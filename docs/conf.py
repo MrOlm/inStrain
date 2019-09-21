@@ -20,6 +20,7 @@
 project = 'inStrain'
 copyright = '2019, Matt Olm and Alex Crits-Christoph'
 author = 'Matt Olm and Alex Crits-Christoph'
+master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
 release = '0.7.2'
