@@ -7,8 +7,8 @@ inStrain
 ====================================
 
 A tool for  analysis of co-occuring genome populations from metagenomes that allows
- highly accurate genome comparisons, analysis of coverage, microdiveristy, and linkage
- and sensitive SNP detection with gene localization and synonymous non-synonymous identification
+highly accurate genome comparisons, analysis of coverage, microdiveristy, and linkage
+and sensitive SNP detection with gene localization and synonymous non-synonymous identification
 
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
