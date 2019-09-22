@@ -29,7 +29,7 @@ Contents
 
    overview
    installation
-   quick_start
+   quickstart
    example_output
    choosing_parameters
    module_descriptions
