@@ -23,7 +23,8 @@ Pip is a great package with many options to change the installation parameters i
 Dependencies
 ------------
 
-inStrain requires other programs to run. Not all dependencies are needed for all operations
+inStrain requires a few other programs to run. Not all dependencies are needed for all operations. There are a number of python
+package dependencies, but those should install automatically when inStrain is installed using pip 
 
 ** Essential**
 
