@@ -13,7 +13,7 @@ and sensitive SNP detection with gene localization and synonymous non-synonymous
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
 
-See links to the left for :doc:`installation` and :doc:`quick_start` instructions
+See links to the left for :doc:`installation` and :doc:`quickstart` instructions
 
 Comments and suggestions can be sent to `Matt Olm <mattolm@berkeley.edu>`_ and/or
 `Alex Crits-Christoph <crits-christoph@berkeley.edu>`_
