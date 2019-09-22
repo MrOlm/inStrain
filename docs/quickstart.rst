@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-The functionality of inStrain is broken up into modules. To see a list of the available modules, see :doc:`module_descriptions`::
+The functionality of inStrain is broken up into modules. To see a list of the available modules, see :doc:`module_descriptions`.::
 
  $ inStrain -h
 
