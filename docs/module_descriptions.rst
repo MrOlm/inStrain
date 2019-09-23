@@ -51,6 +51,25 @@ Next, using only read pairs that pass filters, a number of microdiveristy metric
 
  * Calculate the clonality at each position along the scaffold in which the coverage is greater than the min_cov argument. The formula for calculating clonality is the sum of the frequency of each base squared - [(frequency of A)^2 + (frequency of C)^2 + (frequency of G)^2 + (frequency of T)^2 ]. This clonality definition is nice because it is not effected by coverage
 
+ * Identify SNPs. The criteria for being called a SNP are 1) More than min_cov number of bases at that position, 2) More than min_freq percentage of reads that are a variant base, 3) The number of reads with the variant base is more than the null model for that coverage. The null model describes the probability that the number of true reads that support a variant base could be due to random mutation error, assuming Q30 score. The default false discovery rate with the null model is 1e-6 (one in a million)
+
+ * Calculate linkage between SNPs on the same read pair. For each pair harboring a SNP, calculate the linkage of that SNP with other SNPs within that same pair. This is only done for pairs of SNPs that are both on at least MIN_SNP reads
+
+ * Calculate scaffold-level properties. These include things like the overall coverage, breadth of coverage, average nucleotide identity (ANI) between the reads and the reference genome, and the expected breadth of coverage based on that true coverage.
+
+Finally, this information is stored as an IS_profile object. This includes the locations of SNPs, the number of read pairs that passed filters (and other information) for each scaffold, the linkage between SNV pairs, ect.
+
+.. seealso::
+
+  :doc:`example_output`
+    for help interpreting the output
+
+  :doc:`advanced_use`
+    for access to the raw internal data (which can be very useful)
+
+  :doc:`choosing_parameters`
+    for information about the pitfalls and other things to consider when running inStrain
+
 To see the command-line options, check the help::
 
   $ inStrain profile -h
