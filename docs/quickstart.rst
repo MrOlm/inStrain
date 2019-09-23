@@ -41,28 +41,28 @@ To run inStrain on a mapping run the following command::
 compare
 -----------------
 
-inStrain is able to compare multiple read mappings to the same .fasta file. Each mapping file must first be make into an inStrain profile using the above command. The coverage overlap and popANI between all pairs is calculated:
+inStrain is able to compare multiple read mappings to the same .fasta file. Each mapping file must first be make into an inStrain profile using the above command. The coverage overlap and popANI between all pairs is calculated::
 
  $ inStrain compare -i IS_output_1 IS_output_2 IS_output_3
 
 profile_genes
 -----------------
 
-Once you've run `inStrain profile`, you can also calculate gene-wise clonality, coverage, SNV identity, ect. using this command. It relies on having gene calls in the `.fna` format from the program prodigal.:
+Once you've run `inStrain profile`, you can also calculate gene-wise clonality, coverage, SNV identity, ect. using this command. It relies on having gene calls in the `.fna` format from the program prodigal::
 
  $ inStrain profile_genes -i IS_output -g called_genes.fna
 
 quick_profile
 -----------------
 
-This auxiliary module does not profile microdiveristy at all, but is merely a quick way to calculate the coverage and breadth using the blazingly fast program `coverM <https://github.com/wwood/CoverM>`_. This can be useful for quickly figuring out which scaffolds have any coverage, and then generating a list of these scaffolds to profile with inStrain profile, making it run faster:
+This auxiliary module does not profile microdiveristy at all, but is merely a quick way to calculate the coverage and breadth using the blazingly fast program `coverM <https://github.com/wwood/CoverM>`_. This can be useful for quickly figuring out which scaffolds have any coverage, and then generating a list of these scaffolds to profile with inStrain profile, making it run faster::
 
  $ inStrain quick_profile -b .bam_file -f .fasta_file -s scaffold_to_bin_file -o output_name
 
 filter_reads
 -----------------
 
-This auxiliary module lets you do various tasks to filter and/or characterize a mapping file, and then generate a new mapping file with those filters applied.:
+This auxiliary module lets you do various tasks to filter and/or characterize a mapping file, and then generate a new mapping file with those filters applied::
 
  $ inStrain filter_reads .bam_file .fasta_file -g new_sam_file_location
 

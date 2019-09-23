@@ -4,7 +4,7 @@ Installation
 Using pip
 ---------
 
-To install inStrain, simply run ::
+To install inStrain using the PyPi python repository, simply run ::
 
 $ pip install instrain
 
