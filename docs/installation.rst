@@ -24,8 +24,12 @@ Dependencies
 ------------
 
 inStrain requires a few other programs to run. Not all dependencies are needed for all operations. There are a number of python
-package dependencies, but those should install automatically when inStrain is installed using pip 
+package dependencies, but those should install automatically when inStrain is installed using pip
 
 ** Essential**
 
-* `samtools <http://www.htslib.org>`_
+* `samtools <http://www.htslib.org>`_ This is needed for pysam
+
+** Optional**
+
+* `coverM <https://github.com/wwood/CoverM>`_ This is needed for the quick_profile operation
