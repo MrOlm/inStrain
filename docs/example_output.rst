@@ -14,6 +14,7 @@ scaffold_info.tsv
 This gives basic information about the scaffolds in your sample at the highest allowed level of read identity. Example below:
 
 ::
+
   scaffold        length  breadth coverage        median_cov      std_cov bases_w_0_coverage      mean_clonality  median_clonality        unmaskedBreadth SNPs    expected_breadth    ANI
   1608A0826_scaffold_3621 5866    0.18615751789976132     0.27395158540743264     0       0.6119560844337848      4774    0.0     0.0     0.0     0       0.21486472398684486     0.0
   1608A0826_scaffold_3624 2829    0.30505478967833155     0.3336868151290209      0       0.5287759217659689      1966    0.0     0.0     0.0     0       0.25520439783710397     0.0
