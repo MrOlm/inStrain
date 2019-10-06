@@ -3,7 +3,7 @@ Example Output
 
 InStrain produces a variety of output in the IS folder depending on which operations are run. Generally, output that is meant for human eyes to be easily interpretable is located in the ``output`` folder.
 
-Typical output
+inStrain profile output
 -------
 
 A typical run of inStrain will yield the following files in the output folder:
