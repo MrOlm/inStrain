@@ -31,6 +31,6 @@ Contents
    installation
    quickstart
    example_output
-   choosing_parameters
+   preparing_input
    module_descriptions
    advanced_use

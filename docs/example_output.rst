@@ -139,6 +139,41 @@ This describes the SNPs that are detected in this mapping. Example below ::
   1723A1010_scaffold_472  2034    A       1       0       0       4       G       A       1       False   5       0.2     0.8
   1723A1010_scaffold_476  1139    A       0       0       0       5       G       A       1       False   5       0.0     1.0
 
+See the section "module_descriptions" for what constitutes a SNP (what makes it into this table)
+
+scaffold
+  The scaffold that the SNP is on
+
+position
+  The genomic position of the SNP
+
+refBase
+  The reference base in the .fasta file at that position
+
+A, C, T, and G
+  The number of mapped reads encoding each of the bases
+
+conBase
+  The consensus base; the base that is supported by the most reads
+
+varBase
+  Variant base; the base with the second most reads
+
+morphia
+  The number of bases that are detected above background levels. In order to be detected above background levels, you must pass an fdr filter. See module descriptions for a description of how that works. A morphia of 0 means no bases are supported by the reads, a morphia of 1 means that only 1 base is supported by the reads, a morphia of 2 means two bases are supported by the reads, etc.
+
+cryptic
+  If a SNP is cryptic, it means that it is detected when using a lower read mismatch threshold, but becomes undetected when you move to a higher read mismatch level. See "dealing with mm" in the advanced_use section for more details on what this means.
+
+baseCoverage
+  The total number of reads at this position
+
+varFreq
+  The fraction of reads supporting the varBase
+
+refFreq
+  The fraction of reds supporting the refBase
+
 linkage.tsv
 +++++++++++++++++
 
@@ -154,3 +189,127 @@ This describes the linkage between pairs of SNPs in the mapping that are found o
   1.0000000000000002      1.0000000000000002      0.9999999999999998      1.0     27      14      0       0       13      G       A       C       A       61      187     248     1727A1014_scaffold_559
   0.9999999999999998      1.0     0.9999999999999998      1.0     78      66      0       0       12      C       A       T       C       1       195     196     1727A1014_scaffold_559
   1.0     1.0                     68      56      0       0       12      C       A       A       G       13      195     208     1727A1014_scaffold_559
+
+Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP as two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
+
+scaffold
+  The scaffold that both SNPs are on
+
+position_A
+  The position of the first SNP on this scaffold
+
+position_B
+  The position of the second SNP on this scaffold
+
+distance
+  The distance between the two SNPs
+
+allele_A
+  One of the two bases at position_A
+
+allele_a
+  The other of the two bases at position_A
+
+allele_B
+  One of the bases at position_B
+
+allele_b
+  The other of the two bases at position_B
+
+countAB
+  The number of read-pairs that have allele_A and allele_B
+
+countAb
+  The number of read-pairs that have allele_A and allele_b
+
+countaB
+  The number of read-pairs that have allele_a and allele_B
+
+countab
+  The number of read-pairs that have allele_a and allele_b
+
+total
+  The total number of read-pairs that have have information for both position_A and position_B
+
+r2
+  This is the r-squared linkage metric. See below for how it's calculated
+
+d_prime
+  This is the d-prime linkage metric. See below for how it's calculated
+
+r2_normalized, d_prime_normalized
+  These are calculated by rarefying to ``min_snp`` number of read pairs. See below for how it's calculated
+
+Code for the calculation of these metrics::
+
+  freq_AB = float(countAB) / total
+  freq_Ab = float(countAb) / total
+  freq_aB = float(countaB) / total
+  freq_ab = float(countab) / total
+
+  freq_A = freq_AB + freq_Ab
+  freq_a = freq_ab + freq_aB
+  freq_B = freq_AB + freq_aB
+  freq_b = freq_ab + freq_Ab
+
+  linkD = freq_AB - freq_A * freq_B
+
+  if freq_a == 0 or freq_A == 0 or freq_B == 0 or freq_b == 0:
+      r2 = np.nan
+  else:
+      r2 = linkD*linkD / (freq_A * freq_a * freq_B * freq_b)
+
+  linkd = freq_ab - freq_a * freq_b
+
+  # calc D-prime
+  d_prime = np.nan
+  if (linkd < 0):
+      denom = max([(-freq_A*freq_B),(-freq_a*freq_b)])
+      d_prime = linkd / denom
+
+  elif (linkD > 0):
+      denom = min([(freq_A*freq_b), (freq_a*freq_B)])
+      d_prime = linkd / denom
+
+  ################
+  # calc rarefied
+
+  rareify = np.random.choice(['AB','Ab','aB','ab'], replace=True, p=[freq_AB,freq_Ab,freq_aB,freq_ab], size=min_snp)
+  freq_AB = float(collections.Counter(rareify)['AB']) / min_snp
+  freq_Ab = float(collections.Counter(rareify)['Ab']) / min_snp
+  freq_aB = float(collections.Counter(rareify)['aB']) / min_snp
+  freq_ab = float(collections.Counter(rareify)['ab']) / min_snp
+
+  freq_A = freq_AB + freq_Ab
+  freq_a = freq_ab + freq_aB
+  freq_B = freq_AB + freq_aB
+  freq_b = freq_ab + freq_Ab
+
+  linkd_norm = freq_ab - freq_a * freq_b
+
+  if freq_a == 0 or freq_A == 0 or freq_B == 0 or freq_b == 0:
+      r2_normalized = np.nan
+  else:
+      r2_normalized = linkd_norm*linkd_norm / (freq_A * freq_a * freq_B * freq_b)
+
+
+  # calc D-prime
+  d_prime_normalized = np.nan
+  if (linkd_norm < 0):
+      denom = max([(-freq_A*freq_B),(-freq_a*freq_b)])
+      d_prime_normalized = linkd_norm / denom
+
+  elif (linkd_norm > 0):
+      denom = min([(freq_A*freq_b), (freq_a*freq_B)])
+      d_prime_normalized = linkd_norm / denom
+
+  rt_dict = {}
+  for att in ['r2', 'd_prime', 'r2_normalized', 'd_prime_normalized', 'total', 'countAB', \
+              'countAb', 'countaB', 'countab', 'allele_A', 'allele_a', \
+              'allele_B', 'allele_b']:
+      rt_dict[att] = eval(att)
+
+inStrain compare output
+-------
+
+A typical run of inStrain will yield the following files in the output folder:
