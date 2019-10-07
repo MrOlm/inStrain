@@ -33,4 +33,4 @@ Contents
    example_output
    preparing_input
    module_descriptions
-   advanced_use
+   Advanced_use
