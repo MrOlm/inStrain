@@ -7,12 +7,14 @@ Another common use-case is detailed strain comparisons that involves comparing t
 
 To get started using it, see :doc:`quickstart`
 
-For descriptions of what the modules can can, see :doc:`module_descriptions`
+For descriptions of what the modules can do, see :doc:`module_descriptions`
+
+For an example of the output you can expect, see :doc:`example_output`
 
 What is microdiveristy?
 -----------------
 
-It's like a read cloud. Here is a paragraph about it or soemthing
+It's like a read cloud. Here is a paragraph about it or something
 
 How does inStrain work?
 ---------------
