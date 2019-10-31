@@ -3,7 +3,7 @@ Overview
 
 When you sequence any microbial genome(s), you are always sequencing a population of cells (with the exception of single cell genomics). This population may be a nearly clonal population in a culture flask, a nearly clonal population in the real world, or a highly heterogenous population in the real world, but there is always real biological genetic hetereogeneity within that population - every cell does not have the same genotype at every single position. 
 
- *inStrain* **is a program for measuring, comparing, and interrogating that population's ("intraspecific") genetic heterogeneity (we can call it "microdiversity") in and between samples.**
+ *inStrain* **is a program for measuring, comparing, and interrogating that population's genetic heterogeneity ("intraspecific"; we can call it "microdiversity") in and between samples.**
 ~~~~~~~~~~~~~~~~~~~~~~
 
 The includes calculation of nucleotide diversity, SNPs (including non-synonymous and synonymous variants), coverage / breadth, and linkage disequilibrium in the contexts of genomes, contigs, and individual genes.
