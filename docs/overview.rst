@@ -54,6 +54,11 @@ The basic steps:
 
 6. Optional: compare SNPs between samples.
 
+What is a population?
+--------------
+
+To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". inStrain relies mainly on population definitions that are largely technically limited, but also coincide conventiently with possibly biological real microbial population constraints (https://www.biorxiv.org/content/10.1101/647511v1) (https://www.nature.com/articles/s41467-018-07641-9). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 96.5% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by strigently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, inStrain makes it possible to adjust these parameters as needed and builds graphs which can be used to estimate the best cutoffs for each project.
+
 What are the metrics and terminology of *inStrain*?
 --------------
 
