@@ -1,7 +1,7 @@
 Quick Start
 ===========
 
-The functionality of inStrain is broken up into modules. To see a list of the available modules, see :doc:`module_descriptions`.::
+The functionality of inStrain is broken up into several core modules. To see a list of the available modules, see :doc:`module_descriptions`.::
 
  $ inStrain -h
 
@@ -19,7 +19,7 @@ The functionality of inStrain is broken up into modules. To see a list of the av
     filter_reads    -> Commands related to filtering reads from .bam files
     other           -> Other miscellaneous operations
 
-Below is a list of brief descriptions of each of the modules. For more information see :doc:`module_descriptions`, for help understanding the output see :doc:`example_output`, to change the comparison parameters see :doc:`choosing_parameters`
+Below is a list of brief descriptions of each of the modules. For more information see :doc:`module_descriptions`, for help understanding the output, see :doc:`example_output`, and to change the comparison parameters see :doc:`choosing_parameters`
 
 .. seealso::
   :doc:`module_descriptions`
@@ -32,7 +32,7 @@ Below is a list of brief descriptions of each of the modules. For more informati
 profile
 ---------------
 
-inStrain profile is the main part of this program. It takes .bam file, consisting of reads mapping to a .fasta file, and runs a series of steps to characterize the microdiversity present. Details on how to generate the mapping, how the profiling is done, explanations of the output, how to choose the parameters can be found at :doc:`choosing_parameters` and :doc:`module_descriptions`
+inStrain profile is the main method of the program. It takes a `.fasta` file and a `.bam` file (consisting of reads mapping to the `.fasta` file) and runs a series of steps to characterize the microdiversity present. Details on how to generate the mapping, how the profiling is done, explanations of the output, how to choose the parameters can be found at :doc:`choosing_parameters` and :doc:`module_descriptions`
 
 To run inStrain on a mapping run the following command::
 
@@ -48,14 +48,14 @@ inStrain is able to compare multiple read mappings to the same .fasta file. Each
 profile_genes
 -----------------
 
-Once you've run `inStrain profile`, you can also calculate gene-wise clonality, coverage, SNV identity, ect. using this command. It relies on having gene calls in the `.fna` format from the program prodigal::
+Once you've run `inStrain profile`, you can also calculate gene-wise microdiversity, coverage, and SNP function using this command. It relies on having gene calls in the `.fna` format from the program prodigal::
 
  $ inStrain profile_genes -i IS_output -g called_genes.fna
 
 quick_profile
 -----------------
 
-This auxiliary module does not profile microdiveristy at all, but is merely a quick way to calculate the coverage and breadth using the blazingly fast program `coverM <https://github.com/wwood/CoverM>`_. This can be useful for quickly figuring out which scaffolds have any coverage, and then generating a list of these scaffolds to profile with inStrain profile, making it run faster::
+This auxiliary module  is merely a quick way to calculate the coverage and breadth using the blazingly fast program `coverM <https://github.com/wwood/CoverM>`_. This can be useful for quickly figuring out which scaffolds have any coverage, and then generating a list of these scaffolds to profile with inStrain profile, making it run faster::
 
  $ inStrain quick_profile -b .bam_file -f .fasta_file -s scaffold_to_bin_file -o output_name
 
