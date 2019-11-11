@@ -52,10 +52,10 @@ samtools sort sample.bam -o sample.sorted.bam
 
 Bowtie2 default parameters are what we use for mapping, but it may be worth playing around with them to see how different settings perform on your data. It is important to note that the `-X` flag (capital X) is the expected insert length and is by default `500`. In many cases (e.g., 2x250 bp or simply datasets with longer inserts) it may be worthwhile to increase this value up to `-X 1000` for passing to bowtie2.
 
-Preparing the prodigal `.faa` genes file for gene-level profiling
+Preparing the prodigal `.fna` genes file for gene-level profiling
 -----------
 
-You can run prodigal on your FASTA file to generate the `.FAA` file that `inStrain profile_genes` requires.
+You can run prodigal on your FASTA file to generate the `.FNA` file with the gene-level information that `inStrain profile_genes` requires.
 
 Example:
-`prodigal -i assembly.fasta -a proteins.faa`
+`prodigal -i assembly.fasta -d genes.fna`
