@@ -8,7 +8,7 @@ To install inStrain using the PyPi python repository, simply run ::
 
 $ pip install instrain
 
-OR ::
+Or to install from GitHub run ::
 
   $ git clone https://github.com/MrOlm/instrain.git
 
@@ -26,10 +26,10 @@ Dependencies
 inStrain requires a few other programs to run. Not all dependencies are needed for all operations. There are a number of python
 package dependencies, but those should install automatically when inStrain is installed using pip
 
-** Essential**
+**Essential**
 
 * `samtools <http://www.htslib.org>`_ This is needed for pysam
 
-** Optional**
+**Optional**
 
 * `coverM <https://github.com/wwood/CoverM>`_ This is needed for the quick_profile operation
