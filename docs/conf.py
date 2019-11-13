@@ -23,7 +23,7 @@ author = 'Matt Olm and Alex Crits-Christoph'
 master_doc = 'index'
 
 # The full version, including alpha/beta/rc tags
-release = '0.7.2'
+release = '1.0.0'
 
 
 # -- General configuration ---------------------------------------------------
