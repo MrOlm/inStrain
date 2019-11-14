@@ -157,12 +157,13 @@ Compare does pair-wise comparisons between each input *IS_profile*. For each pai
 
 1. All positions in which both *IS_profile* objects have at least *min_cov* coverage (5x by default) are identified. This information can be stored in the output by using the flag *--store_coverage_overlap*, but due to it's size, it's not stored by default
 
-2. Each position identified in step 1 is compared. If the flag *--compare_consensus_bases* is used, the consensus base at each position is compared. That means that if the position is 60% A 40% G in sample 1, and 40% A 60% G in sample 2, they will considered different.
-By default, however, this position would be considered the same. The way that is compares positions is by testing whether the consensus base in sample 1 is detected at all in sample 2 and vice-verse. Detection of an allele in a sample is based on that allele being above the set *-min_freq* and *-fdr*. All detected differences between each pair of samples can be reported if the flag *--store_mismatch_locations* is set.
+2. Each position identified in step 1 is compared. If the flag *--compare_consensus_bases* is used, the consensus base at each position is compared. That means that if the position is 60% A 40% G in sample 1, and 40% A 60% G in sample 2, they will considered different. By default, however, this position would be considered the same. The way that is compares positions is by testing whether the consensus base in sample 1 is detected at all in sample 2 and vice-verse. Detection of an allele in a sample is based on that allele being above the set *-min_freq* and *-fdr*. All detected differences between each pair of samples can be reported if the flag *--store_mismatch_locations* is set.
 
 3. The coverage overlap and the average nucleotide identify for each scaffold is reported. For details on how this is done, see :doc:`example_output`
 
+
 To see the command-line options, check the help::
+
   $ inStrain compare -h
   usage: inStrain compare -i [INPUT [INPUT ...]] [-o OUTPUT] [-p PROCESSES] [-d]
                           [-h] [-c MIN_COV] [-f MIN_FREQ] [-fdr FDR]
@@ -229,6 +230,7 @@ profile_genes
 After running *inStrain profile* on a sample, you can calculate the coverage, microdiveristy, and SNP type for each gene. You do this by providing a file of gene calls. See doc:`example_output` for example results, and doc:`preparing_input` for information about creating the input file.
 
 To see the command-line options, check the help::
+
   $ inStrain profile_genes -h
   usage: inStrain profile_genes -i IS -g GENE_FILE [-p PROCESSES] [-d] [-h]
 
@@ -259,6 +261,7 @@ There are a number of ways of telling *inStrain* which scaffold belongs to which
 The flag `--mm_level` produces output for each mm. You probably don't want this. For information on what I mean by mm_level see :doc:`Advanced_use`, for information on the output see :doc:`example_output`
 
 To see the command-line options, check the help::
+
   $ inStrain genome_wide -h
   usage: inStrain genome_wide -i IS [-s [STB [STB ...]]] [--mm_level]
                             [-p PROCESSES] [-d] [-h]
@@ -289,6 +292,7 @@ This is a quirky module that is not really related to any of the others. It is u
 To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). The *stringent_breadth_cutoff* removed scaffolds entirely which have less breath than this (used to make the program run faster and produce smaller output). All scaffolds from genomes with at least the *breadth_cutoff* are then written to a file. In this way, you can then choose to run inStrain profile only on scaffolds from genomes that known to be of sufficient breadth, speeding up the run and reducing RAM usage (though not by much).
 
 To see the command-line options, check the help::
+
   $ inStrain quick_profile -h
   usage: inStrain quick_profile -b BAM -f FASTA -s STB [-o OUTPUT]
                               [-p PROCESSES] [-d] [-h]
@@ -327,6 +331,7 @@ The recommended way of running this module is with the default `-pl a`. It will 
 See :doc:`example_output` for an example of the plots it can make.
 
 To see the command-line options, check the help::
+
   $ inStrain plot -h
   usage: inStrain plot -i IS [-pl [PLOTS [PLOTS ...]]] [-p PROCESSES] [-d] [-h]
 
@@ -355,9 +360,10 @@ To see the command-line options, check the help::
 other
 ----------
 
-This module holds odds and ends functionalities. As of version 1.0.0, all it can do is convert old *IS_profile* objects (>v0.3.0) to newer versions (v0.8.0). As the code base around *inStrain* matures, we expect more functionalities to be included here.  
+This module holds odds and ends functionalities. As of version 1.0.0, all it can do is convert old *IS_profile* objects (>v0.3.0) to newer versions (v0.8.0). As the code base around *inStrain* matures, we expect more functionalities to be included here.
 
 To see the command-line options, check the help::
+
   $ inStrain other -h
   usage: inStrain other [-p PROCESSES] [-d] [-h] [--old_IS OLD_IS]
 
