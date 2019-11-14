@@ -39,7 +39,7 @@ inStrain can be run on individual microbial genomes assembled and binned from a 
 When should I probably not use *inStrain*?
 ---------------
 
-When you have not assembled genomes from the metagenomic samples you are interrogating; When breadth and coverage of the consensus genome are low; when you wish to compare populations that are <95% ANI with each other; when you are interested in species-level community composition, not intra-population diversity.
+When you have not assembled genomes from the metagenomic samples you are interrogating; when breadth and coverage of the consensus genome are low; when you wish to compare populations that are <95% ANI with each other; when you are interested in species-level community composition, not intra-population diversity.
 
 How does *inStrain* work?
 ---------------
@@ -75,7 +75,7 @@ Population
   The collection of cells for each species in a metagenome, i.e. the genetic diversity of each species in a microbiome.
 
 .. note::
-  InStrain* is for characterizing metagenomes at the population level, not at the community level.
+  *inStrain* is for characterizing metagenomes at the population level, not at the community level.
 
 SNP
   A SNP is a Single Nucleotide Polymorphism, a genetic variant of a single nucleotide change that some percentage of the cells that comprise a species population. We identify and call SNPs using a simple model to distinguish them from errors, and more importantly in our experience, careful read mapping and filtering of 300 bp (2x150 bp paired reads carefully evaluated as a pair) to be assured that the variants (and the reads that contain them) are truly from the species being profiled, and not from another species in the metagenome (we call it 'mismapping' when this happens). Note that a SNP refers to genetic variation *within a read set*.
@@ -94,13 +94,3 @@ N SNP
 
 S SNP
   A polymoprhic variant that does not change the amino acid code of the protein encoded by the gene in which it resides; synonymous.
-
-How does the compare function work?
---------------
-
-`inStrain compare` calculates popANI metrics comparing a set of different inStrain profiles (sets of different sample reads, mapped to the same consenuss / reference genome). To use, we recommend assembly and binning of each sample, and then dereplication of genomes using the software dRep (https://drep.readthedocs.io/) at a high percent ANI, e.g. 96%-99%. Samples which contain multiple populations of the same dRep cluster (members of similar species or sub-species) can then be mapped back to the best genome from this dRep cluster, and then inStrain should be run on these dRep cluster genomes.
-
-.. note::
-  *inStrain* can only compare read profiles that have been mapped to the same reference genome
-
-The metric that `inStrain compare` returns is a popANI between all inStrain profiles in the set. This reflects the percentage of *fixed sites* in sample A that are also *fixed* in sample B. Sites that are segregating in either sample are ignored. We find that popANI is highly specific for tracking near identical microbial populations, which should have popANI values of almost exactly 100%.
