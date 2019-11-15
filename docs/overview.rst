@@ -80,6 +80,9 @@ Population
 SNP
   A SNP is a Single Nucleotide Polymorphism, a genetic variant of a single nucleotide change that some percentage of the cells that comprise a species population. We identify and call SNPs using a simple model to distinguish them from errors, and more importantly in our experience, careful read mapping and filtering of 300 bp (2x150 bp paired reads carefully evaluated as a pair) to be assured that the variants (and the reads that contain them) are truly from the species being profiled, and not from another species in the metagenome (we call it 'mismapping' when this happens). Note that a SNP refers to genetic variation *within a read set*.
 
+SNV
+  Single nucleotide variant - in inStrain used interchangeably with SNP
+
 Microdiversity
   We use the term microdiversity to refer to intraspecific genetic variation, i.e. the genetic variation between cells within a microbial species. To measure this, we calculate a per-site nucleotide diversity of all reads - thus this metric is slightly influenced by sequencing error, but within study error rates should be consistent, and this effect is extremely minor compared to the extent of biological variation observed within samples. The metric of nucleotide diversity (often referred to as 'pi' in the population genetics world) is from Nei and Li 1979, calculated per site and then averaged across all sites.
 

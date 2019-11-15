@@ -3,7 +3,7 @@ Example Output
 
 InStrain produces a variety of output in the IS folder depending on which operations are run. Generally, output that is meant for human eyes to be easily interpretable is located in the ``output`` folder.
 
-inStrain profile output
+inStrain profile
 -------
 
 A typical run of inStrain will yield the following files in the output folder:
@@ -11,20 +11,20 @@ A typical run of inStrain will yield the following files in the output folder:
 scaffold_info.tsv
 +++++++++++++++++
 
-This gives basic information about the scaffolds in your sample at the highest allowed level of read identity. Example below
+This gives basic information about the scaffolds in your sample at the highest allowed level of read identity.
 
 .. csv-table:: scaffold_info.tsv
 
-  scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,unmaskedBreadth,SNPs,expected_breadth,ANI
-  1608A0826_scaffold_3621,5866,0.18615751789976132,0.27395158540743264,0,0.6119560844337848,4774,0.0,0.0,0.0,0,0.21486472398684486,0.0
-  1608A0826_scaffold_3624,2829,0.30505478967833155,0.3336868151290209,0,0.5287759217659689,1966,0.0,0.0,0.0,0,0.25520439783710397,0.0
-  1608A0826_scaffold_3631,3282,0.22516758074344911,0.32693479585618523,0,0.6823711580458389,2543,0.0,0.0,0.0,0,0.2507506383274967,0.0
-  1608A0826_scaffold_3633,1893,0.6724775488642366,1.5884838880084522,1,1.664144253208806,620,1.0,1.0,0.104067617538299,0,0.7540510470980886,1.0
-  1608A0826_scaffold_3642,2661,0.5606914693724164,1.4753851935362643,1,1.936771851529394,1169,1.0,1.0,0.10973318301390454,0,0.7282207507647787,1.0
-  1608A0826_scaffold_3645,1887,0.4843667196608373,0.7456279809220986,0,0.9161743431517859,973,0.0,0.0,0.0,0,0.48231560949644997,0.0
-  1608A0826_scaffold_3646,2168,0.6342250922509225,1.084870848708487,1,1.0875816472378086,793,0.0,0.0,0.0,0,0.6163179098079582,0.0
-  1608A0826_scaffold_3647,1887,0.255431902490726,0.255431902490726,0,0.4361037097763493,1405,0.0,0.0,0.0,0,0.20191994730181093,0.0
-  1608A0826_scaffold_3652,1884,0.7547770700636943,2.004777070063694,2,1.5722104009266933,462,0.9955963301002432,1.0,0.057855626326963915,1,0.8297041657514823,0.9908256880733946
+  scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,SNPs,expected_breadth,ANI
+  1820A1025_scaffold_114,27197,1.0,117.53612530793836,119,22.517049757019283,0,0.9995305505412146,1.0,0.0004694494587853537,0.0,0.9996323123873956,5,1.0,0.999816088571744
+  1820A1025_scaffold_106,28546,1.0,115.79373642541864,117,22.0981482314861,0,0.9995114336856696,1.0,0.0004885663143303631,0.0,0.9997898129335108,4,1.0,0.9998598458304134
+  1820A1025_scaffold_112,27554,1.0,159.2970530594469,159,26.559269091036462,0,0.9994393799204232,1.0,0.0005606200795766902,0.0,0.9998911228859694,4,1.0,0.99985481470727
+  1820A1025_scaffold_115,26897,1.0,171.2598059263115,167,36.6364045667205,0,0.999117155309884,1.0,0.0008828446901159025,0.0,1.0,46,1.0,0.998289772093542
+  1820A1025_scaffold_118,25342,1.0,137.14375345276616,139,21.175189619940546,0,0.9994166977631538,1.0,0.0005833022368462171,0.0,0.9999605398153264,15,1.0,0.9994080738723808
+  1820A1025_scaffold_130,22145,1.0,168.69356513885754,172,31.331335540083884,0,0.9993979713803196,1.0,0.0006020286196805058,0.0,1.0,8,1.0,0.9996387446376156
+  1820A1025_scaffold_142,19159,1.0,163.43525236181432,164,26.75316027430802,0,0.9992356436742522,1.0,0.0007643563257477838,0.0,1.0,15,1.0,0.999217078135602
+  1820A1025_scaffold_152,17330,1.0,143.43064050778997,144,26.235443720406167,0,0.9996060369840994,1.0,0.0003939630159005558,0.0,0.9978649740334681,0,1.0,1.0
+  1820A1025_scaffold_158,16158,1.0,176.14370590419603,178,30.332807934861112,0,0.9993612181655604,1.0,0.0006387818344396612,0.0,0.9999381111523704,6,1.0,0.9996286439314228
 
 scaffold
   The name of the scaffold in the input .fasta file
@@ -41,6 +41,9 @@ coverage
 median_cov
   The median coverage value of all bases in the scaffold, included bases with 0 coverage
 
+std_cov
+  The standard deviation of all coverage values
+
 bases_w_0_coverage
   The number of bases with 0 coverage
 
@@ -50,38 +53,49 @@ mean_clonality
 median_clonality
   The median clonality value of all bases in the scaffold that have a clonality value calculated
 
+mean_microdiversity
+  The mean mean_microdiversity value of all bases in the scaffold that have a mean_microdiversity value calculated (microdiveristy = 1 - clonality)
+
+median_microdiversity
+  The median microdiversity value of all bases in the scaffold that have a microdiversity value calculated
+
 unmaskedBreadth
   The percentage of bases in the scaffold that have at least the min_cov number of bases. This value multiplied by the length of the scaffold gives the percentage of bases for which clonality is calculated and on which SNPs can be called
 
 SNPs
-  The number of SNPs called on this scaffold
+  The total number of SNPs called on this scaffold
 
 expected_breadth
-  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower, this means that reads are mapping only to a specific region of your scaffold (transposon, etc.)
+  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, etc.)
 
 ANI
   The average nucleotide identity between the reads in the sample and the .fasta file. Calculated using the formula ANI = (unmaskedBreadth * length) - SNPs)/ (unmaskedBreadth * length))
 
+.. warning::
+
+  As of inStrain v1.0.0, ANI includes consideration of all SNPs, including those that signify polymorphic positions and those that signify deviations from the reference base.
+
 read_report.tsv
 +++++++++++++++++
 
-This provides an overview of the number of reads that map to each scaffold, and some basic metrics about their quality. Example below ::
+This provides an overview of the number of reads that map to each scaffold, and some basic metrics about their quality.
 
-  # filter_cutoff:0.95 max_insert_relative:3 min_insert:50 min_mapq:-1
-  scaffold        unfiltered_reads        unfiltered_pairs        pass_filter_cutoff      pass_max_insert pass_min_insert pass_min_mapq   filtered_pairs  mean_mistmaches mean_insert_distance mean_mapq_score mean_pair_length        median_insert   mean_PID
-  all_scaffolds   205082276       96617528        94929495        96590231        96573054        96617524        94862959        1.9608805247014809      335.7611296886006       15.170048420199695   286.27552505793767      329.0   0.9930197361098816
-  b003-d052_scaffold_330  326     101     96      101     99      101     94      2.118811881188119       194.5049504950495       1.0693069306930694      251.3465346534653       210.00.9912149801106098
-  b003-d052_scaffold_468  0       0       0       0       0       0       0
-  b003-d052_scaffold_140  0       0       0       0       0       0       0
-  b003-d086_scaffold_1    39      18      18      18      18      18      18      1.8333333333333333      326.72222222222223      1.8888888888888888      271.94444444444446      341.00.9925481073725309
-  b003-d052_scaffold_687  0       0       0       0       0       0       0
-  b003-d052_scaffold_64   672     225     210     225     223     225     208     2.7644444444444445      219.26222222222225      2.0311111111111106      274.3688888888889       212.00.9901429258972524
-  b003-d052_scaffold_312  400     177     176     177     177     177     176     4.59322033898305        281.090395480226        5.175141242937853       282.0169491525424       287.00.9839838132309756
+.. csv-table:: read_report.tsv
+
+  scaffold,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
+  all_scaffolds,4464152,2168391,2154253,2168102,2167792,2168391,2153442,0.5102327024969205,325.4543267335089,41.506261555226885,293.22514574170435,313.0,0.9981314852335254
+  JBBB007E_scaffold_233,10605,5062,5048,5062,5062,5062,5048,0.3832477281706835,312.3638877913868,1.3024496246542872,293.6845120505729,308.0,0.998581261373412
+  1820A1025_scaffold_11,200651,98185,97870,98174,98150,98185,97825,0.4297295920965524,320.3908336303916,41.902917960992006,293.49184702347617,314.0,0.9984105714013544
+  1820A1025_scaffold_12,192161,94169,93860,94165,94146,94169,93835,0.4243647060072848,320.1241916129512,41.86061230341195,293.2882264864233,313.0,0.9984318946277784
+  1820A1025_scaffold_5,328711,160303,159657,160296,160265,160303,159613,0.4424371346762069,320.44356624642086,41.882241754677075,293.1935023050099,313.0,0.9983611885767244
+  1820A1025_scaffold_2,428162,209675,208987,209651,209621,209675,208913,0.4234267318469059,328.2336473113151,41.89234768093478,293.3190318349827,313.0,0.9984327943894524
+  1820A1025_scaffold_22,180103,87912,87523,87908,87880,87912,87488,0.4677632177632178,320.15531440531436,41.63107425607426,292.8853512603513,314.0,0.9982475272431892
+  1820A1025_scaffold_1,461964,226192,225400,226155,226126,226192,225299,0.4299002617245526,336.90442190705244,41.908409669661175,293.1702359057792,313.0,0.9984114970717194
 
 The following metrics are provided for all individual scaffolds, and for all scaffolds together (scaffold "all_scaffolds"). For the max insert cutoff, the median_insert for all_scaffolds is used
 
 header line
-  The header line (starting with #) describes the parameters that were used to filter the reads
+  The header line (starting with #; not shown in the above table) describes the parameters that were used to filter the reads
 
 scaffold
   The name of the scaffold in the input .fasta file
@@ -128,20 +142,22 @@ mean_PID
 SNVs.tsv
 +++++++++++++++++
 
-This describes the SNPs that are detected in this mapping. Example below ::
+This describes the SNPs that are detected in this mapping.
 
-  scaffold        position        refBase A       C       T       G       conBase varBase morphia cryptic baseCoverage    varFreq refFreq
-  1608A0826_scaffold_3652 941     G       2       0       0       3       G       A       0       False   5       0.4     0.6
-  1723A1010_scaffold_464  3543    C       0       3       2       0       C       T       0       False   5       0.4     0.6
-  1723A1010_scaffold_464  3576    G       4       0       0       1       A       G       1       False   5       0.2     0.8
-  1723A1010_scaffold_472  418     T       0       5       0       0       C       A       1       False   5       0.0     1.0
-  1723A1010_scaffold_472  765     G       5       0       0       0       A       A       1       False   5       1.0     1.0
-  1723A1010_scaffold_472  1269    C       0       0       6       0       T       A       1       False   6       0.0     1.0
-  1723A1010_scaffold_472  1287    C       0       0       8       0       T       A       1       False   8       0.0     1.0
-  1723A1010_scaffold_472  2034    A       1       0       0       4       G       A       1       False   5       0.2     0.8
-  1723A1010_scaffold_476  1139    A       0       0       0       5       G       A       1       False   5       0.0     1.0
+.. csv-table:: SNVs.tsv
 
-See the section "module_descriptions" for what constitutes a SNP (what makes it into this table)
+  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,cryptic,baseCoverage,varFreqrefFreq
+  1820A1025_scaffold_114,27192,A,13,2,0,0,A,C,2,False,15,0.13333333333333333,0.8666666666666667
+  1820A1025_scaffold_114,27193,T,8,2,4,1,A,T,3,False,15,0.26666666666666666,0.5333333333333333
+  1820A1025_scaffold_114,27194,A,11,4,0,0,A,C,2,False,15,0.26666666666666666,0.7333333333333333
+  1820A1025_scaffold_114,27195,G,1,10,4,0,C,T,2,False,15,0.26666666666666666,0.6666666666666666
+  1820A1025_scaffold_114,27196,A,0,10,0,0,C,A,1,False,10,0.0,1.0
+  1820A1025_scaffold_106,11174,C,4,57,0,0,C,A,2,False,61,0.06557377049180327,0.9344262295081968
+  1820A1025_scaffold_106,28450,A,37,2,0,0,A,C,2,True,39,0.05128205128205128,0.9487179487179488
+  1820A1025_scaffold_106,28541,A,3,2,2,1,A,C,3,False,8,0.25,0.375
+  1820A1025_scaffold_106,28542,G,0,4,0,4,C,G,2,False,8,0.5,0.5
+
+See the :doc:`module_descriptions` for what constitutes a SNP (what makes it into this table)
 
 scaffold
   The scaffold that the SNP is on
@@ -179,18 +195,20 @@ refFreq
 linkage.tsv
 +++++++++++++++++
 
-This describes the linkage between pairs of SNPs in the mapping that are found on the same read pair at least min_snp times. Example below ::
+This describes the linkage between pairs of SNPs in the mapping that are found on the same read pair at least min_snp times.
 
-  r2      d_prime r2_normalized   d_prime_normalized      total   countAB countAb countaB countab allele_A        allele_a        allele_B        allele_b        distance        position_A   position_B      scaffold
-  1.0000000000000009      1.0     0.9999999999999998      1.0     80      68      0       0       12      G       A       C       A       8       187     195     1727A1014_scaffold_559
-  0.9999999999999992      1.0     1.0     1.0     78      65      0       0       13      G       A       T       C       9       187     196     1727A1014_scaffold_559
-  0.9999999999999996      1.0     0.9999999999999998      0.9999999999999998      67      54      0       0       13      G       A       A       G       21      187     208     1727A1014_scaffold_559
-  0.9999999999999988      1.0     0.9999999999999998      0.9999999999999998      59      48      0       0       11      G       A       G       T       22      187     209     1727A1014_scaffold_559
-  1.0     1.0     0.9999999999999998      0.9999999999999998      43      30      0       0       13      G       A       T       A       36      187     223     1727A1014_scaffold_559
-  1.0000000000000002      1.0     1.0     1.0     39      27      0       0       12      G       A       C       T       46      187     233     1727A1014_scaffold_559
-  1.0000000000000002      1.0000000000000002      0.9999999999999998      1.0     27      14      0       0       13      G       A       C       A       61      187     248     1727A1014_scaffold_559
-  0.9999999999999998      1.0     0.9999999999999998      1.0     78      66      0       0       12      C       A       T       C       1       195     196     1727A1014_scaffold_559
-  1.0     1.0                     68      56      0       0       12      C       A       A       G       13      195     208     1727A1014_scaffold_559
+.. csv-table:: linkage.tsv
+
+  r2,d_prime,r2_normalized,d_prime_normalized,total,countAB,countAb,countaB,countab,allele_A,allele_a,allele_B,allele_b,distance,position_A,position_B,scaffold
+  1.000000000000002,1.0,0.9999999999999998,1.0,162,152,0,0,10,G,A,C,A,24,24679,24703,1820A1025_scaffold_115
+  0.9999999999999986,1.0,0.9999999999999998,1.0,122,113,0,0,9,G,A,C,A,58,24679,24737,1820A1025_scaffold_115
+  1.0000000000000004,1.0,126,118,0,0,8,G,A,C,G,59,24679,24738,1820A1025_scaffold_115
+  0.9999999999999984,1.0,1.0,1.0,125,117,0,0,8,G,A,T,G,70,24679,24749,1820A1025_scaffold_115
+  1.0,1.0,1.0,1.0,48,42,0,0,6,G,A,T,C,160,24679,24839,1820A1025_scaffold_115
+  1.0000000000000016,1.0,0.9999999999999998,1.0,49,43,0,0,6,G,A,G,A,163,24679,24842,1820A1025_scaffold_115
+  0.9999999999999998,1.0,0.9999999999999998,0.9999999999999998,46,40,0,0,6,G,A,GA,169,24679,24848,1820A1025_scaffold_115
+  1.0000000000000009,1.0000000000000002,1.0,1.0,49,42,0,0,7,G,A,C,T,181,24679,24860,1820A1025_scaffold_115
+  1.0,1.0,1.0,1.0,43,38,0,0,5,G,A,C,G,238,24679,24917,1820A1025_scaffold_115
 
 Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP as two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
 
@@ -311,7 +329,81 @@ Code for the calculation of these metrics::
               'allele_B', 'allele_b']:
       rt_dict[att] = eval(att)
 
-inStrain compare output
+inStrain compare
 -------
 
 A typical run of inStrain will yield the following files in the output folder:
+
+inStrain profile_genes
+-----------
+
+A typical run of inStrain profile_genes will yield the following additional files in the output folder:
+
+gene_info.tsv
++++++++++++
+
+This describes some basic information about the genes being profiled
+
+.. csv-table:: gene_info.tsv
+
+  gene,scaffold,direction,partial,start,end,coverage,breadth,clonality,microdiversity,masked_breadthSNPs_per_bp,min_ANI
+  JBBB007E_scaffold_233_1,JBBB007E_scaffold_233,-1,True,1,327,31.07645259938838,0.9908256880733946,0.9996904894417408,0.00030951055825922946,0.9357798165137616,0.0,0
+  JBBB007E_scaffold_233_2,JBBB007E_scaffold_233,-1,False,344,1654,68.31273836765827,1.0,0.9995749550953246,0.0004250449046754312,1.0,0.0,0
+  JBBB007E_scaffold_233_3,JBBB007E_scaffold_233,-1,False,1655,1840,57.55913978494624,1.0,0.9995984579286268,0.0004015420713732176,1.0,0.0,0
+  JBBB007E_scaffold_233_4,JBBB007E_scaffold_233,-1,False,1824,2261,60.378995433789946,1.0,0.999627013456876,0.0003729865431241208,1.0,0.0,0
+  JBBB007E_scaffold_233_5,JBBB007E_scaffold_233,-1,False,2254,2679,69.35915492957747,1.0,0.9996632362755252,0.00033676372447488667,1.0,0.0,0
+  JBBB007E_scaffold_233_6,JBBB007E_scaffold_233,-1,False,2679,3026,49.05172413793103,1.0,0.9995279442304852,0.000472055769514812,1.0,0.0,0
+  JBBB007E_scaffold_233_7,JBBB007E_scaffold_233,-1,False,3020,3421,53.14427860696517,1.0,0.9997191567029526,0.00028084329704736183,1.0,0.0,0
+  JBBB007E_scaffold_233_8,JBBB007E_scaffold_233,-1,False,3431,3664,65.02991452991454,1.0,0.999618145899895,0.00038185410010505016,1.0,0.0,0
+  JBBB007E_scaffold_233_9,JBBB007E_scaffold_233,-1,False,3664,4563,64.00333333333333,1.0,0.9994913809167014,0.0005086190832985782,1.0,0.0,0
+
+SNP_mutation_types.tsv
++++++++++++++++
+
+This describes whether SNPs are synonymous, nonsynonymous, or intergenic
+
+.. csv-table:: SNP_mutation_types.tsv
+
+  scaffold,position,refBase,A,C,T,G,conBase,varBase,baseCoverage,varFreq,refFreq,mutation_type,mutation,gene
+  1820A1025_scaffold_5,96846,A,142,0,0,17,A,G,159,0.1069182389937107,0.8930817610062893,S,S:296,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96849,T,17,0,142,0,T,A,159,0.1069182389937107,0.8930817610062893,S,S:299,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96866,A,142,0,0,16,A,G,158,0.10126582278481013,0.8987341772151899,N,N:D316G,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96867,T,16,0,139,0,T,A,155,0.1032258064516129,0.8967741935483872,N,N:D317E,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96868,T,16,0,136,0,T,A,152,0.10526315789473684,0.8947368421052632,N,N:S318T,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96869,C,0,142,0,15,C,G,157,0.09554140127388536,0.9044585987261148,N,N:S319C,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96879,T,0,16,143,0,T,C,159,0.10062893081761007,0.89937106918239,S,S:329,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,96918,G,0,6,0,113,G,C,119,0.050420168067226885,0.9495798319327732,S,S:368,1820A1025_scaffold_5_96
+  1820A1025_scaffold_5,345729,A,3,0,2,0,A,T,5,0.4,0.6,N,N:I756L,1820A1025_scaffold_5_314
+  1820A1025_scaffold_5,345730,T,0,0,3,2,T,G,5,0.4,0.6,N,N:I757R,1820A1025_scaffold_5_314
+
+inStrain genome_wide
+------------
+
+A typical run of inStrain genome_wide will yield the following additional files in the output folder:
+
+genomeWide_scaffold_info.tsv
++++++++++++++
+
+This is a genome-wide version of the scaffold report described above
+
+.. csv-table:: genomeWide_scaffold_info.tsv
+
+  genome,detected_scaffolds,true_scaffolds,true_length,SNPs,breadth,coverage,std_cov,mean_clonality,ANI,unmaskedBreadth,expected_breadth
+  S2_002_005G1_phage_Clostridioides_difficile.fasta,1,1,21096,1,0.9993837694349641,61.11220136518772,11.758200608087787,0.9996280813990492,0.9999525098542053,0.9981513083048921,1.0
+  S2_018_020G1_bacteria_Clostridioides_difficile.fasta,34,34,4075786,1235,0.9978202977290761,134.79707030742046,25.46058779187456,0.9994819824195843,0.9996962394194163,0.9975258759905451,1.0
+
+genomeWide_read_report.tsv
+++++++++++++
+
+This is a genome-wide version of the read report described above
+
+.. csv-table:: genomeWide_read_report.tsv
+
+  genome,scaffolds,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
+  S2_002_005G1_phage_Clostridioides_difficile.fasta,1,10605,5062,5048,5062,5062,5062,5048,0.3832477281706835,312.3638877913868,1.3024496246542872,293.6845120505729,308.0,0.998581261373412
+  S2_018_020G1_bacteria_Clostridioides_difficile.fasta,34,4453547,2163329,2149205,2163040,2162730,2163329,2148394,0.5636466689761853,321.3510672021471,41.47419579138972,293.33494491093336,312.5147058823529,0.9979527547934701
+
+inStrain plot
+------------
+
+This is what those plots look like

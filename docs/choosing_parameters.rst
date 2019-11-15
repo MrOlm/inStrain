@@ -59,6 +59,8 @@ Mapping to multiple reference genomes
 
 This is a great way to avoid mis-mapped reads.
 
+Also talk about the mapQ score here
+
 Parameters for inStrain compare
 --------------
 
