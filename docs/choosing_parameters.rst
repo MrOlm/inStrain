@@ -95,7 +95,7 @@ This simple formula fits the observed trend remarkably well, providing pretty go
 
 .. note::
 
-  In the above example, read stealing approaches 0 at around 98% ANI. This, when dereplicating your genome set (using `dRep <https://github.com/MrOlm/drep>`_ for example), using a threshold of 98% or lower is a good idea.
+  In the above example, read stealing approaches 0 at around 98% ANI. Thus, when dereplicating your genome set (using `dRep <https://github.com/MrOlm/drep>`_ for example), using a threshold of 98% or lower is a good idea.
 
 As a final check, we can also filter reads by MapQ score. A MapQ is assigned to each read mapped by bowtie2, and is mean to signify how well the read mapped. MapQ scores are incredibly confusing (see the following `link <http://biofinysics.blogspot.com/2014/05/how-does-bowtie2-assign-mapq-scores.html>`_ for more information), but MapQ scores of 0 and 1 have a special meaning. If a read maps equally well to multiple different locations on a .fasta file, it always gets a MapQ score of 0 or 1. Thus, by filtering out reads with MapQ scores < 2, we can see reads that map uniquely to one genome only.
 
@@ -122,7 +122,7 @@ As you can see, genomes from that share >95% ANI tend to share ~75% of their gen
 
   Based on the above information we recommend the following pipeline. 1) Assemble and bin genomes from all samples individually. 2) Dereplicate genomes based on 97-98% ANI. 3) Concatenate all dereplicated genomes into a single .fasta file, and map reads from all original samples to this concatenated .fasta file. 4) Use inStrain to profile the strain-level diversity of each microbial population (represented by a genome in your concatenated .fasta file)
 
-Parameters for inStrain compare
+Detecting closely related organisms with inStrain compare
 --------------
 
 Pretty obvious what I'm going to talk about here
