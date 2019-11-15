@@ -151,7 +151,7 @@ Compare provides the ability to compare two *IS_profile* folders (created by run
 *inStrain compare* compares a set of different *IS_profile* folders (created by running *inStrain profile*). These *IS_profile* folders represent sets of different sample reads mapped to the same *.fasta* file. To use, we recommend assembly and binning of each sample, and then dereplication of genomes using the software dRep (https://drep.readthedocs.io/) at a high percent ANI, e.g. 96%-99%. Samples which contain multiple populations of the same dRep cluster (members of similar species or sub-species) can then be mapped back to the best genome from this dRep cluster, and then inStrain should be run on these dRep cluster genomes.
 
 .. note::
-  *inStrain* can only compare read profiles that have been mapped to the same reference genome
+  *inStrain* can only compare read profiles that have been mapped to the same .fasta file
 
 Compare does pair-wise comparisons between each input *IS_profile*. For each pair, a series of steps are undertaken.
 
