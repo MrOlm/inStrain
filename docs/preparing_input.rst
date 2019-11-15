@@ -29,6 +29,8 @@ The recommended workflow for running *inStrain*:
 
 The most important aspect of this workflow is to **map to many genomes at once**. Mapping to just one genome at a time is highly discouraged, because this encourages mismapped reads from other genomes to be recruited by this genome. By including many (dereplicated) genomes in your bowtie2 index, you will be able to far more accurately filter out mismapped reads and reduce false positive SNPs.
 
+For more information on this, see :doc:`choosing_parameters`
+
 Using a single genome .FASTA file
 ++++++++++++++
 

@@ -6,6 +6,13 @@ When you sequence any microbial genome(s), you sequence a population of cells (w
 .. note::
   *inStrain* is a program for measuring, comparing, and interrogating the genetic heterogeneity of microbial populations in and between metagenomic samples. We refer to these intraspecific differences as "microdiversity"
 
+How does inStrain compare to other bioinformatics tools for strains analysis?
+-------------------
+
+.. figure:: images/Figure0_v1.3.png
+  :width: 400px
+  :align: center
+
 What can *inStrain* do?
 -----------------
 
