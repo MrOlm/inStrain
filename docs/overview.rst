@@ -10,7 +10,7 @@ How does inStrain compare to other bioinformatics tools for strains analysis?
 -------------------
 
 .. figure:: images/Figure0_v1.3.png
-  :width: 400px
+  :width: 800px
   :align: center
 
 What can *inStrain* do?
@@ -22,7 +22,7 @@ What can *inStrain* do?
 
 The typical use-case is to generate a `.bam` file by mapping metagenomic reads to a bacterial genome that is present in the metagenomic sample, and using inStrain to characterize the microdiversity present.
 
-Another common use-case is detailed strain comparisons that involves comparing the genetic diversity of two populations and calculating the extent to which they overlap. This allows for the calculation of population ANI values for extremely similar genomic populations (<99.999% average nucleotide identity).
+Another common use-case is detailed strain comparisons that involves comparing the genetic diversity of two populations and calculating the extent to which they overlap. This allows for the calculation of population ANI values for extremely similar genomic populations (>99.999% average nucleotide identity).
 
 .. seealso::
   :doc:`quickstart`
@@ -33,6 +33,8 @@ Another common use-case is detailed strain comparisons that involves comparing t
     To view example output
   :doc:`preparing_input`
     For information on how to prepare data for inStrain
+  :doc:`choosing_parameters`
+    For detailed information on how to make sure inStrain is running correctly
 
 When should I use *inStrain*?
 -----------------
@@ -67,6 +69,11 @@ The basic steps:
 
 6. Optional: compare SNPs between samples.
 
+What is unique about the way that *inStrain* compares strains?
+---------------
+
+Most strain-resolved pipelines compare the dominant allele at each position. If you have two closely related strains A and B in sample 1, with B being at higher abundance, and two closely related strains A and C in sample 2, with C being at higher abundance, most strain comparison pipelines will in actuality compare strain B and C. This is because they work on the principle of finding the dominant strain in each sample and then comparing the dominant strains. inStrain, on the other hand, is able to identify the fact that A is present in both samples. This is because it doesn't just compare the dominant alleles, but compares all alleles in the two populations. See doc:`module_descriptions` and :doc:`choosing_parameters` for more information.
+
 What is a population?
 --------------
 
@@ -76,10 +83,10 @@ What are the metrics and terminology of *inStrain*?
 --------------
 
 Community
-  The collection of species in a metagenome, i.e. the species diversity of a microbiome.
+  The collection of taxa in a metagenome, i.e. the species diversity of a microbiome.
 
 Population
-  The collection of cells for each species in a metagenome, i.e. the genetic diversity of each species in a microbiome.
+  The collection of cells for each taxa in a metagenome, i.e. the genetic diversity of each species or sub-species in a microbiome.
 
 .. note::
   *inStrain* is for characterizing metagenomes at the population level, not at the community level.
@@ -104,3 +111,12 @@ N SNP
 
 S SNP
   A polymoprhic variant that does not change the amino acid code of the protein encoded by the gene in which it resides; synonymous.
+
+ANI
+  Average nucleotide identity. The average nucleotide distance between two genomes or .fasta files. If two genomes have a difference every 100 base-pairs, the ANI would be 99%
+
+fasta file
+  A file containing a DNA sequence. Details on this file format can be found on `wikipedia <https://en.wikipedia.org/wiki/FASTA_format>`_
+
+bam file
+  A file containing metagenomic reads mapped to a DNA sequence. Very similar to a `.sam` file. Details can be found `online <https://samtools.github.io/hts-specs/SAMv1.pdf>`_
