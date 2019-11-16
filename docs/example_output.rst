@@ -425,3 +425,53 @@ This is what the results of inStrain plot look like.
 .. figure:: images/ExampleIS_plots/genomeWide_microdiveristy_metrics_2.png
   :width: 800px
   :align: center
+
+3) Read-level ANI distribution
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/readANI_distribution.png
+  :width: 800px
+  :align: center
+
+4) Major allele frequencies
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/MajorAllele_frequency_plot.png
+  :width: 800px
+  :align: center
+
+5) Linkage decay
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/LinkageDecay_plot.png
+  :width: 800px
+  :align: center
+
+6) Read filtering plots
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/ReadFiltering_plot.png
+  :width: 800px
+  :align: center
+
+7) Scaffold inspection plot (large)
+++++++++++++
+
+**Example to come**
+
+8) Linkage with SNP type (GENES REQUIRED)
+++++++++++++
+
+**Example to come**
+
+9) Gene histograms (GENES REQUIRED)
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/GeneHistogram_plot.png
+  :width: 800px
+  :align: center
+
+10) Compare dendrograms (RUN ON COMPARE; NOT PROFILE)
+++++++++++++
+
+**Example to come**
