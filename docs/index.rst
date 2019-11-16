@@ -6,10 +6,8 @@
 inStrain
 ====================================
 
-A tool for  analysis of co-occuring genome populations from metagenomes that allows
-highly accurate genome comparisons, analysis of coverage, microdiveristy, and linkage,
-and sensitive SNP detection with gene localization and synonymous non-synonymous identification
 
+inStrain is a program for measuring, comparing, and interrogating the genetic heterogeneity of microbial populations in and between metagenomic samples. This includes calculation of nucleotide diversity, calling SNPs (including non-synonymous and synonymous variants), reporting accurate coverage / breadth, and calculating linkage disequilibrium in the contexts of genomes, contigs, and individual genes.
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
 
