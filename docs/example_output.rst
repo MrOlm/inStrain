@@ -406,4 +406,22 @@ This is a genome-wide version of the read report described above
 inStrain plot
 ------------
 
-This is what those plots look like
+This is what the results of inStrain plot look like.
+
+1) Coverage and breadth vs. read mismatches
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/CoverageAndBreadth_vs_readMismatch.png
+  :width: 800px
+  :align: center
+
+2) Genome-wide microdiversity metrics
+++++++++++++
+
+.. figure:: images/ExampleIS_plots/genomeWide_microdiveristy_metrics_1.png
+  :width: 800px
+  :align: center
+
+.. figure:: images/ExampleIS_plots/genomeWide_microdiveristy_metrics_2.png
+  :width: 800px
+  :align: center
