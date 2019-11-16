@@ -1,0 +1,13 @@
+numpy
+pandas>=0.25
+seaborn
+matplotlib
+biopython
+scikit-learn
+pytest
+tqdm
+pysam
+networkx
+h5py
+psutil
+drep

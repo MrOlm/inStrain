@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+###############################################################################
+#
+# inStrain - main program entry point
+#
+###############################################################################
+
+__author__ = "Alex Crits-Christoph and Matt Olm"
+__license__ = "MIT"
+__email__ = "crits-christoph@berkeley.edu and mattolm@gmail.com"
+__status__ = "Development"
+
+import argparse
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import inStrain.controller
+import inStrain.argumentParser
+
+if sys.version_info[0] < 3:
+    print('''
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!! you're running inStrain with python2- you need python 3 !!!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!''')
+    sys.exit(1)
+
+if __name__ == '__main__':
+    args = inStrain.argumentParser.parse_args(sys.argv[1:])
+    inStrain.controller.Controller().main(args)

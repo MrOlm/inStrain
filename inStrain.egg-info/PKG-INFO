@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: inStrain
+Version: 1.0.0
+Summary: Calculation of strain-level metrics
+Home-page: https://github.com/MrOlm/inStrain
+Author: Matt Olm and Alex Crits-Christoph
+Author-email: mattolm@berkeley.edu
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3.4.0

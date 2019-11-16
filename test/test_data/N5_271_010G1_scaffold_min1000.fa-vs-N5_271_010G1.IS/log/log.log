@@ -1,0 +1,904 @@
+11-11 14:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+11-11 14:20 DEBUG    ***Logger started up at /Users/mattolm/Programs/strains_analysis/test/test_backend/testdir/test/log/log.log***
+11-11 14:20 DEBUG    Command to run inStrain was: ./test_suite.py
+
+11-11 14:20 DEBUG    inStrain version 1.0.0 was run 
+
+11-11 14:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_0 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_1 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_2 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_3 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_4 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_5 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_5 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_0 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_6 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_4 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_7 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_8 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_7 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_2 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_6 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_9 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_10 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_11 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_1 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_8 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_3 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_12 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_13 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_11 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_14 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_15 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_9 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_12 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_16 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_10 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_17 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_14 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_13 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_15 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_19 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_18 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_17 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_20 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_21 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_16 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_22 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_23 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_21 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_24 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_23 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_20 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_18 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_25 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_26 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_27 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_19 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_26 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_25 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_28 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_29 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_30 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_27 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_24 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_31 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_32 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_22 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_33 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_30 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_29 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_28 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_31 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_34 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_36 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_35 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_37 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_36 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_34 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_38 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_35 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_39 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_33 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_40 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_41 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_37 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_39 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_40 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_42 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_43 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_44 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_32 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_43 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_45 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_46 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_42 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_47 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_41 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_48 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_45 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_46 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_49 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_50 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_47 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_51 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_48 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_44 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_49 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_52 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_53 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_54 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_50 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_55 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_53 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_51 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_56 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_57 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_55 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_58 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_57 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_56 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_59 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_60 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_54 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_52 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_58 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_59 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_38 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_64 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_61 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_63 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_62 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_60 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_65 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_64 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_66 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_67 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_63 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_68 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_67 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_65 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_69 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_68 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_70 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_66 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_72 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_71 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_69 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_73 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_70 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_61 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_74 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_73 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_75 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_76 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_71 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_77 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_74 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_78 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_75 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_77 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_79 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_80 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_78 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_81 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_76 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_80 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_82 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_83 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_81 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_84 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_79 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_85 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_84 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_83 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_86 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_82 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_87 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_85 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_88 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_89 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_86 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_90 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_88 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_91 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_87 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_90 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_91 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_92 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_93 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_94 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_89 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_95 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_94 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_92 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_96 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_95 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_97 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_98 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_96 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_99 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_97 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_98 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_100 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_101 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_99 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_102 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_100 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_103 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_101 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_104 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_102 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_105 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_103 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_106 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_105 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_107 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_106 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_108 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_104 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_93 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_107 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_108 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_109 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_110 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_112 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_111 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_109 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_111 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_113 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_114 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_113 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_112 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_115 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_116 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_116 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_117 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_117 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_118 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_118 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_119 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_72 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_119 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_120 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_62 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_120 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_121 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_122 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_121 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_123 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_124 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_122 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_125 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_123 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_126 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_114 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_125 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_127 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_126 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_128 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_128 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_129 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_130 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_127 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_129 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_124 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_131 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_132 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_133 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_130 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_131 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_132 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_136 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_135 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_134 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_133 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_137 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_134 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_135 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_138 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_139 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_137 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_140 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_136 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_141 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_139 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_138 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_142 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_143 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_141 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_142 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_144 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_145 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_143 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_146 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_145 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_144 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_110 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_147 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_148 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_148 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_149 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_150 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_149 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_151 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_150 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_152 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_151 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_153 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_152 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_154 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_153 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_155 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_147 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_155 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_156 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_157 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_154 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_158 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_156 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_159 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_157 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_158 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_160 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_161 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_159 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_162 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_161 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_163 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_160 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_185 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_162 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_197 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_163 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_185 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_341 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_350 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_197 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_361 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_350 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_146 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_362 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_362 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_376 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_419 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_376 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_443 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_341 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_484 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_443 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_419 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_618 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_649 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_484 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_836 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_618 reads
+11-11 14:20 DEBUG    running N5_271_010G1_scaffold_963 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_836 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_140 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_361 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_115 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_649 reads
+11-11 14:20 DEBUG    returning N5_271_010G1_scaffold_963 reads
+11-11 14:20 INFO     Making read report
+11-11 14:20 INFO     running on all reads
+11-11 14:20 INFO     running on individual scaffolds
+11-11 14:20 INFO     Filtering reads
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_10 PID 98731 start at 1573510833.4963892 with 8761344 RAM. System has 6526545920 of 17179869184 available
+N5_271_010G1_scaffold_10 PID 98731 end at 1573510833.990605 with 23887872 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_100 PID 98732 start at 1573510833.501158 with 9351168 RAM. System has 6520528896 of 17179869184 available
+N5_271_010G1_scaffold_100 PID 98732 end at 1573510833.566736 with 20443136 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_101 PID 98732 start at 1573510833.567519 with 20316160 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_101 PID 98732 end at 1573510833.6235409 with 21757952 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_102 PID 98732 start at 1573510833.624177 with 21643264 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_102 PID 98732 end at 1573510833.686542 with 22196224 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_103 PID 98732 start at 1573510833.686996 with 22196224 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_103 PID 98732 end at 1573510833.7446241 with 22511616 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_104 PID 98732 start at 1573510833.74518 with 22511616 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_104 PID 98732 end at 1573510833.912406 with 25714688 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_105 PID 98732 start at 1573510833.913155 with 25714688 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_105 PID 98732 end at 1573510834.024723 with 25886720 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_106 PID 98733 start at 1573510833.50144 with 9240576 RAM. System has 6520111104 of 17179869184 available
+N5_271_010G1_scaffold_106 PID 98733 end at 1573510833.56556 with 21151744 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_107 PID 98733 start at 1573510833.566337 with 21049344 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_107 PID 98733 end at 1573510833.68458 with 24408064 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_108 PID 98733 start at 1573510833.6851661 with 24264704 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_108 PID 98733 end at 1573510833.737398 with 25477120 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_109 PID 98733 start at 1573510833.7380931 with 25481216 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_109 PID 98733 end at 1573510833.799825 with 25718784 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_11 PID 98733 start at 1573510833.800441 with 25718784 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_11 PID 98733 end at 1573510834.043539 with 26767360 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_0 PID 98729 start at 1573510833.4920151 with 8773632 RAM. System has 6533914624 of 17179869184 available
+N5_271_010G1_scaffold_0 PID 98729 end at 1573510834.163844 with 23867392 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_111 PID 98731 start at 1573510833.997739 with 24752128 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_111 PID 98731 end at 1573510834.082966 with 25268224 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_112 PID 98731 start at 1573510834.083322 with 25268224 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_112 PID 98731 end at 1573510834.3502011 with 29028352 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_113 PID 98731 start at 1573510834.350875 with 29028352 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_113 PID 98731 end at 1573510834.4117272 with 29130752 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_110 PID 98734 start at 1573510833.500679 with 8769536 RAM. System has 6521053184 of 17179869184 available
+N5_271_010G1_scaffold_110 PID 98734 end at 1573510834.495449 with 30769152 RAM. System has 6432198656 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_116 PID 98729 start at 1573510834.1745532 with 24784896 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_116 PID 98729 end at 1573510834.23403 with 25366528 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_117 PID 98729 start at 1573510834.2344918 with 25366528 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_117 PID 98729 end at 1573510834.388708 with 26038272 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_118 PID 98729 start at 1573510834.389348 with 26038272 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_118 PID 98729 end at 1573510834.452739 with 26210304 RAM. System has 6503354368 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_119 PID 98729 start at 1573510834.4533 with 26210304 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_119 PID 98729 end at 1573510834.524863 with 28938240 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_12 PID 98729 start at 1573510834.525651 with 28938240 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_12 PID 98729 end at 1573510834.662673 with 29528064 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_120 PID 98731 start at 1573510834.425828 with 29425664 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_120 PID 98731 end at 1573510834.600368 with 29544448 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_121 PID 98731 start at 1573510834.600981 with 29544448 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_121 PID 98731 end at 1573510834.666189 with 31793152 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_122 PID 98731 start at 1573510834.666956 with 31809536 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_122 PID 98731 end at 1573510834.736044 with 32075776 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_123 PID 98731 start at 1573510834.736504 with 32075776 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_123 PID 98731 end at 1573510834.837654 with 32104448 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_124 PID 98734 start at 1573510834.501857 with 31301632 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_124 PID 98734 end at 1573510834.825896 with 32542720 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_125 PID 98734 start at 1573510834.826644 with 32542720 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_125 PID 98734 end at 1573510834.8879008 with 32620544 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_126 PID 98734 start at 1573510834.889201 with 32620544 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_126 PID 98734 end at 1573510834.9443069 with 32727040 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_1 PID 98730 start at 1573510833.4951859 with 8892416 RAM. System has 6528565248 of 17179869184 available
+N5_271_010G1_scaffold_1 PID 98730 end at 1573510835.0549572 with 30425088 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_130 PID 98731 start at 1573510834.849469 with 32329728 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_130 PID 98731 end at 1573510834.9265878 with 32444416 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_131 PID 98731 start at 1573510834.927128 with 32444416 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_131 PID 98731 end at 1573510834.991303 with 32481280 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_132 PID 98731 start at 1573510834.991862 with 32481280 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_132 PID 98731 end at 1573510835.056464 with 32493568 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_133 PID 98731 start at 1573510835.057269 with 32493568 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_133 PID 98731 end at 1573510835.124317 with 32530432 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_134 PID 98731 start at 1573510835.1248882 with 32530432 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_134 PID 98731 end at 1573510835.1932511 with 32653312 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_135 PID 98731 start at 1573510835.193821 with 32653312 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_135 PID 98731 end at 1573510835.2696168 with 32677888 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_127 PID 98729 start at 1573510834.6729212 with 30035968 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_127 PID 98729 end at 1573510834.831844 with 30347264 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_128 PID 98729 start at 1573510834.8324218 with 30347264 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_128 PID 98729 end at 1573510834.897853 with 30453760 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_129 PID 98729 start at 1573510834.898447 with 30453760 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_129 PID 98729 end at 1573510834.953109 with 30793728 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_13 PID 98729 start at 1573510834.953779 with 30793728 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_13 PID 98729 end at 1573510835.300339 with 31039488 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_136 PID 98734 start at 1573510834.954207 with 33001472 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_136 PID 98734 end at 1573510835.040135 with 33193984 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_137 PID 98734 start at 1573510835.041035 with 33198080 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_137 PID 98734 end at 1573510835.105201 with 33292288 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_138 PID 98734 start at 1573510835.1058261 with 33292288 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_138 PID 98734 end at 1573510835.186977 with 33443840 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_139 PID 98734 start at 1573510835.187787 with 33443840 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_139 PID 98734 end at 1573510835.2438772 with 33603584 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_14 PID 98734 start at 1573510835.2444448 with 33603584 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_14 PID 98734 end at 1573510835.506679 with 33984512 RAM. System has 6362161152 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_114 PID 98732 start at 1573510834.037874 with 29933568 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_114 PID 98732 end at 1573510835.5793002 with 34430976 RAM. System has 6361051136 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_148 PID 98729 start at 1573510835.30932 with 31043584 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_148 PID 98729 end at 1573510835.389895 with 31092736 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_149 PID 98729 start at 1573510835.39056 with 31092736 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_149 PID 98729 end at 1573510835.456091 with 31096832 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_15 PID 98729 start at 1573510835.4567838 with 31096832 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_15 PID 98729 end at 1573510835.739598 with 31879168 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_150 PID 98734 start at 1573510835.516686 with 34275328 RAM. System has 6361317376 of 17179869184 available
+N5_271_010G1_scaffold_150 PID 98734 end at 1573510835.604748 with 34320384 RAM. System has 6359973888 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_151 PID 98734 start at 1573510835.605313 with 34320384 RAM. System has 6359986176 of 17179869184 available
+N5_271_010G1_scaffold_151 PID 98734 end at 1573510835.6558971 with 34639872 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_152 PID 98734 start at 1573510835.656554 with 34639872 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_152 PID 98734 end at 1573510835.7096992 with 34734080 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_153 PID 98734 start at 1573510835.710625 with 34734080 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_153 PID 98734 end at 1573510835.779932 with 34775040 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_154 PID 98734 start at 1573510835.7806258 with 34775040 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_154 PID 98734 end at 1573510835.9401941 with 34889728 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_143 PID 98731 start at 1573510835.2824771 with 32813056 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_143 PID 98731 end at 1573510835.349833 with 32829440 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_144 PID 98731 start at 1573510835.350413 with 32829440 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_144 PID 98731 end at 1573510835.432819 with 32833536 RAM. System has 6431383552 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_145 PID 98731 start at 1573510835.433418 with 32833536 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_145 PID 98731 end at 1573510835.5624452 with 32845824 RAM. System has 6359244800 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_146 PID 98731 start at 1573510835.5640378 with 32845824 RAM. System has 6359289856 of 17179869184 available
+N5_271_010G1_scaffold_146 PID 98731 end at 1573510835.9504309 with 33624064 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_147 PID 98731 start at 1573510835.951324 with 33624064 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_147 PID 98731 end at 1573510836.1845682 with 33673216 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_155 PID 98732 start at 1573510835.5869608 with 34746368 RAM. System has 6360113152 of 17179869184 available
+N5_271_010G1_scaffold_155 PID 98732 end at 1573510835.642771 with 35074048 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_156 PID 98732 start at 1573510835.64347 with 35082240 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_156 PID 98732 end at 1573510835.6929522 with 35147776 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_157 PID 98732 start at 1573510835.6934888 with 35147776 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_157 PID 98732 end at 1573510835.7593238 with 35168256 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_158 PID 98732 start at 1573510835.7600598 with 35168256 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_158 PID 98732 end at 1573510835.818649 with 35213312 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_159 PID 98732 start at 1573510835.8195908 with 35213312 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_159 PID 98732 end at 1573510835.905584 with 35258368 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_16 PID 98732 start at 1573510835.906181 with 35258368 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_16 PID 98732 end at 1573510836.2002602 with 35348480 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_160 PID 98729 start at 1573510835.746146 with 31956992 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_160 PID 98729 end at 1573510835.8316622 with 31985664 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_161 PID 98729 start at 1573510835.8322308 with 31985664 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_161 PID 98729 end at 1573510835.905409 with 32018432 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_162 PID 98729 start at 1573510835.90608 with 32018432 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_162 PID 98729 end at 1573510835.9941812 with 32063488 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_163 PID 98729 start at 1573510836.0028548 with 32063488 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_163 PID 98729 end at 1573510836.080173 with 32079872 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_17 PID 98729 start at 1573510836.081078 with 32079872 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_17 PID 98729 end at 1573510836.254102 with 32477184 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_18 PID 98734 start at 1573510835.9496331 with 34918400 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_18 PID 98734 end at 1573510836.253958 with 35110912 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_185 PID 98734 start at 1573510836.254675 with 35110912 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_185 PID 98734 end at 1573510836.3431082 with 35180544 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_140 PID 98730 start at 1573510835.066515 with 31227904 RAM. System has 6431383552 of 17179869184 available
+N5_271_010G1_scaffold_140 PID 98730 end at 1573510836.235115 with 133054464 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_141 PID 98730 start at 1573510836.236428 with 132911104 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_141 PID 98730 end at 1573510836.332969 with 133066752 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_142 PID 98730 start at 1573510836.3335218 with 133066752 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_142 PID 98730 end at 1573510836.398112 with 133148672 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_19 PID 98731 start at 1573510836.1925828 with 33755136 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_19 PID 98731 end at 1573510836.572991 with 33873920 RAM. System has 6335139840 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_115 PID 98733 start at 1573510834.058231 with 28266496 RAM. System has 6503354368 of 17179869184 available
+N5_271_010G1_scaffold_115 PID 98733 end at 1573510836.646944 with 132333568 RAM. System has 6336815104 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_20 PID 98729 start at 1573510836.261832 with 32546816 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_20 PID 98729 end at 1573510836.518115 with 32559104 RAM. System has 6336925696 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_21 PID 98729 start at 1573510836.518688 with 32559104 RAM. System has 6337605632 of 17179869184 available
+N5_271_010G1_scaffold_21 PID 98729 end at 1573510836.747623 with 32571392 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_24 PID 98730 start at 1573510836.4064581 with 133070848 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_24 PID 98730 end at 1573510836.677981 with 133136384 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_25 PID 98730 start at 1573510836.67852 with 133136384 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_25 PID 98730 end at 1573510836.950071 with 133246976 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_22 PID 98734 start at 1573510836.3489568 with 35225600 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_22 PID 98734 end at 1573510836.662751 with 35295232 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_23 PID 98734 start at 1573510836.6634712 with 35295232 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_23 PID 98734 end at 1573510837.031508 with 35336192 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_26 PID 98731 start at 1573510836.579077 with 33783808 RAM. System has 6334803968 of 17179869184 available
+N5_271_010G1_scaffold_26 PID 98731 end at 1573510836.677981 with 33804288 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_27 PID 98731 start at 1573510836.67852 with 33804288 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_27 PID 98731 end at 1573510836.936853 with 33820672 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_28 PID 98731 start at 1573510836.937674 with 33820672 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_28 PID 98731 end at 1573510837.312783 with 33931264 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_30 PID 98729 start at 1573510836.759244 with 32579584 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_30 PID 98729 end at 1573510837.0778759 with 32792576 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_31 PID 98729 start at 1573510837.07856 with 32792576 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_31 PID 98729 end at 1573510837.2345102 with 32886784 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_32 PID 98729 start at 1573510837.235039 with 32886784 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_32 PID 98729 end at 1573510837.5966341 with 33021952 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_33 PID 98730 start at 1573510836.95943 with 133341184 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_33 PID 98730 end at 1573510837.2309172 with 133361664 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_34 PID 98730 start at 1573510837.231468 with 133361664 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_34 PID 98730 end at 1573510837.342794 with 133378048 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_341 PID 98730 start at 1573510837.3439941 with 133378048 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_341 PID 98730 end at 1573510837.623468 with 133480448 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_197 PID 98732 start at 1573510836.212638 with 35360768 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_197 PID 98732 end at 1573510836.300107 with 35377152 RAM. System has 6358380544 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_2 PID 98732 start at 1573510836.3006668 with 35377152 RAM. System has 6358380544 of 17179869184 available
+N5_271_010G1_scaffold_2 PID 98732 end at 1573510837.9899971 with 36216832 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_35 PID 98734 start at 1573510837.0396821 with 35336192 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_35 PID 98734 end at 1573510837.2062888 with 35368960 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_350 PID 98734 start at 1573510837.20684 with 35368960 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_350 PID 98734 end at 1573510837.2744188 with 35373056 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_36 PID 98734 start at 1573510837.2749708 with 35373056 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_36 PID 98734 end at 1573510837.4317708 with 35401728 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_361 PID 98734 start at 1573510837.432554 with 35401728 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_361 PID 98734 end at 1573510838.12346 with 35549184 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_362 PID 98731 start at 1573510837.3201869 with 34156544 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_362 PID 98731 end at 1573510837.388191 with 34172928 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_37 PID 98731 start at 1573510837.3888152 with 34172928 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_37 PID 98731 end at 1573510837.597813 with 34242560 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_376 PID 98731 start at 1573510837.5983732 with 34242560 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_376 PID 98731 end at 1573510837.705003 with 34242560 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_38 PID 98731 start at 1573510837.7055712 with 34242560 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_38 PID 98731 end at 1573510838.2023768 with 34295808 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_40 PID 98730 start at 1573510837.644622 with 133513216 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_40 PID 98730 end at 1573510837.888791 with 133517312 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_41 PID 98730 start at 1573510837.889618 with 133517312 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_41 PID 98730 end at 1573510838.229245 with 133574656 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_419 PID 98730 start at 1573510838.235512 with 133574656 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_419 PID 98730 end at 1573510838.596682 with 133611520 RAM. System has 6267535360 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_29 PID 98733 start at 1573510836.656401 with 132501504 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_29 PID 98733 end at 1573510836.955266 with 132546560 RAM. System has 6337540096 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_3 PID 98733 start at 1573510836.955931 with 132546560 RAM. System has 6337540096 of 17179869184 available
+N5_271_010G1_scaffold_3 PID 98733 end at 1573510838.634677 with 133578752 RAM. System has 6265966592 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_42 PID 98732 start at 1573510837.9974022 with 36171776 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_42 PID 98732 end at 1573510838.0884988 with 36204544 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_43 PID 98732 start at 1573510838.08928 with 36204544 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_43 PID 98732 end at 1573510838.1876748 with 36220928 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_44 PID 98732 start at 1573510838.188498 with 36220928 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_44 PID 98732 end at 1573510838.76403 with 36249600 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_39 PID 98729 start at 1573510837.603887 with 33050624 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_39 PID 98729 end at 1573510837.777631 with 33058816 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_4 PID 98729 start at 1573510837.778928 with 33058816 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_4 PID 98729 end at 1573510838.88654 with 33689600 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_443 PID 98734 start at 1573510838.132104 with 35557376 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_443 PID 98734 end at 1573510838.429039 with 35581952 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_45 PID 98734 start at 1573510838.429895 with 35581952 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_45 PID 98734 end at 1573510838.716442 with 35590144 RAM. System has 6262718464 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_46 PID 98734 start at 1573510838.717011 with 35590144 RAM. System has 6262730752 of 17179869184 available
+N5_271_010G1_scaffold_46 PID 98734 end at 1573510838.9197419 with 35602432 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_47 PID 98731 start at 1573510838.2142148 with 34332672 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_47 PID 98731 end at 1573510838.456665 with 34353152 RAM. System has 6308507648 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_48 PID 98731 start at 1573510838.499506 with 34353152 RAM. System has 6308507648 of 17179869184 available
+N5_271_010G1_scaffold_48 PID 98731 end at 1573510838.7129111 with 34381824 RAM. System has 6262988800 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_484 PID 98731 start at 1573510838.713583 with 34381824 RAM. System has 6262972416 of 17179869184 available
+N5_271_010G1_scaffold_484 PID 98731 end at 1573510838.8580632 with 34422784 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_49 PID 98731 start at 1573510838.858877 with 34422784 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_49 PID 98731 end at 1573510838.944213 with 34430976 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_50 PID 98733 start at 1573510838.646212 with 133955584 RAM. System has 6264827904 of 17179869184 available
+N5_271_010G1_scaffold_50 PID 98733 end at 1573510838.762729 with 133980160 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_51 PID 98733 start at 1573510838.763275 with 133980160 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_51 PID 98733 end at 1573510838.900749 with 134008832 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_52 PID 98733 start at 1573510838.901397 with 134008832 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_52 PID 98733 end at 1573510839.140231 with 134008832 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_5 PID 98730 start at 1573510838.6221929 with 133611520 RAM. System has 6267359232 of 17179869184 available
+N5_271_010G1_scaffold_5 PID 98730 end at 1573510839.2938828 with 133767168 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_53 PID 98732 start at 1573510838.773509 with 36028416 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_53 PID 98732 end at 1573510838.924277 with 36098048 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_54 PID 98732 start at 1573510838.925031 with 36098048 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_54 PID 98732 end at 1573510839.102499 with 36184064 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_55 PID 98732 start at 1573510839.103074 with 36184064 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_55 PID 98732 end at 1573510839.184313 with 36200448 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_56 PID 98732 start at 1573510839.184839 with 36200448 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_56 PID 98732 end at 1573510839.3620212 with 36257792 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_65 PID 98733 start at 1573510839.148124 with 133922816 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_65 PID 98733 end at 1573510839.2246451 with 133947392 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_66 PID 98733 start at 1573510839.2252102 with 133947392 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_66 PID 98733 end at 1573510839.363177 with 133947392 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_67 PID 98733 start at 1573510839.363841 with 133947392 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_67 PID 98733 end at 1573510839.459626 with 133963776 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_68 PID 98733 start at 1573510839.4601831 with 133963776 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_68 PID 98733 end at 1573510839.576554 with 134004736 RAM. System has 6244892672 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_57 PID 98729 start at 1573510838.89363 with 33644544 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_57 PID 98729 end at 1573510838.975925 with 33660928 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_58 PID 98729 start at 1573510838.976823 with 33660928 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_58 PID 98729 end at 1573510839.118561 with 33665024 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_59 PID 98729 start at 1573510839.119002 with 33665024 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_59 PID 98729 end at 1573510839.2055528 with 33665024 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_6 PID 98729 start at 1573510839.206132 with 33665024 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_6 PID 98729 end at 1573510839.905084 with 33783808 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_69 PID 98730 start at 1573510839.3088808 with 133791744 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_69 PID 98730 end at 1573510839.3914182 with 133791744 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_7 PID 98730 start at 1573510839.391979 with 133791744 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_7 PID 98730 end at 1573510839.9340842 with 133836800 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_73 PID 98733 start at 1573510839.590328 with 134098944 RAM. System has 6240473088 of 17179869184 available
+N5_271_010G1_scaffold_73 PID 98733 end at 1573510839.706686 with 134098944 RAM. System has 6220562432 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_74 PID 98733 start at 1573510839.7157178 with 134098944 RAM. System has 6216134656 of 17179869184 available
+N5_271_010G1_scaffold_74 PID 98733 end at 1573510839.835625 with 134098944 RAM. System has 6194282496 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_75 PID 98733 start at 1573510839.836149 with 134098944 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_75 PID 98733 end at 1573510839.9430091 with 134098944 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_76 PID 98733 start at 1573510839.9439108 with 134098944 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_76 PID 98733 end at 1573510840.1934028 with 134119424 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_80 PID 98730 start at 1573510839.945088 with 133128192 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_80 PID 98730 end at 1573510840.082033 with 133128192 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_81 PID 98730 start at 1573510840.082626 with 133128192 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_81 PID 98730 end at 1573510840.1567428 with 133128192 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_82 PID 98730 start at 1573510840.1572711 with 133128192 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_82 PID 98730 end at 1573510840.261857 with 133132288 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_83 PID 98730 start at 1573510840.262389 with 133132288 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_83 PID 98730 end at 1573510840.400397 with 133152768 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_77 PID 98729 start at 1573510839.9311192 with 34164736 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_77 PID 98729 end at 1573510840.031158 with 34729984 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_78 PID 98729 start at 1573510840.03196 with 34729984 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_78 PID 98729 end at 1573510840.108255 with 34738176 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_79 PID 98729 start at 1573510840.108591 with 34738176 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_79 PID 98729 end at 1573510840.2541618 with 34750464 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_8 PID 98729 start at 1573510840.254833 with 34750464 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_8 PID 98729 end at 1573510840.699968 with 34906112 RAM. System has 6205276160 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_836 PID 98733 start at 1573510840.201666 with 134123520 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_836 PID 98733 end at 1573510840.260857 with 134144000 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_84 PID 98733 start at 1573510840.261466 with 134144000 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_84 PID 98733 end at 1573510840.336937 with 134144000 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_85 PID 98733 start at 1573510840.337665 with 134144000 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_85 PID 98733 end at 1573510840.464746 with 134156288 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_86 PID 98733 start at 1573510840.465569 with 134156288 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_86 PID 98733 end at 1573510840.535077 with 134164480 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_87 PID 98733 start at 1573510840.535734 with 134164480 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_87 PID 98733 end at 1573510840.7793632 with 134324224 RAM. System has 6202564608 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_88 PID 98730 start at 1573510840.408465 with 133222400 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_88 PID 98730 end at 1573510840.567318 with 133226496 RAM. System has 6194941952 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_89 PID 98730 start at 1573510840.5680609 with 133226496 RAM. System has 6194941952 of 17179869184 available
+N5_271_010G1_scaffold_89 PID 98730 end at 1573510840.799285 with 133287936 RAM. System has 6205288448 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_70 PID 98732 start at 1573510839.379583 with 36302848 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_70 PID 98732 end at 1573510839.554212 with 36306944 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_71 PID 98732 start at 1573510839.5547462 with 36306944 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_71 PID 98732 end at 1573510839.64398 with 36306944 RAM. System has 6237589504 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_72 PID 98732 start at 1573510839.645639 with 36306944 RAM. System has 6237614080 of 17179869184 available
+N5_271_010G1_scaffold_72 PID 98732 end at 1573510840.879612 with 133046272 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_60 PID 98734 start at 1573510838.927187 with 35610624 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_60 PID 98734 end at 1573510839.003341 with 35635200 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_61 PID 98734 start at 1573510839.003964 with 35635200 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_61 PID 98734 end at 1573510839.164715 with 35643392 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_618 PID 98734 start at 1573510839.165409 with 35643392 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_618 PID 98734 end at 1573510839.223047 with 35688448 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_62 PID 98734 start at 1573510839.223663 with 35688448 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_62 PID 98734 end at 1573510840.923567 with 131973120 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_97 PID 98734 start at 1573510840.9328582 with 132194304 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_97 PID 98734 end at 1573510840.9983091 with 132194304 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_98 PID 98734 start at 1573510840.9989178 with 132194304 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_98 PID 98734 end at 1573510841.054056 with 132194304 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_99 PID 98734 start at 1573510841.054388 with 132194304 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_99 PID 98734 end at 1573510841.117783 with 132194304 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_9 PID 98729 start at 1573510840.706638 with 34955264 RAM. System has 6204706816 of 17179869184 available
+N5_271_010G1_scaffold_9 PID 98729 end at 1573510841.224677 with 35069952 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_94 PID 98730 start at 1573510840.805119 with 133287936 RAM. System has 6205071360 of 17179869184 available
+N5_271_010G1_scaffold_94 PID 98730 end at 1573510840.952798 with 133312512 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_95 PID 98730 start at 1573510840.953571 with 133312512 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_95 PID 98730 end at 1573510841.111913 with 133316608 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_96 PID 98730 start at 1573510841.112619 with 133316608 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_96 PID 98730 end at 1573510841.2367501 with 133320704 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_90 PID 98733 start at 1573510840.787956 with 134426624 RAM. System has 6202572800 of 17179869184 available
+N5_271_010G1_scaffold_90 PID 98733 end at 1573510840.8591738 with 134426624 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_91 PID 98733 start at 1573510840.85952 with 134426624 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_91 PID 98733 end at 1573510840.917281 with 134426624 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_92 PID 98733 start at 1573510840.91776 with 134426624 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_92 PID 98733 end at 1573510841.015048 with 134426624 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_93 PID 98733 start at 1573510841.015732 with 134426624 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_93 PID 98733 end at 1573510841.427946 with 134889472 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_63 PID 98731 start at 1573510838.958606 with 34435072 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_63 PID 98731 end at 1573510839.092275 with 34463744 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_64 PID 98731 start at 1573510839.092976 with 34463744 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_64 PID 98731 end at 1573510839.171998 with 34467840 RAM. System has 6261026816 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_649 PID 98731 start at 1573510839.172559 with 34467840 RAM. System has 6261026816 of 17179869184 available
+N5_271_010G1_scaffold_649 PID 98731 end at 1573510841.516673 with 132820992 RAM. System has 6204944384 of 17179869184 available
+11-11 14:20 DEBUG    
+N5_271_010G1_scaffold_963 PID 98732 start at 1573510840.8870242 with 133246976 RAM. System has 6204944384 of 17179869184 available
+N5_271_010G1_scaffold_963 PID 98732 end at 1573510846.4145842 with 143126528 RAM. System has 6103035904 of 17179869184 available
+11-11 14:20 DEBUG    Done processing scaffolds- making SNV profile
+11-11 14:20 DEBUG    Writing output files now
