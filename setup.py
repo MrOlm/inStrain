@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from inStrain._version import __version__
 
@@ -13,7 +13,6 @@ setup(name='inStrain',
       author_email='mattolm@berkeley.edu',
       license='MIT',
       package_data={'inStrain': ['helper_files/NullModel.txt']},
-      include_package_data=True,
       packages=['inStrain'],
       scripts=['bin/inStrain'],
       python_requires='>=3.4.0',
