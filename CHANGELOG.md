@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.0.1] - 2019-11-16
+- Plot 9 displays titles now
+- Fixed some of the test data; was previously on a non-mm level
+- Set a maximum figure size of 100 inches on the scaffold inspection plot
+- Update the docs for example_output
+- Edit the GitHub README
+
 ## [1.0.0] - 2019-11-08
 - InStain only yells at you if the minor version is different
 - Add microdiversity in addition to clonality for user-facing output

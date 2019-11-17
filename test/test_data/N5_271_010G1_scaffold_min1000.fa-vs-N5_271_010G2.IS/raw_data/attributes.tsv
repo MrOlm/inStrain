@@ -1,5 +1,5 @@
 name	value	type	description
-location	/Users/mattolm/Programs/strains_analysis/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS	value	Location of SNVprofile object
+location	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS	value	Location of SNVprofile object
 version	1.0.0	value	Version of inStrain
 bam_loc	/Users/mattolm/Programs/testing_house/inStrain/test_prepping/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	value	Location of .bam file
 scaffold_list	/Users/mattolm/Programs/strains_analysis/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/raw_data/scaffold_list.txt	list	1d list of scaffolds, in same order as counts_table

@@ -1,5 +1,5 @@
 name	value	type	description
-location	/Users/mattolm/Programs/strains_analysis/test/test_data/Ecoli_ani.100.0.subset.sorted.bam.IS	value	Location of SNVprofile object
+location	/Users/mattolm/Programs/inStrain/test/test_data/Ecoli_ani.100.0.subset.sorted.bam.IS	value	Location of SNVprofile object
 version	0.7.0	value	Version of inStrain
 bam_loc	Ecoli_ani.100.0.subset.sorted.sorted.bam	value	Location of .bam file
 scaffold_list	/data8/Human/BioEssays_publication/synthetic_comparison/subset/Ecoli_ani.100.0.subset.sorted.bam.IS/raw_data/scaffold_list.txt	list	1d list of scaffolds, in same order as counts_table

@@ -2043,7 +2043,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --skip_mm_profiling --min_mapq 2".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} --skip_mm_profiling".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))

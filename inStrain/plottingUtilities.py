@@ -806,7 +806,7 @@ def scaffold_inspection_plot(Wdb, breaks, midpoints, title=''):
     fig.set_size_inches(8, ylim)
 
 def _calc_ylim(max_size):
-    return max(5, max_size/5000)
+    return min(max(5, max_size/5000), 100)
 
 def linkage_decay_type(Odb, chunkSize=5, min_vals=2, title=''):
     COLS = ['r2', 'r2_normalized', 'd_prime', 'd_prime_normalized']
@@ -883,6 +883,7 @@ def gene_histogram_plot(db, title=''):
         i += 1
 
     plt.xlabel('gene index')
+    plt.suptitle(title, y=0.999)
     #plt.xlim(-1, df['index'].max())
 
 def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=0.001, gthresh = 0.01):

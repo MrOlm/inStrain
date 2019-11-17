@@ -334,6 +334,43 @@ inStrain compare
 
 A typical run of inStrain will yield the following files in the output folder:
 
+.. csv-table:: comparisonsTable.tsv
+
+  scaffold,name1,name2,coverage_overlap,compared_bases_count,percent_genome_compared,length,popANI
+  N5_271_010G1_scaffold_78,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,77,0.06275468622656886,1227,1.0
+  N5_271_010G1_scaffold_28,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,854,0.3547985043622767,2407,1.0
+  N5_271_010G1_scaffold_111,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,272,0.24134871339840286,1127,1.0
+  N5_271_010G1_scaffold_154,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,582,0.5762376237623762,1010,1.0
+  N5_271_010G1_scaffold_98,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,61,0.05290546400693842,1153,1.0
+  N5_271_010G1_scaffold_61,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,357,0.20987654320987653,1701,1.0
+  N5_271_010G1_scaffold_86,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,21,0.017691659646166806,1187,1.0
+  N5_271_010G1_scaffold_53,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,298,0.2212323682256867,1347,1.0
+  N5_271_010G1_scaffold_139,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,24,0.023121387283236997,1038,1.0
+
+scaffold
+  The scaffold being compared
+
+name1
+  The name of the first `inStrain profile` being compared
+
+name2
+  The name of the second `inStrain profile` being compared
+
+coverage_overlap
+  The percentage of bases that are either covered or not covered in both of the profiles (covered = the base is present at at least min_snp coverage). The formula is length(coveredInBoth) / length(coveredInEither). If both scaffolds have 0 coverage, this will be 0.
+
+compared_bases_count
+  The number of considered bases; that is, the number of bases with at least min_snp coverage in both profiles. Formula is length([x for x in overlap if x == True]).
+
+percent_genome_compared
+  The percentage of bases in the scaffolds that are covered by both. The formula is length([x for x in overlap if x == True])/length(overlap). When ANI is np.nan, this must be 0. If both scaffolds have 0 coverage, this will be 0.
+
+length
+  The total length of the scaffold
+
+popANI
+  The average nucleotide identity among compared bases between the two scaffolds.
+
 inStrain profile_genes
 -----------
 
@@ -457,12 +494,16 @@ This is what the results of inStrain plot look like.
 7) Scaffold inspection plot (large)
 ++++++++++++
 
-**Example to come**
+.. figure:: images/ExampleIS_plots/ScaffoldInspection_plot.png
+  :width: 800px
+  :align: center
 
 8) Linkage with SNP type (GENES REQUIRED)
 ++++++++++++
 
-**Example to come**
+.. figure:: images/ExampleIS_plots/LinkageDecay_types_plot.png
+  :width: 800px
+  :align: center
 
 9) Gene histograms (GENES REQUIRED)
 ++++++++++++
@@ -474,4 +515,6 @@ This is what the results of inStrain plot look like.
 10) Compare dendrograms (RUN ON COMPARE; NOT PROFILE)
 ++++++++++++
 
-**Example to come**
+.. figure:: images/ExampleIS_plots/inStrainCompare_dendrograms.png
+  :width: 800px
+  :align: center
