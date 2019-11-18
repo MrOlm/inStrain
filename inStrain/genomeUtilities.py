@@ -363,8 +363,9 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
                     table[col].append(sum([x * y for x, y in zip(db[col], db['compared_bases_count'])]) / tcb)
 
             # Sum columns
-            for col in ['compared_bases_count']:
-                table[col].append(db[col].sum())
+            for col in ['compared_bases_count', 'consensus_SNPs', 'population_SNPs']:
+                if col in list(db.columns):
+                    table[col].append(db[col].sum())
 
             # Special ANI column
             for col in ['ANI', 'popANI', 'conANI']:

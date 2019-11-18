@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## Uncommitted
+- Change genome_wide to include sums of SNPs
+
 ## [1.1.1] - 2019-11-18
 - Change genome_wide to account for ANI, popANI, and conANI
 
