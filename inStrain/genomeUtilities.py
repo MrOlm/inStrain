@@ -339,7 +339,7 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
     table = defaultdict(list)
 
     # Backwards compatibility
-    gdb = gdb.rename(columns={'ANI':'popANI'})
+    #gdb = gdb.rename(columns={'ANI':'popANI'})
 
     for mm in sorted(list(gdb['mm'].unique())):
         Odb = gdb[gdb['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['scaffold', 'name1', 'name2'], keep='last')
@@ -367,12 +367,13 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
                 table[col].append(db[col].sum())
 
             # Special ANI column
-
-            if tcb == 0:
-                table['popANI'].append(np.nan)
-            else:
-                table['popANI'].append(sum(a * c  if a == a else 0 for a, c in
-                                    zip(db['popANI'], db['compared_bases_count'])) / tcb)
+            for col in ['ANI', 'popANI', 'conANI']:
+                if col in list(db.columns):
+                    if tcb == 0:
+                        table[col].append(np.nan)
+                    else:
+                        table[col].append(sum(a * c  if a == a else 0 for a, c in
+                                            zip(db[col], db['compared_bases_count'])) / tcb)
 
             # Percent compared
             if b2l != None:
