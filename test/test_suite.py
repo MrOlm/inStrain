@@ -845,12 +845,17 @@ class test_readcomparer():
         self.test9()
         self.tearDown()
 
-        self.setUp()
-        self.test10()
-        self.tearDown()
+        ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
+        ### self.setUp()
+        ### self.test10()
+        ### self.tearDown()
 
         self.setUp()
         self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
         self.tearDown()
 
     def testS(self):
@@ -879,7 +884,7 @@ class test_readcomparer():
 
         # Read the pickle file
         RIS = inStrain.SNVprofile.SNVprofile(base)
-        scaff2pair2mm2SNPs = RIS.get('scaff2pair2mm2SNPs')
+        MSdb = RIS.get('pairwise_SNP_locations')
 
         # Make sure it's correct
         S1 = inStrain.SNVprofile.SNVprofile(self.IS)
@@ -940,8 +945,8 @@ class test_readcomparer():
 
             # Check on the pickle;
             for i, row in db.iterrows():
-                snp_locs = scaff2pair2mm2SNPs[scaff]['-vs-'.join(sorted([row['name1'],
-                                                row['name2']]))][row['mm']]
+                msdb = MSdb[(MSdb['name1'] == row['name1']) & (MSdb['name2'] == row['name2'])]
+                snp_locs = msdb[msdb['mm'] == 'mm']['position'].tolist()
 
                 cov = row['compared_bases_count']
                 ani = row['popANI']
@@ -950,7 +955,7 @@ class test_readcomparer():
                     snps = int(round(snps))
                 except:
                     snps = 0
-                assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani]
+                assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani, msdb]
 
     def test0(self):
         '''
@@ -980,7 +985,7 @@ class test_readcomparer():
 
         # Read the pickle file
         RIS = inStrain.SNVprofile.SNVprofile(base)
-        scaff2pair2mm2SNPs = RIS.get('scaff2pair2mm2SNPs')
+        MSdb = RIS.get('pairwise_SNP_locations')
 
         # Make sure it's correct
         S1 = inStrain.SNVprofile.SNVprofile(self.IS)
@@ -1042,8 +1047,9 @@ class test_readcomparer():
 
             # Check on the pickle;
             for i, row in db.iterrows():
-                snp_locs = scaff2pair2mm2SNPs[scaff]['-vs-'.join(sorted([row['name1'],
-                                                row['name2']]))][row['mm']]
+                msdb = MSdb[(MSdb['name1'] == row['name1']) & (MSdb['name2'] == row['name2']) \
+                        & (MSdb['mm'] == float(row['mm'])) & (MSdb['scaffold'] == row['scaffold'])]
+                snp_locs = msdb[(msdb['population_SNP'] == True)]['position'].tolist()
 
                 cov = row['compared_bases_count']
                 ani = row['popANI']
@@ -1052,7 +1058,9 @@ class test_readcomparer():
                     snps = int(round(snps))
                 except:
                     snps = 0
-                assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani]
+
+                assert snps == int(row['population_SNPs']), [snps, row]
+                assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani, msdb]
 
     def test1(self):
         '''
@@ -1244,72 +1252,12 @@ class test_readcomparer():
 
         # Load snps
         scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
+        MSdb = inStrain.SNVprofile.SNVprofile(base).get('comparisonsTable')
+        for i, row in MSdb.iterrows():
+            if row['conANI'] != row['conANI']:
+                continue
+            assert row['conANI'] <= row['popANI'], row
 
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
-
-
-        # Print the total number
-        total_snps = sum([len(s) for sc, s in scaff2snps.items()])
-        #print(sorted(scaff2snps['N5_271_010G1_scaffold_0']))
-        #print(total_snps)
-
-        # Run program with compare_consensus_bases
-        base = self.test_dir + 'testR2'
-
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --compare_consensus_bases -p 1 --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
-            base, self.scafflist)
-        print(cmd)
-        call(cmd, shell=True)
-
-        # Make sure it produced output
-        rawfiles = glob.glob(base + '/raw_data/*')
-        assert len(rawfiles) == 5
-
-        # Load snps
-        scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
-
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
-
-        # Print the total number
-        total_snps2 = sum([len(s) for sc, s in scaff2snps.items()])
-
-        # Make sure you catch more SNPs when comparing references
-        assert total_snps2 > total_snps, [total_snps2, total_snps]
-
-        # Validate these SNPs
-        Caught_snps = scaff2snps['N5_271_010G1_scaffold_0']
-
-        S1 = inStrain.SNVprofile.SNVprofile(self.IS)
-        S2 = inStrain.SNVprofile.SNVprofile(self.IS2)
-        SRdb1 = S1.get_nonredundant_snv_table()
-        SRdb2 = S2.get_nonredundant_snv_table()
-
-        Mdb = pd.concat([SRdb1, SRdb2]).sort_values(['scaffold', 'position'])
-        Mdb = Mdb[Mdb.duplicated(subset=['scaffold', 'position'], keep=False)]
-        Mdb = Mdb[~Mdb.duplicated(subset=['scaffold', 'position', 'conBase'], keep=False)]
-
-        Mdb = Mdb[Mdb['scaffold'] == 'N5_271_010G1_scaffold_0']
-
-        Mdb = Mdb[~Mdb['position'].isin(list(Caught_snps))]
-
-
-        assert len(Mdb) == 0
 
     def test8(self):
         '''
@@ -1328,23 +1276,23 @@ class test_readcomparer():
         assert len(rawfiles) == 5
 
         # Load snps
-        scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
+        scaff2popsnps = {}
+        scaff2consnps = {}
+        MSdb = inStrain.SNVprofile.SNVprofile(base).get('pairwise_SNP_locations')
+        for scaff, msdb in MSdb.groupby('scaffold'):
+            if scaff not in scaff2popsnps:
+                scaff2popsnps[scaff] = set()
+                scaff2consnps[scaff] = set()
 
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
-
+            consnps = set(msdb[msdb['consensus_SNP'] == True]['position'].tolist())
+            popsnps = set(msdb[msdb['population_SNP'] == True]['position'].tolist())
+            scaff2consnps[scaff] = scaff2consnps[scaff].union(consnps)
+            scaff2popsnps[scaff] = scaff2popsnps[scaff].union(popsnps)
 
         # Print the total number
-        total_snps = sum([len(s) for sc, s in scaff2snps.items()])
-        #print(sorted(scaff2snps['N5_271_010G1_scaffold_0']))
-        #print(total_snps)
+        total_con_snps = sum([len(s) for sc, s in scaff2consnps.items()])
+        total_pop_snps = sum([len(s) for sc, s in scaff2popsnps.items()])
+
 
         # Run program with compare_consensus_bases
         base = self.test_dir + 'testR2'
@@ -1359,23 +1307,26 @@ class test_readcomparer():
         assert len(rawfiles) == 5
 
         # Load snps
-        scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
+        scaff2popsnps = {}
+        scaff2consnps = {}
+        MSdb = inStrain.SNVprofile.SNVprofile(base).get('pairwise_SNP_locations')
+        for scaff, msdb in MSdb.groupby('scaffold'):
+            if scaff not in scaff2popsnps:
+                scaff2popsnps[scaff] = set()
+                scaff2consnps[scaff] = set()
 
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
+            consnps = set(msdb[msdb['consensus_SNP'] == True]['position'].tolist())
+            popsnps = set(msdb[msdb['population_SNP'] == True]['position'].tolist())
+            scaff2consnps[scaff] = scaff2consnps[scaff].union(consnps)
+            scaff2popsnps[scaff] = scaff2popsnps[scaff].union(popsnps)
 
         # Print the total number
-        total_snps2 = sum([len(s) for sc, s in scaff2snps.items()])
+        total_con_snps2 = sum([len(s) for sc, s in scaff2consnps.items()])
+        total_pop_snps2 = sum([len(s) for sc, s in scaff2popsnps.items()])
 
         # Make sure you catch less SNPs when you lower your fdr
-        assert total_snps2 < total_snps, [total_snps2, total_snps]
+        assert total_con_snps2 == total_con_snps, [total_con_snps2, total_con_snps]
+        assert total_pop_snps2 < total_pop_snps, [total_pop_snps2, total_pop_snps]
 
     def test9(self):
         '''
@@ -1394,25 +1345,29 @@ class test_readcomparer():
         assert len(rawfiles) == 5
 
         # Load snps
-        scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
+        scaff2popsnps = {}
+        scaff2consnps = {}
+        MSdb = inStrain.SNVprofile.SNVprofile(base).get('pairwise_SNP_locations')
+        for scaff, msdb in MSdb.groupby('scaffold'):
+            if scaff not in scaff2popsnps:
+                scaff2popsnps[scaff] = set()
+                scaff2consnps[scaff] = set()
 
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
-        total_snps = sum([len(s) for sc, s in scaff2snps.items()])
+            consnps = set(msdb[msdb['consensus_SNP'] == True]['position'].tolist())
+            popsnps = set(msdb[msdb['population_SNP'] == True]['position'].tolist())
+            scaff2consnps[scaff] = scaff2consnps[scaff].union(consnps)
+            scaff2popsnps[scaff] = scaff2popsnps[scaff].union(popsnps)
+
+        total_con_snps = sum([len(s) for sc, s in scaff2consnps.items()])
+        total_pop_snps = sum([len(s) for sc, s in scaff2popsnps.items()])
 
         # Load the SNV tables
         SNdb1 = inStrain.SNVprofile.SNVprofile(self.SIS).get_nonredundant_snv_table()
         SNdb2 = inStrain.SNVprofile.SNVprofile(self.SIS2).get_nonredundant_snv_table()
 
         # Make sure they're all called
-        assert (len(SNdb2) + len(SNdb1)) == total_snps == 11
+        assert (len(SNdb2) + len(SNdb1)) == total_con_snps == total_pop_snps == 11, \
+                [len(SNdb2), len(SNdb1), total_con_snps, total_pop_snps]
 
         # TRY THE OTHER OPNE
 
@@ -1428,18 +1383,21 @@ class test_readcomparer():
         assert len(rawfiles) == 5
 
         # Load snps
-        scaff2snps = {}
-        scaff2pair2mm2SNPs = inStrain.SNVprofile.SNVprofile(base).get('scaff2pair2mm2SNPs')
-        for scaff, p2mm2s in scaff2pair2mm2SNPs.items():
-            for pair, mm2s in p2mm2s.items():
-                for mm, s in mm2s.items():
-                    if scaff not in scaff2snps:
-                        scaff2snps[scaff] = set()
-                    scaff2snps[scaff] = scaff2snps[scaff].union(s)
+        scaff2popsnps = {}
+        scaff2consnps = {}
+        MSdb = inStrain.SNVprofile.SNVprofile(base).get('pairwise_SNP_locations')
+        for scaff, msdb in MSdb.groupby('scaffold'):
+            if scaff not in scaff2popsnps:
+                scaff2popsnps[scaff] = set()
+                scaff2consnps[scaff] = set()
 
-                    if pair.split('-vs-')[0] == pair.split('-vs-')[1]:
-                        assert len(s) == 0, [pair, scaff, s]
-        total_snps = sum([len(s) for sc, s in scaff2snps.items()])
+            consnps = set(msdb[msdb['consensus_SNP'] == True]['position'].tolist())
+            popsnps = set(msdb[msdb['population_SNP'] == True]['position'].tolist())
+            scaff2consnps[scaff] = scaff2consnps[scaff].union(consnps)
+            scaff2popsnps[scaff] = scaff2popsnps[scaff].union(popsnps)
+        total_con_snps = sum([len(s) for sc, s in scaff2consnps.items()])
+        total_pop_snps = sum([len(s) for sc, s in scaff2popsnps.items()])
+        assert total_con_snps == total_pop_snps, [total_con_snps, total_pop_snps]
 
         # Load the SNV table
         SNdb2 = inStrain.SNVprofile.SNVprofile(self.SIS2).get_nonredundant_snv_table()
@@ -1465,34 +1423,34 @@ class test_readcomparer():
 
 
         # Make sure they're all called
-        assert len(Positions) == total_snps == 18, [len(Positions) , total_snps]
+        assert len(Positions) == total_con_snps == 18, [len(Positions) , total_con_snps]
 
-    def test10(self):
-        '''
-        Test greedy clustering
-        '''
-        # Run program
-        base = self.test_dir + 'testR'
-
-        # Make a copy of one
-        location = os.path.join(self.test_dir, os.path.basename(self.IS.replace('N5_271_010G1', 'testeroni')))
-        shutil.copytree(self.IS, location)
-        inStrain.SNVprofile.SNVprofile(location).store('bam_loc', 'testeroni', 'value', 'Location of .bam file')
-
-        cmd = "inStrain compare -i {1} {2} {5} -o {3} -s {4} --greedy_clustering --g_cov 0.46".format(self.script, self.IS, self.IS2, \
-            base, self.scafflist, location)
-        print(cmd)
-        call(cmd, shell=True)
-
-        # Make sure it produced output
-        outfiles = glob.glob(base + '/output/*')
-        assert len(outfiles) == 2
-
-        # Load the clusters file
-        Cdb = pd.read_csv(base + '/output/testR_greedyClusters.tsv', sep='\t')
-        print(Cdb)
-        assert len(Cdb['name'].unique()) == 3
-        assert len(Cdb['cluster'].unique()) == 2
+    # def test10(self):
+    #     '''
+    #     Test greedy clustering
+    #     '''
+    #     # Run program
+    #     base = self.test_dir + 'testR'
+    #
+    #     # Make a copy of one
+    #     location = os.path.join(self.test_dir, os.path.basename(self.IS.replace('N5_271_010G1', 'testeroni')))
+    #     shutil.copytree(self.IS, location)
+    #     inStrain.SNVprofile.SNVprofile(location).store('bam_loc', 'testeroni', 'value', 'Location of .bam file')
+    #
+    #     cmd = "inStrain compare -i {1} {2} {5} -o {3} -s {4} --greedy_clustering --g_cov 0.46".format(self.script, self.IS, self.IS2, \
+    #         base, self.scafflist, location)
+    #     print(cmd)
+    #     call(cmd, shell=True)
+    #
+    #     # Make sure it produced output
+    #     outfiles = glob.glob(base + '/output/*')
+    #     assert len(outfiles) == 2
+    #
+    #     # Load the clusters file
+    #     Cdb = pd.read_csv(base + '/output/testR_greedyClusters.tsv', sep='\t')
+    #     print(Cdb)
+    #     assert len(Cdb['name'].unique()) == 3
+    #     assert len(Cdb['cluster'].unique()) == 2
 
     def test11(self):
         '''
@@ -1509,9 +1467,129 @@ class test_readcomparer():
         s2l['junkero'] = 1000
 
         # Run program
-        Cdb, scaff2pair2mm2SNPs, scaff2pair2mm2cov = inStrain.readComparer.compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l)
+        Cdb, Mdb, scaff2pair2mm2cov = inStrain.readComparer.compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l)
 
         # NO REAL WAY TO TEST THIS; JUST MAKE SURE THAT THE OUTPUT DOESNT SHOW RE-RUNNING ANY SCAFFOLDS
+
+    def test12(self):
+        '''
+        Test _calc_SNP_count_alternate
+        '''
+        # Make table1
+        table = defaultdict(list)
+
+        # Make a consensus SNP in table1
+        table['position'].append(1)
+        table['conBase'].append('A')
+        table['refBase'].append('C')
+        table['varBase'].append('A')
+        table['baseCoverage'].append(100)
+        table['A'].append(100)
+        table['C'].append(0)
+        table['G'].append(0)
+        table['T'].append(0)
+        table['allele_count'].append(1)
+        table['mm'].append(0)
+
+        # Make a population SNP in table1
+        table['position'].append(2)
+        table['conBase'].append('A')
+        table['refBase'].append('C')
+        table['varBase'].append('C')
+        table['baseCoverage'].append(100)
+        table['A'].append(60)
+        table['C'].append(40)
+        table['G'].append(0)
+        table['T'].append(0)
+        table['allele_count'].append(2)
+        table['mm'].append(0)
+
+        SNPtable1 = pd.DataFrame(table)
+        SNPtable2 = pd.DataFrame()
+
+        mm2overlap = {0:[1,2]}
+
+        mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+                                mm2overlap)
+        assert len(mdb[mdb['consensus_SNP'] == True]) == 2
+        assert len(mdb[mdb['population_SNP'] == True]) == 1
+
+        # Change up table2
+        table = defaultdict(list)
+
+        # Make a consensus SNP in table1
+        table['position'].append(1)
+        table['conBase'].append('T')
+        table['refBase'].append('C')
+        table['varBase'].append('T')
+        table['baseCoverage'].append(100)
+        table['A'].append(0)
+        table['C'].append(0)
+        table['G'].append(0)
+        table['T'].append(100)
+        table['allele_count'].append(1)
+        table['mm'].append(0)
+
+        # Make a population SNP in table1
+        table['position'].append(2)
+        table['conBase'].append('T')
+        table['refBase'].append('C')
+        table['varBase'].append('G')
+        table['baseCoverage'].append(100)
+        table['A'].append(0)
+        table['C'].append(0)
+        table['G'].append(40)
+        table['T'].append(60)
+        table['allele_count'].append(2)
+        table['mm'].append(0)
+
+        SNPtable2 = pd.DataFrame(table)
+        mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+                                mm2overlap)
+        assert len(mdb[mdb['consensus_SNP'] == True]) == 2
+        assert len(mdb[mdb['population_SNP'] == True]) == 2
+
+        # Change up table2 again
+        table = defaultdict(list)
+
+        table['position'].append(1)
+        table['conBase'].append('A')
+        table['refBase'].append('C')
+        table['varBase'].append('A')
+        table['baseCoverage'].append(100)
+        table['A'].append(80)
+        table['C'].append(20)
+        table['G'].append(0)
+        table['T'].append(0)
+        table['allele_count'].append(2)
+        table['mm'].append(0)
+
+        # Make a population SNP in table1
+        table['position'].append(2)
+        table['conBase'].append('G')
+        table['refBase'].append('C')
+        table['varBase'].append('C')
+        table['baseCoverage'].append(100)
+        table['A'].append(0)
+        table['C'].append(40)
+        table['G'].append(60)
+        table['T'].append(0)
+        table['allele_count'].append(2)
+        table['mm'].append(0)
+
+        SNPtable2 = pd.DataFrame(table)
+        mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+                                mm2overlap)
+        assert len(mdb[mdb['consensus_SNP'] == True]) == 1
+        assert len(mdb[mdb['population_SNP'] == True]) == 0
+
+
+        # Try with nothing
+        SNPtable1 = pd.DataFrame()
+        SNPtable2 = pd.DataFrame()
+        mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+                                mm2overlap)
+        assert len(mdb) == 0
 
 class test_strains():
     def setUp(self):

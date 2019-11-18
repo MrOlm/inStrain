@@ -140,8 +140,6 @@ def parse_args(args):
         help="Also store coverage overlap on an mm level")
     Oflags.add_argument('--store_mismatch_locations', action='store_true', default=False,\
         help="Store the locations of SNPs")
-    Oflags.add_argument('--compare_consensus_bases', action='store_true', default=False,\
-        help="Only compare consensus bases; dont look for lower frequency SNPs when calculating ANI")
     Oflags.add_argument('--include_self_comparisons', action='store_true', default=False,\
         help="Also compare IS profiles against themself")
 

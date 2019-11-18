@@ -581,7 +581,7 @@ def load_scaff2pair2mm2SNPs(location, scaffolds=[], pairs=[]):
             if pair not in pairs:
                 continue
 
-        dset = list(f[thing])
+        dset = f[thing].value
         mm = int(mm)
 
         if scaff not in scaff2pair2mm2SNPs:

@@ -22,4 +22,5 @@ inStrain.egg-info/dependency_links.txt
 inStrain.egg-info/not-zip-safe
 inStrain.egg-info/requires.txt
 inStrain.egg-info/top_level.txt
+inStrain/helper_files/NullModel.txt
 test/test_suite.py

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0] - 2019-11-18
+- Big changes to inStrain compare (stores SNVprofiles as globals; calculates popANI and con_ANI always; big changes to how popANI is calculated)
+
 ## [1.0.2] - 2019-11-17
 - Update to try and get the Null model properly installed
 
