@@ -1071,9 +1071,11 @@ def plot_genome(genome, IS, **kwargs):
         if GWdb is False:
             GWdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=False)
         if 'mm' in GWdb.columns:
-            breadth = GWdb[GWdb['genome'] == genome].sort_values('mm').drop_duplicates(subset='genome', keep='last')['breadth'].tolist()[0]
-        else:
+            GWdb = GWdb.sort_values('mm').drop_duplicates(subset='genome', keep='last')
+        try:
             breadth = GWdb[GWdb['genome'] == genome]['breadth'].tolist()[0]
+        except:
+            breadth = 0
         if breadth < mb:
             return False
 
