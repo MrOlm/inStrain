@@ -2363,14 +2363,14 @@ class test_special():
         assert not inStrain.SNVprofile.same_versions('1.1.0', '0.1.0')
 
 if __name__ == '__main__':
-    # test_strains().run()
-    # test_filter_reads().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
+    test_strains().run()
+    test_filter_reads().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
     test_plot().run()
-    # test_special().run()
-    # test_readcomparer().run()
+    test_special().run()
+    test_readcomparer().run()
 
     print('everything is working swimmingly!')
