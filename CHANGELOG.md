@@ -13,6 +13,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 - You can now only plot genomes meeting a breadth requirement
 - You can now specify which genomes to plot
 - Fixed bug preventing plots 2 and 7 from being made in a lot of cases
+- Plot 4 now plots only freq > 0.5 and a set 50 bins
 
 ## [1.1.1] - 2019-11-18
 - Change genome_wide to account for ANI, popANI, and conANI

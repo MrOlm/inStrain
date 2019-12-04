@@ -718,7 +718,7 @@ class test_gene_statistics():
         Sdb['allele_count'] = Sdb['allele_count'].astype(int)
         Sdb = Sdb[Sdb['cryptic'] == False]
         if 'allele_count' in Sdb.columns:
-            Sdb = Sdb[Sdb['allele_count'].isin(1,2)]
+            Sdb = Sdb[Sdb['allele_count'].isin([1,2])]
             Sdb = Sdb.drop(columns="allele_count")
         Sdb = Sdb.drop(columns="cryptic")
         Sdb['position'] = Sdb['position'].astype(int)
@@ -2363,14 +2363,14 @@ class test_special():
         assert not inStrain.SNVprofile.same_versions('1.1.0', '0.1.0')
 
 if __name__ == '__main__':
-    test_strains().run()
-    test_filter_reads().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
+    # test_strains().run()
+    # test_filter_reads().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
     test_plot().run()
-    test_special().run()
-    test_readcomparer().run()
+    # test_special().run()
+    # test_readcomparer().run()
 
     print('everything is working swimmingly!')

@@ -666,9 +666,9 @@ def prepare_read_ani_dist_plot(IS):
 
 def major_allele_freq_plot(db, title=''):
     db['major_allele_freq'] = [max(x, y) for x, y in zip(db['varFreq'], db['refFreq'])]
-    sns.distplot(db['major_allele_freq'], kde=False, bins=30)
+    sns.distplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False)
 
-    plt.xlim(0, 1)
+    plt.xlim(0.5, 1)
     plt.title(title)
     plt.xlabel('Major allele frequency')
     plt.ylabel('Number of SNPs')
