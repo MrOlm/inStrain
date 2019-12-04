@@ -188,6 +188,7 @@ def parse_args(args):
     '''
     # Make a parent for profile to go above the system arguments
     plot_parent = argparse.ArgumentParser(add_help=False)
+
     # Required positional arguments
     Rflags = plot_parent.add_argument_group('REQUIRED')
     Rflags.add_argument("-i", '--IS', help="an inStrain profile object", required=True)
@@ -205,7 +206,13 @@ def parse_args(args):
                         + "10) Compare dendrograms (RUN ON COMPARE; NOT PROFILE)\n",
                         nargs='*', default='a')
 
-    plot_parent = subparsers.add_parser("plot",formatter_class=SmartFormatter,\
+    POflags = plot_parent.add_argument_group('OPTIONAL FIGURE ADJUSTMENTS')
+    POflags.add_argument("-mb", "--minimum_breadth", default=0, type=float,
+                    help= "Minimum breadth of coverage for genome to make it into plot (from 0-1).")
+    POflags.add_argument("-g", "--genomes", nargs='*',
+                    help= "Only plot genomes with the names provided in this argument")
+
+    plot_parser = subparsers.add_parser("plot",formatter_class=SmartFormatter,\
                     parents = [plot_parent, parent_parser], add_help=False)
 
     '''

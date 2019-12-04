@@ -178,8 +178,9 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
                 table['metric'].append(metric)
     bdb = pd.DataFrame(table)
     Wdb = pd.concat([Wdb, bdb], sort=False)
-    Wdb['midpoint'] = [np.mean([x, y]) for x, y in zip(Wdb['adjusted_start'], Wdb['adjusted_end'])]
-    Wdb = Wdb.sort_values(['metric', 'mm', 'midpoint', 'scaffold'])
+    if len(Wdb) > 0:
+        Wdb['midpoint'] = [np.mean([x, y]) for x, y in zip(Wdb['adjusted_start'], Wdb['adjusted_end'])]
+        Wdb = Wdb.sort_values(['metric', 'mm', 'midpoint', 'scaffold'])
 
     if report_midpoints:
         return Wdb, breaks, midpoints
@@ -1056,6 +1057,34 @@ def _shorten_name(name):
         name = '\n'.join(name[n:n + 15] for n in range(0, len(name), 15))
     return name
 
+def plot_genome(genome, IS, **kwargs):
+    '''
+    Decide if this genome should be plotted based on the filters in the kwargs. Return True if so
+
+    GWdb is the result of Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
+    '''
+    GWdb = kwargs.get('GWdb', False)
+
+    # FILTER BY BREADTH
+    mb = kwargs.get('minimum_breadth', 0)
+    if mb > 0:
+        if GWdb is False:
+            GWdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=False)
+        if 'mm' in GWdb.columns:
+            breadth = GWdb[GWdb['genome'] == genome].sort_values('mm').drop_duplicates(subset='genome', keep='last')['breadth'].tolist()[0]
+        else:
+            breadth = GWdb[GWdb['genome'] == genome]['breadth'].tolist()[0]
+        if breadth < mb:
+            return False
+
+    # FILTER BY GENOME LIST
+    genomes = kwargs.get('genomes', None)
+    if genomes is not None:
+        if genome not in genomes:
+            return False
+
+    return True
+
 '''
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 THIS IS WHERE THE MAIN METHODS ARE
@@ -1069,87 +1098,121 @@ def main(args):
     # Parse arguments
     args = validate_input(args)
     kwargs = vars(args)
+    debug = kwargs.get('debug', False)
 
     # Load the IS object
-    IS = kwargs.get('IS')
+    IS = kwargs.pop('IS')
 
     # Figure out if this is an RC or a IS
     bl = IS.get('bam_loc')
     if bl is None:
+        IS_TYPE = 'RC'
         options = ['10']
     else:
+        IS_TYPE = 'IS'
         options = ['1','2','3','4','5','6','7','8','9']
-
 
     # Figure out what plots to make
     to_plot = _parse_plot_options(options, kwargs.get('plots', None))
     logging.info("making plots {0}".format(', '.join(to_plot)))
 
-    # Get the plot directory
-    plot_dir = IS.get_location('figures')
+    # Get the plot directory and basename
+    plot_dir = IS.get_location('figures') + os.path.basename(IS.get('location')) + '_'
+
+    # Cache needed data
+    if IS_TYPE == 'IS':
+        kwargs['GWdb'] = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
 
     # 1) MM plot
     if '1' in to_plot:
         try:
-            mm_plot_from_IS(IS, plot_dir=plot_dir)
+            mm_plot_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #1: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '2' in to_plot:
         try:
-            genome_plot_from_IS(IS, plot_dir=plot_dir)
+            genome_plot_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #2: ' + str(e))
-            traceback.print_exc()
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '3' in to_plot:
         try:
-            ANI_dist_plot_from_IS(IS, plot_dir=plot_dir)
+            ANI_dist_plot_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #3: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '4' in to_plot:
         try:
-            allele_freq_plot_from_IS(IS, plot_dir=plot_dir)
+            allele_freq_plot_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #4: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '5' in to_plot:
         try:
-            linkage_decay_from_IS(IS, plot_dir=plot_dir)
+            linkage_decay_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #5: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '6' in to_plot:
         try:
-            read_filtering_from_IS(IS, plot_dir=plot_dir)
+            read_filtering_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #6: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '7' in to_plot:
         try:
-            scaffold_inspection_from_IS(IS, plot_dir=plot_dir)
+            scaffold_inspection_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #7: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '8' in to_plot:
         try:
-            linkage_decay_type_from_IS(IS, plot_dir=plot_dir)
+            linkage_decay_type_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #8: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '9' in to_plot:
         try:
-            gene_histogram_from_IS(IS, plot_dir=plot_dir)
+            gene_histogram_from_IS(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #9: ' + str(e))
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
     if '10' in to_plot:
         try:
-            dendrograms_from_RC(IS, plot_dir=plot_dir)
+            dendrograms_from_RC(IS, plot_dir=plot_dir, **kwargs)
         except BaseException as e:
             logging.error('Failed to make plot #10: ' + str(e))
-            traceback.print_exc()
+            if debug:
+                traceback.print_exc()
+                logging.debug(traceback.format_exc())
 
 def validate_input(args):
     '''
@@ -1193,10 +1256,12 @@ def _parse_plot_options(options, args):
 
     return to_plot
 
-def mm_plot_from_IS(IS, plot_dir=False):
+def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
-        Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
+        Mdb = kwargs.get('GWdb', False)
+        if Mdb is False:
+            Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1206,10 +1271,12 @@ def mm_plot_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 1")
     name = 'CoverageAndBreadth_vs_readMismatch.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
     #print(Mdb.head())
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         mm_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1222,7 +1289,7 @@ def mm_plot_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def genome_plot_from_IS(IS, plot_dir=False):
+def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         stb = IS.get('scaffold2bin')
@@ -1238,9 +1305,11 @@ def genome_plot_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 2")
     name = 'genomeWide_microdiveristy_metrics.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, scaffolds in b2s.items():
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         Wdb, breaks = load_windowed_metrics(IS, scaffolds, ANI_levels=[0, 100])
         genomeWide_microdiveristy_metrics_plot(Wdb, breaks, title=genome)
         fig = plt.gcf()
@@ -1255,7 +1324,7 @@ def genome_plot_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def ANI_dist_plot_from_IS(IS, plot_dir=False):
+def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         Mdb = prepare_read_ani_dist_plot(IS)
@@ -1268,9 +1337,11 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 3")
     name = 'readANI_distribution.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         db = read_ani_dist_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1284,7 +1355,7 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def allele_freq_plot_from_IS(IS, plot_dir=False):
+def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         db = IS.get('cumulative_snv_table')
@@ -1307,9 +1378,11 @@ def allele_freq_plot_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 4")
     name = 'MajorAllele_frequency_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         db = major_allele_freq_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1323,7 +1396,7 @@ def allele_freq_plot_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def linkage_decay_from_IS(IS, plot_dir=False):
+def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         db = IS.get('raw_linkage_table')
@@ -1341,9 +1414,11 @@ def linkage_decay_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 5")
     name = 'LinkageDecay_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         linkage_decay_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1357,7 +1432,7 @@ def linkage_decay_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def read_filtering_from_IS(IS, plot_dir=False):
+def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         # Prepare
@@ -1371,9 +1446,11 @@ def read_filtering_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 6")
     name = 'ReadFiltering_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         read_filtering_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1387,7 +1464,7 @@ def read_filtering_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def scaffold_inspection_from_IS(IS, plot_dir=False):
+def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         stb = IS.get('scaffold2bin')
@@ -1403,9 +1480,11 @@ def scaffold_inspection_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 7")
     name = 'ScaffoldInspection_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, scaffolds in b2s.items():
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         Wdb, breaks, midpoints = load_windowed_metrics(IS, scaffolds, report_midpoints=True)
         scaffold_inspection_plot(Wdb, breaks, midpoints, title=genome)
         fig = plt.gcf()
@@ -1419,7 +1498,7 @@ def scaffold_inspection_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def linkage_decay_type_from_IS(IS, plot_dir=False):
+def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         # Prepare
@@ -1444,9 +1523,11 @@ def linkage_decay_type_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 8")
     name = 'LinkageDecay_types_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         db = linkage_decay_type(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
@@ -1460,7 +1541,7 @@ def linkage_decay_type_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def gene_histogram_from_IS(IS, plot_dir=False):
+def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         # Prepare
@@ -1478,9 +1559,11 @@ def gene_histogram_from_IS(IS, plot_dir=False):
     # Make the plot
     logging.info("Plotting plot 9")
     name = 'GeneHistogram_plot.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Gdb.groupby('genome'):
+        if not plot_genome(genome, IS, **kwargs):
+            continue
         db = gene_histogram_plot(mdb, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(8, 5)
@@ -1494,7 +1577,7 @@ def gene_histogram_from_IS(IS, plot_dir=False):
     #plt.show()
     plt.close('all')
 
-def dendrograms_from_RC(IS, plot_dir=False):
+def dendrograms_from_RC(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         db = IS.get('comparisonsTable')
@@ -1516,9 +1599,11 @@ def dendrograms_from_RC(IS, plot_dir=False):
     # Plot
     logging.info("Plotting plot 10")
     name = 'inStrainCompare_dendrograms.pdf'
-    pp = PdfPages(os.path.join(plot_dir, name))
+    pp = PdfPages(plot_dir + name)
 
     for genome, mdb in Mdb.groupby('genome'):
+        # if not plot_genome(genome, IS, **kwargs):
+        #     continue
         plot_readComparerer_dendrograms(mdb, genome, cluster_method='average')
         fig = plt.gcf()
         #fig.tight_layout()

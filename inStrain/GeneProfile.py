@@ -137,12 +137,14 @@ def profile_genes(IS, scaffold, gdb, gene2sequence, **kwargs):
 
         if 'morphia' in Sdb.columns:
             Sdb['morphia'] = Sdb['morphia'].astype(int)
-            Sdb = Sdb[Sdb['morphia'] == 2]
+            # Sdb = Sdb[Sdb['morphia'] == 2]
+            Sdb = Sdb[(Sdb['morphia'] > 0) & (Sdb['morphia'] <= 2)]
             Sdb = Sdb.drop(columns="morphia")
 
         elif 'allele_count' in Sdb.columns:
             Sdb['allele_count'] = Sdb['allele_count'].astype(int)
-            Sdb = Sdb[Sdb['allele_count'] == 2]
+            # Sdb = Sdb[Sdb['allele_count'] == 2]
+            Sdb = Sdb[(Sdb['allele_count'] > 0) & (Sdb['allele_count'] <= 2)]
             Sdb = Sdb.drop(columns="allele_count")
 
         Sdb = Sdb.drop(columns="cryptic")

@@ -67,7 +67,7 @@ class test_plot():
     def setUp(self):
         self.test_dir = load_random_test_dir()
         self.IS = load_data_loc() + \
-            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.ForPlotting.IS'
         self.RC_Loc = load_data_loc() + \
             'readComparer_v1.RC'
         self.stb = load_data_loc() + \
@@ -90,6 +90,14 @@ class test_plot():
         self.test2()
         self.tearDown()
 
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
     def test1(self):
         '''
         Make sure all plots are made
@@ -104,13 +112,13 @@ class test_plot():
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
 
-        cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.stb)
-        print(cmd)
-        call(cmd, shell=True)
-
-        cmd = "inStrain profile_genes -i {0} -g {1}".format(location, self.genes)
-        print(cmd)
-        call(cmd, shell=True)
+        # cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.stb)
+        # print(cmd)
+        # call(cmd, shell=True)
+        #
+        # cmd = "inStrain profile_genes -i {0} -g {1}".format(location, self.genes)
+        # print(cmd)
+        # call(cmd, shell=True)
 
         cmd = "inStrain plot -i {0}".format(location)
         print(cmd)
@@ -120,9 +128,11 @@ class test_plot():
         IS = inStrain.SNVprofile.SNVprofile(location)
         figs = glob.glob(IS.get_location('figures') + '*')
 
-        assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        #assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        for F in FIGS:
+            assert len([f for f in figs if F in f]) == 1, F
         for fig in figs:
-            assert os.path.getsize(fig) > 0
+            assert os.path.getsize(fig) > 1000
 
     def test2(self):
         '''
@@ -146,9 +156,82 @@ class test_plot():
         IS = inStrain.SNVprofile.SNVprofile(location)
         figs = glob.glob(IS.get_location('figures') + '*')
 
-        assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        #assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        for F in FIGS:
+            assert len([f for f in figs if F in f]) == 1, F
         for fig in figs:
-            assert os.path.getsize(fig) > 0
+            assert os.path.getsize(fig) > 1000
+
+    def test3(self):
+        '''
+        Test the breadth cutoff
+        '''
+        # Run the IS plots
+        FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf', 'genomeWide_microdiveristy_metrics.pdf',
+                'MajorAllele_frequency_plot.pdf', 'readANI_distribution.pdf',
+                'LinkageDecay_plot.pdf', 'ScaffoldInspection_plot.pdf',
+                'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
+                'GeneHistogram_plot.pdf']
+
+        # FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf']#, 'genomeWide_microdiveristy_metrics.pdf',
+        # #         'MajorAllele_frequency_plot.pdf', 'readANI_distribution.pdf',
+        # #         'LinkageDecay_plot.pdf', 'ScaffoldInspection_plot.pdf',
+        # #         'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
+        # #         'GeneHistogram_plot.pdf']
+
+        location = os.path.join(self.test_dir, os.path.basename(self.IS))
+        shutil.copytree(self.IS, location)
+
+        cmd = "inStrain plot -i {0} -mb 0.97".format(location)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        figs = glob.glob(IS.get_location('figures') + '*')
+
+        #assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        for F in FIGS:
+            assert len([f for f in figs if F in f]) == 1, F
+        for fig in figs:
+            assert os.path.getsize(fig) > 1000
+
+    def test4(self):
+        '''
+        Test the genome name
+        '''
+        # Run the IS plots
+        FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf', 'genomeWide_microdiveristy_metrics.pdf',
+                'MajorAllele_frequency_plot.pdf', 'readANI_distribution.pdf',
+                'LinkageDecay_plot.pdf', 'ScaffoldInspection_plot.pdf',
+                'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
+                'GeneHistogram_plot.pdf']
+
+        # FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf']#, 'genomeWide_microdiveristy_metrics.pdf',
+        # #         'MajorAllele_frequency_plot.pdf', 'readANI_distribution.pdf',
+        # #         'LinkageDecay_plot.pdf', 'ScaffoldInspection_plot.pdf',
+        # #         'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
+        # #         'GeneHistogram_plot.pdf']
+
+        location = os.path.join(self.test_dir, os.path.basename(self.IS))
+        shutil.copytree(self.IS, location)
+
+        cmd = "inStrain plot -i {0} -g maxbin2.maxbin.001.fasta".format(location)
+        #cmd = "inStrain plot -i {0} -g poop".format(location)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        figs = glob.glob(IS.get_location('figures') + '*')
+
+        #assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        for F in FIGS:
+            assert len([f for f in figs if F in f]) == 1, F
+        for fig in figs:
+            assert os.path.getsize(fig) > 1000
+
+
 
 class test_genome_wide():
     def setUp(self):
@@ -2280,14 +2363,14 @@ class test_special():
         assert not inStrain.SNVprofile.same_versions('1.1.0', '0.1.0')
 
 if __name__ == '__main__':
-    test_strains().run()
-    test_filter_reads().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
+    # test_strains().run()
+    # test_filter_reads().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
     test_plot().run()
-    test_special().run()
-    test_readcomparer().run()
+    # test_special().run()
+    # test_readcomparer().run()
 
     print('everything is working swimmingly!')

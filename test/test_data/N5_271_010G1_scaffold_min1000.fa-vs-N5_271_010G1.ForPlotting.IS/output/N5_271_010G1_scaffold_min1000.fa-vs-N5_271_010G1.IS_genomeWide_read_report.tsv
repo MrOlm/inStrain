@@ -1,0 +1,3 @@
+genome	scaffolds	unfiltered_reads	unfiltered_pairs	pass_filter_cutoff	pass_max_insert	pass_min_insert	pass_min_mapq	filtered_pairs	mean_mistmaches	mean_insert_distance	mean_mapq_score	mean_pair_length	median_insert	mean_PID
+fobin.fasta	1	23170	5660	945	5642	5613	5660	904	18.91201413427562	303.15724381625444	6.158657243816254	247.52773851590104	284.5	0.9246042750317528
+maxbin2.maxbin.001.fasta	166	20910	6560	5139	6546	6546	6560	5123	4.000332458274189	349.1787106595678	37.04909275733428	276.57445265019555	360.1957831325301	0.9843232873974991

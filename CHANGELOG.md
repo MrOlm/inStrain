@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## Uncommitted
+## [1.2.0] - 2019-12-04
 - Change genome_wide to include sums of SNPs
+- GeneProfile now reports reference SNPs as well
+- Many updates to plotting function (listed below)
+- The debug option will now produce a stack track for failed plots
+- Plot basename now included in figure creation
+- You can now only plot genomes meeting a breadth requirement
+- You can now specify which genomes to plot
+- Fixed bug preventing plots 2 and 7 from being made in a lot of cases
 
 ## [1.1.1] - 2019-11-18
 - Change genome_wide to account for ANI, popANI, and conANI
