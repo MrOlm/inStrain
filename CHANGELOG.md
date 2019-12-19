@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2019-12-18
+- Move from 'ANI' in scaffold_profile to "conANI" and "popANI"
+- Store information on lots more types of SNPs in scaffold_profile
+- Remove snpsCounted
+
 ## [1.1.3] - 2019-12-18
 - Profile genes no longer drops allele_count
 

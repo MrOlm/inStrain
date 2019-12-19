@@ -283,7 +283,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     mLen = len(seq)
     covT = {} # Dictionary of mm -> positional coverage along the genome
     #basesCounted = {} # Dictionary of mm -> Count of bases that got through to SNP calling
-    snpsCounted = {} # Dictionary of mm -> Count of SNPs
+    #snpsCounted = {} # Dictionary of mm -> Count of SNPs
     read_to_snvs = defaultdict(_dlist) # Dictionary of mm -> read variant -> count
     p2c = {} # dictionary of position -> cryptic SNPs
     snv2mm2counts = {} # dictionary of position to mm to counts for SNP positions
@@ -308,7 +308,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
 
         # Call SNPs
         snp, bases, total_counts = _update_snp_table_T(Stable, clonT,\
-                    snpsCounted, MMcounts, p2c,\
+                    MMcounts, p2c,\
                     pileupcolumn.pos, scaffold, mLen, seq[pileupcolumn.pos], min_cov=min_cov, min_freq=min_freq)
 
         # add the counts for this position to the numpy array alexcc
@@ -327,7 +327,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     # shrink lots of things by default
     covT = shrink_basewise(covT, 'coverage')
     clonT = shrink_basewise(clonT, 'clonality')
-    snpsCounted = shrink_basewise(snpsCounted, 'snpCounted')
+    #snpsCounted = shrink_basewise(snpsCounted, 'snpCounted')
 
     # Make the SNP table
     SNPTable = pd.DataFrame(Stable)
@@ -374,7 +374,8 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     # Make cummulative tables
     Sprofile.make_cumulative_tables()
 
-    for att in ['covT', 'snpsCounted', 'clonT']:
+    #for att in ['covT', 'snpsCounted', 'clonT']:
+    for att in ['covT', 'clonT']:
         setattr(Sprofile, att, eval(att))
 
     # store extra things if required
@@ -440,7 +441,7 @@ def _update_covT(covT, MMcounts, position, mLen):
             covT[mm] = np.zeros(mLen, dtype=int)
         covT[mm][position] = sum(count)
 
-def _update_snp_table_T(Stable, clonT, snpsCounted, MMcounts, p2c,\
+def _update_snp_table_T(Stable, clonT, MMcounts, p2c,\
         pos, scaff, mLen, refBase, min_cov=5, min_freq=.05):
     '''
     Add information to SNP table. Update basesCounted and snpsCounted
@@ -526,10 +527,9 @@ def _update_snp_table_T(Stable, clonT, snpsCounted, MMcounts, p2c,\
            elif (morphia == 1) & (anySNP == True):
                p2c[pos] = True
 
-           if mm not in snpsCounted:
-               snpsCounted[mm] = np.zeros(mLen, dtype=bool)
-
-           snpsCounted[mm][pos] = True
+           # if mm not in snpsCounted:
+           #     snpsCounted[mm] = np.zeros(mLen, dtype=bool)
+           # snpsCounted[mm][pos] = True
 
         # if it's now not a SNP, but it was in the past, mark it cryptic
         elif (snp == -1) & (anySNP == True):
@@ -969,7 +969,6 @@ class scaffold_profile():
 
         'scaff2covT',
         'scaff2basesCounted',
-        'scaff2snpsCounted',
         )
         for att in self.ATTRIBUTES:
             setattr(self, att, kwargs.get(att, None))
@@ -1079,11 +1078,12 @@ def gen_snv_profile(Sprofiles, **kwargs):
 
     # Store extra things
     att2descr = {'covT':'Scaffold -> mm -> position based coverage',
-                 'snpsCounted':"Scaffold -> mm -> position based True/False on if a SNPs is there",
+                 #'snpsCounted':"Scaffold -> mm -> position based True/False on if a SNPs is there",
                  'clonT':"Scaffold -> mm -> position based clonality",
                  'read_to_snvs':'?',
                  'mm_to_position_graph':'?'}
-    for att in ['covT', 'snpsCounted', 'clonT', 'read_to_snvs', 'mm_to_position_graph']:
+    #for att in ['covT', 'snpsCounted', 'clonT', 'read_to_snvs', 'mm_to_position_graph']:
+    for att in ['covT', 'clonT', 'read_to_snvs', 'mm_to_position_graph']:
         if hasattr(Sprofiles[0], att):
             thing = {S.scaffold:getattr(S, att) for S in Sprofiles}
             Sprofile.store(att, thing, 'special', att2descr[att])
