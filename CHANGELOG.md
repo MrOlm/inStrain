@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.1.3] - 2019-12-18
+- Profile genes no longer drops allele_count
+
 ## [1.1.2] - 2019-12-04
 - Change genome_wide to include sums of SNPs
 - GeneProfile now reports reference SNPs as well
