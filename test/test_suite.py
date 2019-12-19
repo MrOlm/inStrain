@@ -1741,34 +1741,34 @@ class test_strains():
         # self.setUp()
         # self.test6()
         # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test9()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test10()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test13()
-        # self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
+
+        self.setUp()
+        self.test9()
+        self.tearDown()
+
+        self.setUp()
+        self.test10()
+        self.tearDown()
+
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
+
+        self.setUp()
+        self.test13()
+        self.tearDown()
 
         self.setUp()
         self.test14()
@@ -1780,7 +1780,7 @@ class test_strains():
         '''
         # Run Matts program
         base = self.test_dir + 'testMatt'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --min_mapq 2".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --min_mapq 2 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         sys_args = cmd.split(' ')
@@ -1889,7 +1889,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.98".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
@@ -1974,7 +1974,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.98".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2007,7 +2007,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2027,7 +2027,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 1".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 1 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2044,7 +2044,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.99 -p 1".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.99 -p 1 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.single_scaff, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2063,7 +2063,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.extra_single_scaff, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2093,7 +2093,7 @@ class test_strains():
             inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
             Sprofile = inStrain.SNVprofile.SNVprofile(base)
 
-            rloc = glob.glob(Sprofile.get_location('output') + '*read_report.tsv')[0]
+            rloc = glob.glob(Sprofile.get_location('output') + 'test_read_report.tsv')[0]
             with open(rloc) as f:
                 first_line = f.readline()
             assert "{0}:{1}".format(thing, val) in first_line, [first_line, thing, val]
@@ -2120,7 +2120,7 @@ class test_strains():
 
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything".format(self.script, new_sam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide".format(self.script, new_sam, \
             self.extra_single_scaff, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2139,7 +2139,7 @@ class test_strains():
         base = self.test_dir + 'testMatt'
         # cmd = "{0} {1} {2} -o {3} -l 0.95 --store_everything --debug".format(self.script, self.sorted_bam, \
         #     self.fasta, base)
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2189,7 +2189,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_fasta_reads 10".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_fasta_reads 10 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2210,7 +2210,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} --skip_mm_profiling".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} --skip_mm_profiling --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2239,7 +2239,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --min_mapq 2 --scaffolds_to_profile {4}".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --min_mapq 2 --scaffolds_to_profile {4} --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base, self.scafflist)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2257,7 +2257,7 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --min_mapq 2 --scaffolds_to_profile {4} -p 1".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --min_mapq 2 --scaffolds_to_profile {4} -p 1 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base, self.scafflist)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))

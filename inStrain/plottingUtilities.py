@@ -1099,6 +1099,9 @@ def main(args):
     '''
     # Parse arguments
     args = validate_input(args)
+    if args.ret:
+        return
+
     kwargs = vars(args)
     debug = kwargs.get('debug', False)
 
@@ -1123,7 +1126,12 @@ def main(args):
 
     # Cache needed data
     if IS_TYPE == 'IS':
-        kwargs['GWdb'] = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
+        try:
+            kwargs['GWdb'] = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
+        except:
+            logging.error("Cannot cache scaffold info - you don't have all required information. You need to run inStrain genome_wide first")
+            if debug:
+                traceback.print_exc()
 
     # 1) MM plot
     if '1' in to_plot:
@@ -1227,6 +1235,14 @@ def validate_input(args):
     # Set up the logger
     log_loc = args.IS.get_location('log') + 'log.log'
     inStrain.controller.setup_logger(log_loc)
+
+    # Make sure this IS object has an stb
+    stb = args.IS.get('scaffold2bin')
+    if stb == None:
+        logging.error("This IS object does not have an .stb file; cant use it to make plots")
+        args.ret = True
+    else:
+        args.ret = False
 
     return args
 
@@ -1518,8 +1534,9 @@ def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
         Mdb['link_type'] = Mdb.apply(calc_link_type, axis=1, k2t=k2t)
         assert len(Mdb) > 0
     except:
-        logging.error("Skipping plot 8 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        logging.error("Skipping plot 8 - you don't have all required information. You need to run inStrain profile_genes first")
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1554,8 +1571,9 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
             Gdb['microdiversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0
     except:
-        logging.error("Skipping plot 9 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        logging.error("Skipping plot 9 - you don't have all required information. You need to run inStrain profile_genes first")
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot

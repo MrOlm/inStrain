@@ -128,6 +128,11 @@ def makeGenomeWide(thing, db, stb, b2l=None, **kwargs):
 
 def _add_stb(db, stb):
     gdb = db.copy()
+
+    if len(gdb) == 0:
+        logging.error('Error- no scaffolds detected.')
+        return
+
     gdb['genome'] = gdb['scaffold'].map(stb)
 
     if len(gdb['genome'].dropna().unique()) == 0:

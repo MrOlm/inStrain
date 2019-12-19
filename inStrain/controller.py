@@ -114,6 +114,7 @@ class ProfileController():
 
         # Load dictionary of paired reads
         Rdic, RR = self.load_paired_reads(args, FAdb)
+        logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
 
         # Get scaffold to paired reads (useful for multiprocessing)
         s2p = RR.set_index('scaffold')['filtered_pairs'].to_dict()
