@@ -8,6 +8,8 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 - Move from 'ANI' in scaffold_profile to "conANI" and "popANI"
 - Store information on lots more types of SNPs in scaffold_profile
 - Remove snpsCounted
+- Make it so profile can handle genes, genome_wide, and figure generation
+- Make the output of profile a bit more pretty
 
 ## [1.1.3] - 2019-12-18
 - Profile genes no longer drops allele_count
