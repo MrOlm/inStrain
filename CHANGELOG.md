@@ -6,11 +6,11 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 
 ## [1.1.2] - 2019-12-04
 - Change genome_wide to include sums of SNPs
-- GeneProfile now reports reference SNPs as well
+- GeneProfile now reports reference SNPs as well in terms of N and S
 - Many updates to plotting function (listed below)
 - The debug option will now produce a stack track for failed plots
 - Plot basename now included in figure creation
-- You can now only plot genomes meeting a breadth requirement
+- You can now plot only genomes meeting a breadth requirement
 - You can now specify which genomes to plot
 - Fixed bug preventing plots 2 and 7 from being made in a lot of cases
 - Plot 4 now plots only freq > 0.5 and a set 50 bins

@@ -17,6 +17,7 @@ from collections import defaultdict
 
 import inStrain.linkage
 import inStrain.SNVprofile
+import inStrain.readComparer
 
 from ._version import __version__
 
@@ -328,9 +329,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     clonT = shrink_basewise(clonT, 'clonality')
     snpsCounted = shrink_basewise(snpsCounted, 'snpCounted')
 
-    # Do per-scaffold aggregating
-    CoverageTable = make_coverage_table(covT, clonT, mLen, scaffold, Wdb, snpsCounted=snpsCounted)
-
+    # Make the SNP table
     SNPTable = pd.DataFrame(Stable)
 
     if len(SNPTable) > 0:
@@ -339,6 +338,12 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
         # Add cryptic SNPs
         SNPTable['cryptic'] = SNPTable['position'].map(p2c)
         SNPTable['cryptic'] = SNPTable['cryptic'].fillna(False)
+
+        # Calc base coverage
+        SNPTable['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
+
+    # Do per-scaffold aggregating
+    CoverageTable = make_coverage_table(covT, clonT, mLen, scaffold, Wdb, SNPTable, min_freq=min_freq)
 
     # Make linkage network
     mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
@@ -684,7 +689,39 @@ def _get_basewise_clons3(clonT, MM, fill_zeros=False):
 
     return counts
 
-def make_coverage_table(covT, clonT, lengt, scaff, Wdb, snpsCounted, debug=False):
+def _calc_snps(Odb, mm, min_freq=0.05):
+    '''
+    Calculate the number of reference SNPs, bi-allelic SNPs, multi-allelic SNPs (>2), total SNPs, consensus_SNPs, and poplation_SNPs
+    '''
+    if len(Odb) == 0:
+        return [0, 0, 0, 0, 0, 0]
+
+    db = Odb[Odb['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['position'], keep='last')
+
+    ref_snps = len(db[(db['allele_count'] == 1)])
+    bi_snps = len(db[(db['allele_count'] == 2)])
+    multi_snps = len(db[(db['allele_count'] > 2)])
+
+    con_snps = len(db[(db['conBase'] != db['refBase']) & (db['allele_count'] > 0)])
+
+    # One pool of population SNPs are those of morphia 1 where con != ref
+    p1 = len(db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 1)])
+
+    # Another pool is when its biallelic but neither are the reference
+    p2 = len(db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 2) & (db['refBase'] != db['varBase'])])
+
+    # Finally, and the hardest to detect, are morphia of three where
+    p3 = 0
+    pdb = db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 3) & (db['refBase'] != db['varBase'])]
+    for i, row in pdb.iterrows():
+        if not inStrain.readComparer.is_present(int(row[row['refBase']]), int(row['baseCoverage']), null_model, float(min_freq)):
+            p3 += 1
+
+    pop_snps = p1 + p2 + p3
+
+    return [ref_snps, bi_snps, multi_snps, len(db), con_snps, pop_snps]
+
+def make_coverage_table(covT, clonT, lengt, scaff, Wdb, SNPTable, min_freq=0.05, debug=False):
     '''
     Add information to the table
     Args:
@@ -706,25 +743,11 @@ def make_coverage_table(covT, clonT, lengt, scaff, Wdb, snpsCounted, debug=False
         zeros = lengt - nonzeros
 
         # Get clonalities
-        # NOTE: YOU NEED TO DO IT THIS WAY BECAUSE OTHERWISE YOU DONT HIT ALL THE MMs
-        # if len(CLdb) > 0:
-        #     clons = list(CLdb[CLdb['mm'] <= mm].sort_values('mm').drop_duplicates(
-        #             subset=['position'], keep='last')['clonality'])
-        # else:
-        #     clons = list()
-
-        # Try this another way
         clons = _get_basewise_clons2(clonT, mm)
 
-        # assert len(clonsN) == len(clons)
-        # assert sum(clonsN) == sum(clons)
-        #
-        # cdb = clonsN.to_frame(name='clonality').reset_index().rename(columns={'index':'position'})
-        # cdb2 = CLdb[CLdb['mm'] <= mm].sort_values('mm').drop_duplicates(
-        #         subset=['position'], keep='last')
-
         counted_bases = len(clons)
-        counted_snps = _calc_counted_bases(snpsCounted, mm)
+        ref_snps, bi_snps, multi_snps, counted_snps, con_snps, pop_snps = _calc_snps(SNPTable, mm, min_freq=min_freq)
+        #counted_snps = _calc_counted_bases(snpsCounted, mm)
 
         assert len(covs) == lengt, [covs, lengt, mm]
 
@@ -751,21 +774,31 @@ def make_coverage_table(covT, clonT, lengt, scaff, Wdb, snpsCounted, debug=False
             table['median_microdiversity'].append(np.nan)
 
         table['unmaskedBreadth'].append(len(clons) / lengt)
-        table['SNPs'].append(counted_snps)
         table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
 
+        table['SNPs'].append(counted_snps)
+
+        table['Referece_SNPs'].append(ref_snps)
+        table['BiAllelic_SNPs'].append(bi_snps)
+        table['MultiAllelic_SNPs'].append(multi_snps)
+
+        table['consensus_SNPs'].append(con_snps)
+        table['population_SNPs'].append(pop_snps)
+
         if counted_bases == 0:
-            table['ANI'].append(0)
+            table['conANI'].append(0)
+            table['popANI'].append(0)
         else:
-            table['ANI'].append((counted_bases - counted_snps)/ counted_bases)
+            table['conANI'].append((counted_bases - con_snps)/ counted_bases)
+            table['popANI'].append((counted_bases - pop_snps)/ counted_bases)
 
         table['mm'].append(mm)
 
-    if debug == True:
-        covs = _mm_counts_to_counts(covT, max(list(covT.keys())))
-        zero_pos = [i+1 for i,x in enumerate(covs) if x==0]
-        print(zero_pos)
-        print(len(zero_pos))
+    # if debug == True:
+    #     covs = _mm_counts_to_counts(covT, max(list(covT.keys())))
+    #     zero_pos = [i+1 for i,x in enumerate(covs) if x==0]
+    #     print(zero_pos)
+    #     print(len(zero_pos))
 
     return pd.DataFrame(table)
 
@@ -897,7 +930,7 @@ def _parse_Sdb(sdb):
     if len(sdb) == 0:
         return sdb
 
-    sdb['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(sdb['A'],sdb['C'],sdb['T'],sdb['G'])]
+    # sdb['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(sdb['A'],sdb['C'],sdb['T'],sdb['G'])]
     # sdb['varBase'] = [['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-1])]\
     #                   if ['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-1])] != r \
     #                   else ['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-2])] \

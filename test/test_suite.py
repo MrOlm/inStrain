@@ -1712,17 +1712,17 @@ class test_strains():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
-
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
 
         self.setUp()
         self.test3()
@@ -2290,27 +2290,31 @@ def _internal_verify_Sdb(Sdb):
     assert len(sdb) == len(sdb.dropna())
 
     for i, row in Sdb.iterrows():
-        if row['SNPs'] > 0:
-            assert row['ANI'] != 0
+        if row['consensus_SNPs'] > 0:
+            assert row['conANI'] != 0
 
-    assert Sdb['ANI'].max() <= 1
+    assert Sdb['conANI'].max() <= 1
     assert Sdb['unmaskedBreadth'].max() <= 1
     assert Sdb['breadth'].max() <= 1
 
 def _internal_verify_OdbSdb(Odb, Sdb):
+    '''
+    Odb = cumulative scaffold table
+    Sdb = SNP table
+    '''
     # Ensure internal consistancy between Sdb and Cdb at the lowest mm
     low_mm = Sdb['mm'].min()
     for scaff, db in Sdb[Sdb['mm'] == low_mm].groupby('scaffold'):
         snps = Odb['SNPs'][(Odb['scaffold'] == scaff) & (Odb['mm'] \
                 == low_mm)].fillna(0).tolist()[0]
-        assert snps == len(db), [snps, len(db)]
+        assert snps == len(db), [snps, len(db), scaff, low_mm]
 
     # Ensure internal consistancy between Sdb and Cdb at the highset mm
     odb = Odb.sort_values('mm').drop_duplicates(subset='scaffold', keep='last')
     for scaff, db in Sdb.sort_values('mm').drop_duplicates(subset=['scaffold'\
                     ,'position'], keep='last').groupby('scaffold'):
         snps = odb['SNPs'][(odb['scaffold'] == scaff)].fillna(0).tolist()[0]
-        assert snps == len(db), [snps, len(db)]
+        assert snps == len(db), [snps, len(db), scaff]
 
 def compare_dfs(db1, db2, round=4, verbose=False):
     '''
