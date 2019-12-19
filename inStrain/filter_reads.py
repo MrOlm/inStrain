@@ -90,7 +90,7 @@ def makeFilterReport(scaff2pair2info, scaff2total, pairTOinfo=False, **kwargs):
     values['min_mapq'] = kwargs.get('min_mapq', 2)
 
     # Make report on scaffolds
-    logging.info('running on all reads')
+    logging.debug('running on all reads')
     table = defaultdict(list)
     table['scaffold'].append('all_scaffolds')
     table['unfiltered_reads'].append(sum([total for scaff, total in scaff2total.items()]))
@@ -120,7 +120,7 @@ def makeFilterReport(scaff2pair2info, scaff2total, pairTOinfo=False, **kwargs):
         table['median_insert'].append(np.median([value[1] for key, value in pair2info.items()]))
         table['mean_PID'].append(np.mean([(1 - (float(info[0]) / float(info[3]))) for pair, info in pair2info.items()]))
 
-    logging.info('running on individual scaffolds')
+    logging.debug('running on individual scaffolds')
     for scaff, pair2info in scaff2pair2info.items():
         table['scaffold'].append(scaff)
         table['unfiltered_reads'].append(scaff2total[scaff])

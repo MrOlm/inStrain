@@ -39,8 +39,11 @@ def printHelp():
   Choose one of the operations below for more detailed help. See https://instrain.readthedocs.io for documentation.
   Example: inStrain profile -h
 
+  Workflows:
     profile         -> Create an inStrain profile (microdiversity analysis) from a mapping.
     compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
+
+  Single operations:
     profile_genes   -> Calculate gene-level metrics on an inStrain profile
     genome_wide     -> Calculate genome-level metrics on an inStrain profile
     quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
@@ -85,6 +88,20 @@ def parse_args(args):
     fiflags.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
         help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
 
+    # Make a parent for profile_genes
+    genes_parent = argparse.ArgumentParser(add_help=False)
+    Rflags = genes_parent.add_argument_group('GENE PROFILING OPTIONS')
+    Rflags.add_argument("-g", "--gene_file", action="store", default=None, \
+        help='Path to prodigal .fna genes file.')
+
+    # Make a parent for genome_wide
+    geneomewide_parent = argparse.ArgumentParser(add_help=False)
+    Rflags = geneomewide_parent.add_argument_group('GENOME WIDE OPTIONS')
+    Rflags.add_argument('-s', '--stb', help="Scaffold to bin. This can be a file with each line listing a scaffold and a bin name, tab-seperated. This can also be a space-seperated list of .fasta files, with one genome per .fasta file. If nothing is provided, all scaffolds will be treated as belonging to the same genome",
+                        nargs='*', default=[])
+    Rflags.add_argument('--mm_level', help="Create files on the mm level (see documentation for info)",
+                        action='store_true', default=False)
+
     '''
     ####### Arguments for profile operation ######
     '''
@@ -100,11 +117,11 @@ def parse_args(args):
         help='Output prefix')
 
     profile_parser = subparsers.add_parser("profile",formatter_class=SmartFormatter,\
-                    parents = [profile_parent, parent_parser, readfilter_parent, variant_parent], add_help=False)
+                    parents = [profile_parent, parent_parser, readfilter_parent, variant_parent, genes_parent, geneomewide_parent], add_help=False)
 
     # Other Parameters
-    Oflags = profile_parser.add_argument_group('OTHER OPTIONS')
-    Oflags.add_argument("-s", "--min_snp", action="store", default=20, \
+    Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')
+    Oflags.add_argument("--min_snp", action="store", default=20, \
         help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
     Oflags.add_argument("--min_fasta_reads", action="store", default=0, type=int,\
         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
@@ -114,6 +131,13 @@ def parse_args(args):
         help="Dont perform analysis on an mm level; saves RAM and time")
     Oflags.add_argument("--scaffolds_to_profile", action="store",\
         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
+
+    # Other Parameters
+    Iflags = profile_parser.add_argument_group('OTHER  OPTIONS')
+    Iflags.add_argument('--skip_genome_wide', action='store_true', default=False,\
+        help="Do not generate tables that consider groups of scaffolds belonging to genomes")
+    Iflags.add_argument('--skip_plot_generation', action='store_true', default=False,\
+        help="Do not make plots")
 
 
     '''
@@ -157,31 +181,21 @@ def parse_args(args):
     ####### Arguments for profile_genes operation ######
     '''
     # Make a parent for profile to go above the system arguments
-    genes_parent = argparse.ArgumentParser(add_help=False)
+    genes_io = argparse.ArgumentParser(add_help=False)
+
     # Required positional arguments
-    Rflags = genes_parent.add_argument_group('REQUIRED')
+    Rflags = genes_io.add_argument_group('INPUT / OUTPUT')
     Rflags.add_argument("-i", '--IS', help="an inStrain profile object", required=True)
-    Rflags.add_argument("-g", "--gene_file", action="store", required=True, \
-        help='Path to prodigal .fna genes file.')
 
     genes_parser = subparsers.add_parser("profile_genes",formatter_class=SmartFormatter,\
-                    parents = [genes_parent, parent_parser], add_help=False)
+                    parents = [genes_parent, genes_io, parent_parser], add_help=False)
 
     '''
     ####### Arguments for genome_wide operation ######
     '''
     # Make a parent for profile to go above the system arguments
-    genome_parent = argparse.ArgumentParser(add_help=False)
-    # Required positional arguments
-    Rflags = genome_parent.add_argument_group('REQUIRED')
-    Rflags.add_argument("-i", '--IS', help="an inStrain profile object", required=True)
-    Rflags.add_argument('-s', '--stb', help="Scaffold to bin. This can be a file with each line listing a scaffold and a bin name, tab-seperated. This can also be a space-seperated list of .fasta files, with one genome per .fasta file. If nothing is provided, all scaffolds will be treated as belonging to the same genome",
-                        nargs='*', default=[])
-    Rflags.add_argument('--mm_level', help="Create files on the mm level (see documentation for info)",
-                        action='store_true', default=False)
-
-    genome_parent = subparsers.add_parser("genome_wide",formatter_class=SmartFormatter,\
-                    parents = [genome_parent, parent_parser], add_help=False)
+    genome_parser = subparsers.add_parser("genome_wide",formatter_class=SmartFormatter,\
+                    parents = [geneomewide_parent, genes_io, parent_parser], add_help=False)
 
     '''
     ####### Arguments for plot operation ######

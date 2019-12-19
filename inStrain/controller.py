@@ -100,6 +100,12 @@ class ProfileController():
             args.output = args.fasta.split(".")[0].split("/")[-1] #default prefix is now fasta prefix -alexcc 5/8/2019
 
         args = self.validate_arguments(args)
+        message = """\
+***************************************************
+    ..:: inStrain profile Step 1. Filter reads ::..
+***************************************************
+        """
+        logging.info(message)
 
         global s2l # make ths global so we can access it later.
 
@@ -134,6 +140,14 @@ class ProfileController():
         vargs['s2s'] = s2s
         vargs['s2p'] = s2p
 
+        message = """\
+***************************************************
+.:: inStrain profile Step 2. Profile scaffolds ::..
+***************************************************
+        """
+        logging.info(message)
+
+
         Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
 
         # Add the read report
@@ -146,7 +160,68 @@ class ProfileController():
                 Sprofile.store('Rdic', Rdic, 'dictionary', 'Read pair -> mismatches')
 
         # Save
+        logging.info('Storing output')
         self.write_output(Sprofile, args)
+
+        # Run the rest of things
+        args.IS = Sprofile.location
+
+        # See if you can profile genes as well
+        message = """\
+***************************************************
+  .:: inStrain profile Step 3. Profile genes ::..
+***************************************************
+        """
+        logging.info(message)
+        if args.gene_file != None:
+            args.IS = Sprofile.location
+            Controller().profile_genes_operation(args)
+        else:
+            logging.info('Nevermind! You didnt include a genes file')
+
+        # Make things genome_wide
+        message = """\
+***************************************************
+.:: inStrain profile Step 4. Make genome-wide ::..
+***************************************************
+        """
+        logging.info(message)
+        if not args.skip_genome_wide:
+            args.IS = Sprofile.location
+            Controller().genome_wide_operation(args)
+        else:
+            logging.info('Nevermind! You chose to skip genome_wide')
+
+        # Generate plots
+        message = """\
+***************************************************
+ .:: inStrain profile Step 5. Generate plots ::..
+***************************************************
+        """
+        logging.info(message)
+        if not args.skip_plot_generation:
+            args.IS = Sprofile.location
+            args.plots = 'a'
+            Controller().plot_operation(args)
+        else:
+            logging.info('Nevermind! You chose to skip making plots')
+
+        # Final message
+        message = """\
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    ..:: inStrain profile finished ::..
+
+Output tables........ {0}
+Figures.............. {1}
+
+See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        """.format(Sprofile.get_location('output'), \
+            Sprofile.get_location('figures'))
+        logging.info(message)
+
         return Sprofile
 
     def load_fasta(self, args):
@@ -292,6 +367,10 @@ def load_scaff_list(list):
 def setup_logger(loc):
     ''' set up logger such that DEBUG goes only to file, rest go to file and console '''
 
+    # Cancel if a logger already exists:
+    if logging.getLogger('').handlers:
+        return
+
     # set up logging everything to file
     logging.basicConfig(level=logging.DEBUG,
                        format='%(asctime)s %(levelname)-8s %(message)s',
@@ -303,6 +382,7 @@ def setup_logger(loc):
     console.setLevel(logging.INFO)
     formatter = logging.Formatter('%(message)s')
     console.setFormatter(formatter)
+
     logging.getLogger('').addHandler(console)
 
     logging.debug("!"*80)

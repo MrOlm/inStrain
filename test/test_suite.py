@@ -1700,6 +1700,8 @@ class test_strains():
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
         self.scafflist = load_data_loc() + \
             'scaffList.txt'
+        self.genes = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa.genes.fna'
 
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -1723,49 +1725,53 @@ class test_strains():
         # self.setUp()
         # self.test2()
         # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test9()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test10()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test13()
+        # self.tearDown()
 
         self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        self.setUp()
-        self.test10()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
-        self.test13()
+        self.test14()
         self.tearDown()
 
     def test0(self):
@@ -2268,6 +2274,29 @@ class test_strains():
                     if row['position'] in covs:
                         cov += covs[row['position']]
             assert row['baseCoverage'] == cov, [cov, row['baseCoverage'], row]
+
+    def test14(self):
+        '''
+        Basic test- Make sure genes and genome_wide can be run within the profile option
+        '''
+        # Set up
+        base = self.test_dir + 'test'
+
+        # Run program
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98".format(self.script, self.sorted_bam, \
+            self.fasta, base, self.genes)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it produced output
+        assert os.path.isdir(base)
+        assert len(glob.glob(base + '/output/*')) == 8
+
+        # Make sure the output makes sense
+        S1 = inStrain.SNVprofile.SNVprofile(base)
+        db = S1.get('cumulative_scaffold_table')
+        _internal_verify_Sdb(db)
+
 
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
