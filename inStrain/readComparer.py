@@ -110,7 +110,7 @@ def greedy_main(RCprof, names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
         # Adjust the clusters
         found = False
         for i, row in Ddb.iterrows():
-            if (row['ANI'] >= g_ani) & (row['cov'] >= g_cov):
+            if (row['popANI'] >= g_ani) & (row['cov'] >= g_cov):
                 found = True
                 logging.debug("{0} is in the same cluster as {1}".format(name, row['name2']))
                 name2cluster[name] = name2cluster[row['name2']]

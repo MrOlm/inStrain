@@ -166,6 +166,8 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
     for mm in sorted(list(gdb['mm'].unique())):
         Odb = gdb[gdb['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['scaffold'], keep='last')
         for genome, df in Odb.groupby('genome'):
+            cols = list(df.columns)
+
             table['mm'].append(mm)
             table['genome'].append(genome)
 
@@ -175,8 +177,9 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
             table['true_length'].append(int(b2l[genome]))
 
             # The summing columns
-            for col in ['SNPs']:
-                table[col].append(df[col].sum())
+            for col in ['SNPs', 'Referece_SNPs', 'BiAllelic_SNPs', 'MultiAllelic_SNPs', 'consensus_SNPs', 'population_SNPs']:
+                if col in cols:
+                    table[col].append(df[col].sum())
 
             # Weighted average (over total length)
             for col in ['breadth', 'coverage', 'std_cov']:
@@ -204,10 +207,18 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                     table[col].append(np.nan)
 
             # ANI
-            if considered_leng != 0:
-                table['ANI'].append((considered_leng - df['SNPs'].sum()) / considered_leng)
+            if 'consensus_SNPs' in cols:
+                if considered_leng != 0:
+                    table['conANI'].append((considered_leng - df['consensus_SNPs'].sum()) / considered_leng)
+                    table['popANI'].append((considered_leng - df['population_SNPs'].sum()) / considered_leng)
+                else:
+                    table['conANI'].append(0)
+                    table['popANI'].append(0)
             else:
-                table['ANI'].append(0)
+                if considered_leng != 0:
+                    table['ANI'].append((considered_leng - df['SNPs'].sum()) / considered_leng)
+                else:
+                    table['ANI'].append(0)
             #table['detected_scaff_length'].append(df['length'].sum())
 
             table['unmaskedBreadth'].append(considered_leng / b2l[genome])
