@@ -2,7 +2,7 @@ Tutorial
 ===================
 
 The following tutorial goes through an example run of inStrain. You can follow along with your own data, or download the files that are used in this tutorial from the `following link
-<https://www.youtube.com/watch?v=dQw4w9WgXcQ>`_.
+<https://doi.org/10.6084/m9.figshare.11663925.v1>`_.
 
 .. seealso::
   :doc:`quickstart`
@@ -73,3 +73,8 @@ Plotting
 To make all of the plots that you can given the current inStrain profile object, just run the plot command::
 
  inStrain plot -i allGenomes_v1.fasta-vs-N4_005_026G1.IS
+
+inStrain compare
+-----------
+
+To run inStrain compare,

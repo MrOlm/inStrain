@@ -15,16 +15,12 @@ This gives basic information about the scaffolds in your sample at the highest a
 
 .. csv-table:: scaffold_info.tsv
 
-  scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,SNPs,expected_breadth,ANI
-  1820A1025_scaffold_114,27197,1.0,117.53612530793836,119,22.517049757019283,0,0.9995305505412146,1.0,0.0004694494587853537,0.0,0.9996323123873956,5,1.0,0.999816088571744
-  1820A1025_scaffold_106,28546,1.0,115.79373642541864,117,22.0981482314861,0,0.9995114336856696,1.0,0.0004885663143303631,0.0,0.9997898129335108,4,1.0,0.9998598458304134
-  1820A1025_scaffold_112,27554,1.0,159.2970530594469,159,26.559269091036462,0,0.9994393799204232,1.0,0.0005606200795766902,0.0,0.9998911228859694,4,1.0,0.99985481470727
-  1820A1025_scaffold_115,26897,1.0,171.2598059263115,167,36.6364045667205,0,0.999117155309884,1.0,0.0008828446901159025,0.0,1.0,46,1.0,0.998289772093542
-  1820A1025_scaffold_118,25342,1.0,137.14375345276616,139,21.175189619940546,0,0.9994166977631538,1.0,0.0005833022368462171,0.0,0.9999605398153264,15,1.0,0.9994080738723808
-  1820A1025_scaffold_130,22145,1.0,168.69356513885754,172,31.331335540083884,0,0.9993979713803196,1.0,0.0006020286196805058,0.0,1.0,8,1.0,0.9996387446376156
-  1820A1025_scaffold_142,19159,1.0,163.43525236181432,164,26.75316027430802,0,0.9992356436742522,1.0,0.0007643563257477838,0.0,1.0,15,1.0,0.999217078135602
-  1820A1025_scaffold_152,17330,1.0,143.43064050778997,144,26.235443720406167,0,0.9996060369840994,1.0,0.0003939630159005558,0.0,0.9978649740334681,0,1.0,1.0
-  1820A1025_scaffold_158,16158,1.0,176.14370590419603,178,30.332807934861112,0,0.9993612181655604,1.0,0.0006387818344396612,0.0,0.9999381111523704,6,1.0,0.9996286439314228
+  scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,expected_breadth,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,conANI,popANI
+  S3_003_000X1_scaffold_21039,1049,0.9609151572926596,7.778836987607247,9,3.6242339424115295,41,0.9984115827692688,1.0,0.0015884172307313313,0.0,0.7836034318398475,0.9989601856174312,1,0,1,0,0,0,1.0,1.0
+  S3_003_000X1_scaffold_21063,1048,0.3721374045801527,0.6698473282442748,0,0.978669048484894,658,,,,,0.0,0.4464898509344126,0,0,0,0,0,0,0.0,0.0
+  S3_003_000X1_scaffold_21081,1047,0.2082139446036294,0.2082139446036294,0,0.4060306612513717,829,,,,,0.0,0.1679418203027453,0,0,0,0,0,0,0.0,0.0
+  S3_003_000X1_scaffold_21188,1043,0.3547459252157239,0.4688398849472674,0,0.6908089219842111,673,,,,,0.0,0.338989542420026,0,0,0,0,0,0,0.0,0.0
+  S3_003_000X1_scaffold_21225,1042,0.7821497120921305,4.341650671785029,5,3.4491608427332947,227,1.0,1.0,0.0,0.0,0.5374280230326296,0.9783700757950428,0,0,0,0,0,0,1.0,1.0
 
 scaffold
   The name of the scaffold in the input .fasta file
@@ -68,12 +64,29 @@ SNPs
 expected_breadth
   This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, etc.)
 
-ANI
-  The average nucleotide identity between the reads in the sample and the .fasta file. Calculated using the formula ANI = (unmaskedBreadth * length) - SNPs)/ (unmaskedBreadth * length))
+SNPs
+  The total number of SNPs called on this scaffold
 
-.. warning::
+Referece_SNPs
+  The number of SNPs called on this scaffold with allele_count = 1. This means that the only allele detected in the reads is different from the reference base
 
-  As of inStrain v1.0.0, ANI includes consideration of all SNPs, including those that signify polymorphic positions and those that signify deviations from the reference base.
+BiAllelic_SNPs
+  The number of SNPs called on this scaffold with allele_count = 2. This means that there are two possible alleles at this position
+
+MultiAllelic_SNPs
+  The number of SNPs called on this scaffold with allele_count > 2. This means that there are more than two possible alleles at this position
+
+consensus_SNPs
+  The number of SNPs called on this scaffold with allele_count > 0 **and** where consensus base is not the reference base. This should be the same as Reference_SNPs under almost all circumstances
+
+population_SNPs
+  These are SNPs where the reference base isn't detected at all, regardless of the allele count.
+
+conANI
+  The average nucleotide identity between the reads in the sample and the .fasta file based on consensus SNPs. Calculated using the formula ANI = (unmaskedBreadth * length) - consensus_SNPs)/ (unmaskedBreadth * length))
+
+popANI
+  The average nucleotide identity between the reads in the sample and the .fasta file based on consensus SNPs. Calculated using the formula ANI = (unmaskedBreadth * length) - population_SNPs)/ (unmaskedBreadth * length))
 
 read_report.tsv
 +++++++++++++++++
@@ -83,14 +96,11 @@ This provides an overview of the number of reads that map to each scaffold, and 
 .. csv-table:: read_report.tsv
 
   scaffold,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
-  all_scaffolds,4464152,2168391,2154253,2168102,2167792,2168391,2153442,0.5102327024969205,325.4543267335089,41.506261555226885,293.22514574170435,313.0,0.9981314852335254
-  JBBB007E_scaffold_233,10605,5062,5048,5062,5062,5062,5048,0.3832477281706835,312.3638877913868,1.3024496246542872,293.6845120505729,308.0,0.998581261373412
-  1820A1025_scaffold_11,200651,98185,97870,98174,98150,98185,97825,0.4297295920965524,320.3908336303916,41.902917960992006,293.49184702347617,314.0,0.9984105714013544
-  1820A1025_scaffold_12,192161,94169,93860,94165,94146,94169,93835,0.4243647060072848,320.1241916129512,41.86061230341195,293.2882264864233,313.0,0.9984318946277784
-  1820A1025_scaffold_5,328711,160303,159657,160296,160265,160303,159613,0.4424371346762069,320.44356624642086,41.882241754677075,293.1935023050099,313.0,0.9983611885767244
-  1820A1025_scaffold_2,428162,209675,208987,209651,209621,209675,208913,0.4234267318469059,328.2336473113151,41.89234768093478,293.3190318349827,313.0,0.9984327943894524
-  1820A1025_scaffold_22,180103,87912,87523,87908,87880,87912,87488,0.4677632177632178,320.15531440531436,41.63107425607426,292.8853512603513,314.0,0.9982475272431892
-  1820A1025_scaffold_1,461964,226192,225400,226155,226126,226192,225299,0.4299002617245526,336.90442190705244,41.908409669661175,293.1702359057792,313.0,0.9984114970717194
+  all_scaffolds,3802370,1790817,1674511,1784011,1790699,1790817,1668496,2.7480758782164787,293.0713925543481,23.46918082640493,298.38404705785126,246.0,0.9906729188638016
+  S3_002_000X1_scaffold_1162,12,6,6,6,6,6,6,1.0,281.1666666666667,25.16666666666667,300.0,287.0,0.9966666666666668
+  S3_002_000X1_scaffold_1005,10,5,5,5,5,5,5,0.2,318.0,33.2,299.8,208.0,0.9993333333333332
+  S3_002_000X1_scaffold_1151,6,3,3,3,3,3,3,5.666666666666668,280.3333333333333,19.666666666666668,300.0,293.0,0.9811111111111112
+  S3_002_000X1_scaffold_1004,14,6,6,6,6,6,6,0.5,295.5,16.666666666666668,300.0,248.0,0.9983333333333334
 
 The following metrics are provided for all individual scaffolds, and for all scaffolds together (scaffold "all_scaffolds"). For the max insert cutoff, the median_insert for all_scaffolds is used
 
@@ -146,16 +156,12 @@ This describes the SNPs that are detected in this mapping.
 
 .. csv-table:: SNVs.tsv
 
-  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,cryptic,baseCoverage,varFreqrefFreq
-  1820A1025_scaffold_114,27192,A,13,2,0,0,A,C,2,False,15,0.13333333333333333,0.8666666666666667
-  1820A1025_scaffold_114,27193,T,8,2,4,1,A,T,3,False,15,0.26666666666666666,0.5333333333333333
-  1820A1025_scaffold_114,27194,A,11,4,0,0,A,C,2,False,15,0.26666666666666666,0.7333333333333333
-  1820A1025_scaffold_114,27195,G,1,10,4,0,C,T,2,False,15,0.26666666666666666,0.6666666666666666
-  1820A1025_scaffold_114,27196,A,0,10,0,0,C,A,1,False,10,0.0,1.0
-  1820A1025_scaffold_106,11174,C,4,57,0,0,C,A,2,False,61,0.06557377049180327,0.9344262295081968
-  1820A1025_scaffold_106,28450,A,37,2,0,0,A,C,2,True,39,0.05128205128205128,0.9487179487179488
-  1820A1025_scaffold_106,28541,A,3,2,2,1,A,C,3,False,8,0.25,0.375
-  1820A1025_scaffold_106,28542,G,0,4,0,4,C,G,2,False,8,0.5,0.5
+  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,cryptic,baseCoverage,varFreq,refFreq
+  S3_003_000X1_scaffold_21039,833,C,2,7,0,0,C,A,2,False,9,0.2222222222222222,0.7777777777777778
+  S3_003_000X1_scaffold_20,99,C,0,0,5,0,T,A,1,False,5,0.0,1.0
+  S3_003_000X1_scaffold_20,123,A,0,0,0,11,G,A,1,False,11,0.0,1.0
+  S3_003_000X1_scaffold_20,261,T,19,0,0,0,A,A,1,False,19,1.0,1.0
+  S3_003_000X1_scaffold_20,291,C,0,16,2,0,C,T,2,False,18,0.1111111111111111,0.8888888888888888
 
 See the :doc:`module_descriptions` for what constitutes a SNP (what makes it into this table)
 
@@ -192,6 +198,9 @@ varFreq
 refFreq
   The fraction of reds supporting the refBase
 
+conFreq
+  The fraction of reds supporting the conBase
+
 linkage.tsv
 +++++++++++++++++
 
@@ -200,15 +209,11 @@ This describes the linkage between pairs of SNPs in the mapping that are found o
 .. csv-table:: linkage.tsv
 
   r2,d_prime,r2_normalized,d_prime_normalized,total,countAB,countAb,countaB,countab,allele_A,allele_a,allele_B,allele_b,distance,position_A,position_B,scaffold
-  1.000000000000002,1.0,0.9999999999999998,1.0,162,152,0,0,10,G,A,C,A,24,24679,24703,1820A1025_scaffold_115
-  0.9999999999999986,1.0,0.9999999999999998,1.0,122,113,0,0,9,G,A,C,A,58,24679,24737,1820A1025_scaffold_115
-  1.0000000000000004,1.0,126,118,0,0,8,G,A,C,G,59,24679,24738,1820A1025_scaffold_115
-  0.9999999999999984,1.0,1.0,1.0,125,117,0,0,8,G,A,T,G,70,24679,24749,1820A1025_scaffold_115
-  1.0,1.0,1.0,1.0,48,42,0,0,6,G,A,T,C,160,24679,24839,1820A1025_scaffold_115
-  1.0000000000000016,1.0,0.9999999999999998,1.0,49,43,0,0,6,G,A,G,A,163,24679,24842,1820A1025_scaffold_115
-  0.9999999999999998,1.0,0.9999999999999998,0.9999999999999998,46,40,0,0,6,G,A,GA,169,24679,24848,1820A1025_scaffold_115
-  1.0000000000000009,1.0000000000000002,1.0,1.0,49,42,0,0,7,G,A,C,T,181,24679,24860,1820A1025_scaffold_115
-  1.0,1.0,1.0,1.0,43,38,0,0,5,G,A,C,G,238,24679,24917,1820A1025_scaffold_115
+  1.0,1.0,1.0,1.0,27,0,14,13,0,G,A,T,C,45,191425,191470,S3_003_000X1_scaffold_20
+  0.10743801652892566,1.0000000000000002,0.05263157894736843,1.0,24,13,0,9,2,G,A,C,A,80,191425,191505,S3_003_000X1_scaffold_20
+  0.08333333333333348,1.0,0.07894736842105264,1.0,26,11,2,13,0,T,C,C,A,35,191470,191505,S3_003_000X1_scaffold_20
+  1.0000000000000009,1.0,1.0,1.0,30,22,0,0,8,C,T,T,C,12,99342,99354,S3_003_000X1_scaffold_88
+  1.0000000000000004,1.0,1.0,1.0,22,17,0,0,5,C,T,T,A,60,99342,99402,S3_003_000X1_scaffold_88
 
 Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP as two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
 
@@ -260,7 +265,7 @@ d_prime
 r2_normalized, d_prime_normalized
   These are calculated by rarefying to ``min_snp`` number of read pairs. See below for how it's calculated
 
-Code for the calculation of these metrics::
+Python code for the calculation of these metrics::
 
   freq_AB = float(countAB) / total
   freq_Ab = float(countAb) / total
@@ -336,16 +341,12 @@ A typical run of inStrain will yield the following files in the output folder:
 
 .. csv-table:: comparisonsTable.tsv
 
-  scaffold,name1,name2,coverage_overlap,compared_bases_count,percent_genome_compared,length,popANI
-  N5_271_010G1_scaffold_78,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,77,0.06275468622656886,1227,1.0
-  N5_271_010G1_scaffold_28,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,854,0.3547985043622767,2407,1.0
-  N5_271_010G1_scaffold_111,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,272,0.24134871339840286,1127,1.0
-  N5_271_010G1_scaffold_154,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,582,0.5762376237623762,1010,1.0
-  N5_271_010G1_scaffold_98,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,61,0.05290546400693842,1153,1.0
-  N5_271_010G1_scaffold_61,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,357,0.20987654320987653,1701,1.0
-  N5_271_010G1_scaffold_86,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,21,0.017691659646166806,1187,1.0
-  N5_271_010G1_scaffold_53,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,298,0.2212323682256867,1347,1.0
-  N5_271_010G1_scaffold_139,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,24,0.023121387283236997,1038,1.0
+  scaffold,name1,name2,coverage_overlap,compared_bases_count,percent_genome_compared,length,consensus_SNPs,population_SNPs,conANI,popANI
+  S3_016_000X1_scaffold_14208,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9825304393859184,1856,0.9814912744579588,1891,7,0,0.996228448275862,1.0
+  S3_016_000X1_scaffold_9493,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9778541428025964,2561,0.977107974055704,2621,2,0,0.9992190550566185,1.0
+  S3_016_000X1_scaffold_12686,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9787336877718704,2025,0.9768451519536904,2073,7,0,0.9965432098765432,1.0
+  S3_016_000X1_scaffold_11829,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9739130434782608,2128,0.9712460063897764,2191,14,0,0.9934210526315792,1.0
+  S3_016_000X1_scaffold_8891,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9826212889210716,2714,0.9826212889210716,2762,5,0,0.9981577008106116,1.0
 
 scaffold
   The scaffold being compared
@@ -368,8 +369,17 @@ percent_genome_compared
 length
   The total length of the scaffold
 
+consensus_SNPs
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and the consensus allele in each sample is different
+
+population_SNPs
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and no alleles are shared between either sample. See inStrain manuscript for more details.
+
 popANI
-  The average nucleotide identity among compared bases between the two scaffolds.
+  The average nucleotide identity among compared bases between the two scaffolds, based on population_SNPs. Calculated using the formula popANI = (compared_bases_count - population_SNPs) / compared_bases_count
+
+conANI
+  The average nucleotide identity among compared bases between the two scaffolds, based on consensus_SNPs. Calculated using the formula conANI = (compared_bases_count - consensus_SNPs) / compared_bases_count
 
 inStrain profile_genes
 -----------
@@ -383,16 +393,51 @@ This describes some basic information about the genes being profiled
 
 .. csv-table:: gene_info.tsv
 
-  gene,scaffold,direction,partial,start,end,coverage,breadth,clonality,microdiversity,masked_breadthSNPs_per_bp,min_ANI
-  JBBB007E_scaffold_233_1,JBBB007E_scaffold_233,-1,True,1,327,31.07645259938838,0.9908256880733946,0.9996904894417408,0.00030951055825922946,0.9357798165137616,0.0,0
-  JBBB007E_scaffold_233_2,JBBB007E_scaffold_233,-1,False,344,1654,68.31273836765827,1.0,0.9995749550953246,0.0004250449046754312,1.0,0.0,0
-  JBBB007E_scaffold_233_3,JBBB007E_scaffold_233,-1,False,1655,1840,57.55913978494624,1.0,0.9995984579286268,0.0004015420713732176,1.0,0.0,0
-  JBBB007E_scaffold_233_4,JBBB007E_scaffold_233,-1,False,1824,2261,60.378995433789946,1.0,0.999627013456876,0.0003729865431241208,1.0,0.0,0
-  JBBB007E_scaffold_233_5,JBBB007E_scaffold_233,-1,False,2254,2679,69.35915492957747,1.0,0.9996632362755252,0.00033676372447488667,1.0,0.0,0
-  JBBB007E_scaffold_233_6,JBBB007E_scaffold_233,-1,False,2679,3026,49.05172413793103,1.0,0.9995279442304852,0.000472055769514812,1.0,0.0,0
-  JBBB007E_scaffold_233_7,JBBB007E_scaffold_233,-1,False,3020,3421,53.14427860696517,1.0,0.9997191567029526,0.00028084329704736183,1.0,0.0,0
-  JBBB007E_scaffold_233_8,JBBB007E_scaffold_233,-1,False,3431,3664,65.02991452991454,1.0,0.999618145899895,0.00038185410010505016,1.0,0.0,0
-  JBBB007E_scaffold_233_9,JBBB007E_scaffold_233,-1,False,3664,4563,64.00333333333333,1.0,0.9994913809167014,0.0005086190832985782,1.0,0.0,0
+  gene,scaffold,direction,partial,start,end,coverage,breadth,clonality,microdiversity,masked_breadth,SNPs_per_bp,min_ANI
+  S3_002_028G1_scaffold_0_1,S3_002_028G1_scaffold_0,-1,False,957,2219,,,,,,,0
+  S3_002_028G1_scaffold_0_2,S3_002_028G1_scaffold_0,-1,False,2189,3136,,,,,,,0
+  S3_002_028G1_scaffold_0_3,S3_002_028G1_scaffold_0,1,False,3274,5013,,,,,,,0
+  S3_002_028G1_scaffold_0_4,S3_002_028G1_scaffold_0,-1,False,5018,5746,,,,,,,0
+  S3_002_028G1_scaffold_0_5,S3_002_028G1_scaffold_0,1,False,5888,6862,,,,,,,0
+
+gene
+  Name of the gene being profiled
+
+scaffold
+  Scaffold that the gene is on
+
+direction
+  Direction of the gene (based on prodigal call). If -1, means the gene is not coded in the direction expressed by the .fasta file
+
+partial
+  If True this is a partial gene; based on not having `partial=00` in the record description provided by Prodigal
+
+start
+  Start of the gene (position on scaffold; 0-indexed)
+
+end
+  End of the gene (position on scaffold; 0-indexed)
+
+coverage
+  The mean coverage across the length of the gene
+
+breadth
+  The number of bases in the gene that have at least 1x coverage
+
+microdiversity
+  The mean nucleotide diversity (pi) among positions on the gene with at least 5x coverage
+
+clonality
+  1 - microdiversity
+
+masked_breadth
+  The percentage of positions in the gene with at least 5x coverage
+
+SNPs_per_bp
+  The number of positions on the gene where a SNP is called
+
+min_ANI
+  The minimum read ANI level when profile_genes was run (0 means the value is whatever was set with Profile was originally run)
 
 SNP_mutation_types.tsv
 +++++++++++++++
@@ -401,17 +446,23 @@ This describes whether SNPs are synonymous, nonsynonymous, or intergenic
 
 .. csv-table:: SNP_mutation_types.tsv
 
-  scaffold,position,refBase,A,C,T,G,conBase,varBase,baseCoverage,varFreq,refFreq,mutation_type,mutation,gene
-  1820A1025_scaffold_5,96846,A,142,0,0,17,A,G,159,0.1069182389937107,0.8930817610062893,S,S:296,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96849,T,17,0,142,0,T,A,159,0.1069182389937107,0.8930817610062893,S,S:299,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96866,A,142,0,0,16,A,G,158,0.10126582278481013,0.8987341772151899,N,N:D316G,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96867,T,16,0,139,0,T,A,155,0.1032258064516129,0.8967741935483872,N,N:D317E,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96868,T,16,0,136,0,T,A,152,0.10526315789473684,0.8947368421052632,N,N:S318T,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96869,C,0,142,0,15,C,G,157,0.09554140127388536,0.9044585987261148,N,N:S319C,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96879,T,0,16,143,0,T,C,159,0.10062893081761007,0.89937106918239,S,S:329,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,96918,G,0,6,0,113,G,C,119,0.050420168067226885,0.9495798319327732,S,S:368,1820A1025_scaffold_5_96
-  1820A1025_scaffold_5,345729,A,3,0,2,0,A,T,5,0.4,0.6,N,N:I756L,1820A1025_scaffold_5_314
-  1820A1025_scaffold_5,345730,T,0,0,3,2,T,G,5,0.4,0.6,N,N:I757R,1820A1025_scaffold_5_314
+  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,baseCoverage,varFreq,refFreq,mutation_type,mutation,gene
+  S3_002_056W1_scaffold_121,2134,C,0,3,2,0,C,T,2,5,0.4,0.6,N,N:H936Y,S3_002_056W1_scaffold_121_2
+  S3_002_056W1_scaffold_121,8509,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G459R,S3_002_056W1_scaffold_121_11
+  S3_002_056W1_scaffold_121,8510,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G460E,S3_002_056W1_scaffold_121_11
+  S3_002_056W1_scaffold_121,16899,G,0,2,0,5,G,C,2,7,0.2857142857142857,0.7142857142857143,N,N:G1068R,S3_002_056W1_scaffold_121_20
+  S3_002_056W1_scaffold_121,24347,C,0,9,2,0,C,T,2,11,0.18181818181818185,0.8181818181818182,N,N:Q894*,S3_002_056W1_scaffold_121_25
+
+All genes with an allele_count of 1 or 2 make it into this table; see the above description of SNVs.tsv for details on what most of these columns mean
+
+mutation_type
+  What type of mutation this is. N = nonsynonymous, S = synonymous, I = intergenic, M = there are multiple genes with this base so you cant tell
+
+mutation
+  Short-hand code for the amino acid switch. If synonymous, this will be S: + the position. If nonsynonymous, this will be N: + the old amino acid + the position + the new amino acid.
+
+gene
+  The gene this SNP is in
 
 inStrain genome_wide
 ------------
@@ -421,18 +472,21 @@ A typical run of inStrain genome_wide will yield the following additional files 
 genomeWide_scaffold_info.tsv
 +++++++++++++
 
-This is a genome-wide version of the scaffold report described above
+This is a genome-wide version of the scaffold report described above. See above for column descriptions.
 
 .. csv-table:: genomeWide_scaffold_info.tsv
 
-  genome,detected_scaffolds,true_scaffolds,true_length,SNPs,breadth,coverage,std_cov,mean_clonality,ANI,unmaskedBreadth,expected_breadth
-  S2_002_005G1_phage_Clostridioides_difficile.fasta,1,1,21096,1,0.9993837694349641,61.11220136518772,11.758200608087787,0.9996280813990492,0.9999525098542053,0.9981513083048921,1.0
-  S2_018_020G1_bacteria_Clostridioides_difficile.fasta,34,34,4075786,1235,0.9978202977290761,134.79707030742046,25.46058779187456,0.9994819824195843,0.9996962394194163,0.9975258759905451,1.0
+  genome,detected_scaffolds,true_scaffolds,true_length,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,breadth,coverage,std_cov,mean_clonality,conANI,popANI,unmaskedBreadth,expected_breadth
+  S3_002_S3_002_000X1_S3_002_000X1_scaffold_633.fasta.fa,1,1,19728,24,5,19,0,7,5,0.9462185725871858,4.5430859691808605,2.7106449701139903,0.998095248422326,0.9992792421746294,0.999485172981878,0.4922952149229522,0.9818945976123048
+  S3_002_S3_002_000X1_S3_002_000X1_scaffold_980.fasta.fa,1,1,11440,0,0,0,0,0,0,0.10113636363636364,0.10113636363636364,0.3015092031543595,,0.0,0.0,0.0,0.08543195678460236
+  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_1.fasta.fa,1,1,21455,0,0,0,0,0,0,0.5250058261477512,0.925378699603822,1.1239958370555831,0.9985388128180482,1.0,1.0,0.010207410859939408,0.5582933883068741
+  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_22.fasta.fa,1,1,15306,62,2,60,0,10,2,0.9562263164771984,4.977525153534561,4.1617488447219975,0.9939042740586184,0.9983668136534378,0.9996733627306876,0.4000392003136025,0.9876630284821302
+  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_24.fasta.fa,1,1,10383,64,6,58,0,18,6,0.9650390060676104,4.310507560435327,2.783478652159297,0.9912517160274896,0.9957865168539326,0.9985955056179776,0.4114417798324184,0.9777670126398924
 
 genomeWide_read_report.tsv
 ++++++++++++
 
-This is a genome-wide version of the read report described above
+This is a genome-wide version of the read report described above. See above for column descriptions.
 
 .. csv-table:: genomeWide_read_report.tsv
 
@@ -448,9 +502,11 @@ This is what the results of inStrain plot look like.
 1) Coverage and breadth vs. read mismatches
 ++++++++++++
 
-.. figure:: images/ExampleIS_plots/CoverageAndBreadth_vs_readMismatch.png
+.. figure:: images/ExampleIS_plots/Example1.png
   :width: 800px
   :align: center
+
+Breadth of coverage (blue line), coverage depth (red line), and expected breadth of coverage given the depth of coverage (dotted blue line) versus the minimum ANI of mapped reads. Coverage depth continues to increase while breadth of plateaus, suggesting that all regions of the reference genome are not present in the reads being mapped.
 
 2) Genome-wide microdiversity metrics
 ++++++++++++
@@ -463,12 +519,16 @@ This is what the results of inStrain plot look like.
   :width: 800px
   :align: center
 
+SNV density, coverage, and nucleotide diversity. Spikes in nucleotide diversity and SNV density do not correspond with increased coverage, indicating that the signals are not due to read mis-mapping. Positions with nucleotide diversity and no SNV-density are those where diversity exists but is not high enough to call a SNV
+
 3) Read-level ANI distribution
 ++++++++++++
 
 .. figure:: images/ExampleIS_plots/readANI_distribution.png
   :width: 800px
   :align: center
+
+Distribution of read pair ANI levels when mapped to a reference genome; this plot suggests that the reference genome is >1% different than the mapped reads
 
 4) Major allele frequencies
 ++++++++++++
@@ -477,12 +537,20 @@ This is what the results of inStrain plot look like.
   :width: 800px
   :align: center
 
+Distribution of the major allele frequencies of bi-allelic SNVs (the Site Frequency Spectrum). Alleles with major frequencies below 50% are the result of multiallelic sites. The lack of distinct puncta suggest that more than a few distinct strains are present.
+
 5) Linkage decay
 ++++++++++++
 
 .. figure:: images/ExampleIS_plots/LinkageDecay_plot.png
   :width: 800px
   :align: center
+
+.. figure:: images/ExampleIS_plots/Example5.png
+  :width: 800px
+  :align: center
+
+Metrics of SNV linkage vs. distance between SNVs; linkage decay (shown in one plot and not the other) is a common signal of recombination.
 
 6) Read filtering plots
 ++++++++++++
@@ -491,12 +559,16 @@ This is what the results of inStrain plot look like.
   :width: 800px
   :align: center
 
+Bar plots showing how many reads got filtered out during filtering. All percentages are based on the number of paired reads; for an idea of how many reads were filtered out for being non-paired, compare the top bar and the second to top bar.
+
 7) Scaffold inspection plot (large)
 ++++++++++++
 
 .. figure:: images/ExampleIS_plots/ScaffoldInspection_plot.png
   :width: 800px
   :align: center
+
+This is an elongated version of the genome-wide microdiversity metrics that is long enough for you to read scaffold names on the y-axis
 
 8) Linkage with SNP type (GENES REQUIRED)
 ++++++++++++
@@ -505,6 +577,8 @@ This is what the results of inStrain plot look like.
   :width: 800px
   :align: center
 
+Linkage plot for pairs of non-synonymous SNPs and all pairs of SNPs
+
 9) Gene histograms (GENES REQUIRED)
 ++++++++++++
 
@@ -512,9 +586,13 @@ This is what the results of inStrain plot look like.
   :width: 800px
   :align: center
 
+Histogram of values for all genes profiled
+
 10) Compare dendrograms (RUN ON COMPARE; NOT PROFILE)
 ++++++++++++
 
-.. figure:: images/ExampleIS_plots/inStrainCompare_dendrograms.png
+.. figure:: images/ExampleIS_plots/Example10.png
   :width: 800px
   :align: center
+
+A dendrogram comparing all samples based on popANI and based on shared_bases.
