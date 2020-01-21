@@ -61,7 +61,7 @@ genome_wide
 
 This module is able to translate scaffold-level results to genome-level results. If the `.fasta` file you mapped to consists of a single genome, running this module on its own will average the results among all scaffolds. If the `.fasta` file you mapped to consists of several genomes, by providing a `scaffold to bin file` or a list of the individual `.fasta` files making up the combined `.fasta` file, you can get summary results for each individual genome. Running this module is also required before generating plots.
 
-  $ inStrain genome_wide -i IS_output -s genome1.fasta genome2.fasta genome3.fasta
+ $ inStrain genome_wide -i IS_output -s genome1.fasta genome2.fasta genome3.fasta
 
 quick_profile
 -----------------

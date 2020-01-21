@@ -55,5 +55,6 @@ Preparing the prodigal `.fna` genes file for gene-level profiling
 
 You can run prodigal on your *.fasta* file to generate the *.fna* file with the gene-level information that `inStrain profile_genes` requires.
 
-Example::
-  $ prodigal -i assembly.fasta -d genes.fna
+Example:
+
+ $ prodigal -i assembly.fasta -d genes.fna

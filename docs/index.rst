@@ -3,14 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-inStrain
+InStrain
 ====================================
 
-A tool for  analysis of co-occurring genome populations from metagenomes that allows
+InStrain is a tool for  analysis of co-occurring genome populations from metagenomes that allows
 highly accurate genome comparisons, analysis of coverage, microdiversity, and linkage,
 and sensitive SNP detection with gene localization and synonymous non-synonymous identification
 
-inStrain is a program for measuring, comparing, and interrogating the genetic heterogeneity of microbial populations in and between metagenomic samples. This includes calculation of nucleotide diversity, calling SNPs (including non-synonymous and synonymous variants), reporting accurate coverage / breadth, and calculating linkage disequilibrium in the contexts of genomes, contigs, and individual genes.
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
 
@@ -34,5 +33,6 @@ Contents
    preparing_input
    module_descriptions
    choosing_parameters
+   tutorial
    example_output
    Advanced_use

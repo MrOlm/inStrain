@@ -1,10 +1,9 @@
 Overview and Theory
 ========
 
-When you sequence any microbial genome(s), you sequence a population of cells (with the exception of single cell genomics). This population may be a nearly clonal population grown up from an isolate in a culture flask, or a highly heterogenous population in the real world, but there is always real biological genetic hetereogeneity within that population - every cell does not have the same genotype at every single position.
+When you sequence any microbial genome(s), you sequence a population of cells. This population may be a nearly clonal population grown up from an isolate in a culture flask, or a highly heterogenous population in the real world, but there is always real biological genetic hetereogeneity within that population - every cell does not have the same genotype at every single position.
 
-.. note::
-  *inStrain* is a program for measuring, comparing, and interrogating the genetic heterogeneity of microbial populations in and between metagenomic samples. We refer to these intraspecific differences as "microdiversity"
+**InStrain is a program for measuring, comparing, and interrogating the genetic heterogeneity of microbial populations in and between metagenomic samples.** We refer to these intraspecific differences as "microdiversity"
 
 How does inStrain compare to other bioinformatics tools for strains analysis?
 -------------------
@@ -18,7 +17,7 @@ What can *inStrain* do?
 
 *inStrain* includes calculation of nucleotide diversity, calling SNPs (including non-synonymous and synonymous variants), reporting accurate coverage / breadth, and calculating linkage disequilibrium in the contexts of genomes, contigs, and individual genes.
 
-*inStrain* also includes comparing the frequencies of fixed and segregating variants between sequenced populations with extremely high accuracy, out-performing other popular "strain-resolved" metagenomics programs.
+*inStrain* also includes comparing the frequencies of fixed and segregating variants between sequenced populations with extremely high accuracy, out-performing other popular strain-resolved metagenomics programs.
 
 The typical use-case is to generate a `.bam` file by mapping metagenomic reads to a bacterial genome that is present in the metagenomic sample, and using inStrain to characterize the microdiversity present.
 
@@ -43,7 +42,7 @@ inStrain is intended to be used as a genome-resolved metagenomics approach. Geno
 
 We don't recommend using reference genomes for strain-resolved inferences in metagenomes. This is because reference databases have usually poorly sampled the true extent of microbial diversity below the species level across many environments. Using even partially inaccurate references can lead to inaccurate conclusions about the genetic variation within your samples.
 
-inStrain can be run on individual microbial genomes assembled and binned from a metagenome, (recommended) or entire metagenomic assemblies at once. However, it is important to note that when run on entire metagenomic assemblies, the results must be interpreted in the context of each unique species in that community - this can be resolved with a scaffold to bin file after the fact.
+inStrain can be run on individual microbial genomes assembled and binned from a metagenome, sets of de-replicated microbial genomes, or entire metagenomic assemblies at once.
 
 When should I probably not use *inStrain*?
 ---------------
@@ -77,7 +76,7 @@ Most strain-resolved pipelines compare the dominant allele at each position. If 
 What is a population?
 --------------
 
-To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". *inStrain* relies mainly on population definitions that are largely technically limited, but also coincide conveniently with possibly biological real microbial population constraints (https://www.biorxiv.org/content/10.1101/647511v1) (https://www.nature.com/articles/s41467-018-07641-9). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 96.5% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by stringently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, *inStrain* makes it possible to adjust these parameters as needed and builds plots which can be used to estimate the best cutoffs for each project.
+To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". *inStrain* relies mainly on population definitions that are largely technically limited, but also coincide conveniently with possibly biological real microbial population constraints (https://msystems.asm.org/content/5/1/e00731-19) (https://www.nature.com/articles/s41467-018-07641-9). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 95% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by stringently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, *inStrain* makes it possible to adjust these parameters as needed and builds plots which can be used to estimate the best cutoffs for each project.
 
 What are the metrics and terminology of *inStrain*?
 --------------
@@ -92,7 +91,7 @@ Population
   *inStrain* is for characterizing metagenomes at the population level, not at the community level.
 
 SNP
-  A SNP is a Single Nucleotide Polymorphism, a genetic variant of a single nucleotide change that some percentage of the cells that comprise a species population. We identify and call SNPs using a simple model to distinguish them from errors, and more importantly in our experience, careful read mapping and filtering of 300 bp (2x150 bp paired reads carefully evaluated as a pair) to be assured that the variants (and the reads that contain them) are truly from the species being profiled, and not from another species in the metagenome (we call it 'mismapping' when this happens). Note that a SNP refers to genetic variation *within a read set*.
+  A SNP is a Single Nucleotide Polymorphism, a genetic variant of a single nucleotide change that some percentage of the cells that comprise a species population. We identify and call SNPs using a simple model to distinguish them from errors, and more importantly in our experience, careful read mapping and filtering of paired reads to be assured that the variants (and the reads that contain them) are truly from the species being profiled, and not from another species in the metagenome (we call it 'mismapping' when this happens). Note that a SNP refers to genetic variation *within a read set*.
 
 SNV
   Single nucleotide variant - in inStrain used interchangeably with SNP
