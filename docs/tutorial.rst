@@ -7,14 +7,12 @@ The following tutorial goes through an example run of inStrain. You can follow a
 .. seealso::
   :doc:`quickstart`
     To get started using the program
-  :doc:`module_descriptions`
-    For descriptions of what the modules can do
+  :doc:`program_documentation`
+    For descriptions of what the modules can do and information on how to prepare data for inStrain
   :doc:`example_output`
     To view example output
-  :doc:`preparing_input`
-    For information on how to prepare data for inStrain
-  :doc:`choosing_parameters`
-    For detailed information on how to make sure inStrain is running correctly
+  :doc:`Advanced_use`
+    For detailed information on how to rationally adjust inStrain parameters
 
 Preparing .bam and .fasta files
 ----------------

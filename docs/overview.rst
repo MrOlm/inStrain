@@ -31,7 +31,7 @@ The typical use-case is to generate a `.bam` file by mapping metagenomic reads t
 Another common use-case is detailed strain comparisons that involves comparing the genetic diversity of two populations and calculating the extent to which they overlap. This allows for the calculation of population ANI values for extremely similar genomic populations (>99.999% average nucleotide identity).
 
 .. seealso::
-  :doc:`quickstart`
+  :doc:`installation`
     To get started using the program
   :doc:`module_descriptions`
     For descriptions of what the modules can do
@@ -83,10 +83,11 @@ Most strain-resolved pipelines compare the dominant allele at each position. If 
 What is a population?
 +++++++++++++++
 
-To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". inStrain relies mainly on population definitions that are largely technically limited, but also coincide conveniently with possibly biological real microbial population constraints (https://msystems.asm.org/content/5/1/e00731-19) (https://www.nature.com/articles/s41467-018-07641-9). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 95% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by stringently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, inStrain makes it possible to adjust these parameters as needed and builds plots which can be used to estimate the best cutoffs for each project.
+To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". inStrain relies mainly on population definitions that are largely technically limited, but also coincide conveniently with possibly biological real microbial population constraints (`link1
+<https://msystems.asm.org/content/5/1/e00731-19>`_. `link2<https://www.nature.com/articles/s41467-018-07641-9>`_.). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 95% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by stringently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, inStrain makes it possible to adjust these parameters as needed and builds plots which can be used to estimate the best cutoffs for each project.
 
-What are the metrics and terminology of inStrain?
-+++++++++++++++
+Glossary of terms used in inStrain
+------------
 
 Community
   The collection of taxa in a metagenome, i.e. the species diversity of a microbiome.
