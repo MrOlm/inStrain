@@ -77,4 +77,11 @@ To make all of the plots that you can given the current inStrain profile object,
 inStrain compare
 -----------
 
-To run inStrain compare,
+To run inStrain compare, you first need to profile another .bam file from another set of reads based on mapping to the same .fasta file. Once that is done, you can compare them using the command::
+
+  inStrain compare -i allGenomes_v1.fasta-vs-N4_005_026G1.IS allGenomes_v1.fasta-vs-N5_215_032G1.IS -o allGenomes_v1.fasta.RC
+
+Interpreting the output
+----------
+
+For help interpreting the output, see :doc:`example_output`
