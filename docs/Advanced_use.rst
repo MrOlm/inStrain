@@ -316,7 +316,7 @@ You can of course subset to any level of mismatch by modifying the above code sl
   You usually do not want to subset these DataFrames using something like ``scdb = scdb[scdb['mm'] == 5]``. That's because if there are no reads that have 5 mismatches, as in the case above, you'll end up with an empty DataFrame. By using the drop_duplicates technique described above you avoid this problem, because in the cases where you don't have 5 mismatches, you just get the next-highest mm level (which is usually what you want)
 
 Performance issues
-+--------------
+--------------
 
 inStrain uses a lot of RAM. In the log file, it often reports how much RAM it's using and how much system RAM is available. To reduce RAM usage, you can try the following things:
 

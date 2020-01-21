@@ -65,13 +65,13 @@ The functionality of inStrain is broken up into several core modules. For more d
 Below is a list of brief descriptions of each of the modules. For more information see :doc:`module_descriptions`, for help understanding the output, see :doc:`example_output`, and to change the parameters see :doc:`choosing_parameters`
 
 .. seealso::
-  :doc:`module_descriptions`
+  :doc:`installation`
     for more information on the modules
   :doc:`example_output`
     to view example output
-  :doc:`choosing_parameters`
+  :doc:`Advanced_use`
     for guidance changing parameters
-  :doc:`preparing_input`
+  :doc:`program_documentation`
     for information on how to prepare data for inStrain
 
 profile
