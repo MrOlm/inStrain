@@ -13,7 +13,7 @@ and sensitive SNP detection with gene localization and synonymous non-synonymous
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
 
-See links to the left for :doc:`installation` and :doc:`quickstart` instructions
+See links to the left for :doc:`installation` instructions
 
 Comments and suggestions can be sent to `Matt Olm <mattolm@berkeley.edu>`_ and/or
 `Alex Crits-Christoph <crits-christoph@berkeley.edu>`_
@@ -27,12 +27,9 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   overview
    installation
-   quickstart
-   preparing_input
-   module_descriptions
-   choosing_parameters
-   tutorial
+   overview
+   program_documentation
    example_output
+   tutorial
    Advanced_use

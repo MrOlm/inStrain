@@ -184,11 +184,11 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
             # The summing columns
             for col in ['SNPs', 'Referece_SNPs', 'BiAllelic_SNPs', 'MultiAllelic_SNPs', 'consensus_SNPs', 'population_SNPs']:
                 if col in cols:
-                    table[col].append(df[col].sum())
+                    table[col].append(df[col].fillna(0).sum())
 
             # Weighted average (over total length)
             for col in ['breadth', 'coverage', 'std_cov']:
-                table[col].append(sum(x * y for x, y in zip(df[col], df['length'])) / b2l[genome])
+                table[col].append(sum([x * y for x, y in zip(df[col].fillna(0), df['length'])]) / b2l[genome])
 
             # Weighted average (over detected scaffold length)
             df['considered_length'] = [x*y for x,y in zip(df['unmaskedBreadth'], df['length'])]
@@ -199,7 +199,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                 if col not in df.columns:
                     continue
                 if considered_leng != 0:
-                    table[col].append(sum(x * y for x, y in zip(df[col], df['considered_length'])) / considered_leng)
+                    table[col].append(sum(x * y for x, y in zip(df[col].fillna(0), df['considered_length'])) / considered_leng)
                 else:
                     table[col].append(np.nan)
 
@@ -207,7 +207,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                 if col not in df.columns:
                     continue
                 if considered_leng != 0:
-                    table[col].append(sum(x * y for x, y in zip(df[col], df['considered_length'])) / considered_leng)
+                    table[col].append(sum(x * y for x, y in zip(df[col].fillna(0), df['considered_length'])) / considered_leng)
                 else:
                     table[col].append(np.nan)
 

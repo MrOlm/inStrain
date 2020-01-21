@@ -1,4 +1,4 @@
-Example Output
+Example output and explanations
 ===================
 
 InStrain produces a variety of output in the IS folder depending on which operations are run. Generally, output that is meant for human eyes to be easily interpretable is located in the ``output`` folder.

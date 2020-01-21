@@ -778,7 +778,7 @@ def make_coverage_table(covT, clonT, lengt, scaff, Wdb, SNPTable, min_freq=0.05,
 
         table['SNPs'].append(counted_snps)
 
-        table['Referece_SNPs'].append(ref_snps)
+        table['Reference_SNPs'].append(ref_snps)
         table['BiAllelic_SNPs'].append(bi_snps)
         table['MultiAllelic_SNPs'].append(multi_snps)
 
@@ -938,6 +938,8 @@ def _parse_Sdb(sdb):
     sdb['varFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
                         sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['varBase'], sdb['baseCoverage'])]
     sdb['refFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
+                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['refBase'], sdb['baseCoverage'])]
+    sdb['conFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
                         sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['conBase'], sdb['baseCoverage'])]
     return sdb
 

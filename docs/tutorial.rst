@@ -2,7 +2,7 @@ Tutorial
 ===================
 
 The following tutorial goes through an example run of inStrain. You can follow along with your own data, or download the files that are used in this tutorial from the `following link
-<https://doi.org/10.6084/m9.figshare.11663925.v1>`_.
+<https://doi.org/10.6084/m9.figshare.11663925.v1>`_. Note that the reads files are several Gbp, and you really only need one set of reads (forward, which end in .1.fastq.gz, and reverse, which end in .2.fastq.gz). These read come from fecal samples of premature infants.
 
 .. seealso::
   :doc:`quickstart`

@@ -498,7 +498,7 @@ class SNVprofile:
         np.savez_compressed(location, obj)
 
     def _load_numpy(self, location):
-        loaded = np.load(location)['arr_0']
+        loaded = np.load(location, allow_pickle=True)['arr_0']
         return loaded
 
     def _store_pandas(self, obj, location):

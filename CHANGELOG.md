@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1] - 2020-01-21
+- Fixed typo in spelling of "Reference_SNPs"
+- Fixed bug reporting refFreq
+- Add a lot of "fillna(0)"s to the method "genome_wide_si_2" to make the average coverage work out correctly
+
 ## [1.2.0] - 2019-12-18
 - Move from 'ANI' in scaffold_profile to "conANI" and "popANI"
 - Store information on lots more types of SNPs in scaffold_profile
