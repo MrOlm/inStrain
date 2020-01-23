@@ -61,9 +61,9 @@ In order to get gene level information, including categorizing SNPs as synonymou
 
  $ cat S2_002_005G1_phage_Clostridioides_difficile.fasta.genes.fna S2_018_020G1_bacteria_Clostridioides_difficile.fasta.genes.fna > allGenomes_v1.genes.fna
 
-Once we have all the genes to profile in .fna format, we can tell inStrain to profile them:
+Once we have all the genes to profile in .fna format, we can tell inStrain to profile them::
 
- $ inStrain plot -i allGenomes_v1.fasta-vs-N4_005_026G1.IS
+ $ inStrain profile_genes -i allGenomes_v1.fasta-vs-N4_005_026G1.IS/ -g allGenomes_v1.genes.fna
 
 Plotting
 ------
