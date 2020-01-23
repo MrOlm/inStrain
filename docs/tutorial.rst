@@ -78,111 +78,157 @@ A long list of arguments and options will show up. For more details on what thes
 
 Using all of the files we generated above, here is going to be our inStrain command ::
 
- $ inStrain profile N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -p 6 -g N5_271_010G1_scaffold_min1000.fa.genes.fna -s ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
+ $ inStrain profile N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -o N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS -p 6 -g N5_271_010G1_scaffold_min1000.fa.genes.fna -s ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
 
 You should see the following as inStrain runs (should only take a few minutes) ::
 
- You gave me a sam- I'm going to make it a .bam now
- Converting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam to N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
- samtools view -S -b N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam > N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
- sorting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
- samtools sort N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam -o N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
- Indexing N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
- samtools index N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.bai
- ***************************************************
-     ..:: inStrain profile Step 1. Filter reads ::..
- ***************************************************
+  You gave me a sam- I'm going to make it a .bam now
+  Converting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam to N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+  samtools view -S -b N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam > N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+  sorting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+  samtools sort N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam -o N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
+  Indexing N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
+  samtools index N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.bai
+  ***************************************************
+      ..:: inStrain profile Step 1. Filter reads ::..
+  ***************************************************
 
- Getting read pairs: 100%|██████████████████████████████████████████████████████████| 178/178 [00:00<00:00, 593.73it/s]
- Making read report
- /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/fromnumeric.py:3335: RuntimeWarning: Mean of empty slice.
-   out=out, **kwargs)
- /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/_methods.py:161: RuntimeWarning: invalid value encountered in double_scalars
-   ret = ret.dtype.type(ret / rcount)
- Filtering reads
- 1,727 read pairs remain after filtering
- ***************************************************
- .:: inStrain profile Step 2. Profile scaffolds ::..
- ***************************************************
+  Getting read pairs: 100%|██████████████████████████████████████████████████████████| 178/178 [00:00<00:00, 715.57it/s]
+  Making read report
+  /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/fromnumeric.py:3335: RuntimeWarning: Mean of empty slice.
+    out=out, **kwargs)
+  /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/_methods.py:161: RuntimeWarning: invalid value encountered in double_scalars
+    ret = ret.dtype.type(ret / rcount)
+  Filtering reads
+  1,727 read pairs remain after filtering
+  ***************************************************
+  .:: inStrain profile Step 2. Profile scaffolds ::..
+  ***************************************************
 
- Profiling scaffolds: 100%|████████████████████████████████████████████████████████████| 23/23 [00:07<00:00,  2.96it/s]
- Storing output
- ***************************************************
-   .:: inStrain profile Step 3. Profile genes ::..
- ***************************************************
+  Profiling scaffolds: 100%|████████████████████████████████████████████████████████████| 23/23 [00:06<00:00,  3.44it/s]
+  Storing output
+  ***************************************************
+    .:: inStrain profile Step 3. Profile genes ::..
+  ***************************************************
 
- 20.67703568161025% of the input 1093 genes were marked as incomplete
- 161 scaffolds with genes, 169 in the IS, 153 to compare
- Running gene-level calculations on scaffolds: 100%|█████████████████████████████████| 153/153 [00:18<00:00,  8.26it/s]
- ***************************************************
- .:: inStrain profile Step 4. Make genome-wide ::..
- ***************************************************
+  20.67703568161025% of the input 1093 genes were marked as incomplete
+  161 scaffolds with genes, 169 in the IS, 153 to compare
+  Running gene-level calculations on scaffolds: 100%|█████████████████████████████████| 153/153 [00:18<00:00,  8.16it/s]
+  ***************************************************
+  .:: inStrain profile Step 4. Make genome-wide ::..
+  ***************************************************
 
- Scaffold to bin was made using .stb file
- 85.66% of scaffolds have a genome
- 93.82% of scaffolds have a genome
- ***************************************************
-  .:: inStrain profile Step 5. Generate plots ::..
- ***************************************************
+  Scaffold to bin was made using .stb file
+  85.66% of scaffolds have a genome
+  93.82% of scaffolds have a genome
+  ***************************************************
+   .:: inStrain profile Step 5. Generate plots ::..
+  ***************************************************
 
- making plots 1, 2, 3, 4, 5, 6, 7, 8, 9
- 85.66% of scaffolds have a genome
- Plotting plot 1
- Plotting plot 2
- 85.66% of scaffolds have a genome
- Plotting plot 3
- 57.37% of scaffolds have a genome
- Plotting plot 4
- 97.33% of scaffolds have a genome
- Plotting plot 5
- 93.82% of scaffolds have a genome
- Plotting plot 6
- Plotting plot 7
- 97.33% of scaffolds have a genome
- Plotting plot 8
- 93.96% of scaffolds have a genome
- Plotting plot 9
- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  making plots 1, 2, 3, 4, 5, 6, 7, 8, 9
+  85.66% of scaffolds have a genome
+  Plotting plot 1
+  Plotting plot 2
+  85.66% of scaffolds have a genome
+  Plotting plot 3
+  57.37% of scaffolds have a genome
+  Plotting plot 4
+  97.33% of scaffolds have a genome
+  Plotting plot 5
+  93.82% of scaffolds have a genome
+  Plotting plot 6
+  Plotting plot 7
+  97.33% of scaffolds have a genome
+  Plotting plot 8
+  93.96% of scaffolds have a genome
+  Plotting plot 9
+  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-     ..:: inStrain profile finished ::..
+      ..:: inStrain profile finished ::..
 
- Output tables........ /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000/output/
- Figures.............. /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000/figures/
+  Output tables........ /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/output/
+  Figures.............. /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/figures/
 
- See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
+  See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
 
- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 The last note shows you where the plots and figures have been made. Here's a list of the files that you should see ::
 
-  $ ls -lht N5_271_010G1_scaffold_min1000/output/
+  $ ls -lht N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/output/
   total 512
-  -rw-r--r--  1 mattolm  staff   544B Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_read_report.tsv
-  -rw-r--r--  1 mattolm  staff   602B Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_scaffold_info.tsv
-  -rw-r--r--  1 mattolm  staff    25K Jan 23 14:11 N5_271_010G1_scaffold_min1000_SNP_mutation_types.tsv
-  -rw-r--r--  1 mattolm  staff   125K Jan 23 14:11 N5_271_010G1_scaffold_min1000_gene_info.tsv
-  -rw-r--r--  1 mattolm  staff    19K Jan 23 14:11 N5_271_010G1_scaffold_min1000_read_report.tsv
-  -rw-r--r--  1 mattolm  staff    14K Jan 23 14:11 N5_271_010G1_scaffold_min1000_linkage.tsv
-  -rw-r--r--  1 mattolm  staff    26K Jan 23 14:11 N5_271_010G1_scaffold_min1000_SNVs.tsv
-  -rw-r--r--  1 mattolm  staff    27K Jan 23 14:11 N5_271_010G1_scaffold_min1000_scaffold_info.tsv
+  -rw-r--r--  1 mattolm  staff   545B Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_read_report.tsv
+  -rw-r--r--  1 mattolm  staff   602B Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_scaffold_info.tsv
+  -rw-r--r--  1 mattolm  staff    25K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_SNP_mutation_types.tsv
+  -rw-r--r--  1 mattolm  staff   125K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_gene_info.tsv
+  -rw-r--r--  1 mattolm  staff    19K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_read_report.tsv
+  -rw-r--r--  1 mattolm  staff    14K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_linkage.tsv
+  -rw-r--r--  1 mattolm  staff    26K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_SNVs.tsv
+  mattolm@Matts-MacBook-Pro-3:~/Programs/testing_house/tutorial$ caffold_min1000.fa-vs-N5_271_010G1.IS_scaffold_info.tsv
 
-  $ ls -lht N5_271_010G1_scaffold_min1000/figures/
+  $ ls -lht N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/figures
   total 7792
-  -rw-r--r--  1 mattolm  staff   432K Jan 23 14:12 N5_271_010G1_scaffold_min1000_GeneHistogram_plot.pdf
-  -rw-r--r--  1 mattolm  staff   422K Jan 23 14:12 N5_271_010G1_scaffold_min1000_LinkageDecay_types_plot.pdf
-  -rw-r--r--  1 mattolm  staff   448K Jan 23 14:12 N5_271_010G1_scaffold_min1000_ScaffoldInspection_plot.pdf
-  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_ReadFiltering_plot.pdf
-  -rw-r--r--  1 mattolm  staff   421K Jan 23 14:12 N5_271_010G1_scaffold_min1000_LinkageDecay_plot.pdf
-  -rw-r--r--  1 mattolm  staff   420K Jan 23 14:12 N5_271_010G1_scaffold_min1000_MajorAllele_frequency_plot.pdf
-  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_readANI_distribution.pdf
-  -rw-r--r--  1 mattolm  staff   443K Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_microdiveristy_metrics.pdf
-  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_CoverageAndBreadth_vs_readMismatch.pdf
+  -rw-r--r--  1 mattolm  staff   432K Jan 23 15:17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_GeneHistogram_plot.pdf
+  -rw-r--r--  1 mattolm  staff   422K Jan 23 15:17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_LinkageDecay_types_plot.pdf
+  -rw-r--r--  1 mattolm  staff   448K Jan 23 15:17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_ScaffoldInspection_plot.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_ReadFiltering_plot.pdf
+  -rw-r--r--  1 mattolm  staff   421K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_LinkageDecay_plot.pdf
+  -rw-r--r--  1 mattolm  staff   420K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_MajorAllele_frequency_plot.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_readANI_distribution.pdf
+  -rw-r--r--  1 mattolm  staff   443K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_microdiveristy_metrics.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_CoverageAndBreadth_vs_readMismatch.pdf
 
-For help interpreting this output, see :doc:`example_output`
+For help interpreting these output files, see :doc:`example_output`
 
 inStrain compare
 -----------
 
-To run inStrain compare, you first need to profile another .bam file from another set of reads based on mapping to the same .fasta file. Once that is done, you can compare them using the command::
+inStrain compare allows you to compare genomes that have been profiled by multiple mappings. To compare a genome in multiple samples, you must first map reads from multiple samples to the **same** .fasta file, then run run `inStrain profile on each mapping.
 
-  inStrain compare -i allGenomes_v1.fasta-vs-N4_005_026G1.IS allGenomes_v1.fasta-vs-N5_215_032G1.IS -o allGenomes_v1.fasta.RC
+In this tutorial we profiled reads mapped to the .fasta file "N5_271_010G1_scaffold_min1000.fa". Provided in the inStrain test_data folder (<https://github.com/MrOlm/inStrain/tree/master/test/test_data>) is also a different set of reads mapped to the same .fasta file. We've also already run inStrain on this mapping for you! The resulting inStrain profile is the folder `N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/`
+
+To compare these inStrain profiles we will use the following command ::
+
+ $ inStrain compare -i N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/ ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/ -o N5_271_010G1_scaffold_min1000.fa.IS.COMPARE -p 6
+
+  Loading N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/
+  Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/
+  Warning! Your inStrain folder is from version 1.0.0, while the installed version is 1.2.1.
+  If you experience weird behavior, this might be why
+  169 of 178 scaffolds are in at least 2 samples
+  Profiling scaffolds: 100%|█████████████████████████████████████████████████████| 169/169 [00:22<00:00,  7.38it/s]
+
+You should now have the following output file created ::
+
+  $ ls -lht N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/output/
+  total 64
+  -rw-r--r--  1 mattolm  staff    30K Jan 23 15:20 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_comparisonsTable.tsv
+
+This file shows the comparison values between scaffolds, however. To make these on the genome level, we can run `inStrain genome_wide` ::
+
+  $ inStrain genome_wide -i N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/ -s ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
+  Scaffold to bin was made using .stb file
+  89.62% of scaffolds have a genome
+
+Now we should also have a table that compares these genomes on the genome level ::
+
+  $ ls -lht N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/output/
+  total 72
+  -rw-r--r--  1 mattolm  staff   556B Jan 23 15:23 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_genomeWide_compare.tsv
+  -rw-r--r--  1 mattolm  staff    30K Jan 23 15:20 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_comparisonsTable.tsv
+
+Finally, we can also plot these results using the `inStrain plot` function ::
+
+  $ inStrain plot -i N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/
+  making plots 10
+  89.62% of scaffolds have a genome
+  Plotting plot 10
+  Done!
+
+This should make a figure in the figures folder ::
+
+  $ ls -lht N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/figures/
+  total 936
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 15:25 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_inStrainCompare_dendrograms.pdf
+
+As before, for help interpreting this output see :doc:`example_output`
