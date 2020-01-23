@@ -63,8 +63,7 @@ In order to get gene level information, including categorizing SNPs as synonymou
 
 Once we have all the genes to profile in .fna format, we can tell inStrain to profile them:
 
- $ inStrain profile_genes -i allGenomes_v1.fasta-vs-N4_005_026G1.IS/ -g allGenomes_v1.genes.fna
-
+ $ inStrain plot -i allGenomes_v1.fasta-vs-N4_005_026G1.IS
 
 Plotting
 ------
