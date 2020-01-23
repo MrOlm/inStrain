@@ -1,10 +1,8 @@
 Tutorial
 ===================
 
-The following tutorial goes through an example run of inStrain. You can follow along with your own data, or download the files that are used in this tutorial from the `following link
-<https://doi.org/10.6084/m9.figshare.11663925.v1>`_. Note that the reads files are several Gbp, and you really only need one set of reads (forward, which end in .1.fastq.gz, and reverse, which end in .2.fastq.gz). These reads were generated from fecal samples of premature infants.
-
-Alternatively, if you don't feel like downloading that large of a file,
+The following tutorial goes through an example run of inStrain. You can follow along with your own data, or use a small set of reads that are included in the inStrain install for testing. They can be found in the folder `test/test_data/` of your install folder, or can be downloaded from the inStrain source code at `this link on GitHub
+<https://github.com/MrOlm/inStrain/tree/master/test/test_data>`_. The only files that you'll need for this tutorial are forward and reverse metagenomic reads (`N5_271_010G1.R1.fastq.gz` and `N5_271_010G1.R2.fastq.gz`) and a .fasta file to map to (`N5_271_010G1_scaffold_min1000.fa`). In case you're curious, these metagenomic reads come from a premature infant fecal sample.
 
 .. seealso::
   :doc:`overview`
@@ -19,60 +17,168 @@ Alternatively, if you don't feel like downloading that large of a file,
 Preparing .bam and .fasta files
 ----------------
 
-After downloading the genome file that you would like to profile (.fasta file) and at least one set of paired reads, the first thing to do is to map the reads to the .fasta file in order to generate a .bam file. \
+After downloading the genome file that you would like to profile (.fasta file) and at least one set of paired reads, the first thing to do is to map the reads to the .fasta file in order to generate a .bam file.
 
-When this mapping is performed it is important that you map to all genomes simultaneously, so the first thing to do is to combine all of the genomes that you'd like to map into a single .fasta file::
+When this mapping is performed it is important that you map to all genomes simultaneously, so the first thing to do is to combine all of the genomes that you'd like to map into a single .fasta file. In our case our .fasta file already has all of the genomes that we'd like to profile within it, but if you did want to profile a number of different genomes, you could combine them using a command like this ::
 
  $  cat raw_data/S2_002_005G1_phage_Clostridioides_difficile.fasta raw_data/S2_018_020G1_bacteria_Clostridioides_difficile.fasta > allGenomes_v1.fasta
 
-Next we must map all of the reads to this .fasta file in order to create .bam files. In this tutorial we will use the mapper Bowtie 2, and also the program `shrinksam <https://github.com/bcthomas/shrinksam>`_ to make the resulting .sam files smaller. In this case we will just make a .sam file and let inStrain handle conversion to .bam format ::
+Next we must map our reads to this .fasta file to create .bam files. In this tutorial we will use the mapping program Bowtie 2 ::
 
  $ mkdir bt2
 
- $ bowtie2-build allGenomes_v1.fasta bt2/allGenomes_v1.fasta.fa
+ $ bowtie2-build ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa bt2/N5_271_010G1_scaffold_min1000.fa
 
- $ bowtie2 -p 6 -x bt2/allGenomes_v1.fasta.fa -1 raw_data/N4_005_026G1.r1.fastq.gz -2 raw_data/N4_005_026G1.r2.fastq.gz 2> N4_005_026G1_mapped.log | shrinksam > allGenomes_v1.fasta-vs-N4_005_026G1.sam
+ $ bowtie2 -p 6 -x bt2/N5_271_010G1_scaffold_min1000.fa -1 ~/Programs/inStrain/test/test_data/N5_271_010G1.R1.fastq.gz -2 ~/Programs/inStrain/test/test_data/N5_271_010G1.R2.fastq.gz > N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam
+
+At this point we  have generated a .sam file, the precursor to .bam files. Lets make sure it's there and not empty ::
+
+ $ ls -lht
+
+ total 34944
+ -rw-r--r--  1 mattolm  staff    16M Jan 23 11:56 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam
+ drwxr-xr-x  8 mattolm  staff   256B Jan 23 11:54 bt2/
+
+Perfect. At this point we could convert the .sam file to a sorted and indexed .bam file, but since inStrain can do that for us automatically we won't bother.
+
+Preparing genes file
+---------------
+
+If we want inStrain to do gene-level profiling we need to give it a list of genes to profile. **Note - this is an optional step that is not required for inStrain to work in general, but without this you will not get gene-level profiles**
+
+We will profile our genes using the program prodigal, which can be run using the following example command ::
+
+ $ prodigal -i ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -d N5_271_010G1_scaffold_min1000.fa.genes.fna
+
+Preparing for genome-level characterization
+---------------
+
+In the step above ("Preparing .bam and .fasta files"), we combined all of our genomes into a single .fasta file for mapping. However we likely want to profile the microdiversity of the individual genomes in that .fasta file. In order to do that we need to tell inStrain which scaffolds belong to which genomes.
+
+There are two ways of providing this information. One is to give inStrain a list of the .fasta files that went into making the concatenated .fasta file. The other is to provide inStrain with a "scaffold to bin" file, which lists the genome assignment of each scaffold in a tab-delimited file. In this case we're going to use the scaffold to bin file provided by inStrain (called "N5_271_010G1.maxbin2.stb"). Here's what it looks like ::
+
+  $ head ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
+  N5_271_010G1_scaffold_0 	 maxbin2.maxbin.001.fasta
+  N5_271_010G1_scaffold_1 	 maxbin2.maxbin.001.fasta
+  N5_271_010G1_scaffold_2 	 maxbin2.maxbin.001.fasta
+  N5_271_010G1_scaffold_3 	 maxbin2.maxbin.001.fasta
+  N5_271_010G1_scaffold_4 	 maxbin2.maxbin.001.fasta
 
 Running inStrain profile
 --------------
 
-Now that we've made a mapping file we can run inStrain to profile the microdiversity within this genome population.
+Now that we've gotten everything set up, it's time to run inStrain. To see all of the options, run ::
+
+ $ inStrain -h
+
+A long list of arguments and options will show up. For more details on what these do, see :doc:`program_documentation`. The **only** arguments that are absolutely required, however, are a .sam or .bam mapping file, and the .fasta file that the mapping file is mapped to.
 
 .. note::
-  It is possible to run make of the next steps simultaneously with this one, including profile_genes, genome_wide, and plot, just by including more parameters to this initial profile step, but in this tutorial we're going to run these steps separately
+  In this case we're going to have inStrain profile the mapping, call genes, make the results genome wide, and plot the results all in one command. It is possible to do these all as separate steps, however, using the subcommands "inStrain profile", "inStrain profile_genes", "inStrain genome_wide", and "inStrain plot". See :doc:`program_documentation` for more information.
 
-To run inStrain profile you just need to provide the .sam or .bam file, the .fasta file that the reads are mapped to, and the name of the output folder::
+Using all of the files we generated above, here is going to be our inStrain command ::
 
- $ inStrain profile allGenomes_v1.fasta-vs-N4_005_026G1.sam allGenomes_v1.fasta -o allGenomes_v1.fasta-vs-N4_005_026G1.IS
+ $ inStrain profile N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -p 6 -g N5_271_010G1_scaffold_min1000.fa.genes.fna -s ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
 
-Running inStrain genome_wide
---------------
+You should see the following as inStrain runs (should only take a few minutes) ::
 
-Now that we've profiled all scaffolds, its time to average the results for scaffolds that belong to the same genome. This is done using the genome_wide command ::
+ You gave me a sam- I'm going to make it a .bam now
+ Converting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam to N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+ samtools view -S -b N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam > N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+ sorting N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam
+ samtools sort N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam -o N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
+ Indexing N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam
+ samtools index N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.bai
+ ***************************************************
+     ..:: inStrain profile Step 1. Filter reads ::..
+ ***************************************************
 
- $ inStrain genome_wide -i allGenomes_v1.fasta-vs-N4_005_026G1.IS -s raw_data/*.fasta
+ Getting read pairs: 100%|██████████████████████████████████████████████████████████| 178/178 [00:00<00:00, 593.73it/s]
+ Making read report
+ /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/fromnumeric.py:3335: RuntimeWarning: Mean of empty slice.
+   out=out, **kwargs)
+ /Users/mattolm/.pyenv2/versions/3.6.9/lib/python3.6/site-packages/numpy/core/_methods.py:161: RuntimeWarning: invalid value encountered in double_scalars
+   ret = ret.dtype.type(ret / rcount)
+ Filtering reads
+ 1,727 read pairs remain after filtering
+ ***************************************************
+ .:: inStrain profile Step 2. Profile scaffolds ::..
+ ***************************************************
 
-Running profile_genes
---------------
+ Profiling scaffolds: 100%|████████████████████████████████████████████████████████████| 23/23 [00:07<00:00,  2.96it/s]
+ Storing output
+ ***************************************************
+   .:: inStrain profile Step 3. Profile genes ::..
+ ***************************************************
 
-In order to get gene level information, including categorizing SNPs as synonymous / non-synonymous, we need to provide inStrain with a list of the genes to profile. We can call these genes using the program Prodigal::
+ 20.67703568161025% of the input 1093 genes were marked as incomplete
+ 161 scaffolds with genes, 169 in the IS, 153 to compare
+ Running gene-level calculations on scaffolds: 100%|█████████████████████████████████| 153/153 [00:18<00:00,  8.26it/s]
+ ***************************************************
+ .:: inStrain profile Step 4. Make genome-wide ::..
+ ***************************************************
 
- $ prodigal -i raw_data/S2_002_005G1_phage_Clostridioides_difficile.fasta -d S2_002_005G1_phage_Clostridioides_difficile.fasta.genes.fna
+ Scaffold to bin was made using .stb file
+ 85.66% of scaffolds have a genome
+ 93.82% of scaffolds have a genome
+ ***************************************************
+  .:: inStrain profile Step 5. Generate plots ::..
+ ***************************************************
 
- $ prodigal -i raw_data/S2_018_020G1_bacteria_Clostridioides_difficile.fasta -d S2_018_020G1_bacteria_Clostridioides_difficile.fasta.genes.fna
+ making plots 1, 2, 3, 4, 5, 6, 7, 8, 9
+ 85.66% of scaffolds have a genome
+ Plotting plot 1
+ Plotting plot 2
+ 85.66% of scaffolds have a genome
+ Plotting plot 3
+ 57.37% of scaffolds have a genome
+ Plotting plot 4
+ 97.33% of scaffolds have a genome
+ Plotting plot 5
+ 93.82% of scaffolds have a genome
+ Plotting plot 6
+ Plotting plot 7
+ 97.33% of scaffolds have a genome
+ Plotting plot 8
+ 93.96% of scaffolds have a genome
+ Plotting plot 9
+ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
- $ cat S2_002_005G1_phage_Clostridioides_difficile.fasta.genes.fna S2_018_020G1_bacteria_Clostridioides_difficile.fasta.genes.fna > allGenomes_v1.genes.fna
+     ..:: inStrain profile finished ::..
 
-Once we have all the genes to profile in .fna format, we can tell inStrain to profile them::
+ Output tables........ /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000/output/
+ Figures.............. /Users/mattolm/Programs/testing_house/tutorial/N5_271_010G1_scaffold_min1000/figures/
 
- $ inStrain profile_genes -i allGenomes_v1.fasta-vs-N4_005_026G1.IS/ -g allGenomes_v1.genes.fna
+ See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
 
-Plotting
-------
+ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-To make all of the plots that you can given the current inStrain profile object, just run the plot command::
+The last note shows you where the plots and figures have been made. Here's a list of the files that you should see ::
 
- inStrain plot -i allGenomes_v1.fasta-vs-N4_005_026G1.IS
+  $ ls -lht N5_271_010G1_scaffold_min1000/output/
+  total 512
+  -rw-r--r--  1 mattolm  staff   544B Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_read_report.tsv
+  -rw-r--r--  1 mattolm  staff   602B Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_scaffold_info.tsv
+  -rw-r--r--  1 mattolm  staff    25K Jan 23 14:11 N5_271_010G1_scaffold_min1000_SNP_mutation_types.tsv
+  -rw-r--r--  1 mattolm  staff   125K Jan 23 14:11 N5_271_010G1_scaffold_min1000_gene_info.tsv
+  -rw-r--r--  1 mattolm  staff    19K Jan 23 14:11 N5_271_010G1_scaffold_min1000_read_report.tsv
+  -rw-r--r--  1 mattolm  staff    14K Jan 23 14:11 N5_271_010G1_scaffold_min1000_linkage.tsv
+  -rw-r--r--  1 mattolm  staff    26K Jan 23 14:11 N5_271_010G1_scaffold_min1000_SNVs.tsv
+  -rw-r--r--  1 mattolm  staff    27K Jan 23 14:11 N5_271_010G1_scaffold_min1000_scaffold_info.tsv
+
+  $ ls -lht N5_271_010G1_scaffold_min1000/figures/
+  total 7792
+  -rw-r--r--  1 mattolm  staff   432K Jan 23 14:12 N5_271_010G1_scaffold_min1000_GeneHistogram_plot.pdf
+  -rw-r--r--  1 mattolm  staff   422K Jan 23 14:12 N5_271_010G1_scaffold_min1000_LinkageDecay_types_plot.pdf
+  -rw-r--r--  1 mattolm  staff   448K Jan 23 14:12 N5_271_010G1_scaffold_min1000_ScaffoldInspection_plot.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_ReadFiltering_plot.pdf
+  -rw-r--r--  1 mattolm  staff   421K Jan 23 14:12 N5_271_010G1_scaffold_min1000_LinkageDecay_plot.pdf
+  -rw-r--r--  1 mattolm  staff   420K Jan 23 14:12 N5_271_010G1_scaffold_min1000_MajorAllele_frequency_plot.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_readANI_distribution.pdf
+  -rw-r--r--  1 mattolm  staff   443K Jan 23 14:12 N5_271_010G1_scaffold_min1000_genomeWide_microdiveristy_metrics.pdf
+  -rw-r--r--  1 mattolm  staff   419K Jan 23 14:12 N5_271_010G1_scaffold_min1000_CoverageAndBreadth_vs_readMismatch.pdf
+
+For help interpreting this output, see :doc:`example_output`
 
 inStrain compare
 -----------
@@ -80,8 +186,3 @@ inStrain compare
 To run inStrain compare, you first need to profile another .bam file from another set of reads based on mapping to the same .fasta file. Once that is done, you can compare them using the command::
 
   inStrain compare -i allGenomes_v1.fasta-vs-N4_005_026G1.IS allGenomes_v1.fasta-vs-N5_215_032G1.IS -o allGenomes_v1.fasta.RC
-
-Interpreting the output
-----------
-
-For help interpreting the output, see :doc:`example_output`
