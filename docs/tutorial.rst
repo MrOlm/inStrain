@@ -53,7 +53,7 @@ Now that we've profiled all scaffolds, its time to average the results for scaff
 Running profile_genes
 --------------
 
-In order to get gene level information, we need to provide inStrain with a list of the genes to profile. We can call these genes using the program Prodigal::
+In order to get gene level information, including categorizing SNPs as synonymous / non-synonymous, we need to provide inStrain with a list of the genes to profile. We can call these genes using the program Prodigal::
 
  $ prodigal -i raw_data/S2_002_005G1_phage_Clostridioides_difficile.fasta -d S2_002_005G1_phage_Clostridioides_difficile.fasta.genes.fna
 
@@ -61,9 +61,10 @@ In order to get gene level information, we need to provide inStrain with a list 
 
  $ cat S2_002_005G1_phage_Clostridioides_difficile.fasta.genes.fna S2_018_020G1_bacteria_Clostridioides_difficile.fasta.genes.fna > allGenomes_v1.genes.fna
 
-Once we have all the genes to profile in .fna format, we can tell inStrain to profile them
+Once we have all the genes to profile in .fna format, we can tell inStrain to profile them:
 
  $ inStrain profile_genes -i allGenomes_v1.fasta-vs-N4_005_026G1.IS/ -g allGenomes_v1.genes.fna
+
 
 Plotting
 ------
