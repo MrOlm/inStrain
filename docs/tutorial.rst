@@ -2,10 +2,12 @@ Tutorial
 ===================
 
 The following tutorial goes through an example run of inStrain. You can follow along with your own data, or download the files that are used in this tutorial from the `following link
-<https://doi.org/10.6084/m9.figshare.11663925.v1>`_. Note that the reads files are several Gbp, and you really only need one set of reads (forward, which end in .1.fastq.gz, and reverse, which end in .2.fastq.gz). These read come from fecal samples of premature infants.
+<https://doi.org/10.6084/m9.figshare.11663925.v1>`_. Note that the reads files are several Gbp, and you really only need one set of reads (forward, which end in .1.fastq.gz, and reverse, which end in .2.fastq.gz). These reads were generated from fecal samples of premature infants.
+
+Alternatively, if you don't feel like downloading that large of a file,
 
 .. seealso::
-  :doc:`quickstart`
+  :doc:`overview`
     To get started using the program
   :doc:`program_documentation`
     For descriptions of what the modules can do and information on how to prepare data for inStrain
@@ -19,7 +21,7 @@ Preparing .bam and .fasta files
 
 After downloading the genome file that you would like to profile (.fasta file) and at least one set of paired reads, the first thing to do is to map the reads to the .fasta file in order to generate a .bam file. \
 
-When this mapping is performed it is important that you map to all genomes simutaneously, so the first thing to do is to combine all of the genomes that you'd like to map into a single .fasta file::
+When this mapping is performed it is important that you map to all genomes simultaneously, so the first thing to do is to combine all of the genomes that you'd like to map into a single .fasta file::
 
  $  cat raw_data/S2_002_005G1_phage_Clostridioides_difficile.fasta raw_data/S2_018_020G1_bacteria_Clostridioides_difficile.fasta > allGenomes_v1.fasta
 
