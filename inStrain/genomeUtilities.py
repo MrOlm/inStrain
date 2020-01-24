@@ -231,6 +231,10 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
 
     db = pd.DataFrame(table)
 
+    # Add back microdiversity
+    if (('mean_microdiversity' not in df.columns) & ('mean_clonality' in df.columns)):
+        db['mean_microdiversity'] = 1 - db['mean_clonality']
+
     if not mm_level:
         del db['mm']
 
@@ -371,7 +375,7 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
             table['mm'].append(mm)
 
             # Weighted average columns
-            tcb = sum(db['compared_bases_count'])
+            tcb = db['compared_bases_count'].sum()
             for col in ['coverage_overlap']:
                 if tcb == 0:
                     table[col].append(np.nan)

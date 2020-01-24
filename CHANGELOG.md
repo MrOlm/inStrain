@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2020-01-23
+- Have genome_wide report microdiversity if it can
+- Tried to fix a bug where the "percent_compared" in "inStrain compare" is underreported when run in "genome_wide"
+
 ## [1.2.1] - 2020-01-21
 - Fixed typo in spelling of "Reference_SNPs"
 - Fixed bug reporting refFreq

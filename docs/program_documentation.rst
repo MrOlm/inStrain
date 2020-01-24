@@ -22,7 +22,7 @@ The recommended workflow for running *inStrain*:
 
 2. Bin genomes out of each assembly using differential coverage binning. Recommended software: Bowtie2 (for mapping), MetaBAT, CONCOCT, DasTOOL (for binning).
 
-3. Dereplicate the entire set of genomes across all samples from the environment at 97-99% identity, filter genome set draft quality genomes. Recommended software: dRep, checkM.
+3. Dereplicate the entire set of genomes that you would like to profile (all genomes from all environments) at 97-99% identity, and filter out low quality genomes. Recommended software: dRep, checkM.
 
 4. Create a bowtie2 index of the representative genomes from this dereplicated set and map reads to this set from each sample: Recommended software: Bowtie2
 

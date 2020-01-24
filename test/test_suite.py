@@ -1714,33 +1714,33 @@ class test_strains():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
 
         self.setUp()
         self.test7()
