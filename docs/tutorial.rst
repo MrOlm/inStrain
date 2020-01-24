@@ -231,4 +231,4 @@ This should make a figure in the figures folder ::
   total 936
   -rw-r--r--  1 mattolm  staff   419K Jan 23 15:25 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_inStrainCompare_dendrograms.pdf
 
-As before, for help interpreting this output see :doc:`example_output`
+As before, for help interpreting this output see :doc:`example_output` .
