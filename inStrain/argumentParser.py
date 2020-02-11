@@ -272,12 +272,10 @@ def parse_args(args):
 
     # Other Parameters
     Oflags = reads_parser.add_argument_group('OTHER OPTIONS')
-    Oflags.add_argument("-w", "--write", action="store", default=None, \
-        help='File name to write read statistics to.')
-    Oflags.add_argument("-g", "--generate_sam", action="store_true", default=True, \
-        help='Include to create a new filtered SAM to write to.')
+    # Oflags.add_argument("-g", "--generate_sam", action="store_true", default=True, \
+    #     help='Include to create a new filtered SAM to write to.')
     Oflags.add_argument("--read_report", action="store", default=False, \
-        help='Ignore everything else and just make a read report. Indiate here where to save it')
+        help='Ignore everything else and just make a read report. Indicate here where to save it')
 
     '''
     ####### Arguments for other operation ######

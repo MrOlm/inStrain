@@ -16,6 +16,24 @@ import traceback
 import itertools
 from collections import ChainMap
 
+class Controller():
+
+    def main(self, args):
+        '''
+        The main method
+        '''
+        # Set up .fasta file
+        FAdb, s2s = load_fasta(args.fasta)
+
+        # Make the read report
+        if args.read_report != False:
+            read_report_wrapper(args, FAdb)
+            sys.exit()
+
+        # inStrain.filter_reads.filter_reads(args.bam, positions[0], positions[1],
+        #             args.filter_cutoff, args.max_insert_relative, args.min_insert,
+        #             args.min_mapq, write_data = args.write, write_bam=args.generate_sam)
+
 def get_fasta(fasta_file = None):
     positions = []
     total_length = 0
@@ -25,6 +43,20 @@ def get_fasta(fasta_file = None):
         positions.append([str(rec.id),start, len(rec.seq)])
 
     return [positions, total_length]
+
+def load_fasta(fasta_file):
+    '''
+    Load the sequences to be profiled
+
+    Return a table listing scaffold name, start, end
+    '''
+    # PROFILE ALL SCAFFOLDS IN THE .FASTA FILE
+    scaff2sequence = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta")) # set up .fasta file
+    s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
+    Fdb = pd.DataFrame(list(s2l.items()), columns=['scaffold', 'end'])
+    Fdb['start'] = 0
+
+    return Fdb, scaff2sequence # also return s2l - alexcc 5/9/2019: Nah, make it scaff2sequence (s2s) (M.O. 6/10/19)
 
 def filter_paired_reads(bam, scaffolds, **kwargs):
     '''
@@ -181,58 +213,6 @@ def filter_paired_reads_dict_scaff(scaff2pair2info, **kwargs):
                 ret[key] = value[0]
     return ret
 
-    # Return dictionary of pairs
-    # return dict(ChainMap(*[{key:value[0] for key, value in pair2info.items() if _evaluate_pair(value,
-    #         filter_cutoff=filter_cutoff,
-    #         max_insert=max_insert,
-    #         min_insert=min_insert,
-    #         min_mapq=min_mapq)} for scaff, pair2info in scaff2pair2info.items()]))
-
-# def filter_paired_reads_dict_scaff2(scaff2pair2info, **kwargs):
-#     '''
-#     Filter the dictionary of paired reads, end with read -> mm
-#     '''
-#     # Get kwargs
-#     filter_cutoff = kwargs.get('filter_cutoff', 0.97)
-#     max_insert_relative = kwargs.get('max_insert_relative', 3)
-#     min_insert = kwargs.get('min_insert', 50)
-#     min_mapq = kwargs.get('min_mapq', 2)
-#
-#     # Get max insert
-#     max_insert = np.median(list(itertools.chain.from_iterable([[value[1] for key, value in pair2info.items()] for scaff, pair2info in scaff2pair2info.items()]))) * max_insert_relative
-#
-#     # Return dictionary of pairs
-#     return ChainMap(*[{key:value[0] for key, value in pair2info.items() if _evaluate_pair(value,
-#             filter_cutoff=filter_cutoff,
-#             max_insert=max_insert,
-#             min_insert=min_insert,
-#             min_mapq=min_mapq)} for scaff, pair2info in scaff2pair2info.items()])
-#
-# def filter_paired_reads_dict_scaff3(scaff2pair2info, **kwargs):
-#     '''
-#     Filter the dictionary of paired reads, end with read -> mm
-#     '''
-#     # Get kwargs
-#     filter_cutoff = kwargs.get('filter_cutoff', 0.97)
-#     max_insert_relative = kwargs.get('max_insert_relative', 3)
-#     min_insert = kwargs.get('min_insert', 50)
-#     min_mapq = kwargs.get('min_mapq', 2)
-#
-#     # Get max insert
-#     max_insert = np.median(list(itertools.chain.from_iterable([[value[1] for key, value in pair2info.items()] for scaff, pair2info in scaff2pair2info.items()]))) * max_insert_relative
-#
-#     # Return dictionary of pairs
-#     ret = {}
-#     for scaff, pair2info in scaff2pair2info.items():
-#         for key, value in pair2info.items():
-#             if _evaluate_pair(value,
-#                 filter_cutoff=filter_cutoff,
-#                 max_insert=max_insert,
-#                 min_insert=min_insert,
-#                 min_mapq=min_mapq):
-#                 ret[key] = value[0]
-#     return ret
-
 def _evaluate_pair(value, max_insert=1000000, filter_cutoff=-1, min_insert=-1,
                                                         min_mapq=-1):
     # calculate PID for this pair
@@ -269,11 +249,6 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
             except:
                 logging.error("We had a failure! Not sure where!")
 
-        # with concurrent.futures.ProcessPoolExecutor(max_workers=p) as executor:
-        #     dicts = [(scaff, x, t) for scaff, x, t in tqdm(executor.map(scaffold_profile_wrapper,
-        #                                     iterate_read_commands(scaffolds, bam, kwargs)),
-        #                                     desc='Getting read pairs: ',
-        #                                     total=len(scaffolds))]
     else:
         for cmd in tqdm(iterate_read_commands(scaffolds, bam, kwargs), desc='Getting read pairs: ', total=len(scaffolds)):
             dicts.append(scaffold_profile_wrapper(cmd))
@@ -313,12 +288,6 @@ def iterate_read_commands(scaffolds, bam, profArgs):
     '''
     for scaff in scaffolds:
         yield [scaff, bam]
-        # # make this command
-        # cmd = read_command()
-        # cmd.scaffold = scaff
-        # cmd.samfile = bam
-        # cmd.arguments = profArgs
-        # yield cmd
 
 def scaffold_profile_wrapper(cmd):
     '''
@@ -337,8 +306,6 @@ def scaffold_profile_wrapper(cmd):
         logging.error("whole scaffold exception- {0}".format(str(cmd[0])))
         return cmd[0], False
 
-# def _get_scaffold_paired_reads(bam, scaffold, **kwargs):
-#     pass
 
 def get_paired_reads(bam, scaffolds, ret_total=False):
     '''
@@ -410,9 +377,9 @@ def get_paired_reads(bam, scaffolds, ret_total=False):
     else:
         return pair2info
 
-def read_report_wrapper(args, positions):
+def read_report_wrapper(args, FAdb):
     # Get paired reads
-    scaffolds = [x[0] for x in positions]
+    scaffolds = list(FAdb['scaffold'].tolist())
     scaff2pair2info, scaff2total = get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
 
     # Make report
@@ -588,54 +555,3 @@ def filter_reads(bam, positions, fasta_length, filter_cutoff = 0.97, max_insert_
         os.system('rm ' + bam.split("/")[-1].split(".")[0] + "_filtered.bam")
 
     return final_reads, Rdb
-
-# if __name__ == '__main__':
-#
-#     """ This is executed when run from the command line """
-#
-#     parser = argparse.ArgumentParser(description="""Reports read statistics for a BAM mapping file. Do you have a SAM? Not to fear, just run these three commands:\n
-# samtools view -S -b sample.sam > sample.bam\n
-# samtools sort sample.bam -o sample.sorted.bam\n
-# samtools index sample.sorted.bam\n in that order!""", formatter_class=argparse.RawTextHelpFormatter)
-#
-#     # Required positional arguments
-#     parser.add_argument("bam", help="Sorted .bam file")
-#     parser.add_argument("fasta", help="Fasta file the bam is mapped to")
-#
-#     # Optional arguments
-#     parser.add_argument("-m", "--mismatch_threshold", action="store", default=0.97, \
-#         help='Minimum percent identity of read pairs to consensus to use the reads - default is to run at 0.97.')
-#
-#     parser.add_argument("-q", "--min_mapq", action="store", default=2, \
-#         help='Minimum mapq score of EITHER read in a pair to use that pair. Default: 2.')
-#
-#     parser.add_argument("-l", "--max_insert_length", action="store", default=3, \
-#         help='Maximum insert size between two reads - default is to use 3x median insert size.')
-#
-#     parser.add_argument("-u", "--min_insert_length", action="store", default=50, \
-#         help='Minimum insert size between two reads - default is to use 50 bp.')
-#
-#     parser.add_argument("-w", "--write", action="store", default=None, \
-#         help='File name to write read statistics to.')
-#
-#     parser.add_argument("-g", "--generate_sam", action="store_true", default=True, \
-#         help='Include to create a new filtered SAM to write to.')
-#
-#     parser.add_argument("--read_report", action="store", default=False, \
-#         help='Ignore everything else and just make a read report. Indiate here where to save it')
-#
-#     parser.add_argument("-p", "--processes", action="store", default=6, type=int, \
-#         help='Threads to use for multiprocessing')
-#
-#     parser.add_argument('--log', action='store', default=None, \
-#         help ="File to log results to.")
-#
-#     # Parse
-#     args = parser.parse_args()
-#     positions = get_fasta(args.fasta)[0]
-#
-#     if args.read_report != False:
-#         read_report_wrapper(args, positions)
-#         sys.exit()
-#
-#     filter_reads(args.bam, positions[0], positions[1], float(args.mismatch_threshold), int(args.max_insert_length), int(args.min_insert_length), int(args.min_mapq), write_data = args.write, write_bam=args.generate_sam, log=args.log)

@@ -59,13 +59,7 @@ class Controller():
         inStrain.readComparer.main(args)
 
     def filter_reads_operation(self, args):
-        positions = inStrain.filter_reads.get_fasta(args.fasta)[0]
-        if args.read_report != False:
-            inStrain.filter_reads.read_report_wrapper(args, positions)
-            sys.exit()
-        inStrain.filter_reads.filter_reads(args.bam, positions[0], positions[1],
-                    args.filter_cutoff, args.max_insert_relative, args.min_insert,
-                    args.min_mapq, write_data = args.write, write_bam=args.generate_sam)
+        inStrain.filter_reads.Controller().main(args)
 
     def profile_genes_operation(self, args):
         inStrain.GeneProfile.Controller().main(args)
