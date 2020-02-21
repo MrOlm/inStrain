@@ -174,13 +174,17 @@ def paired_read_filter(scaff2pair2info, priority_reads_set=set(), **kwargs):
                 else:
                     del pair2info[p]
 
-    elif pairing_filter == 'all':
+    elif pairing_filter == 'all_reads':
         for scaff, p2i in scaff2pair2info.items():
             for p, i in p2i.items():
                 if p in pair2info:
                     pair2info[p] = _merge_info(i, pair2info[p])
                 else:
                     pair2info[p] = i
+
+    else:
+        logging.error("Do not know paired read filter \"{0}\"; crashing now".format(pairing_filter))
+        raise Exception
 
     return pair2info
 
@@ -194,7 +198,7 @@ def _merge_info(i1, i2):
             -1,
             -1], dtype="int64")
 
-def make_detailed_read_report(scaff2pair2info, pairTOinfo=set(), version=2):
+def make_detailed_read_report(scaff2pair2info, pairTOinfo=dict(), version=2):
     '''
     Make a detailed pandas dataframe from pair2info
     '''

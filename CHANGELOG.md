@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.2.3] - 2020-02-11
+## [1.2.3] - 2020-02-21
 - Messed with the internals of filter_reads. Moved old methods into deprecated_filter_reads
 - Changed the options of filter_reads to just do things that it can actually do at the moment
 - Remove break in "get_paired_reads" when a scaffold isn't in the .bam

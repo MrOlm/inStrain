@@ -91,8 +91,8 @@ def parse_args(args):
     # Make a parent parser for read output
     readoutput_parent = argparse.ArgumentParser(add_help=False)
     fiflags = readoutput_parent.add_argument_group('READ OUTPUT OPTIONS')
-    fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
-        help='Specify the location to write a .sam file with filtered reads only.')
+    # fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
+    #     help='Specify the location to write a .sam file with filtered reads only.')
     fiflags.add_argument("--deatiled_read_report", action="store_true", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
 
     # Make a parent parser for SNV calling

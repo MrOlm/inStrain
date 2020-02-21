@@ -845,13 +845,21 @@ class test_filter_reads():
         self.test0()
         self.tearDown()
 
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
 
     def test0(self):
         '''
@@ -936,7 +944,7 @@ class test_filter_reads():
         filtered_2N = set(p for p, i in pair2info2N.items())
         assert filtered_1 != filtered_2N, [len(filtered_1), len(filtered_2N)]
 
-        kwargs = {'pairing_filter':'all'}
+        kwargs = {'pairing_filter':'all_reads'}
         pair2info2N = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
         filtered_2A = set(p for p, i in pair2info2N.items())
         assert filtered_2N != filtered_2A, [len(filtered_2N), len(filtered_2A)]
@@ -1048,6 +1056,125 @@ class test_filter_reads():
         assert set(pair2infoFo.keys()) != set(pair2infoF.keys())
         assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys())) > 0
         assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys()) - set(PReads)) == 0
+
+    def test3(self):
+        '''
+        Test read filtering options
+        '''
+        # Run on default
+        base = self.test_dir + 'test'
+        cmd = "inStrain filter_reads {0} {1} -o {2}".format(self.sorted_bam, \
+            self.fasta, base)
+        call(cmd, shell=True)
+
+        # Load base output
+        files = glob.glob(base + '/*')
+        assert len(files) == 1
+        Rdb = pd.read_csv(files[0], sep='\t', header=1).head(1)
+        UFB = Rdb['unfiltered_reads'].tolist()[0]
+        FB = Rdb['filtered_pairs'].tolist()[0]
+        assert Rdb['filtered_singletons'].tolist()[0] == 0
+        assert Rdb['filtered_priority_reads'].tolist()[0] == 0
+
+        # Run it keeping all reads
+        base = self.test_dir + 'test'
+        cmd = "inStrain filter_reads {0} {1} -o {2} --pairing_filter all_reads".format(self.sorted_bam, \
+            self.fasta, base)
+        call(cmd, shell=True)
+
+        files = glob.glob(base + '/*')
+        assert len(files) == 1
+        Rdb = pd.read_csv(files[0], sep='\t', header=1).head(1)
+        UFN = Rdb['unfiltered_reads'].tolist()[0]
+        FN = Rdb['filtered_pairs'].tolist()[0]
+        assert Rdb['filtered_singletons'].tolist()[0] > 0
+        assert Rdb['filtered_priority_reads'].tolist()[0] == 0
+        assert UFN == UFB
+        assert FN > FB
+
+        # Run it keeping non_discordant reads
+        base = self.test_dir + 'test'
+        cmd = "inStrain filter_reads {0} {1} -o {2} --pairing_filter non_discordant".format(self.sorted_bam, \
+            self.fasta, base)
+        call(cmd, shell=True)
+
+        files = glob.glob(base + '/*')
+        assert len(files) == 1
+        Rdb = pd.read_csv(files[0], sep='\t', header=1).head(1)
+        UFN = Rdb['unfiltered_reads'].tolist()[0]
+        FN = Rdb['filtered_pairs'].tolist()[0]
+        assert Rdb['filtered_singletons'].tolist()[0] > 0
+        assert Rdb['filtered_priority_reads'].tolist()[0] == 0
+        assert UFN == UFB
+        assert FN > FB
+
+        # Run it with priority_reads
+        base = self.test_dir + 'test'
+        cmd = "inStrain filter_reads {0} {1} -o {2} --priority_reads {3}".format(self.sorted_bam, \
+            self.fasta, base, self.readloc2)
+        call(cmd, shell=True)
+
+        files = glob.glob(base + '/*')
+        assert len(files) == 1
+        Rdb = pd.read_csv(files[0], sep='\t', header=1).head(1)
+        UFN = Rdb['unfiltered_reads'].tolist()[0]
+        FN = Rdb['filtered_pairs'].tolist()[0]
+        assert Rdb['filtered_singletons'].tolist()[0] > 0
+        assert Rdb['filtered_priority_reads'].tolist()[0] > 0
+        assert UFN == UFB
+        assert FN > FB
+
+    def test4(self):
+        '''
+        Test that chaning the read filtering options actually changes the results
+        '''
+        # Run base
+        base = self.test_dir + 'testMatt'
+        cmd = "inStrain profile {0} {1} -o {2} -l 0.95 --skip_genome_wide --skip_plot_generation".format(self.sorted_bam, \
+            self.fasta, base)
+        call(cmd, shell=True)
+
+        # Load the object
+        Matt_object = inStrain.SNVprofile.SNVprofile(base)
+        MCLdb = Matt_object.get_nonredundant_scaffold_table()
+
+        # Run with priority_reads
+        base = self.test_dir + 'testMatt'
+        cmd = "inStrain profile {0} {1} -o {2} -l 0.95 --skip_genome_wide --skip_plot_generation --priority_reads {3}".format(self.sorted_bam, \
+            self.fasta, base, self.readloc2)
+        call(cmd, shell=True)
+
+        # Load the object
+        Priority_object = inStrain.SNVprofile.SNVprofile(base)
+        PCLdb = Priority_object.get_nonredundant_scaffold_table()
+
+        # Compare
+        assert set(PCLdb['scaffold'].tolist()) == set(MCLdb['scaffold'].tolist())
+        scaffs = set(PCLdb['scaffold'].tolist())
+
+        cl_diffs = 0
+        cov_diffs = 0
+        for scaffold in scaffs:
+            db1 = PCLdb[PCLdb['scaffold'] == scaffold]
+            db2 = MCLdb[MCLdb['scaffold'] == scaffold]
+
+            cov1 = db1['coverage'].tolist()[0]
+            cov2 = db2['coverage'].tolist()[0]
+            if cov1 != cov2:
+                cov_diffs += 1
+
+            cl1 = db1['mean_clonality'].tolist()[0]
+            cl2 = db2['mean_clonality'].tolist()[0]
+            if cl1 != cl2:
+                cl_diffs += 1
+
+        print("{0} scaffolds, {1} clonality diffs, {2} coverage diffs".format(
+            len(scaffs), cl_diffs, cov_diffs))
+        # Make sure some, but not all, things are different
+        assert cl_diffs > 0
+        assert cl_diffs < len(scaffs)
+        assert cov_diffs > 0
+        assert cov_diffs < len(scaffs)
 
 
 class test_readcomparer():
@@ -2598,13 +2725,13 @@ class test_special():
 
 if __name__ == '__main__':
     test_filter_reads().run()
-    # test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_special().run()
-    # test_readcomparer().run()
+    test_strains().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_special().run()
+    test_readcomparer().run()
 
     print('everything is working swimmingly!')
