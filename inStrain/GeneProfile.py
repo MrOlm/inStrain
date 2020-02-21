@@ -439,9 +439,12 @@ def get_gene_info(IS,  ANI_level=0):
 
     # Get the SNP density
     db = IS.get('genes_SNP_density')
-    db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
-    del db['mm']
-    Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    if len(db) > 0:
+        db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+        del db['mm']
+        Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    else:
+        logging.info('You have no SNPs! Skipping SNP density calculation')
 
     Gdb['min_ANI'] = ANI_level
 

@@ -7,6 +7,8 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 ## [1.2.3] - 2020-02-11
 - Messed with the internals of filter_reads to make it make more sense
 - Changed the options of filter_reads to just do things that it can actually do at the moment
+- Remove break in "get_paired_reads" when a scaffold isn't in the .bam
+- Fixed bug in profile_genes resulting from having no SNPs called
 
 ## [1.2.2] - 2020-01-23
 - Have genome_wide report microdiversity if it can

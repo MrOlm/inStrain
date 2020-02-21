@@ -826,6 +826,10 @@ class test_filter_reads():
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
         self.fasta = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa'
+        self.readloc = load_data_loc() + \
+            'N5_271_010G1.R1.fastq.gz'
+        self.readloc2 = load_data_loc() + \
+            'N5_271_010G1.R1.reads'
 
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -838,6 +842,14 @@ class test_filter_reads():
     def run(self):
         self.setUp()
         self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
         self.tearDown()
 
     def test0(self):
@@ -855,6 +867,170 @@ class test_filter_reads():
         # Make sure it produced output
         Rdb = pd.read_csv(base, sep='\t', header=1)
         assert len(Rdb) == 179
+
+    def test1(self):
+        '''
+        Compare version 1 and 2 of getting paired reads
+        '''
+        # Run version 1 to get scaffold to pairs to info
+        scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
+        scaffolds = list(scaff2sequence.keys())
+        s2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        db = inStrain.filter_reads.make_detailed_read_report(s2pair2info, version=1)
+
+        # Run version 2 to get scaffold to pairs to info
+        s2pair2info2 = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        db2 = inStrain.filter_reads.make_detailed_read_report(s2pair2info2)
+
+        # Make sure they get the same base reads
+        assert len(db) == len(db2[db2['reads'] == 2])
+
+        # Load priority_reads method 1
+        reads = inStrain.filter_reads.load_priority_reads(self.readloc)
+        s1 = set(db['read_pair'].tolist())
+        assert len(s1.intersection(reads)) > 0
+
+        # Load priority_reads method 2
+        reads2 = inStrain.filter_reads.load_priority_reads(self.readloc2)
+        assert len(s1.intersection(reads2)) > 0
+
+        assert reads == reads2
+
+        # Filter version two with only pairs
+        kwargs = {}
+        pair2info2 = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
+        filtered_2 = set(p for p, i in pair2info2.items())
+
+        # Get the reads in a weird way and make sure it works
+        filtered_1A = set()
+        for s, p2i in s2pair2info.items():
+            for p, i in p2i.items():
+                filtered_1A.add(p)
+        filtered_1 = set([p for s, p2i in s2pair2info.items() for p, i in p2i.items()])
+        assert filtered_1A == filtered_1
+
+        # Make sure the filtered version 2 is the same as regular version 1
+        assert filtered_1 == filtered_2, [len(filtered_1), len(filtered_2)]
+
+        # Make sure that not removing pairs changes this
+        kwargs = {'pairing_filter':'non_discordant'}
+        pair2info2N = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
+        filtered_2N = set(p for p, i in pair2info2N.items())
+        assert filtered_1 != filtered_2N, [len(filtered_1), len(filtered_2N)]
+
+        kwargs = {'pairing_filter':'all'}
+        pair2info2N = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
+        filtered_2A = set(p for p, i in pair2info2N.items())
+        assert filtered_2N != filtered_2A, [len(filtered_2N), len(filtered_2A)]
+        assert filtered_1 != filtered_2A, [len(filtered_1), len(filtered_2A)]
+
+        # Make sure that not priority reads changes this
+        priority_reads_loc = self.readloc
+        priority_reads = inStrain.filter_reads.load_priority_reads(priority_reads_loc)
+        kwargs = {}
+        pair2info2P = inStrain.filter_reads.paired_read_filter(s2pair2info2, priority_reads_set=priority_reads, **kwargs)
+        filtered_2P = set(p for p, i in pair2info2P.items())
+        assert filtered_2 != filtered_2P, [len(filtered_2), len(filtered_2P)]
+
+        # Make the old-style read report
+        # Merge into single
+        pair2info = {}
+        for scaff, p2i in s2pair2info.items():
+            for p, i in p2i.items():
+                pair2info[p] = i
+        RRo = inStrain.filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
+
+        # Test out the read filtering report
+        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, **kwargs)
+
+        for col in ['singletons']:
+            assert RR['unfiltered_' + col].tolist()[0] > 0
+            assert RR['filtered_' + col].tolist()[0] == 0
+        assert RR['unfiltered_priority_reads'].tolist()[0] == 0
+        assert RR['filtered_priority_reads'].tolist()[0] == 0
+
+        # Make sure they have the right number of things in total
+        assert RRo['unfiltered_pairs'].tolist()[0] == RR['unfiltered_pairs'].tolist()[0] == len(filtered_2) == len(filtered_1),\
+        [RRo['unfiltered_pairs'].tolist()[0], RR['unfiltered_pairs'].tolist()[0], len(filtered_2), len(filtered_1)]
+
+        for item in ['unfiltered_pairs', 'pass_filter_cutoff', 'pass_min_mapq',
+            'pass_max_insert', 'pass_min_insert', 'filtered_pairs']:
+            o = RRo[item].tolist()[0]
+            t = RR[item].tolist()[0]
+            assert o == t, [item, o, t]
+
+        # Make sure they're the same for a number of random scaffolds
+        scaffolds = RR['scaffold'].tolist()[4:8]
+        for scaff in scaffolds:
+            for item in ['unfiltered_pairs', 'pass_filter_cutoff', 'pass_min_mapq',
+                'pass_max_insert', 'pass_min_insert', 'filtered_pairs']:
+                o = RRo[RRo['scaffold'] == scaff][item].tolist()[0]
+                t = RR[RR['scaffold'] == scaff][item].tolist()[0]
+                assert o == t, [item, o, t]
+
+        # Make sure no singletons when they're filtered out
+        for col in ['singletons']:
+            assert RR['unfiltered_' + col].tolist()[0] > 0
+            assert RR['filtered_' + col].tolist()[0] == 0
+        assert RR['unfiltered_priority_reads'].tolist()[0] == 0
+        assert RR['filtered_priority_reads'].tolist()[0] == 0
+
+        # Try out allowing singletons
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, **kwargs)
+        for col in ['singletons']:
+            assert RRs['unfiltered_' + col].tolist()[0] > 0
+        assert RRs['unfiltered_priority_reads'].tolist()[0] == 0
+        assert RRs['filtered_priority_reads'].tolist()[0] == 0
+
+        # Try out priority_reads
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, priority_reads_set=priority_reads, **kwargs)
+        for col in ['singletons']:
+            assert RRs['unfiltered_' + col].tolist()[0] > 0
+        assert RRs['unfiltered_priority_reads'].tolist()[0] > 0
+
+
+    def test2(self):
+        '''
+        Compare method 1 and 2 of getting filtered reads
+        '''
+        scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
+        scaffolds = list(scaff2sequence.keys())
+
+        # Try new method
+        pair2infoF, RR = inStrain.filter_reads.load_paired_reads2(self.sorted_bam, scaffolds)
+        assert len(pair2infoF.keys()) == int(RR['filtered_pairs'].tolist()[0])
+
+        # Try old method
+
+        # Load paired reads
+        scaff2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        # Merge into single
+        pair2info = {}
+        for scaff, p2i in scaff2pair2info.items():
+            for p, i in p2i.items():
+                pair2info[p] = i
+        # Make read report
+        logging.info('Making read report')
+        RRo = inStrain.filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info)
+        # Filter the dictionary
+        logging.info('Filtering reads')
+        pair2infoFo = inStrain.filter_reads.filter_paired_reads_dict(pair2info)
+        assert len(pair2infoFo.keys()) == int(RRo['filtered_pairs'].tolist()[0])
+
+        # Compare
+        assert set(pair2infoFo.keys()) == set(pair2infoF.keys())
+        for pair, info in pair2infoF.items():
+            assert info == pair2infoFo[pair], pair
+
+        # Try new method with priority_reads
+        kwargs = {"priority_reads":self.readloc2}
+        pair2infoF, RR = inStrain.filter_reads.load_paired_reads2(self.sorted_bam, scaffolds, **kwargs)
+
+        PReads = inStrain.filter_reads.load_priority_reads(self.readloc2)
+        assert set(pair2infoFo.keys()) != set(pair2infoF.keys())
+        assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys())) > 0
+        assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys()) - set(PReads)) == 0
+
 
 class test_readcomparer():
     def setUp(self):
@@ -2396,14 +2572,14 @@ class test_special():
         assert not inStrain.SNVprofile.same_versions('1.1.0', '0.1.0')
 
 if __name__ == '__main__':
-    # test_strains().run()
     test_filter_reads().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_special().run()
-    # test_readcomparer().run()
+    test_strains().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_special().run()
+    test_readcomparer().run()
 
     print('everything is working swimmingly!')

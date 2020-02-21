@@ -77,6 +77,24 @@ def parse_args(args):
         help='Multiplier to determine maximum insert size between two reads - default is to use 3x median insert size. Must be >, not >=')
     fiflags.add_argument("--min_insert", action="store", default=50, type=int,\
         help='Minimum insert size between two reads - default is 50 bp. If two reads are 50bp each and overlap completely, their insert will be 50. Must be >, not >=')
+    fiflags.add_argument("--pairing_filter", help="R|How should paired reads be handled?\n" \
+        + "paired_only = Only paired reads are retained\n" \
+        + 'non_discordant = Keep all paired reads and singleton reads that map to a single scaffold\n' \
+        + "all_reads = Keep all reads regardless of pairing status (NOT RECOMMENDED; weird behavior will result if two parts of a pair map to different scaffolds. See documentation for deatils)\n", \
+        default = "paired_only", choices={'paired_only', 'all_reads'})
+    fiflags.add_argument("--priority_reads", help='The location of a list ' \
+        + "of reads that should be retained regardless of pairing status " \
+        + "(for example long reads or merged reads). This can be a .fastq " \
+        + "file or text file with list of read names (will assume file is " \
+        + "compressed if ends in .gz", default=None)
+
+    # Make a parent parser for read output
+    readoutput_parent = argparse.ArgumentParser(add_help=False)
+    fiflags = readoutput_parent.add_argument_group('READ OUTPUT OPTIONS')
+    fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
+        help='Specify the location to write a .sam file with filtered reads only.')
+    fiflags.add_argument("--deatiled_read_report", action="store", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
+    fiflags.add_argument("--read_report", action="store", default=False, help='Make a general read report. SOON TO BE DEPRECATED')
 
     # Make a parent parser for SNV calling
     variant_parent = argparse.ArgumentParser(add_help=False)
@@ -268,14 +286,8 @@ def parse_args(args):
 
 
     reads_parser = subparsers.add_parser("filter_reads",formatter_class=SmartFormatter,\
-                    parents = [reads_parent, parent_parser, readfilter_parent], add_help=False)
-
-    # Other Parameters
-    Oflags = reads_parser.add_argument_group('OTHER OPTIONS')
-    # Oflags.add_argument("-g", "--generate_sam", action="store_true", default=True, \
-    #     help='Include to create a new filtered SAM to write to.')
-    Oflags.add_argument("--read_report", action="store", default=False, \
-        help='Ignore everything else and just make a read report. Indicate here where to save it')
+                    parents = [reads_parent, parent_parser, readfilter_parent,
+                    readoutput_parent], add_help=False)
 
     '''
     ####### Arguments for other operation ######
