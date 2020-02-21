@@ -23,28 +23,64 @@ class Controller():
         '''
         The main method
         '''
+        bam = args.bam
+        vargs = vars(args)
+        del vargs['bam']
+
+        detailed_report = vargs.get('deatiled_read_report', False)
+        generate_sam = vargs.get('generate_sam', False)
+        out_folder = vargs.get('output', False)
+
+        # Set up the output folder
+        if not os.path.isdir(out_folder):
+            os.mkdir(out_folder)
+
         # Set up .fasta file
         FAdb, s2s = load_fasta(args.fasta)
 
-        # Make the read report
-        if args.read_report != False:
-            read_report_wrapper(args, FAdb)
-            sys.exit()
+        # Get the paired reads
+        scaffolds = list(FAdb['scaffold'].unique())
+        if detailed_report:
+            Rdic, RR, dRR = load_paired_reads2(bam, scaffolds, **vargs)
+        else:
+            Rdic, RR = load_paired_reads2(bam, scaffolds, **vargs)
+            dRR = None
 
-        # inStrain.filter_reads.filter_reads(args.bam, positions[0], positions[1],
-        #             args.filter_cutoff, args.max_insert_relative, args.min_insert,
-        #             args.min_mapq, write_data = args.write, write_bam=args.generate_sam)
+        # Make a .sam
+        if generate_sam:
+            print("The ability to make .sam files is not finished yet; sorry!")
+
+        # Save results
+        self.write_results(out_folder, RR, dRR, **vargs)
+
+    def write_results(self, out_folder, RR, dRR, **kwargs):
+        '''
+        Save the results in a folder for the filter_reads module
+        '''
+        assert os.path.isdir(out_folder)
+
+        RR_loc = os.path.join(out_folder, 'read_report.csv')
+        write_read_report(RR, RR_loc, **kwargs)
+
+        if dRR is not None:
+            RR_loc = os.path.join(out_folder, 'deatiled_read_report.csv')
+            dRR.to_csv(RR_loc, index=False, sep='\t')
 
 def load_paired_reads2(bam, scaffolds, **kwargs):
     '''
     Load paired reads to be profiled
+
+    You have this method do a lot of things because all of these things take lots of RAM, and you want them all to be cleared as soon as possible
 
     Return a dictionary of results. Some things that could be in it are:
         pair2infoF: A filtered dictionary of read name to number of mismatches
         RR: A summary read reaport
         RR_detailed: A detailed read report
     '''
-    # Get the kwargs
+    # Parse the kwargs
+    detailed_report = kwargs.get('deatiled_read_report', False)
+
+    # Get the pairs
     scaff2pair2info = get_paired_reads_multi2(bam, scaffolds, **kwargs)
 
     # Handle paired-read filtering
@@ -61,7 +97,12 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
     pair2infoF = filter_paired_reads_dict2(pair2info,
         **kwargs)
 
-    return pair2infoF, RR
+    if detailed_report:
+        dRR = make_detailed_read_report(scaff2pair2info, pairTOinfo=pair2info, version=2)
+        return pair2infoF, RR, dRR
+
+    else:
+        return pair2infoF, RR
 
 def load_priority_reads(file_loc):
     '''
@@ -153,7 +194,7 @@ def _merge_info(i1, i2):
             -1,
             -1], dtype="int64")
 
-def make_detailed_read_report(scaff2pair2info, version=2):
+def make_detailed_read_report(scaff2pair2info, pairTOinfo=set(), version=2):
     '''
     Make a detailed pandas dataframe from pair2info
     '''
@@ -163,11 +204,16 @@ def make_detailed_read_report(scaff2pair2info, version=2):
     elif version == 1:
         i2o = {'mm':0, 'insert_dist':1, 'mapq':2, 'length':3,}
 
+    keepers = pairTOinfo.keys()
+    report_keepers =  (len(keepers) > 0)
+
     table = defaultdict(list)
     for scaff, pair2info in scaff2pair2info.items():
         for pair, array in pair2info.items():
             table['read_pair'].append(pair)
             table['scaffold'].append(scaff)
+            if report_keepers:
+                table['pass_filters'].append(pair in keepers)
 
             for item, location in i2o.items():
                 table[item].append(array[location])
@@ -298,6 +344,7 @@ def write_read_report(RR, location, **kwargs):
     values['max_insert_relative'] = kwargs.get('max_insert_relative', 3)
     values['min_insert'] = kwargs.get('min_insert', 50)
     values['min_mapq'] = kwargs.get('min_mapq', 2)
+    values['pairing_filter'] = kwargs.get('pairing_filter', 'paired_only')
 
     # Write header
     os.remove(location) if os.path.exists(location) else None

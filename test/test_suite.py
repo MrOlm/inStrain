@@ -841,33 +841,50 @@ class test_filter_reads():
             shutil.rmtree(self.test_dir)
 
     def run(self):
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
         # self.setUp()
-        # self.test0()
+        # self.test1()
         # self.tearDown()
-
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
 
     def test0(self):
         '''
-        Test read report
+        Test basic functionality
         '''
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain filter_reads {1} {2} --read_report {3}".format(self.script, self.sorted_bam, \
+        cmd = "inStrain filter_reads {0} {1} -o {2}".format(self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
 
         # Make sure it produced output
-        Rdb = pd.read_csv(base, sep='\t', header=1)
-        assert len(Rdb) == 179
+        files = glob.glob(base + '/*')
+        assert len(files) == 1
+        Rdb = pd.read_csv(files[0], sep='\t', header=1)
+        assert len(Rdb) == 179, len(Rdb)
+
+        # Make it make the detailed read report
+        cmd = "inStrain filter_reads {0} {1} -o {2} --deatiled_read_report".format(self.sorted_bam, \
+            self.fasta, base)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it produced output
+        files = glob.glob(base + '/*')
+        assert len(files) == 2
+        Rdb = pd.read_csv(files[0], sep='\t', header=1)
+        assert len(Rdb) == 179, len(Rdb)
+        RRdb = pd.read_csv(files[1], sep='\t', header=1)
+        assert len(RRdb) == 41257
+
 
     def test1(self):
         '''
@@ -2581,13 +2598,13 @@ class test_special():
 
 if __name__ == '__main__':
     test_filter_reads().run()
-    test_strains().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_special().run()
-    test_readcomparer().run()
+    # test_strains().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_special().run()
+    # test_readcomparer().run()
 
     print('everything is working swimmingly!')

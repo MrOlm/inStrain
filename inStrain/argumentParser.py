@@ -81,7 +81,7 @@ def parse_args(args):
         + "paired_only = Only paired reads are retained\n" \
         + 'non_discordant = Keep all paired reads and singleton reads that map to a single scaffold\n' \
         + "all_reads = Keep all reads regardless of pairing status (NOT RECOMMENDED; weird behavior will result if two parts of a pair map to different scaffolds. See documentation for deatils)\n", \
-        default = "paired_only", choices={'paired_only', 'all_reads'})
+        default = "paired_only", choices={'paired_only', 'non_discordant', 'all_reads'})
     fiflags.add_argument("--priority_reads", help='The location of a list ' \
         + "of reads that should be retained regardless of pairing status " \
         + "(for example long reads or merged reads). This can be a .fastq " \
@@ -93,8 +93,7 @@ def parse_args(args):
     fiflags = readoutput_parent.add_argument_group('READ OUTPUT OPTIONS')
     fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
         help='Specify the location to write a .sam file with filtered reads only.')
-    fiflags.add_argument("--deatiled_read_report", action="store", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
-    fiflags.add_argument("--read_report", action="store", default=False, help='Make a general read report. SOON TO BE DEPRECATED')
+    fiflags.add_argument("--deatiled_read_report", action="store_true", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
 
     # Make a parent parser for SNV calling
     variant_parent = argparse.ArgumentParser(add_help=False)
@@ -283,6 +282,8 @@ def parse_args(args):
     Rflags = reads_parent.add_argument_group('REQUIRED')
     Rflags.add_argument("bam", help="Sorted .bam file")
     Rflags.add_argument("fasta", help="Fasta file the bam is mapped to")
+    Rflags.add_argument("-o", "--output", action="store", \
+                        help='Location of folder to store read report(s)')
 
 
     reads_parser = subparsers.add_parser("filter_reads",formatter_class=SmartFormatter,\
