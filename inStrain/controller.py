@@ -103,11 +103,17 @@ class ProfileController():
 
         global s2l # make ths global so we can access it later.
 
+        # Parse the args
+        bam = args.bam
+        vargs = vars(args)
+        del vargs['bam']
+
         # Set up .fasta file
         FAdb, s2s = self.load_fasta(args)
 
         # Load dictionary of paired reads
-        Rdic, RR = self.load_paired_reads(args, FAdb)
+        scaffolds = list(FAdb['scaffold'].unique())
+        Rdic, RR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
         logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
 
         # Get scaffold to paired reads (useful for multiprocessing)
@@ -129,9 +135,7 @@ class ProfileController():
                     sys.getsizeof(eval(att))/1e6))
 
         # Profile the .bam file
-        bam = args.bam
-        vargs = vars(args)
-        del vargs['bam']
+
         vargs['s2s'] = s2s
         vargs['s2p'] = s2p
 

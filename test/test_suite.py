@@ -2085,40 +2085,42 @@ class test_strains():
         Test filter reads; make sure CCs and Matt's agree
         '''
         # Set up
-        positions, total_length = inStrain.filter_reads.get_fasta(self.fasta)
+        positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
         filter_cutoff = 0.98
 
         # Run initial filter_reads
-        subset_reads, Rdb = inStrain.filter_reads.filter_reads(self.sorted_bam, positions, total_length,
+        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
                             filter_cutoff=filter_cutoff, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
-        subset_reads2 = inStrain.filter_reads.filter_paired_reads(self.sorted_bam,
+        subset_reads2 = inStrain.deprecated_filter_reads.filter_paired_reads(self.sorted_bam,
                         scaffolds, filter_cutoff=filter_cutoff, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads in a different way
-        pair2info = inStrain.filter_reads.get_paired_reads(self.sorted_bam, scaffolds)
-        pair2infoF = inStrain.filter_reads.filter_paired_reads_dict(pair2info,
+        pair2info = inStrain.deprecated_filter_reads.get_paired_reads(self.sorted_bam, scaffolds)
+        pair2infoF = inStrain.deprecated_filter_reads.filter_paired_reads_dict(pair2info,
                         filter_cutoff=filter_cutoff, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
         subset_readsF = list(pair2infoF.keys())
 
         # Run Matts filter_reads in a different way still
-        scaff2pair2infoM, scaff2total = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
-        pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict_scaff(scaff2pair2infoM,
+        scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
+        pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
                         filter_cutoff=filter_cutoff, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
+
         subset_readsMF = list(pair2infoMF.keys())
 
         assert (set(subset_reads2) == set(subset_reads) == set(subset_readsF) == set(subset_readsMF)),\
                 [len(subset_reads2), len(subset_reads), len(subset_readsF), len(subset_readsMF)]
 
         # Make sure the filter report is accurate
-        Rdb = inStrain.filter_reads.makeFilterReport(scaff2pair2infoM, scaff2total, filter_cutoff=filter_cutoff, max_insert_relative=3,
+        Rdb = inStrain.filter_reads.makeFilterReport2(scaff2pair2infoM, pairTOinfo=pair2infoMF, filter_cutoff=filter_cutoff, max_insert_relative=3,
                                             min_insert=50, min_mapq=2)
         assert int(Rdb[Rdb['scaffold'] == 'all_scaffolds']['unfiltered_pairs'].tolist()[0]) \
                 == len(list(pair2info.keys()))
@@ -2126,20 +2128,25 @@ class test_strains():
                 == len(subset_reads)
 
         # Try another cutuff
-        positions, total_length = inStrain.filter_reads.get_fasta(self.fasta)
+        positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
         filter_cutoff = 0.90
 
         # Run initial filter_reads
-        subset_reads, Rdb = inStrain.filter_reads.filter_reads(self.sorted_bam, positions, total_length,
+        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
                             filter_cutoff=filter_cutoff, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
-        subset_reads2 = inStrain.filter_reads.filter_paired_reads(self.sorted_bam,
-                        scaffolds, filter_cutoff=filter_cutoff, max_insert_relative=3,
+        Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
+        pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
+                        filter_cutoff=filter_cutoff, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
+
+
+        subset_reads2 = set(pair2infoMF.keys())
 
         assert(set(subset_reads2) == set(subset_reads))
 

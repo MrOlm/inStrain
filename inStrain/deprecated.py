@@ -364,7 +364,7 @@ class SNVdata:
             self.positions = self.positions[0:10]
 
         # Call read filtering function
-        subset_reads, Rdb = inStrain.filter_reads.filter_reads(bam, self.positions, self.fasta_length, filter_cutoff, 3, 50, 2)
+        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(bam, self.positions, self.fasta_length, filter_cutoff, 3, 50, 2)
 
         # Save the read filtering report
         self.read_report = Rdb
