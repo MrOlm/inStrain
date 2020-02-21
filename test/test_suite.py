@@ -24,6 +24,7 @@ import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.deprecated
 import inStrain.filter_reads
+import inStrain.deprecated_filter_reads
 import inStrain.profileUtilities
 import inStrain.readComparer
 import inStrain.argumentParser
@@ -840,9 +841,9 @@ class test_filter_reads():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
 
         self.setUp()
         self.test1()
@@ -875,7 +876,7 @@ class test_filter_reads():
         # Run version 1 to get scaffold to pairs to info
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         scaffolds = list(scaff2sequence.keys())
-        s2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        s2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
         db = inStrain.filter_reads.make_detailed_read_report(s2pair2info, version=1)
 
         # Run version 2 to get scaffold to pairs to info
@@ -938,7 +939,7 @@ class test_filter_reads():
         for scaff, p2i in s2pair2info.items():
             for p, i in p2i.items():
                 pair2info[p] = i
-        RRo = inStrain.filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
+        RRo = inStrain.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
 
         # Test out the read filtering report
         RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, **kwargs)
@@ -1003,7 +1004,7 @@ class test_filter_reads():
         # Try old method
 
         # Load paired reads
-        scaff2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        scaff2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
         # Merge into single
         pair2info = {}
         for scaff, p2i in scaff2pair2info.items():
@@ -1011,10 +1012,10 @@ class test_filter_reads():
                 pair2info[p] = i
         # Make read report
         logging.info('Making read report')
-        RRo = inStrain.filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info)
+        RRo = inStrain.deprecated_filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info)
         # Filter the dictionary
         logging.info('Filtering reads')
-        pair2infoFo = inStrain.filter_reads.filter_paired_reads_dict(pair2info)
+        pair2infoFo = inStrain.deprecated_filter_reads.filter_paired_reads_dict(pair2info)
         assert len(pair2infoFo.keys()) == int(RRo['filtered_pairs'].tolist()[0])
 
         # Compare

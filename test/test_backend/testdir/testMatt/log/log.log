@@ -1,0 +1,12 @@
+02-20 16:38 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+02-20 16:38 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/testMatt/log/log.log***
+02-20 16:38 DEBUG    Command to run inStrain was: ./test_suite.py
+
+02-20 16:38 DEBUG    inStrain version 1.2.2_BRANCH was run 
+
+02-20 16:38 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+02-20 16:38 INFO     ***************************************************
+    ..:: inStrain profile Step 1. Filter reads ::..
+***************************************************
+        
