@@ -116,6 +116,10 @@ class ProfileController():
         Rdic, RR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
         logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
 
+        if RR['filtered_pairs'].tolist()[0] == 0:
+            logging.error("Because no read pairs remain I'm going to crash now. Maybe this is failing because you dont have paired reads (in which case you should adjust --pairing_filter option), or maybe its failing because the mapper you used uses full fasta headers (in which case you should use the flag --use_full_fasta_header)")
+            raise Exception('No paired reads detected; see above message')
+
         # Get scaffold to paired reads (useful for multiprocessing)
         s2p = RR.set_index('scaffold')['filtered_pairs'].to_dict()
 
@@ -230,7 +234,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Return a table listing scaffold name, start, end
         '''
         # PROFILE ALL SCAFFOLDS IN THE .FASTA FILE
-        scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta")) # set up .fasta file
+        if args.use_full_fasta_header:
+            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"), key_function=_get_description)
+        else:
+            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta")) # set up .fasta file
+
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         Fdb = pd.DataFrame(list(s2l.items()), columns=['scaffold', 'end'])
         Fdb['start'] = 0
@@ -390,6 +398,8 @@ def setup_logger(loc):
     logging.debug("inStrain version {0} was run \n".format(__version__))
     logging.debug("!"*80 + '\n')
 
+def _get_description(rec):
+    return rec.description
 
 # def parse_arguments(args):
 #     parser = argparse.ArgumentParser(description="inStrain version {0}".format(__version__),

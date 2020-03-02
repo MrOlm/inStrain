@@ -2412,7 +2412,9 @@ class test_strains():
         reads = len(Sprofile.get('Rdic').keys())
         assert total_pairs == reads
 
-        for thing, val in zip(['min_mapq', 'max_insert_relative', 'min_insert'], [42, 0, 1000]):
+        ORI_READS = reads
+
+        for thing, val in zip(['min_mapq', 'max_insert_relative', 'min_insert'], [10, 1, 100]):
             print("!!!!!")
             print(thing, val)
 
@@ -2436,7 +2438,7 @@ class test_strains():
 
             reads = len(Sprofile.get('Rdic').keys())
             print(Sprofile.get('Rdic'))
-            assert reads == 0
+            assert reads < ORI_READS
 
     def test8(self):
         '''
@@ -2700,6 +2702,15 @@ class test_special():
         self.test_dir = load_random_test_dir()
         self.tearDown()
 
+        self.sorted_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_963_Ns.fasta.sorted.bam'
+        self.fasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_963_Ns.fasta'
+        self.bbsam = load_data_loc() + \
+            'bbmap_N5_271_010G1_scaffold_963.fasta.sorted.bam'
+        self.bbfasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_963.fasta'
+
     def tearDown(self):
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -2707,6 +2718,14 @@ class test_special():
     def run(self):
         self.setUp()
         self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
         self.tearDown()
 
     def test1(self):
@@ -2723,6 +2742,50 @@ class test_special():
 
         assert not inStrain.SNVprofile.same_versions('1.1.0', '0.1.0')
 
+    def test2(self):
+        '''
+        Make sure it works with Ns in the input
+        '''
+        # Run base
+        base = self.test_dir + 'testNs'
+        cmd = "inStrain profile {0} {1} -o {2} -l 0.95 --skip_genome_wide --skip_plot_generation".format(self.sorted_bam, \
+            self.fasta, base)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load the object
+        Matt_object = inStrain.SNVprofile.SNVprofile(base)
+        MCLdb = Matt_object.get_nonredundant_scaffold_table()
+
+    def test3(self):
+        '''
+        Try other mappers
+        '''
+        # Run bbmap and let it crash
+        base = self.test_dir + 'bbMap'
+        cmd = "inStrain profile {0} {1} -o {2} -l 0.95 --skip_genome_wide --skip_plot_generation".format(self.bbsam, \
+            self.bbfasta, base)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load the object
+        Matt_object = inStrain.SNVprofile.SNVprofile(base)
+        MCLdb = Matt_object.get_nonredundant_scaffold_table()
+        assert len(MCLdb) == 0
+
+        # Run bbmap and make it work
+        base = self.test_dir + 'bbMap'
+        cmd = "inStrain profile {0} {1} -o {2} -l 0.95 --skip_genome_wide --skip_plot_generation --use_full_fasta_header".format(self.bbsam, \
+            self.bbfasta, base)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load the object
+        Matt_object = inStrain.SNVprofile.SNVprofile(base)
+        MCLdb = Matt_object.get_nonredundant_scaffold_table()
+        assert len(MCLdb) > 0
+
+
 if __name__ == '__main__':
     test_filter_reads().run()
     test_strains().run()
@@ -2731,7 +2794,8 @@ if __name__ == '__main__':
     test_quickProfile().run()
     test_genome_wide().run()
     test_plot().run()
-    test_special().run()
     test_readcomparer().run()
+    test_special().run()
+
 
     print('everything is working swimmingly!')

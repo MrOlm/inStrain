@@ -132,6 +132,8 @@ def parse_args(args):
     Iflags = profile_parent.add_argument_group('I/O PARAMETERS')
     Iflags.add_argument("-o", "--output", action="store", default='inStrain', \
         help='Output prefix')
+    Iflags.add_argument('--use_full_fasta_header', action='store_true', default=False,
+        help='Instead of using the fasta ID (space in header before space), use the full header. Needed for some mapping tools (including bbMap)')
 
     profile_parser = subparsers.add_parser("profile",formatter_class=SmartFormatter,\
                     parents = [profile_parent, parent_parser, readfilter_parent, variant_parent, genes_parent, geneomewide_parent], add_help=False)

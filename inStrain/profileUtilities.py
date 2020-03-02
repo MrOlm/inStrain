@@ -930,17 +930,13 @@ def _parse_Sdb(sdb):
     if len(sdb) == 0:
         return sdb
 
-    # sdb['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(sdb['A'],sdb['C'],sdb['T'],sdb['G'])]
-    # sdb['varBase'] = [['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-1])]\
-    #                   if ['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-1])] != r \
-    #                   else ['A','C','T','G'][[a,c,t,g].index(sorted([a,c,t,g])[-2])] \
-    #                   for a,c,t,g,r in zip(sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['conBase'])]
     sdb['varFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
                         sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['varBase'], sdb['baseCoverage'])]
-    sdb['refFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
-                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['refBase'], sdb['baseCoverage'])]
     sdb['conFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
                         sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['conBase'], sdb['baseCoverage'])]
+    sdb['refFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s if v in ['A','C','T','G'] else np.nan for a,c,t,g,v,s in zip(\
+                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['refBase'], sdb['baseCoverage'])]
+
     return sdb
 
 class scaffold_profile():
