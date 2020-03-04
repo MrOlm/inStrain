@@ -116,7 +116,7 @@ Next, using only read pairs that pass filters, a number of microdiveristy metric
 
  * Calculate the coverage at each position along the scaffold
 
- * Calculate the clonality at each position along the scaffold in which the coverage is greater than the min_cov argument. The formula for calculating clonality is the sum of the frequency of each base squared - [(frequency of A)^2 + (frequency of C)^2 + (frequency of G)^2 + (frequency of T)^2 ]. This clonality definition is nice because it is not effected by coverage
+ * Calculate the nucleotide diversity at each position along the scaffold in which the coverage is greater than the min_cov argument. The formula for calculating nucleotide diversity is the sum of the frequency of each base squared - [(frequency of A)^2 + (frequency of C)^2 + (frequency of G)^2 + (frequency of T)^2 ]. This microdiversity definition is nice because it is not effected by coverage
 
  * Identify SNPs. The criteria for being called a SNP are 1) More than min_cov number of bases at that position, 2) More than min_freq percentage of reads that are a variant base, 3) The number of reads with the variant base is more than the null model for that coverage. The null model describes the probability that the number of true reads that support a variant base could be due to random mutation error, assuming Q30 score. The default false discovery rate with the null model is 1e-6 (one in a million)
 
