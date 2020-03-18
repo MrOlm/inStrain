@@ -8,6 +8,7 @@ import logging
 import argparse
 import traceback
 
+import Bio
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -389,6 +390,15 @@ class Command():
     def __init__(self):
         pass
 
+def parse_genes(gene_file, **kwargs):
+    if gene_file[-4:] == '.fna':
+        return parse_prodigal_genes(gene_file)
+    elif ((gene_file[-3:] == '.gb') | (gene_file[-4:] == '.gbk')):
+        return parse_genbank_genes(gene_file)
+    else:
+        print("I dont know how to process {0}".format(gene_file))
+        raise Exception
+
 def parse_prodigal_genes(gene_fasta):
     '''
     Parse the prodigal .fna file
@@ -413,6 +423,35 @@ def parse_prodigal_genes(gene_fasta):
 
     Gdb = pd.DataFrame(table)
     logging.info("{0}% of the input {1} genes were marked as incomplete".format((len(Gdb[Gdb['partial'] == True])/len(Gdb))*100, len(Gdb)))
+
+    return Gdb, gene2sequence
+
+def parse_genbank_genes(gene_file, gene_name='gene'):
+    table = defaultdict(list)
+    gene2sequence = {}
+    for record in SeqIO.parse(gene_file, 'gb'):
+        scaffold = record.id
+        for feature in record.features:
+            if feature.type == 'CDS':
+                gene = feature.qualifiers[gene_name][0]
+                loc = feature.location
+                if type(loc) is Bio.SeqFeature.CompoundLocation:
+                    partial = 'compound'
+                else:
+                    partial = False
+
+                table['gene'].append(gene)
+                table['scaffold'].append(scaffold)
+                table['direction'].append(feature.location.strand)
+                table['partial'].append(partial)
+
+                table['start'].append(loc.start)
+                table['end'].append(loc.end)
+
+                gene2sequence[gene] = record.seq
+
+    Gdb = pd.DataFrame(table)
+    logging.info("{0}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
 
     return Gdb, gene2sequence
 
@@ -473,16 +512,17 @@ class Controller():
 
         vargs = vars(args)
         IS = vargs.pop('IS')
+        GF = vargs.pop('gene_file')
 
         # Read the genes file
         logging.debug('Loading genes')
-        Gdb, gene2sequence = parse_prodigal_genes(args.gene_file)
+        Gdb, gene2sequence = parse_genes(GF, **vargs)
 
         # Calculate all your parallelized gene-level stuff
         name2result = calculate_gene_metrics(IS, Gdb, gene2sequence, **vargs)
 
         # Store information
-        IS.store('genes_fileloc', args.gene_file, 'value', 'Location of genes .faa file that was used to call genes')
+        IS.store('genes_fileloc', GF, 'value', 'Location of genes .faa file that was used to call genes')
         IS.store('genes_table', Gdb, 'pandas', 'Location of genes in the associated genes_file')
         IS.store('genes_coverage', name2result['coverage'], 'pandas', 'Coverage of individual genes')
         IS.store('genes_clonality', name2result['clonality'], 'pandas', 'Clonality of individual genes')

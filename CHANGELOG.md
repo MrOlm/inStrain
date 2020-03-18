@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.5] - 2020-03-17
+- Allow genbank files for calling genes (FILE MUST END IN .gb OR .gbk)
+
 ## [1.2.4] - 2020-02-27
 - No longer crash when "N" is in the reference sequence
 - Add the ability to --use_full_fasta_header

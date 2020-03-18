@@ -109,7 +109,7 @@ def parse_args(args):
     genes_parent = argparse.ArgumentParser(add_help=False)
     Rflags = genes_parent.add_argument_group('GENE PROFILING OPTIONS')
     Rflags.add_argument("-g", "--gene_file", action="store", default=None, \
-        help='Path to prodigal .fna genes file.')
+        help='Path to prodigal .fna genes file. If file ends in .gb or .gbk, will treat as a genbank file (EXPERIMENTAL; the name of the gene must be in the gene qualifier)')
 
     # Make a parent for genome_wide
     geneomewide_parent = argparse.ArgumentParser(add_help=False)

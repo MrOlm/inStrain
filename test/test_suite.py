@@ -618,6 +618,10 @@ class test_gene_statistics():
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
         self.genes = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
+        self.IS2 = load_data_loc() + \
+            'sars_cov_2_MT039887.1.fasta.bt2-vs-SRR11140750.sam.IS'
+        self.genbank = load_data_loc() + \
+            'sars_cov_2_MT039887.1.gb'
 
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -638,6 +642,10 @@ class test_gene_statistics():
 
         self.setUp()
         self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
         self.tearDown()
 
     def test0(self):
@@ -817,6 +825,50 @@ class test_gene_statistics():
                 #assert abs((ScaffCov-GeneCov)/ScaffCov) < 3
                 diffs.append(abs((ScaffCov-GeneCov)/ScaffCov))
         assert np.mean(diffs) < 0.15 # The average difference is less than 15%
+
+    def test3(self):
+        '''
+        Make sure it works with a genbank file
+        '''
+        location = os.path.join(self.test_dir, os.path.basename(self.IS2))
+        shutil.copytree(self.IS2, location)
+
+        # Run program
+        base = self.test_dir + 'testN'
+
+        cmd = "inStrain profile_genes -i {1} -g {3}".format(self.script, location, \
+            base, self.genbank)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it produced output
+        rawfiles = glob.glob(location + '/output/*')
+        assert len(rawfiles) == 8, [rawfiles, location + '/output/*', len(rawfiles)]
+
+        # Internally verify
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        Gdb = IS.get('genes_table')
+        db = IS.get('genes_coverage')
+        RGdb = pd.merge(Gdb, db, on='gene', how='left')
+
+        for scaff, d in RGdb.groupby('gene'):
+            d = d.sort_values('mm')
+            for thing in ['coverage', 'breadth']:
+                assert d[thing].tolist() == sorted(d[thing].tolist()), [d, thing]
+
+        # Make sure the values make a little bit of sense when compared to the scaffolds
+        diffs = []
+        Sdb = IS.get('cumulative_scaffold_table')
+        for scaff, sdb in Sdb.groupby('scaffold'):
+            for mm, db in sdb.groupby('mm'):
+                ScaffCov = db['coverage'].tolist()[0]
+                GeneCov = RGdb[(RGdb['mm'] == mm) & (RGdb['scaffold'] == scaff)]['coverage'].mean()
+                if GeneCov != GeneCov:
+                    continue
+                #print(ScaffCov, GeneCov, scaff, mm)
+                #assert abs((ScaffCov-GeneCov)/ScaffCov) < 3
+                diffs.append(abs((ScaffCov-GeneCov)/ScaffCov))
+        assert np.mean(diffs) < 0.16, np.mean(diffs) # The average difference is less than 16%
 
 
 class test_filter_reads():
