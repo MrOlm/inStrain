@@ -43,7 +43,11 @@ def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
 
     # Make a global scaff table
     global CumulativeSNVtable
-    CumulativeSNVtable = IS.get('cumulative_snv_table').sort_values('mm')
+    CumulativeSNVtable = IS.get('cumulative_snv_table')
+    if len(CumulativeSNVtable) > 0:
+        CumulativeSNVtable = CumulativeSNVtable.sort_values('mm')
+    else:
+        CumulativeSNVtable = pd.DataFrame(columns=['scaffold'])
 
     if p > 1:
         ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)

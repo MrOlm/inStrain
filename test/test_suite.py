@@ -648,6 +648,10 @@ class test_gene_statistics():
         self.test3()
         self.tearDown()
 
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
     def test0(self):
         '''
         Test deprecated gene_statistic
@@ -832,6 +836,57 @@ class test_gene_statistics():
         '''
         location = os.path.join(self.test_dir, os.path.basename(self.IS2))
         shutil.copytree(self.IS2, location)
+
+        # Run program
+        base = self.test_dir + 'testN'
+
+        cmd = "inStrain profile_genes -i {1} -g {3}".format(self.script, location, \
+            base, self.genbank)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it produced output
+        rawfiles = glob.glob(location + '/output/*')
+        assert len(rawfiles) == 8, [rawfiles, location + '/output/*', len(rawfiles)]
+
+        # Internally verify
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        Gdb = IS.get('genes_table')
+        db = IS.get('genes_coverage')
+        RGdb = pd.merge(Gdb, db, on='gene', how='left')
+
+        for scaff, d in RGdb.groupby('gene'):
+            d = d.sort_values('mm')
+            for thing in ['coverage', 'breadth']:
+                assert d[thing].tolist() == sorted(d[thing].tolist()), [d, thing]
+
+        # Make sure the values make a little bit of sense when compared to the scaffolds
+        diffs = []
+        Sdb = IS.get('cumulative_scaffold_table')
+        for scaff, sdb in Sdb.groupby('scaffold'):
+            for mm, db in sdb.groupby('mm'):
+                ScaffCov = db['coverage'].tolist()[0]
+                GeneCov = RGdb[(RGdb['mm'] == mm) & (RGdb['scaffold'] == scaff)]['coverage'].mean()
+                if GeneCov != GeneCov:
+                    continue
+                #print(ScaffCov, GeneCov, scaff, mm)
+                #assert abs((ScaffCov-GeneCov)/ScaffCov) < 3
+                diffs.append(abs((ScaffCov-GeneCov)/ScaffCov))
+        assert np.mean(diffs) < 0.16, np.mean(diffs) # The average difference is less than 16%
+
+    def test4(self):
+        '''
+        Make sure it works when there are no SNVs
+        '''
+        location = os.path.join(self.test_dir, os.path.basename(self.IS2))
+        shutil.copytree(self.IS2, location)
+
+        # Delete SNVs
+        s_loc = location + '/output/sars_cov_2_MT039887.1.fasta.bt2-vs-SRR11140750.sam.IS_SNVs.tsv'
+        with open(s_loc, 'w'):
+            pass
+        inStrain.SNVprofile.SNVprofile(location).store('cumulative_snv_table', pd.DataFrame(),
+                        'pandas', 'Cumulative SNP on mm level. Formerly snpLocations.pickle')
 
         # Run program
         base = self.test_dir + 'testN'
@@ -2839,15 +2894,15 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_filter_reads().run()
-    test_strains().run()
-    test_SNVprofile().run()
+    # test_filter_reads().run()
+    # test_strains().run()
+    # test_SNVprofile().run()
     test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_readcomparer().run()
-    test_special().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_readcomparer().run()
+    # test_special().run()
 
 
     print('everything is working swimmingly!')
