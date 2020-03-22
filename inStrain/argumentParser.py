@@ -150,6 +150,8 @@ def parse_args(args):
         help="Dont perform analysis on an mm level; saves RAM and time")
     Oflags.add_argument("--scaffolds_to_profile", action="store",\
         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
+    Oflags.add_argument("--rarefied_coverage", action='store', default=50,\
+        help='When calculating nucleotide diversity, also calculate a rarefied version with this much coverage')
 
     # Other Parameters
     Iflags = profile_parser.add_argument_group('OTHER  OPTIONS')

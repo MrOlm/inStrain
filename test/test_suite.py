@@ -2202,6 +2202,10 @@ class test_strains():
         self.test14()
         self.tearDown()
 
+        self.setUp()
+        self.test15()
+        self.tearDown()
+
     def test0(self):
         '''
         Compare Matts to CCs methodology
@@ -2734,6 +2738,49 @@ class test_strains():
         db = S1.get('cumulative_scaffold_table')
         _internal_verify_Sdb(db)
 
+    def test15(self):
+        '''
+        Basic test- Make sure genes and genome_wide can be run within the profile option
+        '''
+        # Set up
+        base = self.test_dir + 'test'
+
+        # Run program
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98 --rarefied_coverage 10".format(self.script, self.sorted_bam, \
+            self.fasta, base, self.genes)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it produced output
+        assert os.path.isdir(base)
+        assert len(glob.glob(base + '/output/*')) == 8
+
+        # Make sure the output makes sense
+        S1 = inStrain.SNVprofile.SNVprofile(base)
+        db = S1.get('cumulative_scaffold_table')
+        _internal_verify_Sdb(db)
+        clontR = S1.get('clonTR')
+        counts0 = sum([len(x[2]) if 2 in x else 0 for s, x in clontR.items()])
+
+        # Make sure its in the genome_wide table
+        gdb = pd.read_csv(glob.glob(base + '/output/*genomeWide_scaffold_info*.tsv')[0], sep='\t')
+        assert 'rarefied_mean_microdiversity' in gdb.columns, gdb.head()
+
+        # Run again with different rarefied coverage
+        base = self.test_dir + 'test2'
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98 --rarefied_coverage 50".format(self.script, self.sorted_bam, \
+            self.fasta, base, self.genes)
+        print(cmd)
+        call(cmd, shell=True)
+
+        S1 = inStrain.SNVprofile.SNVprofile(base)
+        db = S1.get('cumulative_scaffold_table')
+        _internal_verify_Sdb(db)
+        clontR = S1.get('clonTR')
+        counts2 = sum([len(x[2]) if 2 in x else 0 for s, x in clontR.items()])
+
+        assert counts0 > counts2, [counts0, counts2]
+
 
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
@@ -2749,11 +2796,11 @@ def _internal_verify_Sdb(Sdb):
 
     sdb = Sdb[Sdb['unmaskedBreadth'] > 0]
     for col in sdb.columns:
+        if col in ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']:
+            continue
         if len(sdb[sdb[col].isna()]) > 0:
             print(col)
             print(sdb[sdb[col].isna()])
-
-    assert len(sdb) == len(sdb.dropna())
 
     for i, row in Sdb.iterrows():
         if row['consensus_SNPs'] > 0:
@@ -2762,6 +2809,12 @@ def _internal_verify_Sdb(Sdb):
     assert Sdb['conANI'].max() <= 1
     assert Sdb['unmaskedBreadth'].max() <= 1
     assert Sdb['breadth'].max() <= 1
+
+    if 'rarefied_breadth' not in sdb.columns:
+        assert len(sdb) == len(sdb.dropna())
+    else:
+        sdb = sdb[sdb['rarefied_breadth'] > 0]
+        assert len(sdb) == len(sdb.dropna())
 
 def _internal_verify_OdbSdb(Odb, Sdb):
     '''
@@ -2894,15 +2947,15 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
-    # test_strains().run()
-    # test_SNVprofile().run()
+    test_filter_reads().run()
+    test_strains().run()
+    test_SNVprofile().run()
     test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_readcomparer().run()
-    # test_special().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_readcomparer().run()
+    test_special().run()
 
 
     print('everything is working swimmingly!')

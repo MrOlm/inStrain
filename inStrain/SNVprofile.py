@@ -376,7 +376,7 @@ class SNVprofile:
         '''
         store special things; this is for loading deprecated things
         '''
-        if name in ['covT', 'snpsCounted', 'clonT']:
+        if name in ['covT', 'snpsCounted', 'clonT', 'clonTR']:
             base = np.load(location)
             files = base.files
 
@@ -404,7 +404,7 @@ class SNVprofile:
         '''
         store special things using hd5
         '''
-        if name in ['covT', 'snpsCounted', 'clonT']:
+        if name in ['covT', 'snpsCounted', 'clonT', 'clonTR']:
             '''
             The idea here is to save the series'
             '''
@@ -442,7 +442,7 @@ class SNVprofile:
         scaffolds = kwargs.get('scaffolds', [])
         pairs = kwargs.get('pairs', [])
 
-        if name in ['covT', 'snpsCounted', 'clonT']:
+        if name in ['covT', 'snpsCounted', 'clonT', 'clonTR']:
             if location[-4:] == '.npz':
                 return self._load_special_old(location, name)
 
@@ -812,6 +812,11 @@ def convert_SNVprofile(pickle_loc):
         elif attr == 'clonT':
             new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
             nIS.store('clonT', new,
+                    'special', "Scaffold -> mm -> position based clonality")
+
+        elif attr == 'clonTR':
+            new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
+            nIS.store('clonTR', new,
                     'special', "Scaffold -> mm -> position based clonality")
             # nIS.store('clonT', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'clonality'),
             #         'special', "Scaffold -> mm -> position based clonality")

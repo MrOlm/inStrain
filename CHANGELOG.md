@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.7] - 2020-03-21
+- Calculates rarefied microdiversity as well, now
+
 ## [1.2.6] - 2020-03-19
 - Don't crash geneprofile when no SNPs are called
 

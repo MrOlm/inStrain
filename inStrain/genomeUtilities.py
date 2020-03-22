@@ -203,7 +203,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                 else:
                     table[col].append(np.nan)
 
-            for col in ['mean_microdiverstiy']:
+            for col in ['mean_microdiverstiy', 'rarefied_mean_microdiversity']:
                 if col not in df.columns:
                     continue
                 if considered_leng != 0:

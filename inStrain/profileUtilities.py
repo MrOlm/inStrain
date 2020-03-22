@@ -4,6 +4,7 @@ import sys
 import time
 import pysam
 import psutil
+import random
 import logging
 import resource
 import traceback
@@ -274,6 +275,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
 
     # Pull some arguments
     min_cov = int(kwargs.get('min_cov', 5))
+    min_covR = int(kwargs.get('rarefied_coverage', 5))
     min_freq = float(kwargs.get('min_freq', .05))
     min_snp = int(kwargs.get('min_snp', 10))
     store_everything = kwargs.get('store_everything', False)
@@ -289,6 +291,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     snv2mm2counts = {} # dictionary of position to mm to counts for SNP positions
 
     clonT = {} # Diciontary of mm -> clonality
+    clonTR = {} # Diciontary of mm -> rarefied clonality
 
     # Initialize some tables
     Stable = defaultdict(list) # Holds SNP information
@@ -307,9 +310,9 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
 
 
         # Call SNPs
-        snp, bases, total_counts = _update_snp_table_T(Stable, clonT,\
+        snp, bases, total_counts = _update_snp_table_T(Stable, clonT, clonTR,\
                     MMcounts, p2c,\
-                    pileupcolumn.pos, scaffold, mLen, seq[pileupcolumn.pos], min_cov=min_cov, min_freq=min_freq)
+                    pileupcolumn.pos, scaffold, mLen, seq[pileupcolumn.pos], min_cov=min_cov, min_covR=min_covR, min_freq=min_freq)
 
         # add the counts for this position to the numpy array alexcc
         if store_everything:
@@ -327,6 +330,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     # shrink lots of things by default
     covT = shrink_basewise(covT, 'coverage')
     clonT = shrink_basewise(clonT, 'clonality')
+    clonTR = shrink_basewise(clonTR, 'clonality')
     #snpsCounted = shrink_basewise(snpsCounted, 'snpCounted')
 
     # Make the SNP table
@@ -343,7 +347,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
         SNPTable['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
 
     # Do per-scaffold aggregating
-    CoverageTable = make_coverage_table(covT, clonT, mLen, scaffold, Wdb, SNPTable, min_freq=min_freq)
+    CoverageTable = make_coverage_table(covT, clonT, clonTR, mLen, scaffold, Wdb, SNPTable, min_freq=min_freq)
 
     # Make linkage network
     mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
@@ -375,7 +379,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
     Sprofile.make_cumulative_tables()
 
     #for att in ['covT', 'snpsCounted', 'clonT']:
-    for att in ['covT', 'clonT']:
+    for att in ['covT', 'clonT', 'clonTR']:
         setattr(Sprofile, att, eval(att))
 
     # store extra things if required
@@ -441,8 +445,8 @@ def _update_covT(covT, MMcounts, position, mLen):
             covT[mm] = np.zeros(mLen, dtype=int)
         covT[mm][position] = sum(count)
 
-def _update_snp_table_T(Stable, clonT, MMcounts, p2c,\
-        pos, scaff, mLen, refBase, min_cov=5, min_freq=.05):
+def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
+        pos, scaff, mLen, refBase, min_cov=5, min_covR=50, min_freq=.05):
     '''
     Add information to SNP table. Update basesCounted and snpsCounted
 
@@ -497,6 +501,12 @@ def _update_snp_table_T(Stable, clonT, MMcounts, p2c,\
             clonT[mm] = np.full(mLen, fill_value=np.nan, dtype="float32")
         if sum(counts) >= min_cov:
             clonT[mm][pos] = calculate_clonality(counts)
+
+        # Update rarefied clonality
+        if mm not in clonTR:
+            clonTR[mm] = np.full(mLen, fill_value=np.nan, dtype="float32")
+        if sum(counts) >= min_covR:
+            clonTR[mm][pos] = calculate_rarefied_clonality(counts, rarefied_coverage=min_covR)
 
         if not snp: # means base was not counted
             continue
@@ -630,13 +640,29 @@ def call_snv_site(counts, refBase, min_cov=5, min_freq=0.05, model=None):
         return -1, i
 
 
-def calculate_clonality(counts, min_cov = 5):
+def calculate_clonality(counts):
     '''
     Calculates the probability that two reads have the same allele at a position (per site nucleotide diversity)
     '''
     s = sum(counts)
     prob = (float(counts[0]) / s) * (float(counts[0]) / s) + (float(counts[1]) / s) * (float(counts[1]) / s) + (float(counts[2]) / s) * (float(counts[2]) / s) + (float(counts[3]) / s) * (float(counts[3]) / s)
     return prob
+
+def calculate_rarefied_clonality(counts, rarefied_coverage=50):
+    '''
+    Calculates the probability that two reads have the same allele at a position (per site nucleotide diversity)
+    '''
+    # Figure out the probability distribution
+    s = sum(counts)
+    p = [counts[i]/s for i in [0,1,2,3]]
+
+    # Make rarefied counts
+    rcounts_list = np.random.choice([0,1,2,3], rarefied_coverage, p=p)
+    unique, ncounts = np.unique(rcounts_list, return_counts=True)
+    item2counts = dict(zip(unique, ncounts))
+    rcounts = [item2counts[i] if i in item2counts else 0 for i in [0,1,2,3]]
+
+    return calculate_clonality(rcounts)
 
 def get_lowest_mm(clonT, mm):
     mms = [int(m) for m in list(clonT.keys()) if int(m) <= int(mm)]
@@ -645,18 +671,6 @@ def get_lowest_mm(clonT, mm):
     else:
         return max(mms)
 
-def _get_basewise_clons(clonT, MM, fill_zeros=False):
-    counts = pd.Series(dtype='float32')
-    mms = sorted([int(mm) for mm in list(clonT.keys()) if int(mm) <= int(MM)])
-    for mm in mms:
-        for i, v in clonT[mm].items():
-            counts.at[i] = v
-
-    if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
-
-    return counts
-
 def _get_basewise_clons2(clonT, MM, fill_zeros=False):
     p2c = {}
     mms = sorted([int(mm) for mm in list(clonT.keys()) if int(mm) <= int(MM)])
@@ -664,25 +678,6 @@ def _get_basewise_clons2(clonT, MM, fill_zeros=False):
         p2c.update(clonT[mm].to_dict())
 
     counts = list(p2c.values())
-
-    if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
-
-    return counts
-
-def _get_basewise_clons3(clonT, MM, fill_zeros=False):
-    p2c = {}
-    mms = sorted([int(mm) for mm in list(clonT.keys()) if int(mm) <= int(MM)])
-    for mm in mms:
-        p2c.update(clonT[mm].to_dict())
-
-    inds = []
-    vals = []
-    for ind in sorted(p2c.keys()):
-        inds.append(ind)
-        vals.append(p2c[ind])
-
-    counts = pd.Series(data = vals, index = np.array(inds).astype('int'))
 
     if fill_zeros:
         counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
@@ -721,7 +716,7 @@ def _calc_snps(Odb, mm, min_freq=0.05):
 
     return [ref_snps, bi_snps, multi_snps, len(db), con_snps, pop_snps]
 
-def make_coverage_table(covT, clonT, lengt, scaff, Wdb, SNPTable, min_freq=0.05, debug=False):
+def make_coverage_table(covT, clonT, clonTR, lengt, scaff, Wdb, SNPTable, min_freq=0.05, debug=False):
     '''
     Add information to the table
     Args:
@@ -744,8 +739,10 @@ def make_coverage_table(covT, clonT, lengt, scaff, Wdb, SNPTable, min_freq=0.05,
 
         # Get clonalities
         clons = _get_basewise_clons2(clonT, mm)
+        Rclons = _get_basewise_clons2(clonTR, mm)
 
         counted_bases = len(clons)
+        rarefied_bases = len(Rclons)
         ref_snps, bi_snps, multi_snps, counted_snps, con_snps, pop_snps = _calc_snps(SNPTable, mm, min_freq=min_freq)
         #counted_snps = _calc_counted_bases(snpsCounted, mm)
 
@@ -773,7 +770,17 @@ def make_coverage_table(covT, clonT, lengt, scaff, Wdb, SNPTable, min_freq=0.05,
             table['mean_microdiversity'].append(np.nan)
             table['median_microdiversity'].append(np.nan)
 
+        if len(Rclons) > 0:
+            mean_c = np.mean(Rclons)
+            median_c = np.median(Rclons)
+            table['rarefied_mean_microdiversity'].append(1-mean_c)
+            table['rarefied_median_microdiversity'].append(1-median_c)
+        else:
+            table['rarefied_mean_microdiversity'].append(np.nan)
+            table['rarefied_median_microdiversity'].append(np.nan)
+
         table['unmaskedBreadth'].append(len(clons) / lengt)
+        table['rarefied_breadth'].append(rarefied_bases / lengt)
         table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
 
         table['SNPs'].append(counted_snps)
@@ -1078,10 +1085,11 @@ def gen_snv_profile(Sprofiles, **kwargs):
     att2descr = {'covT':'Scaffold -> mm -> position based coverage',
                  #'snpsCounted':"Scaffold -> mm -> position based True/False on if a SNPs is there",
                  'clonT':"Scaffold -> mm -> position based clonality",
+                 'clonTR':"Scaffold -> mm -> rarefied position based clonality",
                  'read_to_snvs':'?',
                  'mm_to_position_graph':'?'}
     #for att in ['covT', 'snpsCounted', 'clonT', 'read_to_snvs', 'mm_to_position_graph']:
-    for att in ['covT', 'clonT', 'read_to_snvs', 'mm_to_position_graph']:
+    for att in ['covT', 'clonT', 'clonTR', 'read_to_snvs', 'mm_to_position_graph']:
         if hasattr(Sprofiles[0], att):
             thing = {S.scaffold:getattr(S, att) for S in Sprofiles}
             Sprofile.store(att, thing, 'special', att2descr[att])
