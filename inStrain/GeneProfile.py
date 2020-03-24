@@ -450,9 +450,9 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
                 table['partial'].append(partial)
 
                 table['start'].append(loc.start)
-                table['end'].append(loc.end)
+                table['end'].append(loc.end - 1)
 
-                gene2sequence[gene] = record.seq
+                gene2sequence[gene] = feature.location.extract(record).seq
 
     Gdb = pd.DataFrame(table)
     logging.info("{0}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
@@ -532,6 +532,9 @@ class Controller():
         IS.store('genes_clonality', name2result['clonality'], 'pandas', 'Clonality of individual genes')
         IS.store('genes_SNP_density', name2result['SNP_density'], 'pandas', 'SNP density of individual genes')
         IS.store('SNP_mutation_types', name2result['SNP_mutation_types'], 'pandas', 'The mutation types of SNPs')
+
+        if vargs.get('store_everything', False):
+            IS.store('gene2sequence', gene2sequence, 'pickle', 'Dicitonary of gene -> nucleotide sequence')
 
         # Store the output
         out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'

@@ -796,7 +796,7 @@ class test_gene_statistics():
         # Run program
         base = self.test_dir + 'testN'
 
-        cmd = "inStrain profile_genes -i {1} -g {3}".format(self.script, location, \
+        cmd = "inStrain profile_genes -i {1} -g {3} --store_everything".format(self.script, location, \
             base, self.genes)
         print(cmd)
         call(cmd, shell=True)
@@ -809,12 +809,16 @@ class test_gene_statistics():
         IS = inStrain.SNVprofile.SNVprofile(location)
         Gdb = IS.get('genes_table')
         db = IS.get('genes_coverage')
+        gene2sequence = IS.get('gene2sequence')
         RGdb = pd.merge(Gdb, db, on='gene', how='left')
 
         for scaff, d in RGdb.groupby('gene'):
             d = d.sort_values('mm')
             for thing in ['coverage', 'breadth']:
                 assert d[thing].tolist() == sorted(d[thing].tolist()), [d, thing]
+            for i, row in d.iterrows():
+                seq = gene2sequence[row['gene']]
+                assert len(seq) == (row['end'] - row['start'] + 1), [len(seq), row['end'] - row['start'] + 1]
 
         # Make sure the values make a little bit of sense when compared to the scaffolds
         diffs = []
@@ -840,7 +844,7 @@ class test_gene_statistics():
         # Run program
         base = self.test_dir + 'testN'
 
-        cmd = "inStrain profile_genes -i {1} -g {3}".format(self.script, location, \
+        cmd = "inStrain profile_genes -i {1} -g {3} --store_everything".format(self.script, location, \
             base, self.genbank)
         print(cmd)
         call(cmd, shell=True)
@@ -853,7 +857,18 @@ class test_gene_statistics():
         IS = inStrain.SNVprofile.SNVprofile(location)
         Gdb = IS.get('genes_table')
         db = IS.get('genes_coverage')
+        gene2sequence = IS.get('gene2sequence')
         RGdb = pd.merge(Gdb, db, on='gene', how='left')
+
+        for i, row in Gdb.iterrows():
+            seq = gene2sequence[row['gene']]
+            try:
+                assert len(seq) == (row['end'] - row['start'] + 1), [len(seq), row['end'] - row['start'] + 1]
+            except:
+                print(row['gene'] + ' failed')
+                print(len(seq))
+                print(row['end'] - row['start'] + 1)
+                print(row)
 
         for scaff, d in RGdb.groupby('gene'):
             d = d.sort_values('mm')

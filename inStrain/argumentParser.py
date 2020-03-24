@@ -207,6 +207,8 @@ def parse_args(args):
     # Required positional arguments
     Rflags = genes_io.add_argument_group('INPUT / OUTPUT')
     Rflags.add_argument("-i", '--IS', help="an inStrain profile object", required=True)
+    Rflags.add_argument('--store_everything', action='store_true', default=False,\
+        help="Store gene sequences in the IS object")
 
     genes_parser = subparsers.add_parser("profile_genes",formatter_class=SmartFormatter,\
                     parents = [genes_parent, genes_io, parent_parser], add_help=False)
