@@ -49,6 +49,12 @@ def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
     else:
         CumulativeSNVtable = pd.DataFrame(columns=['scaffold'])
 
+    # Make other globals
+    global covTs
+    covTs = IS.get('covT', scaffolds = scaffolds_to_profile)
+    global clonTs
+    clonTs = IS.get('clonT', scaffolds = scaffolds_to_profile)
+
     if p > 1:
         ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
         total_cmds = len([x for x in iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs)])
@@ -77,13 +83,13 @@ def profile_genes(IS, scaffold, gdb, gene2sequence, **kwargs):
     '''
     This is the money that gets multiprocessed
 
-    Relies on having a global "CumulativeSNVtable"
+    Relies on having a global "CumulativeSNVtable", "covTs", and "clonTs"
 
     * Calculate the clonality, coverage, linkage, and SNV_density for each gene
     * Determine whether each SNP is synynomous or nonsynonymous
     '''
     # Calculate gene-level coverage
-    covTs = IS.get('covT', scaffolds=[scaffold])
+    #covTs = IS.get('covT', scaffolds=[scaffold])
     if scaffold not in covTs:
         logging.info("{0} isnt in covT!".format(scaffold))
         cdb = pd.DataFrame()
@@ -93,17 +99,17 @@ def profile_genes(IS, scaffold, gdb, gene2sequence, **kwargs):
         del covT
 
     # Calculate gene-level clonality
-    covTs = IS.get('clonT', scaffolds=[scaffold])
-    if (covTs is None):
-        logging.info("{0} isnt in clovT!".format(scaffold))
-        cldb = pd.DataFrame()
-    if scaffold not in covTs:
+    #covTs = IS.get('clonT', scaffolds=[scaffold])
+    # if (covTs is None):
+    #     logging.info("{0} isnt in clovT!".format(scaffold))
+    #     cldb = pd.DataFrame()
+    if scaffold not in clonTs:
         logging.info("{0} isnt in clovT!".format(scaffold))
         cldb = pd.DataFrame()
     else:
-        covT = covTs[scaffold]
-        cldb = calc_gene_clonality(gdb, covT)
-        del covT
+        clonT = clonTs[scaffold]
+        cldb = calc_gene_clonality(gdb, clonT)
+        del clonT
 
     # I DECIDED THIS DOESN'T MAKE SENSE TO DO
 

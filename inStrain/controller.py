@@ -113,18 +113,24 @@ class ProfileController():
 
         # Load dictionary of paired reads
         scaffolds = list(FAdb['scaffold'].unique())
-        Rdic, RR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
+
+        detailed_report = vargs.get('deatiled_read_report', False)
+        if detailed_report:
+            Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
+        else:
+            Rdic, RR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
+            dRR = None
         logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
 
         if RR['filtered_pairs'].tolist()[0] == 0:
             logging.error("Because no read pairs remain I'm going to crash now. Maybe this is failing because you dont have paired reads (in which case you should adjust --pairing_filter option), or maybe its failing because the mapper you used uses full fasta headers (in which case you should use the flag --use_full_fasta_header)")
-            raise Exception('No paired reads detected; see above message')
+            raise Exception('No paired reads detected; see above message and log')
 
         # Get scaffold to paired reads (useful for multiprocessing)
         s2p = RR.set_index('scaffold')['filtered_pairs'].to_dict()
 
         # Filter the .fasta file
-        FAdb = self.filter_fasta(FAdb, RR, args.min_fasta_reads)
+        FAdb = self.filter_fasta(FAdb, s2p, args.min_fasta_reads)
         FAdb['filtered_pairs'] = FAdb['scaffold'].map(s2p)
         FAdb.sort_values('filtered_pairs', inplace=True, ascending=False)
 
@@ -155,6 +161,9 @@ class ProfileController():
 
         # Add the read report
         Sprofile.store('read_report', RR, 'pandas', "Report on reads")
+        if dRR != None:
+            Sprofile.store('detailed_read_report', dRR, 'pandas', "Details report on reads")
+            del dRR
 
         if args.store_everything:
             if args.skip_mm_profiling:
@@ -333,11 +342,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         RR = Sprofile.get('read_report')
         inStrain.filter_reads.write_read_report(RR, out_base + 'read_report.tsv', **vars(args))
 
-    def filter_fasta(self, FAdb, RR, min_reads=0):
+    def filter_fasta(self, FAdb, s2r, min_reads=0):
         '''
         Filter the .fasta file based on the min number of mapped paired reads
         '''
-        s2r = RR.set_index('scaffold')['filtered_pairs'].to_dict()
         FAdb = FAdb[[True if (s2r[s] >= min_reads) else False for s in FAdb['scaffold']]]
         return FAdb
 

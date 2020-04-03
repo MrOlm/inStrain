@@ -80,7 +80,7 @@ def parse_args(args):
     fiflags.add_argument("--pairing_filter", help="R|How should paired reads be handled?\n" \
         + "paired_only = Only paired reads are retained\n" \
         + 'non_discordant = Keep all paired reads and singleton reads that map to a single scaffold\n' \
-        + "all_reads = Keep all reads regardless of pairing status (NOT RECOMMENDED; weird behavior will result if two parts of a pair map to different scaffolds. See documentation for deatils)\n", \
+        + "all_reads = Keep all reads regardless of pairing status (NOT RECOMMENDED; See documentation for deatils)\n", \
         default = "paired_only", choices={'paired_only', 'non_discordant', 'all_reads'})
     fiflags.add_argument("--priority_reads", help='The location of a list ' \
         + "of reads that should be retained regardless of pairing status " \
@@ -93,6 +93,7 @@ def parse_args(args):
     fiflags = readoutput_parent.add_argument_group('READ OUTPUT OPTIONS')
     # fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
     #     help='Specify the location to write a .sam file with filtered reads only.')
+    fiflags.add_argument("--scaffold_level_read_report", action="store_true", default=False, help='Store read filtering info for each scaffold')
     fiflags.add_argument("--deatiled_read_report", action="store_true", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
 
     # Make a parent parser for SNV calling
@@ -136,7 +137,7 @@ def parse_args(args):
         help='Instead of using the fasta ID (space in header before space), use the full header. Needed for some mapping tools (including bbMap)')
 
     profile_parser = subparsers.add_parser("profile",formatter_class=SmartFormatter,\
-                    parents = [profile_parent, parent_parser, readfilter_parent, variant_parent, genes_parent, geneomewide_parent], add_help=False)
+                    parents = [profile_parent, parent_parser, readfilter_parent, readoutput_parent, variant_parent, genes_parent, geneomewide_parent], add_help=False)
 
     # Other Parameters
     Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')

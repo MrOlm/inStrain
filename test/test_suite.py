@@ -990,7 +990,7 @@ class test_filter_reads():
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain filter_reads {0} {1} -o {2}".format(self.sorted_bam, \
+        cmd = "inStrain filter_reads {0} {1} -o {2} --scaffold_level_read_report".format(self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
@@ -1089,7 +1089,7 @@ class test_filter_reads():
         RRo = inStrain.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
 
         # Test out the read filtering report
-        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, **kwargs)
+        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, scaffold_level_read_report=True, **kwargs)
 
         for col in ['singletons']:
             assert RR['unfiltered_' + col].tolist()[0] > 0
@@ -1124,14 +1124,14 @@ class test_filter_reads():
         assert RR['filtered_priority_reads'].tolist()[0] == 0
 
         # Try out allowing singletons
-        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, **kwargs)
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_read_report=True, **kwargs)
         for col in ['singletons']:
             assert RRs['unfiltered_' + col].tolist()[0] > 0
         assert RRs['unfiltered_priority_reads'].tolist()[0] == 0
         assert RRs['filtered_priority_reads'].tolist()[0] == 0
 
         # Try out priority_reads
-        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, priority_reads_set=priority_reads, **kwargs)
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_read_report=True, pairTOinfo=pair2info2, priority_reads_set=priority_reads, **kwargs)
         for col in ['singletons']:
             assert RRs['unfiltered_' + col].tolist()[0] > 0
         assert RRs['unfiltered_priority_reads'].tolist()[0] > 0
@@ -2971,6 +2971,5 @@ if __name__ == '__main__':
     test_plot().run()
     test_readcomparer().run()
     test_special().run()
-
 
     print('everything is working swimmingly!')

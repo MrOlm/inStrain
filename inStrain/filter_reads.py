@@ -268,6 +268,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
     '''
     assert type(kwargs.get('priority_reads', 'none')) != type(set())
     priority_reads = priority_reads_set
+    profile_scaffolds = kwargs.get('scaffold_level_read_report', False)
 
     #item2order
     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
@@ -311,14 +312,12 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
         table['mean_' + att].append(np.mean([info[i] for info in infos]))
     table['median_insert'].append(np.median([info[i2o['insert_distance']] for info in infos]))
     table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))) for info in infos]))
+    Adb = pd.DataFrame(table)
 
+    table = defaultdict(list)
     logging.debug('running on individual scaffolds')
     for scaff, pair2info in scaff2pair2info.items():
         table['scaffold'].append(scaff)
-        table['unfiltered_reads'].append(sum([value[i2o['reads']] for pair, value in pair2info.items()]))
-        table['unfiltered_pairs'].append(len([True for pair, value in pair2info.items() if value[i2o['reads']] == 2]))
-        table['unfiltered_singletons'].append(len([True for pair, info in pair2info.items() if (info[i2o['reads']] == 1)]))
-        table['unfiltered_priority_reads'].append(len([True for pair, info in pair2info.items() if (pair in priority_reads)]))
 
         if pairTOinfo != False:
             keepers = set(pairTOinfo.keys())
@@ -327,19 +326,27 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
         else:
             infos = [info for pair, info in pair2info.items()]
 
-        for att, v in values.items():
-            kwargs={att:v}
-            table['pass_' + att].append(len([True for info in infos if (_evaluate_pair2(info, **kwargs))]))
         table['filtered_pairs'].append(len([True for info in infos if (_evaluate_pair2(info, **values))]))
-        table['filtered_singletons'].append(len([True for info in infos if ((info[i2o['reads']] == 1) & (_evaluate_pair2(info, **values)))]))
-        table['filtered_priority_reads'].append(len([True for pair, info in pair2info.items() if ((pair in priority_reads) & (_evaluate_pair2(info, **values)))]))
 
-        for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
-            table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
-        table['median_insert'].append(np.median([value[1] for key, value in pair2info.items()]))
-        table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))) for pair, info in pair2info.items()]))
+        if profile_scaffolds:
+            table['unfiltered_reads'].append(sum([value[i2o['reads']] for pair, value in pair2info.items()]))
+            table['unfiltered_pairs'].append(len([True for pair, value in pair2info.items() if value[i2o['reads']] == 2]))
+            table['unfiltered_singletons'].append(len([True for pair, info in pair2info.items() if (info[i2o['reads']] == 1)]))
+            table['unfiltered_priority_reads'].append(len([True for pair, info in pair2info.items() if (pair in priority_reads)]))
 
-    return pd.DataFrame(table)
+            for att, v in values.items():
+                kwargs={att:v}
+                table['pass_' + att].append(len([True for info in infos if (_evaluate_pair2(info, **kwargs))]))
+            table['filtered_singletons'].append(len([True for info in infos if ((info[i2o['reads']] == 1) & (_evaluate_pair2(info, **values)))]))
+            table['filtered_priority_reads'].append(len([True for pair, info in pair2info.items() if ((pair in priority_reads) & (_evaluate_pair2(info, **values)))]))
+
+            for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
+                table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
+            table['median_insert'].append(np.median([value[1] for key, value in pair2info.items()]))
+            table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))) for pair, info in pair2info.items()]))
+    Sdb = pd.DataFrame(table)
+
+    return pd.concat([Adb, Sdb]).reset_index(drop=True)
 
 def write_read_report(RR, location, **kwargs):
     # Get header materials

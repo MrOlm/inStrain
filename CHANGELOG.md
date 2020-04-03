@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.10] - 2020-04-03
+- Change the way that profile_genes works on the backend to optimize speed
+- Turn off complete scaffold-level read profiling by default; make it a command line option
+
 ## [1.2.9] - 2020-03-29
 - Dont crash if you have no gene clonality or coverage
 
