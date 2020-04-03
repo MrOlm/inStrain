@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.9] - 2020-03-29
+- Dont crash if you have no gene clonality or coverage
+
 ## [1.2.8] - 2020-03-23
 - Fix loading genes from GenBank files
 - Allow storing gene2sequence

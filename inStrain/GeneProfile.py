@@ -468,26 +468,36 @@ def get_gene_info(IS,  ANI_level=0):
     # Load all genes
     Gdb = IS.get('genes_table')
 
-    # Get the coverage
-    db = IS.get('genes_coverage')
-    db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
-    del db['mm']
-    Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    # Load coverage, clonality, and SNPs
+    for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_density']:
+        db = IS.get(thing)
+        if len(db) > 0:
+            db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+            del db['mm']
+            Gdb = pd.merge(Gdb, db, on='gene', how='left')
+        else:
+            logging.debug('Skipping {0} gene calculation; you have none'.format(thing))
 
-    # Get the clonality
-    db = IS.get('genes_clonality')
-    db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
-    del db['mm']
-    Gdb = pd.merge(Gdb, db, on='gene', how='left')
-
-    # Get the SNP density
-    db = IS.get('genes_SNP_density')
-    if len(db) > 0:
-        db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
-        del db['mm']
-        Gdb = pd.merge(Gdb, db, on='gene', how='left')
-    else:
-        logging.info('You have no SNPs! Skipping SNP density calculation')
+    # # Get the coverage
+    # db = IS.get('genes_coverage')
+    # db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+    # del db['mm']
+    # Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    #
+    # # Get the clonality
+    # db = IS.get('genes_clonality')
+    # db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+    # del db['mm']
+    # Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    #
+    # # Get the SNP density
+    # db = IS.get('genes_SNP_density')
+    # if len(db) > 0:
+    #     db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+    #     del db['mm']
+    #     Gdb = pd.merge(Gdb, db, on='gene', how='left')
+    # else:
+    #     logging.info('You have no SNPs! Skipping SNP density calculation')
 
     Gdb['min_ANI'] = ANI_level
 
