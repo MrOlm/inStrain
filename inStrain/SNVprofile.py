@@ -156,6 +156,10 @@ class SNVprofile:
         else:
             logging.error('I dont know the location of {0}!'.format(name))
 
+    def get_read_length(self):
+        Rdb = self.get('read_report').head(1)
+        return float(Rdb.loc[0, 'mean_pair_length'])
+
     def verify(self):
         '''
         Run a series of tests to make sure everything is kosher

@@ -111,7 +111,8 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
         return
 
     # Figure out the MMs needed
-    mms = [_get_mm(IS, ANI) for ANI in ANI_levels]
+    rLen = IS.get_read_length()
+    mms = [_get_mm(IS, ANI, rLen=rLen) for ANI in ANI_levels]
 
     # Sort the scaffolds
     s2l = IS.get('scaffold2length')
@@ -370,14 +371,16 @@ def load_windowed_SNP_density(IS, scaffolds, window_len, mms, ANI_levels, s2l):
 #     #plt.ylabel('coverage')
 #     plt.xlim(0, Wdb['adjusted_start'].max())
 
-def _get_mm(IS, ANI):
+def _get_mm(IS, ANI, rLen = None):
     '''
     Get the mm corresponding to an ANI level in an IS
     '''
     if ANI > 1:
         ANI = ANI / 100
 
-    rLen = IS.get('read_report')['mean_pair_length'].tolist()[0]
+    if rLen == None:
+        rLen = IS.get_read_length()
+        #rLen = IS.get('read_report')['mean_pair_length'].tolist()[0]
     mm = int(round((rLen - (rLen * ANI))))
     return mm
 
@@ -656,7 +659,8 @@ def prepare_read_ani_dist_plot(IS):
     db = pd.DataFrame(table)
 
     # Add the number of read-pairs
-    readLen = int(IS.get('read_report')['mean_pair_length'].tolist()[0])
+    #readLen = int(IS.get('read_report')['mean_pair_length'].tolist()[0])
+    readLen = int(IS.get_read_length())
     db['read_length'] = readLen
     db['mm'] = db['mm'].astype(int)
     db['read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['true_length'])]
