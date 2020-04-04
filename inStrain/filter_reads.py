@@ -268,7 +268,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
     '''
     assert type(kwargs.get('priority_reads', 'none')) != type(set())
     priority_reads = priority_reads_set
-    profile_scaffolds = kwargs.get('scaffold_level_read_report', False)
+    profile_scaffolds = kwargs.get('scaffold_level_read_report', None)
 
     #item2order
     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
@@ -320,7 +320,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
         table['scaffold'].append(scaff)
 
         if pairTOinfo != False:
-            keepers = set(pairTOinfo.keys())
+            #keepers = set(pairTOinfo.keys()) This is calculated above; dont need twice
             infos = [info for pair, info in pair2info.items() if pair in keepers]
             table['pass_pairing_filter'].append(len(infos))
         else:
@@ -328,7 +328,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
 
         table['filtered_pairs'].append(len([True for info in infos if (_evaluate_pair2(info, **values))]))
 
-        if profile_scaffolds:
+        if profile_scaffolds == True:
             table['unfiltered_reads'].append(sum([value[i2o['reads']] for pair, value in pair2info.items()]))
             table['unfiltered_pairs'].append(len([True for pair, value in pair2info.items() if value[i2o['reads']] == 2]))
             table['unfiltered_singletons'].append(len([True for pair, info in pair2info.items() if (info[i2o['reads']] == 1)]))
