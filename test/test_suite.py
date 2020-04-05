@@ -2962,14 +2962,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_filter_reads().run()
-    test_strains().run()
-    test_SNVprofile().run()
+    # test_filter_reads().run()
+    # test_strains().run()
+    # test_SNVprofile().run()
     test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_readcomparer().run()
-    test_special().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_readcomparer().run()
+    # test_special().run()
 
     print('everything is working swimmingly!')

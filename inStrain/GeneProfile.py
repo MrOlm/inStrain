@@ -22,7 +22,7 @@ import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.profileUtilities
 
-def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
+def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
     '''
     Calculate the metrics of all genes on a parallelized scaffold-level basis
     '''
@@ -54,11 +54,14 @@ def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
     covTs = IS.get('covT', scaffolds = scaffolds_to_profile)
     global clonTs
     clonTs = IS.get('clonT', scaffolds = scaffolds_to_profile)
+    global gene2sequence
+    gene2sequence =  gene2sequenceP
+
 
     if p > 1:
         ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
-        total_cmds = len([x for x in iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs)])
-        wait_for = [ex.submit(profile_genes_wrapper, cmd) for cmd in iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs)]
+        total_cmds = len([x for x in iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs)])
+        wait_for = [ex.submit(profile_genes_wrapper, cmd) for cmd in iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs)]
         for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Running gene-level calculations on scaffolds'):
             try:
                 results = f.result()
@@ -67,7 +70,7 @@ def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
                 logging.error("We had a failure! Not sure where!")
 
     else:
-        for cmd in tqdm(iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs),
+        for cmd in tqdm(iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs),
                         desc='Running gene-level calculations on scaffolds',
                         total = len(scaffolds_to_profile)):
             GeneProfiles.append(profile_genes_wrapper(cmd))
@@ -79,11 +82,11 @@ def calculate_gene_metrics(IS, Gdb, gene2sequence, **kwargs):
 
     return name2result
 
-def profile_genes(IS, scaffold, gdb, gene2sequence, **kwargs):
+def profile_genes(IS, scaffold, gdb, **kwargs):
     '''
     This is the money that gets multiprocessed
 
-    Relies on having a global "CumulativeSNVtable", "covTs", and "clonTs"
+    Relies on having a global "gene2sequence", "CumulativeSNVtable", "covTs", and "clonTs"
 
     * Calculate the clonality, coverage, linkage, and SNV_density for each gene
     * Determine whether each SNP is synynomous or nonsynonymous
@@ -164,7 +167,7 @@ def profile_genes(IS, scaffold, gdb, gene2sequence, **kwargs):
         if len(Sdb) == 0:
             sdb = pd.DataFrame()
         else:
-            sdb = characterize_SNPs(gdb, Sdb, gene2sequence)
+            sdb = characterize_SNPs(gdb, Sdb)
 
     assert len(Sdb) == len(sdb)
     if len(Sdb) > 0:
@@ -307,9 +310,11 @@ def calc_gene_snp_density(gdb, ldb):
 
     return pd.DataFrame(table)
 
-def characterize_SNPs(gdb, Sdb, gene2sequence):
+def characterize_SNPs(gdb, Sdb):
     '''
     Determine the type of SNP (synonymous, non-synynomous, or intergenic)
+
+    RELIES ON HAVING gene2sequence AS A GLOBAL (needed for multiprocessing speed)
     '''
     table = defaultdict(list)
     for i, row in Sdb.iterrows():
@@ -366,7 +371,7 @@ def characterize_SNPs(gdb, Sdb, gene2sequence):
 
     return pd.DataFrame(table)
 
-def iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs):
+def iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs):
     '''
     Break into individual scaffolds
     '''
@@ -379,7 +384,7 @@ def iterate_commands(IS, scaffolds_to_profile, Gdb, gene2sequence, kwargs):
         cmd.scaffold = scaffold
         cmd.gdb = gdb
         cmd.arguments = kwargs
-        cmd.gene2sequence = {g:gene2sequence[g] for g in gdb['gene'].tolist()}
+        #cmd.gene2sequence = {g:gene2sequence[g] for g in gdb['gene'].tolist()}
 
         yield cmd
 
@@ -389,7 +394,7 @@ def profile_genes_wrapper(cmd):
     '''
     logging.debug('running {0}'.format(cmd.scaffold))
     try:
-        return profile_genes(cmd.IS, cmd.scaffold, cmd.gdb, cmd.gene2sequence, **cmd.arguments)
+        return profile_genes(cmd.IS, cmd.scaffold, cmd.gdb, **cmd.arguments)
     except Exception as e:
         print(e)
         traceback.print_exc()
