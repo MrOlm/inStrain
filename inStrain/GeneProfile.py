@@ -22,7 +22,7 @@ import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.profileUtilities
 
-def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
+def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     '''
     Calculate the metrics of all genes on a parallelized scaffold-level basis
     '''
@@ -30,7 +30,7 @@ def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
     p = int(kwargs.get('processes', 6))
 
     # figure out your overlap level
-    scaffolds_with_genes = set(Gdb['scaffold'].unique())
+    scaffolds_with_genes = set(GdbP['scaffold'].unique())
     scaffolds_in_IS = set(IS._get_covt_keys())
     scaffolds_to_profile = scaffolds_with_genes.intersection(scaffolds_in_IS)
     logging.info("{0} scaffolds with genes, {1} in the IS, {2} to compare".format(
@@ -56,12 +56,13 @@ def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
     clonTs = IS.get('clonT', scaffolds = scaffolds_to_profile)
     global gene2sequence
     gene2sequence =  gene2sequenceP
-
+    global Gdb
+    Gdb = GdbP
 
     if p > 1:
         ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
-        total_cmds = len([x for x in iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs)])
-        wait_for = [ex.submit(profile_genes_wrapper, cmd) for cmd in iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs)]
+        total_cmds = len([x for x in iterate_commands(scaffolds_to_profile, Gdb, kwargs)])
+        wait_for = [ex.submit(profile_genes_wrapper, cmd) for cmd in iterate_commands(scaffolds_to_profile, Gdb, kwargs)]
         for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Running gene-level calculations on scaffolds'):
             try:
                 results = f.result()
@@ -70,7 +71,7 @@ def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
                 logging.error("We had a failure! Not sure where!")
 
     else:
-        for cmd in tqdm(iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs),
+        for cmd in tqdm(iterate_commands(scaffolds_to_profile, Gdb, kwargs),
                         desc='Running gene-level calculations on scaffolds',
                         total = len(scaffolds_to_profile)):
             GeneProfiles.append(profile_genes_wrapper(cmd))
@@ -82,15 +83,16 @@ def calculate_gene_metrics(IS, Gdb, gene2sequenceP, **kwargs):
 
     return name2result
 
-def profile_genes(IS, scaffold, gdb, **kwargs):
+def profile_genes(scaffold, **kwargs):
     '''
     This is the money that gets multiprocessed
 
-    Relies on having a global "gene2sequence", "CumulativeSNVtable", "covTs", and "clonTs"
+    Relies on having a global "Gdb", "gene2sequence", "CumulativeSNVtable", "covTs", and "clonTs"
 
     * Calculate the clonality, coverage, linkage, and SNV_density for each gene
     * Determine whether each SNP is synynomous or nonsynonymous
     '''
+    gdb = Gdb[Gdb['scaffold'] == scaffold]
     # Calculate gene-level coverage
     #covTs = IS.get('covT', scaffolds=[scaffold])
     if scaffold not in covTs:
@@ -371,7 +373,7 @@ def characterize_SNPs(gdb, Sdb):
 
     return pd.DataFrame(table)
 
-def iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs):
+def iterate_commands(scaffolds_to_profile, Gdb, kwargs):
     '''
     Break into individual scaffolds
     '''
@@ -380,9 +382,8 @@ def iterate_commands(IS, scaffolds_to_profile, Gdb, kwargs):
             continue
 
         cmd = Command()
-        cmd.IS = IS
         cmd.scaffold = scaffold
-        cmd.gdb = gdb
+        #cmd.gdb = gdb
         cmd.arguments = kwargs
         #cmd.gene2sequence = {g:gene2sequence[g] for g in gdb['gene'].tolist()}
 
@@ -394,7 +395,7 @@ def profile_genes_wrapper(cmd):
     '''
     logging.debug('running {0}'.format(cmd.scaffold))
     try:
-        return profile_genes(cmd.IS, cmd.scaffold, cmd.gdb, **cmd.arguments)
+        return profile_genes(cmd.scaffold, **cmd.arguments)
     except Exception as e:
         print(e)
         traceback.print_exc()
@@ -541,14 +542,14 @@ class Controller():
 
         # Read the genes file
         logging.debug('Loading genes')
-        Gdb, gene2sequence = parse_genes(GF, **vargs)
+        GdbP, gene2sequence = parse_genes(GF, **vargs)
 
         # Calculate all your parallelized gene-level stuff
-        name2result = calculate_gene_metrics(IS, Gdb, gene2sequence, **vargs)
+        name2result = calculate_gene_metrics(IS, GdbP, gene2sequence, **vargs)
 
         # Store information
         IS.store('genes_fileloc', GF, 'value', 'Location of genes .faa file that was used to call genes')
-        IS.store('genes_table', Gdb, 'pandas', 'Location of genes in the associated genes_file')
+        IS.store('genes_table', GdbP, 'pandas', 'Location of genes in the associated genes_file')
         IS.store('genes_coverage', name2result['coverage'], 'pandas', 'Coverage of individual genes')
         IS.store('genes_clonality', name2result['clonality'], 'pandas', 'Clonality of individual genes')
         IS.store('genes_SNP_density', name2result['SNP_density'], 'pandas', 'SNP density of individual genes')
