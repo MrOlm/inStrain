@@ -99,7 +99,6 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
                 logging.error("We had a failure profiling a scaffold! Not sure which!")
 
     else:
-        total_cmds = len([x for x in iterate_commands(Fdb, bam, profArgs)])
         for cmd in tqdm(iterate_commands(Fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
             results = scaffold_profile_wrapper(cmd)
             for s, log in results:

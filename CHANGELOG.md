@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.2.11P2] - Unpushed
+## [1.2.11P3] - Unpushed
 - Changes to speed up multiprocessing
 - gene2sequence is now a global
 - P2 removes sending over the IS object and Gdb
+- P3 runs 6000 genes per parallelization minimium
 
 ## [1.2.10] - 2020-04-03
 - Change the way that profile_genes works on the backend to optimize speed

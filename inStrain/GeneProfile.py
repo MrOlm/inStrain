@@ -3,6 +3,7 @@
 import os
 import csv
 import sys
+import time
 import glob
 import logging
 import argparse
@@ -35,8 +36,10 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     scaffolds_to_profile = scaffolds_with_genes.intersection(scaffolds_in_IS)
     logging.info("{0} scaffolds with genes, {1} in the IS, {2} to compare".format(
             len(scaffolds_with_genes), len(scaffolds_in_IS), len(scaffolds_to_profile)))
-    # print("{0} scaffolds with genes, {1} in the IS, {2} to compare".format(
-    #         len(scaffolds_with_genes), len(scaffolds_in_IS), len(scaffolds_to_profile)))
+
+    # figure out the number of genes per scaffold
+    s2g = GdbP['scaffold'].value_counts().to_dict()
+    kwargs['s2g'] = s2g
 
     # iterate
     GeneProfiles = []
@@ -59,22 +62,28 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     global Gdb
     Gdb = GdbP
 
+    total_cmds = len([x for x in iterate_commands(scaffolds_to_profile, Gdb, kwargs)])
+
     if p > 1:
         ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
-        total_cmds = len([x for x in iterate_commands(scaffolds_to_profile, Gdb, kwargs)])
         wait_for = [ex.submit(profile_genes_wrapper, cmd) for cmd in iterate_commands(scaffolds_to_profile, Gdb, kwargs)]
         for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Running gene-level calculations on scaffolds'):
             try:
                 results = f.result()
-                GeneProfiles.append(results)
+                for s, log in results:
+                    logging.debug(log)
+                    GeneProfiles.append(s)
             except:
                 logging.error("We had a failure! Not sure where!")
 
     else:
         for cmd in tqdm(iterate_commands(scaffolds_to_profile, Gdb, kwargs),
                         desc='Running gene-level calculations on scaffolds',
-                        total = len(scaffolds_to_profile)):
-            GeneProfiles.append(profile_genes_wrapper(cmd))
+                        total = total_cmds):
+            results = profile_genes_wrapper(cmd)
+            for s, log in results:
+                logging.debug(log)
+                GeneProfiles.append(s)
 
     # Return
     name2result = {}
@@ -92,6 +101,11 @@ def profile_genes(scaffold, **kwargs):
     * Calculate the clonality, coverage, linkage, and SNV_density for each gene
     * Determine whether each SNP is synynomous or nonsynonymous
     '''
+    # Log
+    pid = os.getpid()
+    log_message = "\nCheckpoint Start_genes {0} PID {1} start {2}".format(scaffold, pid, time.time())
+
+
     gdb = Gdb[Gdb['scaffold'] == scaffold]
     # Calculate gene-level coverage
     #covTs = IS.get('covT', scaffolds=[scaffold])
@@ -177,7 +191,9 @@ def profile_genes(scaffold, **kwargs):
 
     results = (cdb, cldb, ldb, sdb)
 
-    return results
+    log_message += "\nCheckpoint End_genes {0} PID {1} end {2}".format(scaffold, pid, time.time())
+
+    return results, log_message
 
 def calc_gene_coverage(gdb, covT):
     '''
@@ -377,25 +393,47 @@ def iterate_commands(scaffolds_to_profile, Gdb, kwargs):
     '''
     Break into individual scaffolds
     '''
+    SECONDS = 60
+
+    s2g = kwargs.get('s2g', None)
+
+    cmds = []
+    seconds = 0
     for scaffold, gdb in Gdb.groupby('scaffold'):
         if scaffold not in scaffolds_to_profile:
             continue
 
+        # make this comammand
         cmd = Command()
         cmd.scaffold = scaffold
-        #cmd.gdb = gdb
         cmd.arguments = kwargs
-        #cmd.gene2sequence = {g:gene2sequence[g] for g in gdb['gene'].tolist()}
 
-        yield cmd
+        # Add estimated seconds
+        seconds += calc_estimated_runtime(s2g[scaffold])
+        cmds.append(cmd)
 
-def profile_genes_wrapper(cmd):
+        # See if you're done
+        if seconds >= SECONDS:
+            yield cmds
+            seconds = 0
+            cmds = []
+
+    yield cmds
+
+def calc_estimated_runtime(pairs):
+    SLOPE_CONSTANT = 0.01
+    return pairs * SLOPE_CONSTANT
+
+def profile_genes_wrapper(cmds):
     '''
     Take a command and profile the scaffold
     '''
-    logging.debug('running {0}'.format(cmd.scaffold))
+    #logging.debug('running {0}'.format(cmd.scaffold))
     try:
-        return profile_genes(cmd.scaffold, **cmd.arguments)
+        results = []
+        for cmd in cmds:
+            results.append(profile_genes(cmd.scaffold, **cmd.arguments))
+        return results
     except Exception as e:
         print(e)
         traceback.print_exc()
