@@ -100,8 +100,9 @@ def estimate_breadth(coverage):
 
 #     return Wdb, breaks
 
-def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_levels=[0, 100],
-                        min_scaff_len=0, report_midpoints=False):
+def load_windowed_metrics(scaffolds, s2l, rLen, metrics=None, window_len=None, ANI_levels=[0, 100],
+                        min_scaff_len=0, report_midpoints=False, covTs=False, clonTs=False,
+                        raw_linkage_table=False, cumulative_snv_table=False):
 
     if metrics is None:
         metrics = ['coverage', 'microdiversity', 'linkage', 'snp_density']
@@ -111,11 +112,11 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
         return
 
     # Figure out the MMs needed
-    rLen = IS.get_read_length()
-    mms = [_get_mm(IS, ANI, rLen=rLen) for ANI in ANI_levels]
+    #rLen = IS.get_read_length()
+    mms = [_get_mm(None, ANI, rLen=rLen) for ANI in ANI_levels]
 
     # Sort the scaffolds
-    s2l = IS.get('scaffold2length')
+    #s2l = IS.get('scaffold2length')
     scaffolds = sorted(scaffolds, key=s2l.get, reverse=True)
 
     if min_scaff_len > 0:
@@ -139,7 +140,10 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
 
     dbs = []
     if 'coverage' in metrics:
-        cdb = load_windowed_coverage_or_clonality(IS, 'coverage', scaffolds, window_len, mms, ANI_levels, s2l)
+        if covTs == False:
+            logging.error("need covTs for coverage")
+            raise Exception
+        cdb = load_windowed_coverage_or_clonality('coverage', covTs, scaffolds, window_len, mms, ANI_levels, s2l)
         cdb['metric'] = 'coverage'
         dbs.append(cdb)
 #     if 'clonality' in metrics:
@@ -147,15 +151,24 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
 #         cdb['metric'] = 'clonality'
 #         dbs.append(cdb)
     if 'microdiversity' in metrics:
-        cdb = load_windowed_coverage_or_clonality(IS, 'microdiversity', scaffolds, window_len, mms, ANI_levels, s2l)
+        if clonTs == False:
+            logging.error("need clonTs for microdiversity")
+            raise Exception
+        cdb = load_windowed_coverage_or_clonality('microdiversity', clonTs, scaffolds, window_len, mms, ANI_levels, s2l)
         cdb['metric'] = 'microdiversity'
         dbs.append(cdb)
     if 'linkage' in metrics:
-        cdb = load_windowed_linkage(IS, scaffolds, window_len, mms, ANI_levels, s2l)
+        if raw_linkage_table is False:
+            logging.error("need raw_linkage_table for linkage")
+            raise Exception
+        cdb = load_windowed_linkage(raw_linkage_table, scaffolds, window_len, mms, ANI_levels, s2l)
         cdb['metric'] = 'linkage'
         dbs.append(cdb)
     if 'snp_density' in metrics:
-        cdb = load_windowed_SNP_density(IS, scaffolds, window_len, mms, ANI_levels, s2l)
+        if cumulative_snv_table is False:
+            logging.error("need cumulative_snv_table for snp_density")
+            raise Exception
+        cdb = load_windowed_SNP_density(cumulative_snv_table, scaffolds, window_len, mms, ANI_levels, s2l)
         cdb['metric'] = 'snp_density'
         dbs.append(cdb)
 
@@ -188,9 +201,11 @@ def load_windowed_metrics(IS, scaffolds, metrics=None, window_len=None, ANI_leve
     else:
         return Wdb, breaks
 
-def load_windowed_coverage_or_clonality(IS, thing, scaffolds, window_len, mms, ANI_levels, s2l):
+def load_windowed_coverage_or_clonality(thing, covTs, scaffolds, window_len, mms, ANI_levels, s2l):
     '''
     Get the windowed coverage
+
+    Pass in a clonTs for microdiversity and covTs for coverage
     '''
     if thing == 'coverage':
         item = 'covT'
@@ -201,7 +216,7 @@ def load_windowed_coverage_or_clonality(IS, thing, scaffolds, window_len, mms, A
         return
 
     # Get the covTs
-    covTs = IS.get(item, scaffolds=scaffolds)
+    #covTs = IS.get(item, scaffolds=scaffolds)
 
     # Make the windows
     dbs = []
@@ -246,10 +261,10 @@ def load_windowed_coverage_or_clonality(IS, thing, scaffolds, window_len, mms, A
         Wdb = pd.DataFrame()
     return Wdb#, breaks
 
-def load_windowed_linkage(IS, scaffolds, window_len, mms, ANI_levels, s2l, on='r2'):
+def load_windowed_linkage(Ldb, scaffolds, window_len, mms, ANI_levels, s2l, on='r2'):
 
     # Get the linkage table
-    Ldb = IS.get('raw_linkage_table')
+    #Ldb = IS.get('raw_linkage_table')
     Ldb = Ldb[Ldb['scaffold'].isin(scaffolds)].sort_values('mm')
     got_scaffolds = set(Ldb['scaffold'].unique())
 
@@ -287,9 +302,9 @@ def load_windowed_linkage(IS, scaffolds, window_len, mms, ANI_levels, s2l, on='r
         Wdb = pd.DataFrame()
     return Wdb
 
-def load_windowed_SNP_density(IS, scaffolds, window_len, mms, ANI_levels, s2l):
+def load_windowed_SNP_density(Ldb, scaffolds, window_len, mms, ANI_levels, s2l):
     # Get the table
-    Ldb = IS.get('cumulative_snv_table')
+    #Ldb = IS.get('cumulative_snv_table')
     Ldb = Ldb[Ldb['scaffold'].isin(scaffolds)].sort_values('mm')
 
     got_scaffolds = list(Ldb['scaffold'].unique())
@@ -1137,6 +1152,13 @@ def main(args):
             if debug:
                 traceback.print_exc()
 
+    # Keep cacheing
+    if (('2' in to_plot) | ('7' in to_plot)):
+        kwargs['covT'] = IS.get('covT')
+        kwargs['clonT'] = IS.get('clonT')
+        kwargs['raw_linkage_table'] = IS.get('raw_linkage_table')
+        kwargs['cumulative_snv_table'] = IS.get('cumulative_snv_table')
+
     # 1) MM plot
     if '1' in to_plot:
         try:
@@ -1319,6 +1341,13 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
         for s, b in stb.items():
             b2s[b].append(s)
         assert len(b2s.keys()) > 0
+
+        # Load the cache
+        covTs = kwargs.get('covT')#, IS.get('covT'))
+        clonTs = kwargs.get('clonT')#, IS.get('clonT'))
+        raw_linkage_table = kwargs.get('raw_linkage_table')#, IS.get('raw_linkage_table'))
+        cumulative_snv_table = kwargs.get('cumulative_snv_table')#, IS.get('cumulative_snv_table'))
+
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
         traceback.print_exc()
@@ -1332,7 +1361,13 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
     for genome, scaffolds in b2s.items():
         if not plot_genome(genome, IS, **kwargs):
             continue
-        Wdb, breaks = load_windowed_metrics(IS, scaffolds, ANI_levels=[0, 100])
+        Wdb, breaks, midpoints = load_windowed_metrics(scaffolds,
+                                IS.get('scaffold2length'),
+                                IS.get_read_length(),
+                                report_midpoints=True,
+                                covTs=covTs, clonTs=clonTs,
+                                raw_linkage_table=raw_linkage_table,
+                                cumulative_snv_table=cumulative_snv_table)
         genomeWide_microdiveristy_metrics_plot(Wdb, breaks, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(8, 5)
@@ -1494,6 +1529,13 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
         for s, b in stb.items():
             b2s[b].append(s)
         assert len(b2s.keys()) > 0
+
+        # Load the cache
+        covTs = kwargs.get('covTs', IS.get('covT'))
+        clonTs = kwargs.get('clonTs', IS.get('clonT'))
+        raw_linkage_table = kwargs.get('raw_linkage_table', IS.get('raw_linkage_table'))
+        cumulative_snv_table = kwargs.get('cumulative_snv_table', IS.get('cumulative_snv_table'))
+
     except:
         logging.error("Skipping plot 7 - you don't have all required information. You need to run inStrain genome_wide first")
         traceback.print_exc()
@@ -1507,7 +1549,13 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
     for genome, scaffolds in b2s.items():
         if not plot_genome(genome, IS, **kwargs):
             continue
-        Wdb, breaks, midpoints = load_windowed_metrics(IS, scaffolds, report_midpoints=True)
+        Wdb, breaks, midpoints = load_windowed_metrics(scaffolds,
+                                IS.get('scaffold2length'),
+                                IS.get_read_length(),
+                                report_midpoints=True,
+                                covTs=covTs, clonTs=clonTs,
+                                raw_linkage_table=raw_linkage_table,
+                                cumulative_snv_table=cumulative_snv_table)
         scaffold_inspection_plot(Wdb, breaks, midpoints, title=genome)
         fig = plt.gcf()
         fig.tight_layout()

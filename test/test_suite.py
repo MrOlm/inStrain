@@ -121,7 +121,7 @@ class test_plot():
         # print(cmd)
         # call(cmd, shell=True)
 
-        cmd = "inStrain plot -i {0}".format(location)
+        cmd = "inStrain plot -i {0} --debug".format(location)
         print(cmd)
         call(cmd, shell=True)
 
@@ -133,7 +133,7 @@ class test_plot():
         for F in FIGS:
             assert len([f for f in figs if F in f]) == 1, F
         for fig in figs:
-            assert os.path.getsize(fig) > 1000
+            assert os.path.getsize(fig) > 1000, fig
 
     def test2(self):
         '''
@@ -2965,10 +2965,10 @@ if __name__ == '__main__':
     # test_filter_reads().run()
     # test_strains().run()
     # test_SNVprofile().run()
-    test_gene_statistics().run()
+    # test_gene_statistics().run()
     # test_quickProfile().run()
     # test_genome_wide().run()
-    # test_plot().run()
+    test_plot().run()
     # test_readcomparer().run()
     # test_special().run()
 
