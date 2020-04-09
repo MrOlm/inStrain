@@ -306,6 +306,7 @@ def parse_args(args):
     # Other Parameters
     Oflags = other_parser.add_argument_group('OTHER OPTIONS')
     Oflags.add_argument('--old_IS', help="Convert an old inStrain version object to the newer version.")
+    Oflags.add_argument('--run_statistics', help='Generate runtime reports for an inStrain run.')
 
     '''
     ####### PARSE THE ARGUMENTS ######

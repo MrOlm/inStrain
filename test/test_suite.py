@@ -2747,6 +2747,7 @@ class test_strains():
         # Make sure it produced output
         assert os.path.isdir(base)
         assert len(glob.glob(base + '/output/*')) == 8
+        assert len(glob.glob(base + '/log/*')) == 2
 
         # Make sure the output makes sense
         S1 = inStrain.SNVprofile.SNVprofile(base)
@@ -2885,6 +2886,8 @@ class test_special():
             'bbmap_N5_271_010G1_scaffold_963.fasta.sorted.bam'
         self.bbfasta = load_data_loc() + \
             'N5_271_010G1_scaffold_963.fasta'
+        self.IS = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
@@ -2901,6 +2904,10 @@ class test_special():
 
         self.setUp()
         self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
         self.tearDown()
 
     def test1(self):
@@ -2960,16 +2967,28 @@ class test_special():
         MCLdb = Matt_object.get_nonredundant_scaffold_table()
         assert len(MCLdb) > 0
 
+    def test4(self):
+        '''
+        Test other --run_statistics
+        '''
+        location = os.path.join(self.test_dir, os.path.basename(self.IS))
+        shutil.copytree(self.IS, location)
+
+        cmd = "inStrain other --run_statistics {0} --debug".format(location)
+        print(cmd)
+        call(cmd, shell=True)
+        assert len(glob.glob(location + '/log/*')) == 2, location
+
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
-    # test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
+    test_filter_reads().run()
+    test_strains().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
     test_plot().run()
-    # test_readcomparer().run()
-    # test_special().run()
+    test_readcomparer().run()
+    test_special().run()
 
     print('everything is working swimmingly!')

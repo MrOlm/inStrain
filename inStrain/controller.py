@@ -9,6 +9,7 @@ import logging
 import argparse
 import pandas as pd
 from Bio import SeqIO
+from datetime import datetime
 from collections import defaultdict
 
 # Import inStrain stuff
@@ -20,6 +21,7 @@ import inStrain.genomeUtilities
 import inStrain.plottingUtilities
 import inStrain.quickProfile
 import inStrain.SNVprofile
+import inStrain.logUtils
 
 class Controller():
     '''
@@ -52,6 +54,8 @@ class Controller():
         if args.operation == "other":
             self.other_operation(args)
 
+        self.shutdown(args)
+
     def profile_operation(self, args):
         ProfileController().main(args)
 
@@ -77,6 +81,17 @@ class Controller():
         # Check if you should convert IS profile
         if args.old_IS != None:
             inStrain.SNVprofile.convert_SNVprofile(args.old_IS)
+        if args.run_statistics != None:
+            inStrain.logUtils.process_logs(args.run_statistics)
+
+    def shutdown(self, args):
+        try:
+            logloc = logging.getLoggerClass().root.handlers[0].baseFilename
+        except:
+            return
+        logging.debug("inStrain complete; shutting down logger and printing run stats (log location = {0})".format(logloc))
+        logging.shutdown()
+        inStrain.logUtils.report_run_stats(logloc, most_recent=True, printToo=args.debug, debug=args.debug)
 
 class ProfileController():
     '''
@@ -100,6 +115,7 @@ class ProfileController():
 ***************************************************
         """
         logging.info(message)
+        logging.debug('Checkpoint {0} start'.format('filter_reads'))
 
         global s2l # make ths global so we can access it later.
 
@@ -145,17 +161,17 @@ class ProfileController():
                     sys.getsizeof(eval(att))/1e6))
 
         # Profile the .bam file
-
         vargs['s2s'] = s2s
         vargs['s2p'] = s2p
 
+        logging.debug('Checkpoint {0} end'.format('filter_reads'))
         message = """\
 ***************************************************
 .:: inStrain profile Step 2. Profile scaffolds ::..
 ***************************************************
         """
         logging.info(message)
-
+        logging.debug('Checkpoint {0} start'.format('profile_scaffolds'))
 
         Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
 
@@ -178,6 +194,7 @@ class ProfileController():
         # Run the rest of things
         args.IS = Sprofile.location
 
+        logging.debug('Checkpoint {0} end'.format('profile_scaffolds'))
         # See if you can profile genes as well
         message = """\
 ***************************************************
@@ -186,8 +203,10 @@ class ProfileController():
         """
         logging.info(message)
         if args.gene_file != None:
+            logging.debug('Checkpoint {0} start'.format('profile_genes'))
             args.IS = Sprofile.location
             Controller().profile_genes_operation(args)
+            logging.debug('Checkpoint {0} end'.format('profile_genes'))
         else:
             logging.info('Nevermind! You didnt include a genes file')
 
@@ -199,8 +218,10 @@ class ProfileController():
         """
         logging.info(message)
         if not args.skip_genome_wide:
+            logging.debug('Checkpoint {0} start'.format('genome_wide'))
             args.IS = Sprofile.location
             Controller().genome_wide_operation(args)
+            logging.debug('Checkpoint {0} end'.format('genome_wide'))
         else:
             logging.info('Nevermind! You chose to skip genome_wide')
 
@@ -212,9 +233,11 @@ class ProfileController():
         """
         logging.info(message)
         if not args.skip_plot_generation:
+            logging.debug('Checkpoint {0} start'.format('making_plots'))
             args.IS = Sprofile.location
             args.plots = 'a'
             Controller().plot_operation(args)
+            logging.debug('Checkpoint {0} end'.format('making_plots'))
         else:
             logging.info('Nevermind! You chose to skip making plots')
 
@@ -389,7 +412,7 @@ def setup_logger(loc):
     # set up logging everything to file
     logging.basicConfig(level=logging.DEBUG,
                        format='%(asctime)s %(levelname)-8s %(message)s',
-                       datefmt='%m-%d %H:%M',
+                       datefmt='%y-%m-%d %H:%M:%S',
                        filename=loc)
 
     # set up logging of INFO or higher to sys.stderr
@@ -409,6 +432,57 @@ def setup_logger(loc):
 def _get_description(rec):
     return rec.description
 
+def report_run_stats(logloc, most_recent=True, printToo=True):
+    if logloc == None:
+        return
+
+    Ldb = load_log(logloc)
+    print(Ldb)
+
+def load_log(logfile):
+    table = defaultdict(list)
+    with open(logfile) as o:
+        prev_line = None
+        for line in o.readlines():
+            line = line.strip()
+
+            # load new inStrain run
+            if 'inStrain version' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+
+                table['log_type'].append('program_start')
+                table['time'].append(epoch_time)
+                table['parsable_string'].append("version={0}".format(linewords[5]))
+
+            # Load  profile RAM and multiprocessing reporting
+            elif 'RAM. System has' in line:
+                linewords = [x.strip() for x in line.split()]
+                pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
+                            linewords[0], linewords[2], linewords[3], linewords[7], linewords[11], linewords[13])
+
+                table['log_type'].append('Profile_PID_RAM')
+                table['time'].append(linewords[5])
+                table['parsable_string'].append(pstring)
+                # table['scaffold'].append(linewords[0])
+                # table['PID'].append(linewords[2])
+                # table['status'].append(linewords[3])
+                # table['time'].append(linewords[5])
+                # table['process_RAM'].append(linewords[7])
+                # table['system_RAM'].append(linewords[11])
+                # table['total_RAM'].append(linewords[13])
+            prev_line = line
+
+    Ldb = pd.DataFrame(table)
+    return Ldb
+
+def log_fmt_to_epoch(ttime):
+    oldformat = '%m-%d %H:%M'
+    print(ttime)
+    datetimeobject = datetime.strptime(ttime,oldformat)
+    print(datetimeobject)
+    return datetimeobject.timestamp()
+    #return convert_table(Ldb)
 # def parse_arguments(args):
 #     parser = argparse.ArgumentParser(description="inStrain version {0}".format(__version__),
 #              formatter_class=argparse.ArgumentDefaultsHelpFormatter)

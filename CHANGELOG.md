@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.2.11P4] - Unpushed
+## [1.2.11] - 2020-04-08
 - Changes to speed up multiprocessing
 - gene2sequence is now a global
-- P2 removes sending over the IS object and Gdb
-- P3 runs 6000 genes per parallelization minimium
-- P4 speeds up creating figures by cacheing
+- removes sending over the IS object and Gdb
+- runs 6000 genes per parallelization minimium
+- speeds up creating figures by cacheing
+- log now reports year and seconds
+- generates a report at the end with runtime notes
 
 ## [1.2.10] - 2020-04-03
 - Change the way that profile_genes works on the backend to optimize speed

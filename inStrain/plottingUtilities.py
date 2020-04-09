@@ -1347,6 +1347,8 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
         clonTs = kwargs.get('clonT')#, IS.get('clonT'))
         raw_linkage_table = kwargs.get('raw_linkage_table')#, IS.get('raw_linkage_table'))
         cumulative_snv_table = kwargs.get('cumulative_snv_table')#, IS.get('cumulative_snv_table'))
+        scaffold2length = IS.get('scaffold2length')
+        rl = IS.get_read_length()
 
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1358,12 +1360,13 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
     name = 'genomeWide_microdiveristy_metrics.pdf'
     pp = PdfPages(plot_dir + name)
 
+
     for genome, scaffolds in b2s.items():
         if not plot_genome(genome, IS, **kwargs):
             continue
         Wdb, breaks, midpoints = load_windowed_metrics(scaffolds,
-                                IS.get('scaffold2length'),
-                                IS.get_read_length(),
+                                scaffold2length,
+                                rl,
                                 report_midpoints=True,
                                 covTs=covTs, clonTs=clonTs,
                                 raw_linkage_table=raw_linkage_table,
@@ -1535,6 +1538,8 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
         clonTs = kwargs.get('clonTs', IS.get('clonT'))
         raw_linkage_table = kwargs.get('raw_linkage_table', IS.get('raw_linkage_table'))
         cumulative_snv_table = kwargs.get('cumulative_snv_table', IS.get('cumulative_snv_table'))
+        scaffold2length = IS.get('scaffold2length')
+        rl = IS.get_read_length()
 
     except:
         logging.error("Skipping plot 7 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1550,8 +1555,8 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
         if not plot_genome(genome, IS, **kwargs):
             continue
         Wdb, breaks, midpoints = load_windowed_metrics(scaffolds,
-                                IS.get('scaffold2length'),
-                                IS.get_read_length(),
+                                scaffold2length,
+                                rl,
                                 report_midpoints=True,
                                 covTs=covTs, clonTs=clonTs,
                                 raw_linkage_table=raw_linkage_table,

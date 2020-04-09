@@ -74,7 +74,7 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
                     logging.debug(log)
                     GeneProfiles.append(s)
             except:
-                logging.error("We had a failure! Not sure where!")
+                logging.error("FAILURE GENES_OUTER There was an exception profiling genes; not sure where!")
 
     else:
         for cmd in tqdm(iterate_commands(scaffolds_to_profile, Gdb, kwargs),
@@ -103,7 +103,7 @@ def profile_genes(scaffold, **kwargs):
     '''
     # Log
     pid = os.getpid()
-    log_message = "\nCheckpoint Start_genes {0} PID {1} start {2}".format(scaffold, pid, time.time())
+    log_message = "\nSpecialPoint_genes {0} PID {1} start {2}".format(scaffold, pid, time.time())
 
 
     gdb = Gdb[Gdb['scaffold'] == scaffold]
@@ -191,7 +191,7 @@ def profile_genes(scaffold, **kwargs):
 
     results = (cdb, cldb, ldb, sdb)
 
-    log_message += "\nCheckpoint End_genes {0} PID {1} end {2}".format(scaffold, pid, time.time())
+    log_message += "\nSpecialPoint_genes {0} PID {1} end {2}".format(scaffold, pid, time.time())
 
     return results, log_message
 
@@ -437,7 +437,7 @@ def profile_genes_wrapper(cmds):
     except Exception as e:
         print(e)
         traceback.print_exc()
-        logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
+        #logging.error("FAILURE GENES_INNER whole scaffold exception- {0}".format(str(cmd.scaffold)))
         return pd.DataFrame({'Failed':[True]})
 
 class Command():
@@ -476,7 +476,7 @@ def parse_prodigal_genes(gene_fasta):
         gene2sequence[gene] = record.seq
 
     Gdb = pd.DataFrame(table)
-    logging.info("{0}% of the input {1} genes were marked as incomplete".format((len(Gdb[Gdb['partial'] == True])/len(Gdb))*100, len(Gdb)))
+    logging.info("{0:.1f}% of the input {1} genes were marked as incomplete".format((len(Gdb[Gdb['partial'] == True])/len(Gdb))*100, len(Gdb)))
 
     return Gdb, gene2sequence
 
@@ -505,7 +505,7 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
                 gene2sequence[gene] = feature.location.extract(record).seq
 
     Gdb = pd.DataFrame(table)
-    logging.info("{0}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
+    logging.info("{0:.1f}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
 
     return Gdb, gene2sequence
 
