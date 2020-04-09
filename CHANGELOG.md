@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.12] - 2020-04-09
+- Bug fixes with logging
+- Bug a problem with refBase being N calling multi-allelic SNPs
+
 ## [1.2.11] - 2020-04-08
 - Changes to speed up multiprocessing
 - gene2sequence is now a global

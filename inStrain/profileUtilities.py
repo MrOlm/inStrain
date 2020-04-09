@@ -708,6 +708,10 @@ def _calc_snps(Odb, mm, min_freq=0.05):
     p3 = 0
     pdb = db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 3) & (db['refBase'] != db['varBase'])]
     for i, row in pdb.iterrows():
+        # Below is trying to get the count of Ns; but there is no count of Ns
+        if row['refBase'] not in ['A', 'C', 'T', 'G']:
+            continue
+            
         if not inStrain.readComparer.is_present(int(row[row['refBase']]), int(row['baseCoverage']), null_model, float(min_freq)):
             p3 += 1
 

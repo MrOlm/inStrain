@@ -35,7 +35,7 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
 
     # Generate reports
     for run, ldb in Ldb.groupby('run_ID'):
-        name2report = generate_reports(ldb)
+        name2report = generate_reports(ldb, debug=debug)
 
         # Print
         if printToo:
@@ -53,7 +53,7 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
             for name, report in name2report.items():
                 o.write("..:: {0} ::..\n{1}\n".format(name, report))
 
-def generate_reports(Ldb):
+def generate_reports(Ldb, debug=False):
     name2report = {}
     assert len(Ldb['run_ID'].unique()) == 1
 
@@ -151,7 +151,7 @@ def _gen_checkpoint_report(Ldb, overall_runtime):
     order = list(ldb['name'].unique())
     for name in order:
         db = ldb[ldb['name'] == name]
-        if len(db) >= 2:
+        if len(db) > 2:
             report += '{0} has problems and cannot be reported\n'.format(name)
         elif len(db) == 2:
             start = datetime.fromtimestamp(db[db['status'] == 'start']['time'].tolist()[0])
@@ -189,16 +189,21 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
     PIDs = len(rdb['PID'].unique())
 
-    report += 'Profile paralellization occured for {0} and involved {1} processes\n'.format(td_format(runtime), PIDs)
-    report += 'An average of {0:.1f} processes were used during this time to profile {1} scaffolds\n'.format(
-                parallel_time/runtime.total_seconds(), len(rdb['scaffold'].unique()))
-    report += 'Scaffolds ran for an average of {0} (median {1}; longest {2})\n'.format(
-                td_format(None, seconds=rdb['runtime'].mean()), td_format(None, seconds=rdb['runtime'].median()),
-                td_format(None, seconds=rdb['runtime'].max()))
-    report += 'System had {0} RAM available. Started at {1:.1f}% and ended at {2:.1f}% usage\n'.format(
-                humanbytes(sys_ram), rdb['percent_RAM'].tolist()[0], rdb['percent_RAM'].tolist()[-1])
-    report += 'Highest RAM usage recoreded was {0:.1f}%, lowest was {1:.1f}%\n'.format(rdb['percent_RAM'].max(),
-                                                                                    rdb['percent_RAM'].min())
+    report += "{0:30}\t{1}\n".format("Wall time for Profile", td_format(runtime))
+    report += "{0:30}\t{1}\n".format("Total number processes used", PIDs)
+    report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
+    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/PIDs)*100)
+    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(rdb['scaffold'].unique()))
+    report += "{0:30}\t{1}\n".format("Average time per scaffold", td_format(None, seconds=rdb['runtime'].mean()))
+    report += "{0:30}\t{1}\n".format("Median time per scaffold", td_format(None, seconds=rdb['runtime'].median()))
+    report += "{0:30}\t{1}\n".format("Maximum scaffold time", td_format(None, seconds=rdb['runtime'].max()))
+    report += "{0:30}\t{1}\n".format("Longest running scaffold", rdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
+    report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", rdb['percent_RAM'].iloc[0])
+    report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", rdb['percent_RAM'].iloc[-1])
+    report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(rdb['end_system_RAM'].max()))
+    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(rdb['end_system_RAM'].min()))
+
     report += '{0} scaffolds needed to be run a second time\n'.format(
             len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
 
@@ -239,7 +244,7 @@ def _gen_failures_report(Ldb):
     report = ''
     ldb = Ldb[Ldb['log_type'] == 'Failure']
     for i, row in ldb.iterrows():
-        report += "Failure {0}\n".foramt(ldb['parsable_string'])
+        report += "Failure {0}\n".format(ldb['parsable_string'])
     if report == '':
         report = "No failures"
     return report
