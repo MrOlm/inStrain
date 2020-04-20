@@ -293,7 +293,7 @@ class test_genome_wide():
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        assert len(files) == 4, len(files)
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert 'mm' not in db.columns
@@ -307,6 +307,8 @@ class test_genome_wide():
         # Setup
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
+        for f in glob.glob(location + '/output/*.tsv'):
+            os.remove(f)
 
         # Run with a normal .stb
         cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.stb)
@@ -316,10 +318,11 @@ class test_genome_wide():
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        files = [f for f in files if 'read_report' not in f]
+        assert len(files) == 1, [len(files), files]
         for f in files:
             db = pd.read_csv(f, sep='\t')
-            assert len(db['genome'].unique()) == 2
+            assert len(db['genome'].unique()) == 2, [f, db]
 
         # Run with a no .stb
         cmd = "inStrain genome_wide -i {0}".format(location, self.stb)
@@ -329,10 +332,11 @@ class test_genome_wide():
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        files = [f for f in files if 'read_report' not in f]
+        assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
-            assert len(db['genome'].unique()) == 1
+            assert len(db['genome'].unique()) == 1, [f, db]
 
         # Run with a single .fasta
         cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.single_scaff)
@@ -342,7 +346,8 @@ class test_genome_wide():
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        files = [f for f in files if 'read_report' not in f]
+        assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert len(db['genome'].unique()) == 1
@@ -356,7 +361,8 @@ class test_genome_wide():
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        files = [f for f in files if 'read_report' not in f]
+        assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert len(db['genome'].unique()) == 2, [f, db]
@@ -387,6 +393,8 @@ class test_genome_wide():
         # Run the dereplicated version
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
+        for f in glob.glob(location + '/output/*.tsv'):
+            os.remove(f)
 
         cmd = "inStrain genome_wide -i {0} -s {1} --mm_level".format(location, self.stb)
         print(cmd)
@@ -409,6 +417,8 @@ class test_genome_wide():
         # Run the dereplicated version
         location = os.path.join(self.test_dir, os.path.basename(self.RC_Loc))
         shutil.copytree(self.RC_Loc, location)
+        for f in glob.glob(location + '/output/*.tsv'):
+            os.remove(f)
 
         cmd = "inStrain genome_wide -i {0} -s {1} --mm_level".format(location, self.stb)
         print(cmd)
@@ -803,7 +813,7 @@ class test_gene_statistics():
 
         # Make sure it produced output
         rawfiles = glob.glob(location + '/output/*')
-        assert len(rawfiles) == 6, [rawfiles, location + '/output/*']
+        assert len(rawfiles) == 8, [len(rawfiles), rawfiles, location + '/output/*']
 
         # Internally verify
         IS = inStrain.SNVprofile.SNVprofile(location)
@@ -2747,7 +2757,7 @@ class test_strains():
         # Make sure it produced output
         assert os.path.isdir(base)
         assert len(glob.glob(base + '/output/*')) == 8
-        assert len(glob.glob(base + '/log/*')) == 2
+        assert len(glob.glob(base + '/log/*')) == 3
 
         # Make sure the output makes sense
         S1 = inStrain.SNVprofile.SNVprofile(base)
@@ -2977,7 +2987,7 @@ class test_special():
         cmd = "inStrain other --run_statistics {0} --debug".format(location)
         print(cmd)
         call(cmd, shell=True)
-        assert len(glob.glob(location + '/log/*')) == 2, location
+        assert len(glob.glob(location + '/log/*')) == 3, location
 
 
 if __name__ == '__main__':

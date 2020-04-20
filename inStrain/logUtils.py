@@ -11,12 +11,21 @@ from datetime import datetime
 from datetime import timedelta
 from collections import defaultdict
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.ticker as ticker
+from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.backends.backend_pdf import PdfPages
+
+import seaborn as sns
+
 def process_logs(IS_loc):
     logging.shutdown()
     logloc = os.path.join(IS_loc, 'log/log.log')
     report_run_stats(logloc, most_recent=False, printToo=True, save=True)
 
-def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=False):
+def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=False, plot=True):
     if logloc == None:
         return
 
@@ -44,14 +53,36 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
 
         if save == True:
             saveloc = logloc.replace('log.log', '{0}.runtime_summary.txt'.format(run))
+            figloc = logloc.replace('log.log', '{0}.ramProfile.png'.format(run))
         elif save == False:
             continue
         else:
             saveloc = save
+            figloc = save + '.ramProfile.png'
 
         with open(saveloc, 'w') as o:
             for name, report in name2report.items():
                 o.write("..:: {0} ::..\n{1}\n".format(name, report))
+
+    # Make the plot
+    if plot:
+        try:
+            profile_plot(Ldb, saveloc=figloc)
+        except BaseException as e:
+            if debug:
+                print('Failed to make profile plot - {1}'.format('None', str(e)))
+                traceback.print_exc()
+
+def profile_plot(Ldb, saveloc=None):
+    ldb = Ldb[Ldb['log_type'] == 'Special_profile']
+    rdb, sys_ram = _load_profile_logtable(ldb)
+
+    plt.scatter(rdb['adjusted_start'], rdb['percent_RAM'])
+    plt.xlabel('Runtime (seconds)')
+    plt.ylabel('System RAM available at start of thread\n(% of the {0} system)'.format(humanbytes(sys_ram)))
+
+    if saveloc != None:
+        plt.gcf().savefig(saveloc, bbox_inches='tight')
 
 def generate_reports(Ldb, debug=False):
     name2report = {}
@@ -170,6 +201,10 @@ def _gen_checkpoint_report(Ldb, overall_runtime):
     return report
 
 def _gen_profileRAM_report(Ldb, detailed=False):
+    '''
+    Percent_RAM goes down over the run; it reports the percentage of RAM available
+    end_system_RAM describes the total about of ram _available_
+    '''
     report = ''
 
     # Set up
@@ -199,10 +234,10 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Maximum scaffold time", td_format(None, seconds=rdb['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running scaffold", rdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
     report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
-    report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", rdb['percent_RAM'].iloc[0])
-    report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", rdb['percent_RAM'].iloc[-1])
-    report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(rdb['end_system_RAM'].max()))
-    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(rdb['end_system_RAM'].min()))
+    report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
+    report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
+    report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
+    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].max()))
 
     report += '{0} scaffolds needed to be run a second time\n'.format(
             len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
@@ -292,7 +327,7 @@ def _load_profile_logtable(ldb):
     db = pd.DataFrame(table)
     db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
     db['RAM_usage'] = [s-e for s,e in zip(db['end_process_RAM'], db['start_process_RAM'])]
-    db['percent_RAM'] = [s/sys_ram for s in db['end_system_RAM']]
+    db['percent_RAM'] = [(s/sys_ram) * 100 for s in db['end_system_RAM']]
 
     return db, sys_ram
 
