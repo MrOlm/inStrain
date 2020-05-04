@@ -528,17 +528,21 @@ class Controller():
 def _genome():
     return 'genome'
 
-def load_scaff2bin(input_stb, IS):
+def load_scaff2bin(input_stb, IS=None):
     '''
     From the input, load an .stb. The input can be a lot of things, though
     '''
+
     # Check if there is nothing there
-    if input_stb == []:
-        s2l = IS.get('scaffold2length')
-        stb = {}
-        for scaffold in list(s2l.keys()):
-            stb[scaffold] = 'all_scaffolds'
-        logging.info('Scaffold to bin will consider all scaffolds the same genome')
+    if IS is not None:
+        if input_stb == []:
+            s2l = IS.get('scaffold2length')
+            stb = {}
+            for scaffold in list(s2l.keys()):
+                stb[scaffold] = 'all_scaffolds'
+            logging.info('Scaffold to bin will consider all scaffolds the same genome')
+        else:
+            stb = None
     else:
         stb = None
 
@@ -554,7 +558,7 @@ def load_scaff2bin(input_stb, IS):
     # Check if this is a regular stb file
     if (stb == None) & (len(input_stb) == 1):
         try:
-            stb = inStrain.quickProfile.parse_stb(input_stb[0])
+            stb = parse_stb(input_stb[0])
             logging.info('Scaffold to bin was made using .stb file')
         except:
             stb = None
@@ -563,6 +567,19 @@ def load_scaff2bin(input_stb, IS):
         logging.error('Could not load the scaffold to bin file!')
         assert False
 
+    return stb
+
+def parse_stb(stb_loc):
+    stb = {}
+    with open(stb_loc, "r") as ins:
+        for line in ins:
+            linewords = line.strip().split('\t')
+            scaffold,b = linewords[:2]
+            scaffold = scaffold.strip()
+            b = b.strip()
+            if scaffold not in stb:
+                stb[scaffold] = []
+            stb[scaffold] = b
     return stb
 
 def gen_stb(fastas):

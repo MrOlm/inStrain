@@ -177,6 +177,11 @@ def _gen_checkpoint_report(Ldb, overall_runtime):
     ldb = Ldb[Ldb['log_type'] == 'checkpoint']
     for i in ['name', 'status']:
         ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+    try:
+        i = 'RAM'
+        ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+    except:
+        pass
 
     # actually go
     order = list(ldb['name'].unique())
@@ -192,7 +197,12 @@ def _gen_checkpoint_report(Ldb, overall_runtime):
             start = start.strftime('%Y-%m-%d %H:%M:%S')
             end = end.strftime('%Y-%m-%d %H:%M:%S')
 
-            report += '{0:20} took {1:15} ({2:3.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
+            if 'RAM' in ldb.columns:
+                startram = int(db[db['status'] == 'start']['RAM'].tolist()[0])
+                endram = int(db[db['status'] == 'end']['RAM'].tolist()[0])
+                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\tRAM use increased by {3}\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100, humanbytes(endram-startram))
+            else:
+                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
         elif len(db) == 1:
             start = datetime.fromtimestamp(db[db['status'] == 'start']['time'].tolist()[0])
             start = start.strftime('%Y-%m-%d %H:%M:%S')
@@ -237,7 +247,7 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
     report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
     report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
-    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].max()))
+    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['start_system_RAM'].max()))
 
     report += '{0} scaffolds needed to be run a second time\n'.format(
             len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
@@ -387,6 +397,12 @@ def td_format(td_object, seconds=False):
         return "<1 second"
 
 def humanbytes(B):
+    if B < 0:
+        unit = '- '
+        B = B * -1
+    else:
+        unit = ''
+
     B = float(B)
     KB = float(1024)
     MB = float(KB ** 2) # 1,048,576
@@ -394,15 +410,15 @@ def humanbytes(B):
     TB = float(KB ** 4) # 1,099,511,627,776
 
     if B < KB:
-        return '{0} {1}'.format(B,'Bytes' if 0 == B > 1 else 'Byte')
+        return '{2}{0} {1}'.format(B,'Bytes' if 0 == B > 1 else 'Byte', unit)
     elif KB <= B < MB:
-        return '{0:.2f} KB'.format(B/KB)
+        return '{1}{0:.2f} KB'.format(B/KB, unit)
     elif MB <= B < GB:
-        return '{0:.2f} MB'.format(B/MB)
+        return '{1}{0:.2f} MB'.format(B/MB, unit)
     elif GB <= B < TB:
-        return '{0:.2f} GB'.format(B/GB)
+        return '{1}{0:.2f} GB'.format(B/GB, unit)
     elif TB <= B:
-        return '{0:.2f} TB'.format(B/TB)
+        return '{1}{0:.2f} TB'.format(B/TB, unit)
 
 def parse_parsable_string(pstring):
     object2string = {}
@@ -458,8 +474,12 @@ def load_log(logfile):
 
                 table['log_type'].append('checkpoint')
                 table['time'].append(epoch_time)
-                table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
                 table['run_ID'].append(run_ID)
+
+                if len(linewords) == 9:
+                    table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
+                else:
+                    table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
 
             # Special gene multiprocessing reporting
             elif 'SpecialPoint_genes' in line:

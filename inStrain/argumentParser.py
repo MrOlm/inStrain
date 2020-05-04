@@ -260,24 +260,23 @@ def parse_args(args):
     quick_parent = argparse.ArgumentParser(add_help=False)
     # Required positional arguments
     Rflags = quick_parent.add_argument_group('REQUIRED')
-    Rflags.add_argument('-b', '--bam', help="A bam file to profile",
-                        required=True)
-    Rflags.add_argument('-f', '--fasta', help="The .fasta file to profile",
-                        required=True)
-    Rflags.add_argument('-s', '--stb', help="Scaffold to bin file for genome-wide coverage and breadth",
-                        required=True)
-    Rflags.add_argument("-o", "--output", action="store", \
-                        help='Output prefix')
+    Rflags.add_argument("bam", help="Sorted .bam file")
+    Rflags.add_argument("fasta", help="Fasta file the bam is mapped to")
+
 
     quick_parser = subparsers.add_parser("quick_profile",formatter_class=SmartFormatter,\
                     parents = [quick_parent, parent_parser], add_help=False)
 
     # Other Parameters
     Oflags = quick_parser.add_argument_group('OTHER OPTIONS')
+    Oflags.add_argument('-s', '--stb', help="Scaffold to bin. This can be a file with each line listing a scaffold and a bin name, tab-seperated. This can also be a space-seperated list of .fasta files, with one genome per .fasta file. If nothing is provided, all scaffolds will be treated as belonging to the same genome",
+                        nargs='*', default=[])
+    Oflags.add_argument("-o", "--output", action="store", \
+                        help='Output prefix', default='QuickProfile')
     Oflags.add_argument("--breadth_cutoff", type=float, default=0.5,
-                        help='Minimum breadth to pull scaffolds')
-    Oflags.add_argument("--stringent_breadth_cutoff", type=float, default=0.01,
-                        help='Minimum breadth to let scaffold into coverm raw results')
+                        help='Minimum genome breadth to pull scaffolds')
+    Oflags.add_argument("--stringent_breadth_cutoff", type=float, default=0.00,
+                        help='Minimum breadth to let scaffold into coverm raw results (done with greater than; NOT greater than or equal to)')
 
 
     '''

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.2.14] - 2020-05-04
+- RAM log actually reports min RAM usage now
+- Dont store mm_reads_to_snvs by default
+- Checkpoints report RAM usage as well
+- Edits to make quick_profile have a similar input structure as profile
+
 ## [1.2.13] - 2020-04-20
 - Correct RAM log
 - Make a ram profiling plot

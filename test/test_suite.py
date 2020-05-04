@@ -469,7 +469,7 @@ class test_quickProfile():
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain quick_profile -b {1} -f {2} -o {3} -s {4}".format(self.script, self.bam, self.fasta, \
+        cmd = "inStrain quick_profile {1} {2} -o {3} -s {4}".format(self.script, self.bam, self.fasta, \
             base, self.stb)
         print(cmd)
         call(cmd, shell=True)
@@ -496,7 +496,7 @@ class test_quickProfile():
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain quick_profile -b {1} -f {2} -o {3} -s {4} --stringent_breadth_cutoff {5}".format(
+        cmd = "inStrain quick_profile {1} {2} -o {3} -s {4} --stringent_breadth_cutoff {5}".format(
             self.script, self.bam, self.fasta, base, self.stb, 0.5)
         print(cmd)
         call(cmd, shell=True)
@@ -504,7 +504,9 @@ class test_quickProfile():
         # Load output
         Cdb = pd.read_csv(base + '/coverm_raw.tsv', sep='\t')
         Cdb['breadth'] = [x/y for x, y in zip(Cdb['Covered Bases'], Cdb['Length'])]
+        assert abs(Cdb['breadth'].max() - 1) < 0.0001
         assert Cdb['breadth'].min() >= 0.5
+        assert Cdb['breadth'].max() <= 1
 
 class test_SNVprofile():
     def setUp(self):
@@ -2744,6 +2746,8 @@ class test_strains():
     def test14(self):
         '''
         Basic test- Make sure genes and genome_wide can be run within the profile option
+
+        Make sure logging produces the run statistics
         '''
         # Set up
         base = self.test_dir + 'test'
@@ -2763,6 +2767,13 @@ class test_strains():
         S1 = inStrain.SNVprofile.SNVprofile(base)
         db = S1.get('cumulative_scaffold_table')
         _internal_verify_Sdb(db)
+
+        # Read the log
+        for l in glob.glob(base + '/log/*'):
+            if 'runtime_summary.txt' in l:
+                with open(l, 'r') as o:
+                    for line in o.readlines():
+                        print(line.strip())
 
     def test15(self):
         '''

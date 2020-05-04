@@ -10,6 +10,9 @@ import pandas as pd
 from Bio import SeqIO
 from collections import defaultdict
 
+import inStrain
+import inStrain.genomeUtilities
+
 def main(args):
     '''
     The main controller of the program
@@ -54,7 +57,8 @@ def parse_validate(args):
         args.output += '/'
 
     # Set up the stb
-    args.stb = parse_stb(args.stb)
+    #args.stb = parse_stb(args.stb)
+    args.stb = inStrain.genomeUtilities.load_scaff2bin(args.stb)
 
     # Get genome to length
     scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
@@ -68,22 +72,9 @@ def parse_validate(args):
         genome = args.stb[scaffold]
         if genome not in genome2length:
             genome2length[genome] = 0
-        genome2length[genome] += (s2l[scaffold] - 150) # 150 to account for the ignored ends
+        genome2length[genome] += (s2l[scaffold])# - 150) # 150 to account for the ignored ends; but it doesn't do that anymore
 
     return loc, genome2length
-
-def parse_stb(stb_loc):
-    stb = {}
-    with open(stb_loc, "r") as ins:
-        for line in ins:
-            linewords = line.strip().split('\t')
-            scaffold,b = linewords[:2]
-            scaffold = scaffold.strip()
-            b = b.strip()
-            if scaffold not in stb:
-                stb[scaffold] = []
-            stb[scaffold] = b
-    return stb
 
 def run_coverm(exe_loc, args):
     '''

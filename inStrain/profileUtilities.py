@@ -371,7 +371,7 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
         raw_snp_table=SNPTable,
         raw_linkage_table=LDdb,
 
-        mm_reads_to_snvs=read_to_snvs
+        #mm_reads_to_snvs=read_to_snvs
         )
 
     # Make cummulative tables
@@ -711,7 +711,7 @@ def _calc_snps(Odb, mm, min_freq=0.05):
         # Below is trying to get the count of Ns; but there is no count of Ns
         if row['refBase'] not in ['A', 'C', 'T', 'G']:
             continue
-            
+
         if not inStrain.readComparer.is_present(int(row[row['refBase']]), int(row['baseCoverage']), null_model, float(min_freq)):
             p3 += 1
 
@@ -1046,7 +1046,8 @@ def gen_snv_profile(Sprofiles, **kwargs):
         cumu_scaff_dbs.append(Sprof.cumulative_scaffold_table)
         cumu_snv_dbs.append(Sprof.cumulative_snv_table)
 
-        scaffold_2_mm_2_read_2_snvs[Sprof.scaffold] = Sprof.mm_reads_to_snvs
+        if Sprof.mm_reads_to_snvs != None:
+            scaffold_2_mm_2_read_2_snvs[Sprof.scaffold] = Sprof.mm_reads_to_snvs
 
     # Make some dataframes
     raw_snp_table = pd.concat(raw_snp_dbs).reset_index(drop=True)
@@ -1077,8 +1078,9 @@ def gen_snv_profile(Sprofiles, **kwargs):
     Sprofile.store('cumulative_snv_table', pd.concat(cumu_snv_dbs).reset_index(drop=True),
                     'pandas', 'Cumulative SNP on mm level. Formerly snpLocations.pickle')
 
-    Sprofile.store('scaffold_2_mm_2_read_2_snvs', scaffold_2_mm_2_read_2_snvs,
-                    'pickle', 'crazy nonsense needed for linkage')
+    if scaffold_2_mm_2_read_2_snvs is not {}:
+        Sprofile.store('scaffold_2_mm_2_read_2_snvs', scaffold_2_mm_2_read_2_snvs,
+                        'pickle', 'crazy nonsense needed for linkage')
 
     # On the fly testing
     # if True:

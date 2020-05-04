@@ -324,6 +324,12 @@ inStrain uses a lot of RAM. In the log file, it often reports how much RAM it's 
 
 * Use ``quick_profile`` to figure out which scaffolds actually have reads mapping to them, and only run inStrain on those
 
+A quick and dirty estimate of resources required (as of version 1.2.12):
+
+The required RAM (in Gb) is 0.4 times the length of the .fasta being mapped to (in Mbp). This is assuming the whole genome is covered by at least 1 read; portions of the .fasta file that have 0 reads mapping do not count.
+
+The runtime (in minutes) is 13 times the number of read base pairs in the input .bam file (in Gbp).
+
 A note for programmers
 --------------
 
