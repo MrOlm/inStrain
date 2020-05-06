@@ -2130,7 +2130,7 @@ class test_readcomparer():
         assert len(mdb) == 0
 
 class test_strains():
-    def setUp(self):
+    def setUp(self, destroy=True):
         self.script = get_script_loc('inStrain')
 
         self.test_dir = load_random_test_dir()
@@ -2149,6 +2149,8 @@ class test_strains():
             'strainProfiler_v0.3_results/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam_SP_snpLocations.pickle'
         self.cc_snp_solution = load_data_loc() + \
             'v0.4_results/test_0.98.freq'
+        self.v12_solution = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.IS.v1.2.14'
         self.sam = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
         self.IS = load_data_loc() + \
@@ -2158,9 +2160,10 @@ class test_strains():
         self.genes = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
 
-        if os.path.isdir(self.test_dir):
-            shutil.rmtree(self.test_dir)
-        os.mkdir(self.test_dir)
+        if destroy:
+            if os.path.isdir(self.test_dir):
+                shutil.rmtree(self.test_dir)
+            os.mkdir(self.test_dir)
 
         importlib.reload(logging)
 
@@ -2169,68 +2172,72 @@ class test_strains():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test9()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test10()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test13()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test14()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test15()
+        # self.tearDown()
 
         self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        self.setUp()
-        self.test10()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
-        self.test13()
-        self.tearDown()
-
-        self.setUp()
-        self.test14()
-        self.tearDown()
-
-        self.setUp()
-        self.test15()
+        self.test16()
         self.tearDown()
 
     def test0(self):
@@ -2818,6 +2825,86 @@ class test_strains():
 
         assert counts0 > counts2, [counts0, counts2]
 
+    def test16(self):
+        '''
+        Make sure the results exactly match a run done with inStrain verion 1.2.14
+        '''
+        # Run program
+        base = self.test_dir + 'test'
+        cmd = "inStrain profile {1} {2} -o {3} -g {4}".format(self.script, self.sorted_bam, \
+            self.fasta, base, self.genes)
+        print(cmd)
+        call(cmd, shell=True)
+
+        exp_IS = inStrain.SNVprofile.SNVprofile(base)
+        sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
+
+        # Check the detailed guys
+        sAdb = sol_IS._get_attributes_file()
+        eAdb = exp_IS._get_attributes_file()
+
+        for i, row in sAdb.iterrows():
+            print("checking {0}".format(i))
+
+            e = exp_IS.get(i)
+            s = sol_IS.get(i)
+
+            if i in ['location', 'version', 'bam_loc', 'genes_fileloc']:
+                continue
+
+            elif i in ['scaffold_list']:
+                if not compare_lists(e, s, verbose=True, check_order=False):
+                    print("{0} is not the same".format(i))
+                    print(e)
+                    print(s)
+                    assert e == s, i
+
+            elif i in ['scaffold2length', 'scaffold2bin', 'bin2length']:
+                assert compare_dicts(e, s, verbose=True), i
+
+            elif i in ['window_table', 'raw_linkage_table', 'raw_snp_table', 'cumulative_scaffold_table',
+                        'cumulative_snv_table', 'read_report', 'genes_table', 'genes_coverage',
+                        'genes_clonality', 'genes_SNP_density', 'SNP_mutation_types']:
+
+                if i in ['window_table', 'read_report']:
+                    e = e.sort_values(['scaffold']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold']).reset_index(drop=True)
+
+                if i in ['raw_linkage_table']:
+                    e = e.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
+
+                    # Delete random ones
+                    rand = ['r2_normalized', 'd_prime_normalized']
+                    for r in rand:
+                        del e[r]
+                        del s[r]
+
+                if i in ['raw_snp_table', 'cumulative_snv_table']:
+                    e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
+
+                if i in ['cumulative_scaffold_table']:
+                    e = e.sort_values(['scaffold', 'mm']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'mm']).reset_index(drop=True)
+
+                    # Delete random ones
+                    rand = ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']
+                    for r in rand:
+                        del e[r]
+                        del s[r]
+
+
+                assert compare_dfs2(e, s, verbose=True), i
+
+            elif i in ['scaffold_2_mm_2_read_2_snvs', 'clonTR']:
+                pass
+
+            elif i in ['covT', 'clonT']:
+                assert compare_covTs(e, s), "{0} is not the same".format(i)
+
+            else:
+                print("YOUR NOT CHECKING {0}".format(i))
 
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
@@ -2893,6 +2980,87 @@ def compare_dfs(db1, db2, round=4, verbose=False):
         print("df_gpby: ", str(df_gpby))
 
     return identicle
+
+def compare_dfs2(db1, db2, round=4, verbose=False):
+    '''
+    Return True if dataframes are equal (order of dataframes doesn't matter)
+    '''
+    try:
+        pd._testing.assert_frame_equal(db1, db2)
+        return True
+    except AssertionError as e:
+        if verbose:
+            print(e)
+        return False
+
+def compare_dfs3(db1, db2, round=4, verbose=False):
+    '''
+    Return True if dataframes are equal (order of dataframes doesn't matter)
+    '''
+    if len(db1) != len(db2):
+        print("lengths are different")
+        return False
+
+    if set(db1.columns) != set(db2.columns):
+        print("columns are different")
+        return False
+
+def compare_lists(l1, l2, verbose=False, check_order=True):
+    if len(l1) != len(l2):
+        print("lengths are different")
+        return False
+
+    if set(l1) != set(l2):
+        print('elements are different')
+        return False
+
+    if check_order:
+        for i, (o, t) in enumerate(zip(l1, l2)):
+            if o != t:
+                print('order is different')
+                print('at position {0}, list 1 has {1} and 2 has {2}'.format(i, o, t))
+                return False
+
+    return True
+
+def compare_dicts(d1, d2, verbose=False):
+    if len(d1.keys()) != len(d2.keys()):
+        print("lengths are different")
+        return False
+
+    if set(d1.keys()) != set(d2.keys()):
+        print('elements are different')
+        return False
+
+    for o, oE in d1.items():
+        if d2[o] != oE:
+            print("{0} is {1} and {2}".format(o, oE, d2[o]))
+            return False
+
+    return True
+
+def compare_covTs(c1, c2):
+    old_scaffs = [x for x, i in c1.items() if len(i) > 0]
+    new_scaffs = [x for x, i in c2.items() if len(i) > 0]
+    if set(old_scaffs) != set(new_scaffs):
+        print('Scaffolds are different')
+        return False
+
+    for scaffold in set(old_scaffs):
+        s1 = c1[scaffold]
+        s2 = c2[scaffold]
+
+        if set(s1.keys()) != set(s2.keys()):
+            print("Different mms for scaffold {0}".format(scaffold))
+            return False
+
+        for mm, s1_vals in s1.items():
+            s2_vals = s2[mm]
+            if not s1_vals.equals(s2_vals):
+                print("Different values for scaffold {0}".format(scaffold))
+                return False
+
+    return True
 
 class test_special():
     def setUp(self):
@@ -3002,14 +3170,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_filter_reads().run()
+    # test_filter_reads().run()
     test_strains().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_readcomparer().run()
-    test_special().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_readcomparer().run()
+    # test_special().run()
 
     print('everything is working swimmingly!')
