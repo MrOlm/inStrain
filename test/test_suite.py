@@ -2831,7 +2831,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -g {4}".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
         call(cmd, shell=True)
@@ -2846,13 +2846,13 @@ class test_strains():
         for i, row in sAdb.iterrows():
             print("checking {0}".format(i))
 
+            if i in ['location', 'version', 'bam_loc', 'genes_fileloc', 'window_table']:
+                continue
+
             e = exp_IS.get(i)
             s = sol_IS.get(i)
 
-            if i in ['location', 'version', 'bam_loc', 'genes_fileloc']:
-                continue
-
-            elif i in ['scaffold_list']:
+            if i in ['scaffold_list']:
                 if not compare_lists(e, s, verbose=True, check_order=False):
                     print("{0} is not the same".format(i))
                     print(e)

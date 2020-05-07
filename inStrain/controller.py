@@ -148,8 +148,6 @@ class ProfileController():
 
         # Filter the .fasta file
         FAdb = self.filter_fasta(FAdb, s2p, args.min_fasta_reads)
-        FAdb['filtered_pairs'] = FAdb['scaffold'].map(s2p)
-        FAdb.sort_values('filtered_pairs', inplace=True, ascending=False)
 
         if args.skip_mm_profiling:
             Rset = set(Rdic.keys())
@@ -266,18 +264,27 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         Return a table listing scaffold name, start, end
         '''
-        # PROFILE ALL SCAFFOLDS IN THE .FASTA FILE
         if args.use_full_fasta_header:
             scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"), key_function=_get_description)
         else:
-            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta")) # set up .fasta file
+            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
 
-        s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
-        Fdb = pd.DataFrame(list(s2l.items()), columns=['scaffold', 'end'])
-        Fdb['start'] = 0
+        # Get scaffold2length
+        s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
+
+        # Generate splits
+        table = defaultdict(list)
+        WINDOW_LEN = 3000
+        for scaffold, sLen in s2l.items():
+            for split_start, split_end in iterate_splits(sLen, WINDOW_LEN):
+                table['scaffold'].append(scaffold)
+                table['start'].append(split_start)
+                table['end'].append(split_end)
+        Fdb = pd.DataFrame(table)
+
+        _validate_splits(Fdb, s2l)
 
         if args.scaffolds_to_profile != None:
-            print(args.scaffolds_to_profile)
             Fdb = Fdb[Fdb['scaffold'].isin(args.scaffolds_to_profile)]
             s2s = {scaff:seq for scaff, seq in scaff2sequence.items() if scaff in args.scaffolds_to_profile}
 
@@ -366,11 +373,18 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         RR = Sprofile.get('read_report')
         inStrain.filter_reads.write_read_report(RR, out_base + 'read_report.tsv', **vars(args))
 
-    def filter_fasta(self, FAdb, s2r, min_reads=0):
+    def filter_fasta(self, FAdb, s2p, min_reads=0):
         '''
         Filter the .fasta file based on the min number of mapped paired reads
         '''
-        FAdb = FAdb[[True if (s2r[s] >= min_reads) else False for s in FAdb['scaffold']]]
+        # Remove scaffolds without the min number of reads
+        FAdb = FAdb[[True if (s2p[s] >= min_reads) else False for s in FAdb['scaffold']]]
+
+        # Sort scaffolds based on the number of reads
+        FAdb['filtered_pairs'] = FAdb['scaffold'].map(s2p)
+        FAdb.sort_values('filtered_pairs', inplace=True, ascending=False)
+
+        # Split scaffolds that are going to take more than 1 min to run
         return FAdb
 
 def load_scaff_list(list):
@@ -402,6 +416,32 @@ def load_scaff_list(list):
             scaffs.append(line.strip())
         handle.close()
         return set(scaffs)
+
+def iterate_splits(sLen, WINDOW_LEN):
+    numberChunks = sLen // WINDOW_LEN + 1
+    chunkLen = int(sLen / numberChunks)
+
+    #print("Scaffold length of {0}, window length of {1}, {2} splits of {3}".format(sLen, WINDOW_LEN, numberChunks, chunkLen))
+
+    start = 0
+    end = 0
+    for i in range(numberChunks):
+        if i + 1 == numberChunks:
+            yield start, sLen
+        else:
+            end += chunkLen
+            yield start, end
+            start += chunkLen
+
+def _validate_splits(Fdb, s2l):
+    for scaffold, db in Fdb.groupby('scaffold'):
+        db['len'] = db['end'] - db['start']
+        if db['len'].sum() != s2l[scaffold]:
+            print(db)
+        assert db['len'].sum() == s2l[scaffold], [db['len'].sum(), s2l[scaffold]]
+        assert db['start'].min() == 0
+        assert db['end'].max() == s2l[scaffold]
+
 
 def setup_logger(loc):
     ''' set up logger such that DEBUG goes only to file, rest go to file and console '''

@@ -45,7 +45,7 @@ def calc_mm_SNV_linkage_network(read_to_snvs, scaff=False):
 
     return G
 
-def calculate_ld(mm_to_position_graph, Wdb, min_snp,
+def calculate_ld(mm_to_position_graph, min_snp,
                 snv2mm2counts, scaffold):
     '''
     Calculates Linkage Disequilibrium for all SNVs in a window.

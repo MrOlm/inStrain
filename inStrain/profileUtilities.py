@@ -11,6 +11,7 @@ import traceback
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import multiprocessing
 import concurrent.futures
 from subprocess import call
 from concurrent import futures
@@ -47,6 +48,31 @@ def prepare_bam_fie(args):
 
     return bam
 
+def profile_contig_worker(available_index_queue, output_queue, log_list):
+    '''
+    Taken from https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
+    '''
+
+    while True:
+        cmd = available_index_queue.get(True)
+        try:
+            s, log = scaffold_profile_wrapper2(cmd)
+            output_queue.put(s)
+            log_list.put(log)
+        except:
+            output_queue.put(False)
+            log_list.put('FAILURE')
+
+        # if contig is not None:
+        #     # We mark these for deletion the next time garbage is collected
+        #     for split in contig.splits:
+        #         del split.coverage
+        #         del split.auxiliary
+        #         del split
+        #     del contig.splits[:]
+        #     del contig.coverage
+        #     del contig
+
 def profile_bam(bam, Fdb, r2m, **kwargs):
     '''
     Profile the .bam file really  well.
@@ -81,22 +107,50 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
 
     # do the multiprocessing
     Sprofiles = []
-    total_cmds = len([x for x in iterate_commands(Fdb, bam, profArgs)])
+    total_cmds = len([x for x in iterate_commands2(Fdb, bam, profArgs)])
 
     if p > 1:
-        Sprofiles = []
-        ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
+        # Set up queues to be synced between the processes
+        manager = multiprocessing.Manager()
+        split_cmd_queue = manager.Queue()
+        split_output_queue = manager.Queue(p*2)
+        log_list = manager.Queue()
 
-        wait_for = [ex.submit(scaffold_profile_wrapper, cmd) for cmd in iterate_commands(Fdb, bam, profArgs)]
+        # Fill in the queue with commands to profile splits
+        for cmd in iterate_commands2(Fdb, bam, profArgs):
+            split_cmd_queue.put(cmd)
 
-        for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Profiling scaffolds'):
-            try:
-                results = f.result()
-                for s, log in results:
-                    logging.debug(log)
-                    Sprofiles.append(s)
-            except:
-                logging.error("We had a failure profiling a scaffold! Not sure which!")
+        # Start a number of processes to do this work
+        processes = []
+        for i in range(0, p):
+            processes.append(multiprocessing.Process(target=profile_contig_worker, args=(split_cmd_queue, split_output_queue, log_list)))
+
+        for proc in processes:
+            proc.start()
+
+        # Set up progress bar
+        pbar = tqdm(desc='Profiling scaffolds: ', total=len(scaffolds))
+
+        # Handle finished results
+        received_results = 0
+        failed_results = 0
+        while received_results < len(scaffolds):
+            Sprofile = split_output_queue.get()
+            if Sprofile is False:
+                failed_results += 1
+            else:
+                Sprofiles.append(Sprofile)
+
+            log_message = log_list.get()
+            logging.debug(log_message)
+
+            received_results += 1
+            pbar.update(1)
+
+        # Finish up multi-processing
+        for proc in processes:
+            proc.terminate()
+        pbar.close()
 
     else:
         for cmd in tqdm(iterate_commands(Fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
@@ -108,7 +162,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     # Re-run failed scaffolds
     failed_scaffs = set(scaffolds) - set([s.scaffold for s in Sprofiles if s is not None])
     if len(failed_scaffs) > 0:
-        logging.error("The following scaffolds failed scaffold profiling- I'll try again {0}".format('\n'.join(failed_scaffs)))
+        logging.error("The following scaffolds failed scaffold profiling- I'll try again in single mode  {0}\n".format('\n'.join(failed_scaffs)))
         fdb = Fdb[Fdb['scaffold'].isin(failed_scaffs)]
         total_cmds = len([x for x in iterate_commands(fdb, bam, profArgs)])
         for cmd in tqdm(iterate_commands(fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
@@ -172,6 +226,19 @@ def scaffold_profile_wrapper(cmds):
         logging.error("whole scaffold exception- {0}".format(str(" ".join([cmd.scaffold for cmd in cmds]))))
         return pd.DataFrame({'Failed':[True]})
 
+def scaffold_profile_wrapper2(cmd):
+    '''
+    Take a command and profile the scaffold
+    '''
+    try:
+        return _profile_scaffold(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, **cmd.arguments)
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+        logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
+        return pd.DataFrame({'Failed':[True]})
+
+
 def iterate_commands(Fdb, bam, args):
     '''
     Make and iterate profiling commands
@@ -203,6 +270,23 @@ def iterate_commands(Fdb, bam, args):
             cmds = []
 
     yield cmds
+
+def iterate_commands2(Fdb, bam, args):
+    '''
+    Make and iterate profiling commands
+    Doing it in this way makes it use way less RAM
+    '''
+    for scaff, db in Fdb.groupby('scaffold'):
+        # make this command
+        cmd = profile_command()
+        cmd.scaffold = scaff
+        cmd.locations = db
+        cmd.samfile = bam
+        cmd.arguments = args
+        cmd.start = db['start'].min()
+        cmd.end = db['end'].max()
+
+        yield cmd
 
 def calc_estimated_runtime(pairs):
     SLOPE_CONSTANT = 0.0061401594694834305
@@ -237,76 +321,109 @@ class profile_command():
     def __init__(self):
         pass
 
-def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
+def _profile_scaffold(bam, scaffold, start, end, **kwargs):
     '''
     Profile a scaffold
 
     Arguments:
         bam = name of .bam file
         scaffold = name of scaffold
-        Wdb = dataframe listing windows to profile
         seq = sequence of .fasta file thats mapped to
     '''
     # Log
+    log_message = _get_log_message('profile_start', scaffold)
 
-    # if kwargs.get('debug', False):
-    pid = os.getpid()
-    process  = psutil.Process(os.getpid())
-    bytes_used = process.memory_info().rss
-    total_available_bytes = psutil.virtual_memory()
-    # logging.debug("PID {0}: {4}. Starting with {1} RAM. System has {2} of {3} available".format(
-    #         pid, humanbytes(bytes_used), humanbytes(total_available_bytes[1]), humanbytes(total_available_bytes[0]),
-    #         scaffold))
-    log_message = "\n{4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
-            pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-            scaffold, time.time())
-
-    # Set up a sam file
-    samfile = pysam.AlignmentFile(bam)
-    try:
-        iter = samfile.pileup(scaffold, truncate = True, max_depth=100000,
-                                stepper = 'nofilter', compute_baq= True,
-                                ignore_orphans = True, ignore_overlaps = True,
-                                min_base_quality = 30)
-    except ValueError:
-        logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, bam))
-        return None, log_message
-
-    # Pull some arguments
+    # Get kwargs
     min_cov = int(kwargs.get('min_cov', 5))
     min_covR = int(kwargs.get('rarefied_coverage', 5))
     min_freq = float(kwargs.get('min_freq', .05))
     min_snp = int(kwargs.get('min_snp', 10))
     store_everything = kwargs.get('store_everything', False)
+
+    # Get sequence from global
     seq = scaff2sequence[scaffold]
 
-    # Initialize some mm dictionaries
-    mLen = len(seq)
-    covT = {} # Dictionary of mm -> positional coverage along the genome
-    #basesCounted = {} # Dictionary of mm -> Count of bases that got through to SNP calling
-    #snpsCounted = {} # Dictionary of mm -> Count of SNPs
-    read_to_snvs = defaultdict(_dlist) # Dictionary of mm -> read variant -> count
-    p2c = {} # dictionary of position -> cryptic SNPs
-    snv2mm2counts = {} # dictionary of position to mm to counts for SNP positions
+    # Set up the .bam file
+    samfile = pysam.AlignmentFile(bam)
+    try:
+        iter = samfile.pileup(scaffold, truncate = True, max_depth=100000,
+                                stepper = 'nofilter', compute_baq= True,
+                                ignore_orphans = True, ignore_overlaps = True,
+                                min_base_quality = 30, start=start, stop=end)
+    except ValueError:
+        logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, bam))
+        return None, log_message
 
+    # Initialize
+    mLen = len(seq) # Length of sequence
+    covT = {} # Dictionary of mm -> positional coverage along the genome
     clonT = {} # Diciontary of mm -> clonality
     clonTR = {} # Diciontary of mm -> rarefied clonality
-
-    # Initialize some tables
+    p2c = {} # dictionary of position -> cryptic SNPs
+    read_to_snvs = defaultdict(_dlist) # Dictionary of mm -> read variant -> count
+    snv2mm2counts = {} # dictionary of position to mm to counts for SNP positions
     Stable = defaultdict(list) # Holds SNP information
-    pileup_counts = np.zeros(shape=(mLen, 4), dtype=int) # Holds all pileup counts - alexcc 5/9/2019
+    if store_everything:
+        pileup_counts = np.zeros(shape=(mLen, 4), dtype=int) # Holds all pileup counts - alexcc 5/9/2019
+    else:
+        pileup_counts = None
 
     # Do per-site processing
+    _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, **kwargs)
+
+    # Shrink these dictionaries into index pandas Series
+    covT = shrink_basewise(covT, 'coverage')
+    clonT = shrink_basewise(clonT, 'clonality')
+    clonTR = shrink_basewise(clonTR, 'clonality')
+
+    # Make the SNP table
+    SNPTable = _make_snp_table2(Stable, scaffold, p2c)
+
+    # Do per-scaffold aggregating
+    CoverageTable = make_coverage_table(covT, clonT, clonTR, mLen, scaffold, SNPTable, min_freq=min_freq)
+
+    # Make linkage network and calculate linkage
+    mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
+    LDdb = inStrain.linkage.calculate_ld(mm_to_position_graph, min_snp, snv2mm2counts=snv2mm2counts, scaffold=scaffold)
+
+    # Make a Scaffold profile to return
+    Sprofile = scaffold_profile()
+    Sprofile.scaffold = scaffold
+    Sprofile.bam = bam
+    Sprofile.length = mLen
+    Sprofile.cumulative_scaffold_table = CoverageTable
+    Sprofile.raw_snp_table = SNPTable
+    Sprofile.raw_linkage_table = LDdb
+    Sprofile.covT = covT
+    Sprofile.clonT = clonT
+    Sprofile.clonTR = clonTR
+
+    # store extra things if required
+    if store_everything:
+        for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
+            setattr(Sprofile, att, eval(att))
+
+    # Make cummulative tables
+    Sprofile.make_cumulative_tables()
+
+    # Return
+    log_message +=  _get_log_message('profile_end', scaffold)
+    return Sprofile, log_message
+
+def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, **kwargs):
+    # Get kwargs
+    min_cov = int(kwargs.get('min_cov', 5))
+    min_covR = int(kwargs.get('rarefied_coverage', 5))
+    min_freq = float(kwargs.get('min_freq', .05))
+    min_snp = int(kwargs.get('min_snp', 10))
+    store_everything = kwargs.get('store_everything', False)
+
     for pileupcolumn in iter:
-        # NOTE!
-        # If you have paired reads in a pileup column, only one will come back
-        # starting in pysam v0.15 (which is usually the intended functionality)
-        # - M.O. 3.19.19
+        # NOTE! If you have paired reads in a pileup column, only one will come back starting in pysam v0.15 (which is usually the intended functionality) - M.O. 3.19.19
 
         # Get basic base counts
         MMcounts = _get_base_counts_mm(pileupcolumn)
         _update_covT(covT, MMcounts, pileupcolumn.pos, mLen)
-
 
         # Call SNPs
         snp, bases, total_counts = _update_snp_table_T(Stable, clonT, clonTR,\
@@ -322,81 +439,25 @@ def _profile_scaffold(bam, scaffold, Wdb, **kwargs):
             _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, pileupcolumn.pos, bases, scaffold=scaffold)
             snv2mm2counts[pileupcolumn.pos] = MMcounts
 
-    # add it back
-    # if len(covT) == 0:
-    #     covT = np.zeros(mLen, dtype=int)
+def _get_log_message(kind, scaffold):
+    if kind == 'profile_start':
+        pid = os.getpid()
+        process  = psutil.Process(os.getpid())
+        bytes_used = process.memory_info().rss
+        total_available_bytes = psutil.virtual_memory()
+        log_message = "\n{4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
+                pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
+                scaffold, time.time())
+        return log_message
 
-    # shrink lots of things by default
-    covT = shrink_basewise(covT, 'coverage')
-    clonT = shrink_basewise(clonT, 'clonality')
-    clonTR = shrink_basewise(clonTR, 'clonality')
-    #snpsCounted = shrink_basewise(snpsCounted, 'snpCounted')
-
-    # Make the SNP table
-    SNPTable = pd.DataFrame(Stable)
-
-    if len(SNPTable) > 0:
-        SNPTable['scaffold'] = scaffold
-
-        # Add cryptic SNPs
-        SNPTable['cryptic'] = SNPTable['position'].map(p2c)
-        SNPTable['cryptic'] = SNPTable['cryptic'].fillna(False)
-
-        # Calc base coverage
-        SNPTable['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
-
-    # Do per-scaffold aggregating
-    CoverageTable = make_coverage_table(covT, clonT, clonTR, mLen, scaffold, Wdb, SNPTable, min_freq=min_freq)
-
-    # Make linkage network
-    mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
-
-    LDdb = inStrain.linkage.calculate_ld(mm_to_position_graph, Wdb, min_snp, snv2mm2counts=snv2mm2counts,
-            scaffold=scaffold)
-
-    # Make a profile
-    Sprofile = scaffold_profile(
-        scaffold=scaffold,
-        bam=bam,
-
-        min_freq=min_freq,
-        min_cov=min_cov,
-
-        length=mLen,
-        #pileup_counts = pileup_counts,
-        windows=Wdb,
-
-        cumulative_scaffold_table=CoverageTable,
-        #raw_ANI_table=ANITable,
-        raw_snp_table=SNPTable,
-        raw_linkage_table=LDdb,
-
-        #mm_reads_to_snvs=read_to_snvs
-        )
-
-    # Make cummulative tables
-    Sprofile.make_cumulative_tables()
-
-    #for att in ['covT', 'snpsCounted', 'clonT']:
-    for att in ['covT', 'clonT', 'clonTR']:
-        setattr(Sprofile, att, eval(att))
-
-    # store extra things if required
-    if store_everything:
-        for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
-            setattr(Sprofile, att, eval(att))
-
-    # if kwargs.get('debug', False):
-
-    pid = os.getpid()
-    process  = psutil.Process(os.getpid())
-    bytes_used = process.memory_info().rss
-    total_available_bytes = psutil.virtual_memory()
-    log_message += "\n{4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
-            pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-            scaffold, time.time())
-
-    return Sprofile, log_message
+    elif kind == 'profile_end':
+        pid = os.getpid()
+        process  = psutil.Process(os.getpid())
+        bytes_used = process.memory_info().rss
+        total_available_bytes = psutil.virtual_memory()
+        return "\n{4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
+                pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
+                scaffold, time.time())
 
 def _dlist():
     return defaultdict(list)
@@ -719,7 +780,7 @@ def _calc_snps(Odb, mm, min_freq=0.05):
 
     return [ref_snps, bi_snps, multi_snps, len(db), con_snps, pop_snps]
 
-def make_coverage_table(covT, clonT, clonTR, lengt, scaff, Wdb, SNPTable, min_freq=0.05, debug=False):
+def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.05, debug=False):
     '''
     Add information to the table
     Args:
@@ -933,6 +994,21 @@ def _make_snp_table(Stable):
 
     return Sdb
 
+def _make_snp_table2(Stable, scaffold, p2c):
+    SNPTable = pd.DataFrame(Stable)
+    if len(SNPTable) > 0:
+        SNPTable['scaffold'] = scaffold
+
+        # Add cryptic SNPs
+        SNPTable['cryptic'] = SNPTable['position'].map(p2c)
+        SNPTable['cryptic'] = SNPTable['cryptic'].fillna(False)
+
+        # Calc base coverage
+        SNPTable['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
+
+    del Stable
+    return SNPTable
+
 def _parse_Sdb(sdb):
     '''
     Add some information to sdb
@@ -952,34 +1028,8 @@ def _parse_Sdb(sdb):
 class scaffold_profile():
     def __init__(self, **kwargs):
         '''
-        initialize all attributes to None
+        initialize
         '''
-
-        self.ATTRIBUTES = (\
-        'scaffold', # Filename of this object
-
-        'fasta_loc',
-        'scaffold2length', # Dictionary of scaffold 2 length
-        'bam',
-        'windows',
-        'length',
-
-        #'pileup_counts',  # a numpy 2d array of [A,C,T,G] counts for this scaffold. Each pos = scaf pos
-        'raw_snp_table', # Contains raw SNP information on a mm level
-        'raw_ANI_table', # Contains raw ANI information on a mm level
-        'raw_coverage_table', # Contains raw coverage information on a mm level
-        'raw_linkage_table',
-
-        'cumulative_scaffold_table', # Cumulative coverage on mm level. Formerly "scaffoldTable.csv"
-        'cumulative_snv_table', # Cumulative SNP on mm level. Formerly "snpLocations.pickle"
-
-        'mm_reads_to_snvs',
-
-        'scaff2covT',
-        'scaff2basesCounted',
-        )
-        for att in self.ATTRIBUTES:
-            setattr(self, att, kwargs.get(att, None))
         self.version = __version__
 
     def make_cumulative_tables(self):
@@ -987,23 +1037,6 @@ class scaffold_profile():
         Make cumulative tables (still raw-looking)
         This is all on the scaffold level
         '''
-        # if ((self.raw_coverage_table is not None)
-        #         & (self.raw_ANI_table is not None)):
-        #     self.cumulative_scaffold_table = \
-        #         _merge_tables_special(self.raw_coverage_table, self.raw_ANI_table)
-
-            # if self.scaffold == 'N5_271_010G1_scaffold_101':
-            #     print(self.scaffold)
-            #     print(self.raw_coverage_table[self.raw_coverage_table['mm'].isna()])
-            #     print(self.raw_ANI_table[self.raw_ANI_table['mm'].isna()])
-            #     print(self.cumulative_scaffold_table[self.cumulative_scaffold_table['mm'].isna()])
-            #     sys.exit()
-            #
-            #     print(self.cumulative_scaffold_table[self.cumulative_scaffold_table.isna()])
-            #     print(self.raw_coverage_table)
-            #     print(self.raw_ANI_table)
-
-
         if (self.raw_snp_table is not None):
             self.cumulative_snv_table = _make_snp_table(self.raw_snp_table)
             self.cumulative_snv_table = _parse_Sdb(self.cumulative_snv_table)
@@ -1020,7 +1053,6 @@ def gen_snv_profile(Sprofiles, **kwargs):
     bam_list = []
     scaffold2length = {}
 
-    wdbs = []
     #raw_cov_dbs = []
     #raw_ani_dbs = []
     raw_snp_dbs = []
@@ -1037,7 +1069,6 @@ def gen_snv_profile(Sprofiles, **kwargs):
         bam_list.append(Sprof.bam)
         scaffold2length[Sprof.scaffold] = Sprof.length
 
-        wdbs.append(Sprof.windows)
         #raw_cov_dbs.append(Sprof.raw_coverage_table)
         #raw_ani_dbs.append(Sprof.raw_ANI_table)
         raw_snp_dbs.append(Sprof.raw_snp_table)
@@ -1046,7 +1077,7 @@ def gen_snv_profile(Sprofiles, **kwargs):
         cumu_scaff_dbs.append(Sprof.cumulative_scaffold_table)
         cumu_snv_dbs.append(Sprof.cumulative_snv_table)
 
-        if Sprof.mm_reads_to_snvs != None:
+        if hasattr(Sprof, 'mm_reads_to_snvs'):
             scaffold_2_mm_2_read_2_snvs[Sprof.scaffold] = Sprof.mm_reads_to_snvs
 
     # Make some dataframes
@@ -1067,8 +1098,6 @@ def gen_snv_profile(Sprofiles, **kwargs):
     Sprofile.store('bam_loc', bam_list[0], 'value', 'Location of .bam file')
     Sprofile.store('scaffold_list', scaffold_list, 'list', '1d list of scaffolds, in same order as counts_table')
     Sprofile.store('scaffold2length', scaffold2length, 'dictionary', 'Dictionary of scaffold 2 length')
-    Sprofile.store('window_table', pd.concat(wdbs).reset_index(drop=True),
-                    'pandas', 'Windows profiled over (not sure if really used right now)')
     Sprofile.store('raw_linkage_table', pd.concat(raw_link_dbs).reset_index(drop=True),
                     'pandas', 'Raw table of linkage information')
     Sprofile.store('raw_snp_table', raw_snp_table,
