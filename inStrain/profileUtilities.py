@@ -544,7 +544,8 @@ def prepare_commands(Fdb, bam, args):
 
         Sprofiles[scaff] = Sprofile
 
-    cmd_groups.append(cmds)
+    if len(cmds) > 0:
+        cmd_groups.append(cmds)
 
     return cmd_groups, Sdict, s2splits
 
