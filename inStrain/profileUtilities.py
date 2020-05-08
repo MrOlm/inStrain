@@ -318,6 +318,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     logging.debug('setting up commands')
     # Set up commands
     cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
+    logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     logging.debug('setting up queues')
     # Set up queues to be synced between the processes
@@ -340,19 +341,23 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         for proc in processes:
             proc.start()
 
-        # Fill in the queue with commands to profile splits
-        logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
-        for i, cmd in enumerate(cmd_groups):
-            split_cmd_queue.put(cmd)
-            if i % 50 == 0:
-                logging.debug("{0} put in".format(i))
-
         # Set up progress bar
         pbar = tqdm(desc='Profiling splits: ', total=len(scaffolds))
 
         # Handle the queues
         logging.debug('starting loop')
+        cmd_index = 0
         while len(Sprofiles) < len(scaffolds):
+
+            # Fill in the queue with commands to profile splits, 500 at a time
+            while cmd_index < len(cmd_groups):
+                logging.debug("Filling cmd queue again- index {0}".format(cmd_index))
+                split_cmd_queue.put(cmd_groups[cmd_index])
+                cmd_index += 1
+                if cmd_index % 500 == 0:
+                    logging.debug("{0} put in".format(i))
+                    break
+
             # Get the logs
             try:
                 log_message = log_list.get(timeout=1)
