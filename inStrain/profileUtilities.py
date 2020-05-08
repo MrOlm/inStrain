@@ -329,14 +329,6 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
     Sprofiles = manager.list() # Holds the resulting Sprofiles
 
-    logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
-    # Fill in the queue with commands to profile splits
-
-    for i, cmd in enumerate(cmd_groups):
-        split_cmd_queue.put(cmd)
-        if i % 50 == 0:
-            logging.debug("{0} put in".format(i))
-
     if p > 1:
         # Start a number of processes to do this work
         logging.debug('setting up processes')
@@ -347,6 +339,13 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         logging.debug('starting processes')
         for proc in processes:
             proc.start()
+
+        # Fill in the queue with commands to profile splits
+        logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
+        for i, cmd in enumerate(cmd_groups):
+            split_cmd_queue.put(cmd)
+            if i % 50 == 0:
+                logging.debug("{0} put in".format(i))
 
         # Set up progress bar
         pbar = tqdm(desc='Profiling splits: ', total=len(scaffolds))
@@ -394,6 +393,13 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         pbar.close()
 
     else:
+        # Fill in the queue with commands to profile splits
+        logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
+        for i, cmd in enumerate(cmd_groups):
+            split_cmd_queue.put(cmd)
+            if i % 50 == 0:
+                logging.debug("{0} put in".format(i))
+
         profile_contig_worker_singlethread(split_cmd_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits)
 
     # # Re-run failed scaffolds
@@ -533,7 +539,7 @@ def prepare_commands(Fdb, bam, args):
             Sdict[scaff + '.' + str(row['split_number'])] = None
 
             # Add estimated seconds
-            seconds += s2p[scaff]
+            seconds += s2p[scaff] / s2splits[scaff]
             cmds.append(cmd)
 
             # See if you're done

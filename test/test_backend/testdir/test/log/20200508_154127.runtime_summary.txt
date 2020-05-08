@@ -1,0 +1,43 @@
+..:: Overall ::..
+InStrain version 1.3.0a started at 2020-05-08 15:41:27 and ended at 2020-05-08 15:42:41.
+Runtime = 1 minute, 14 seconds
+Command = /Users/mattolm/miniconda3/bin/inStrain profile /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test -g /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna --skip_plot_generation
+
+..:: Checkpoints ::..
+filter_reads         took 3 seconds       (4.1% of overall)	RAM use increased by 55.18 MB
+profile_scaffolds    took 43 seconds      (58.1% of overall)	RAM use increased by 152.68 MB
+profile_genes        took 24 seconds      (32.4% of overall)	RAM use increased by 13.54 MB
+genome_wide          took 4 seconds       (5.4% of overall)	RAM use increased by - 24.84 MB
+
+..:: Profile RAM useage and paralellization efficiency ::..
+Wall time for Profile         	33 seconds
+User time profiling splits    	1.0 minute, 42.0 seconds
+User time merging splits      	33.0 seconds
+Total number processes used   	6
+Average number processes used 	4.1
+Paralellization efficiency    	68.5%
+Scaffolds profiled            	178
+Average profile time per split	<1 second
+Average time per split        	<1 second
+Median time per split         	<1 second
+Maximum split time            	11.0 seconds
+Longest running split         	N5_271_010G1_scaffold_963.0
+Average time per merge        	<1 second
+Median time per merge         	<1 second
+Maximum merge time            	<1 second
+Longest running merge         	N5_271_010G1_scaffold_1
+System RAM available          	16.00 GB
+Starting RAM usage (%)        	60.7%
+Ending RAM usage (%)          	60.5%
+Peak RAM used                 	9.72 GB
+Mimimum RAM used              	9.67 GB
+0 scaffolds needed to be run a second time
+
+..:: Genes paralellization efficiency ::..
+Gene calling paralellization occured for 17 seconds and involved 1 processes
+An average of 1.0 processes were used during this time to profile 173 scaffolds
+Scaffolds ran for an average of <1 second (median <1 second; longest 1.0 second)
+0 scaffolds needed to be run a second time
+
+..:: Failures ::..
+No failures
