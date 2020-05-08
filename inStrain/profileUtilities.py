@@ -198,7 +198,7 @@ def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_di
                 # Clean up
                 SSO.delete_self()
                 del SSO
-                
+
             except:
                 log_list.put('FAIL')
                 Sprofiles.append(None)
@@ -281,6 +281,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         Fdb = dictionary listing fasta locations to profile
         R2M = dictionary of read pair -> number of mm
     '''
+    logging.debug('setting up bam profile')
     # get arguments for profiling the scaffolds
     profArgs = kwargs
 
@@ -303,9 +304,11 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     # make a list of the scaffolds to multiprocess
     scaffolds = list(Fdb['scaffold'].unique())
 
+    logging.debug('setting up commands')
     # Set up commands
     cmds, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
 
+    logging.debug('setting up queues')
     # Set up queues to be synced between the processes
     manager = multiprocessing.Manager()
 
@@ -315,16 +318,19 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
     Sprofiles = manager.list() # Holds the resulting Sprofiles
 
+    logging.debug('filling in queues')
     # Fill in the queue with commands to profile splits
     for cmd in cmds:
         split_cmd_queue.put(cmd)
 
     if p > 1:
         # Start a number of processes to do this work
+        logging.debug('setting up processes')
         processes = []
         for i in range(0, p):
             processes.append(multiprocessing.Process(target=profile_contig_worker, args=(split_cmd_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles)))
 
+        logging.debug('starting processes')
         for proc in processes:
             proc.start()
 
@@ -332,6 +338,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         pbar = tqdm(desc='Profiling splits: ', total=len(scaffolds))
 
         # Handle the queues
+        logging.debug('starting loop')
         while len(Sprofiles) < len(scaffolds):
             # Get the logs
             try:
