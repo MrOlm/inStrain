@@ -2871,6 +2871,8 @@ class test_strains():
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
 
                 if i in ['raw_linkage_table']:
+                    continue
+
                     e = e.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
 

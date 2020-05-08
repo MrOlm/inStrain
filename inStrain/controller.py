@@ -276,8 +276,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         table = defaultdict(list)
         WINDOW_LEN = 3000
         for scaffold, sLen in s2l.items():
-            for split_start, split_end in iterate_splits(sLen, WINDOW_LEN):
+            for i, (split_start, split_end) in enumerate(iterate_splits(sLen, WINDOW_LEN)):
                 table['scaffold'].append(scaffold)
+                table['split_number'].append(i)
                 table['start'].append(split_start)
                 table['end'].append(split_end)
         Fdb = pd.DataFrame(table)
@@ -339,7 +340,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         setup_logger(log_loc)
 
         # Make the bam file if you need to
-        args.bam = inStrain.profileUtilities.prepare_bam_fie(args)
+        args.bam = prepare_bam_fie(args)
 
         # Load the list of scaffolds
         args.scaffolds_to_profile = load_scaff_list(args.scaffolds_to_profile)
@@ -418,6 +419,9 @@ def load_scaff_list(list):
         return set(scaffs)
 
 def iterate_splits(sLen, WINDOW_LEN):
+    '''
+    Splits are 0-based and double-inclusive
+    '''
     numberChunks = sLen // WINDOW_LEN + 1
     chunkLen = int(sLen / numberChunks)
 
@@ -427,20 +431,23 @@ def iterate_splits(sLen, WINDOW_LEN):
     end = 0
     for i in range(numberChunks):
         if i + 1 == numberChunks:
-            yield start, sLen
+            yield start, sLen - 1
         else:
             end += chunkLen
-            yield start, end
+            yield start, end - 1
             start += chunkLen
 
 def _validate_splits(Fdb, s2l):
+    '''
+    Splits are 0-based and double-inclusive
+    '''
     for scaffold, db in Fdb.groupby('scaffold'):
-        db['len'] = db['end'] - db['start']
+        db['len'] = db['end'] - db['start'] + 1
         if db['len'].sum() != s2l[scaffold]:
             print(db)
         assert db['len'].sum() == s2l[scaffold], [db['len'].sum(), s2l[scaffold]]
         assert db['start'].min() == 0
-        assert db['end'].max() == s2l[scaffold]
+        assert db['end'].max() == s2l[scaffold] - 1
 
 
 def setup_logger(loc):
@@ -523,6 +530,73 @@ def log_fmt_to_epoch(ttime):
     datetimeobject = datetime.strptime(ttime,oldformat)
     print(datetimeobject)
     return datetimeobject.timestamp()
+
+def prepare_bam_fie(args):
+    '''
+    Make this a .bam file
+    '''
+    bam = args.bam
+
+    if bam[-4:] == '.sam':
+        logging.info("You gave me a sam- I'm going to make it a .bam now")
+
+        bam = _sam_to_bam(bam)
+        bam = _sort_index_bam(bam)
+
+    elif bam[-4:] == '.bam':
+        if (os.path.exists(bam + '.bai')) | ((os.path.exists(bam[:-4] + '.bai'))):
+            pass
+        else:
+            bam = _sort_index_bam(bam, rm_ori=False)
+
+    if os.stat(bam).st_size == 0:
+        logging.error("Failed to generated a sorted .bam file! Make sure you have "+\
+            "samtools version 1.6 or greater.")
+        sys.exit()
+
+    return bam
+
+def _sam_to_bam(sam):
+    '''
+    From the location of a .sam file, convert it to a bam file and retun the location
+    '''
+    if sam[-4:] != '.sam':
+        print('Sam file needs to end in .sam')
+        sys.exit()
+
+    bam = sam[:-4] + '.bam'
+    logging.info("Converting {0} to {1}".format(sam, bam))
+    cmd = ['samtools', 'view','-S','-b', sam, '>', bam]
+    print(' '.join(cmd))
+    call(' '.join(cmd), shell=True)
+
+    return bam
+
+def _sort_index_bam(bam, rm_ori=False):
+    '''
+    From a .bam file, sort and index it. Remove original if rm_ori
+    Return path of sorted and indexed bam
+    '''
+    if bam[-4:] != '.bam':
+        logging.error('Bam file needs to end in .bam')
+        sys.exit()
+
+    logging.info("sorting {0}".format(bam))
+    sorted_bam = bam[:-4] + '.sorted.bam'
+    cmd = ['samtools', 'sort', bam, '-o', sorted_bam]
+    print(' '.join(cmd))
+    call(cmd)
+
+    logging.info("Indexing {0}".format(sorted_bam))
+    cmd = ['samtools', 'index', sorted_bam, sorted_bam + '.bai']
+    print(' '.join(cmd))
+    call(cmd)
+
+    if rm_ori:
+        logging.info("Deleting {0}".format(bam))
+        os.remove(bam)
+
+    return sorted_bam
     #return convert_table(Ldb)
 # def parse_arguments(args):
 #     parser = argparse.ArgumentParser(description="inStrain version {0}".format(__version__),
