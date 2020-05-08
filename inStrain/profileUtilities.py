@@ -60,8 +60,13 @@ class ScaffoldSplitObject():
         '''
         Merge the split dict in order to make a scaffold profile
         '''
+        log_message = _get_log_message('merge_start', self.scaffold)
+
         if self.number_splits == 1:
-            return self.split_dict[0].merge_single_profile()
+            Sprofile = self.split_dict[0].merge_single_profile()
+            log_message += _get_log_message('merge_end', self.scaffold)
+            Sprofile.merge_log = log_message
+            return Sprofile
         else:
             Sprofile = scaffold_profile()
             # Handle value objects
@@ -85,9 +90,33 @@ class ScaffoldSplitObject():
                 vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
                 setattr(Sprofile, att, merge_basewise(vals))
 
+            # Handle extra things
+            for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
+                if hasattr(self.split_dict[0], att):
+                    vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
+                    setattr(Sprofile, att, merge_special(vals, att))
+
             Sprofile.make_cumulative_tables()
 
+            log_message += _get_log_message('merge_end', self.scaffold)
+            Sprofile.merge_log = log_message
+
             return Sprofile
+
+    def delete_self(self):
+        '''
+        Delete everything to free up RAM
+        '''
+        pass
+        #     # We mark these for deletion the next time garbage is collected
+        #     for split in contig.splits:
+        #         del split.coverage
+        #         del split.auxiliary
+        #         del split
+        #     del contig.splits[:]
+        #     del contig.coverage
+        #     del contig
+
 
 class SplitObject():
     '''
@@ -113,7 +142,7 @@ class SplitObject():
 
         for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
             if hasattr(self, att):
-                setattr(Sprofile, att, eval(att))
+                setattr(Sprofile, att, getattr(self, att))
 
         # Make cummulative tables
         Sprofile.make_cumulative_tables()
@@ -144,6 +173,7 @@ class scaffold_profile():
                             self.clonTR, self.length, self.scaffold, self.raw_snp_table,
                             min_freq=self.min_freq)
 
+
 class profile_command():
     '''
     This is a stupid object that just holds the arguments to profile a split
@@ -156,50 +186,90 @@ def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_di
     Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
     '''
 
-    # Process splits
+    while True:
+        # If theres a merge to do, do it to free up the RAM
+        if not sprofile_cmd_queue.empty():
+            SSO = sprofile_cmd_queue.get(True)
+            try:
+                Sprofile = SSO.merge()
+                log_list.put(Sprofile.merge_log)
+                Sprofiles.append(Sprofile)
+
+                # Clean up
+                SSO.delete_self()
+                del SSO
+                
+            except:
+                log_list.put('FAIL')
+                Sprofiles.append(None)
+
+            # Do another loop
+            continue
+
+        # Process another split
+        if not available_index_queue.empty():
+            cmd = available_index_queue.get(True)
+            try:
+                Split = split_profile_wrapper(cmd)
+                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = Split
+                log_list.put(Split.log)
+            except:
+                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
+                log_list.put('FAILURE FOR SCAFFOLD {0} SPLIT {1}'.format(cmd.scaffold, cmd.split_number))
+
+def profile_contig_worker_singlethread(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits):
+    '''
+    Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
+    '''
+
+    # Procecss splits
     while not available_index_queue.empty():
         cmd = available_index_queue.get(True)
         try:
             Split = split_profile_wrapper(cmd)
             Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = Split
             log_list.put(Split.log)
-            #Sprofile_dict[cmd.scaffold].print_status()
         except:
             Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
             log_list.put('FAILURE FOR SCAFFOLD {0} SPLIT {1}'.format(cmd.scaffold, cmd.split_number))
 
-        # if (Sprofile_dict[cmd.scaffold].ready()):# & (cmd.scaffold not in available_index_queue):
-        #     sprofile_cmd_queue.put(cmd.scaffold)
-        # else:
-        #     pass
-            #Sprofile_dict[cmd.scaffold].print_status()
+    # Prepare merges
+    got = []
+    for scaff, splits in s2splits.items():
+        num_ready = sum([Sprofile_dict[scaff + '.' + str(i)] is not None for i in range(splits)])
+        if num_ready == splits:
+            Sprofile = ScaffoldSplitObject(splits)
+            Sprofile.scaffold = scaff
 
-    # Merge splits into Sprofiles
-    #while ((not sprofile_cmd_queue.empty()) | (len(Sprofile_dict) != 0)):
-    while True:
-        # If there's something in the queue, run it
-        ScaffoldSplitObject = sprofile_cmd_queue.get(True)
-        Sprofiles.append(ScaffoldSplitObject.merge())
+            for i in range(splits):
+                Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
 
-        # See if there are any scaffolds to move into the queue
-        # for scaff, obj in Sprofile_dict.items():
-        #     if obj.ready():
-        #         sprofile_cmd_queue.put(scaff)
-        #         break
+            sprofile_cmd_queue.put(Sprofile)
+            got.append(scaff)
+
+    # Do merges
+    while not sprofile_cmd_queue.empty():
+        SSO = sprofile_cmd_queue.get(True)
+        try:
+            Sprofile = SSO.merge()
+            log_list.put(Sprofile.merge_log)
+            Sprofiles.append(Sprofile)
+
+            # Clean up
+            SSO.delete_self()
+            del SSO
+        except:
+            log_list.put('FAIL')
+            Sprofiles.append(None)
+
+    # Handle logs
+    while not log_list.empty():
+        log_message = log_list.get(timeout=1)
+        logging.debug(log_message)
 
 
-    print("Done!")
+    logging.debug('Finished multiprocessing')
     return
-
-        # if contig is not None:
-        #     # We mark these for deletion the next time garbage is collected
-        #     for split in contig.splits:
-        #         del split.coverage
-        #         del split.auxiliary
-        #         del split
-        #     del contig.splits[:]
-        #     del contig.coverage
-        #     del contig
 
 def profile_bam(bam, Fdb, r2m, **kwargs):
     '''
@@ -233,30 +303,23 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     # make a list of the scaffolds to multiprocess
     scaffolds = list(Fdb['scaffold'].unique())
 
-    # do the multiprocessing
-    Sprofiles = []
-
     # Set up commands
     cmds, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
 
-    print(Fdb[Fdb['scaffold'] == 'N5_271_010G1_scaffold_0'])
+    # Set up queues to be synced between the processes
+    manager = multiprocessing.Manager()
+
+    split_cmd_queue = manager.Queue() # Holds the commands to profile splits
+    sprofile_cmd_queue = manager.Queue() # Holds the commands to merge splits
+    log_list = manager.Queue() # Holds the resulting logs
+    Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
+    Sprofiles = manager.list() # Holds the resulting Sprofiles
+
+    # Fill in the queue with commands to profile splits
+    for cmd in cmds:
+        split_cmd_queue.put(cmd)
 
     if p > 1:
-    # p = 1
-    # if p == 1:
-        # Set up queues to be synced between the processes
-        manager = multiprocessing.Manager()
-
-        split_cmd_queue = manager.Queue() # Holds the commands to profile splits
-        sprofile_cmd_queue = manager.Queue() # Holds the commands to merge splits
-        log_list = manager.Queue() # Holds the resulting logs
-        Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
-        Sprofiles = manager.list(Sprofiles) # Holds the resulting Sprofiles
-
-        # Fill in the queue with commands to profile splits
-        for cmd in cmds:
-            split_cmd_queue.put(cmd)
-
         # Start a number of processes to do this work
         processes = []
         for i in range(0, p):
@@ -270,6 +333,13 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
 
         # Handle the queues
         while len(Sprofiles) < len(scaffolds):
+            # Get the logs
+            try:
+                log_message = log_list.get(timeout=1)
+                logging.debug(log_message)
+            except:
+                pass
+
             # See if there are any splits that are ready to be merged
             got = []
             for scaff, splits in s2splits.items():
@@ -284,55 +354,38 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
                     sprofile_cmd_queue.put(Sprofile)
                     got.append(scaff)
 
+            # Handle scaffolds that made it into the Sprofile queue
             for g in got:
                 pbar.update(1)
                 s2splits.pop(g)
 
-
-            # for scaff, obj in Sprofile_dict.items():
-            #     if obj.ready():
-            #         sprofile_cmd_queue.put(Sprofile_dict.pop(scaff))
-            #     else:
-            #         print("{0} not ready".format(obj.scaffold))
-
-
-            time.sleep(1)
-            print("split_cmd_queue {0}; sprofile_cmd_queue {1}; Sprofiles {2}; Sprofile dict {3}".format(split_cmd_queue.qsize(), sprofile_cmd_queue.qsize(), len(Sprofiles), len(Sprofile_dict)))
-            # if Sprofile is False:
-            #     failed_results += 1
-            # else:
-            #     Sprofiles.append(Sprofile)
-
-            log_message = log_list.get()
-            logging.debug(log_message)
-
+            # Uncomment for debug
+            # time.sleep(1)
+            # print("split_cmd_queue {0}; sprofile_cmd_queue {1}; Sprofiles {2}; Sprofile dict {3}".format(split_cmd_queue.qsize(), sprofile_cmd_queue.qsize(), len(Sprofiles), len(Sprofile_dict)))
 
         # Finish up multi-processing
+        logging.debug('Finished multiprocessing')
         for proc in processes:
             proc.terminate()
         pbar.close()
 
     else:
-        for cmd in tqdm(iterate_commands(Fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
-            results = scaffold_profile_wrapper(cmd)
-            for s, log in results:
-                logging.debug(log)
-                Sprofiles.append(s)
+        profile_contig_worker_singlethread(split_cmd_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits)
 
-    # Re-run failed scaffolds
-    failed_scaffs = set(scaffolds) - set([s.scaffold for s in Sprofiles if s is not None])
-    if len(failed_scaffs) > 0:
-        logging.error("The following scaffolds failed scaffold profiling- I'll try again in single mode  {0}\n".format('\n'.join(failed_scaffs)))
-        fdb = Fdb[Fdb['scaffold'].isin(failed_scaffs)]
-        total_cmds = len([x for x in iterate_commands(fdb, bam, profArgs)])
-        for cmd in tqdm(iterate_commands(fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
-            results = scaffold_profile_wrapper(cmd)
-            try:
-                for s, log in results:
-                    logging.debug(log)
-                    Sprofiles.append(s)
-            except:
-                logging.error("Double failure! Here are commands: {0}".format(cmd))
+    # # Re-run failed scaffolds
+    # failed_scaffs = set(scaffolds) - set([s.scaffold for s in Sprofiles if s is not None])
+    # if len(failed_scaffs) > 0:
+    #     logging.error("The following scaffolds failed scaffold profiling- I'll try again in single mode  {0}\n".format('\n'.join(failed_scaffs)))
+    #     fdb = Fdb[Fdb['scaffold'].isin(failed_scaffs)]
+    #     total_cmds = len([x for x in iterate_commands(fdb, bam, profArgs)])
+    #     for cmd in tqdm(iterate_commands(fdb, bam, profArgs), desc='Profiling scaffolds: ', total=total_cmds):
+    #         results = scaffold_profile_wrapper(cmd)
+    #         try:
+    #             for s, log in results:
+    #                 logging.debug(log)
+    #                 Sprofiles.append(s)
+    #         except:
+    #             logging.error("Double failure! Here are commands: {0}".format(cmd))
 
     # collate results
     logging.debug("Done processing scaffolds- making SNV profile")
@@ -463,7 +516,6 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
 
     # Get sequence from global
     seq = scaff2sequence[scaffold][start:end+1] # The plus 1 makes is so the end is inclusive
-    print("{0} to {1} is {2} long".format(start, end, len(seq)))
 
     # Set up the .bam file
     samfile = pysam.AlignmentFile(bam)
@@ -541,95 +593,6 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
 
     return Sprofile
 
-def _profile_scaffold(bam, scaffold, start, end, **kwargs):
-    '''
-    Profile a scaffold
-
-    Arguments:
-        bam = name of .bam file
-        scaffold = name of scaffold
-        seq = sequence of .fasta file thats mapped to
-    '''
-    # Log
-    log_message = _get_log_message('profile_start', scaffold)
-
-    # Get kwargs
-    min_cov = int(kwargs.get('min_cov', 5))
-    min_covR = int(kwargs.get('rarefied_coverage', 5))
-    min_freq = float(kwargs.get('min_freq', .05))
-    min_snp = int(kwargs.get('min_snp', 10))
-    store_everything = kwargs.get('store_everything', False)
-
-    # Get sequence from global
-    seq = scaff2sequence[scaffold]
-
-    # Set up the .bam file
-    samfile = pysam.AlignmentFile(bam)
-    try:
-        iter = samfile.pileup(scaffold, truncate = True, max_depth=100000,
-                                stepper = 'nofilter', compute_baq= True,
-                                ignore_orphans = True, ignore_overlaps = True,
-                                min_base_quality = 30, start=start, stop=end)
-    except ValueError:
-        logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, bam))
-        return None, log_message
-
-    # Initialize
-    mLen = len(seq) # Length of sequence
-    covT = {} # Dictionary of mm -> positional coverage along the genome
-    clonT = {} # Diciontary of mm -> clonality
-    clonTR = {} # Diciontary of mm -> rarefied clonality
-    p2c = {} # dictionary of position -> cryptic SNPs
-    read_to_snvs = defaultdict(_dlist) # Dictionary of mm -> read variant -> count
-    snv2mm2counts = {} # dictionary of position to mm to counts for SNP positions
-    Stable = defaultdict(list) # Holds SNP information
-    if store_everything:
-        pileup_counts = np.zeros(shape=(mLen, 4), dtype=int) # Holds all pileup counts - alexcc 5/9/2019
-    else:
-        pileup_counts = None
-
-    # Do per-site processing
-    _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, **kwargs)
-
-    # Shrink these dictionaries into index pandas Series
-    covT = shrink_basewise(covT, 'coverage')
-    clonT = shrink_basewise(clonT, 'clonality')
-    clonTR = shrink_basewise(clonTR, 'clonality')
-
-    # Make the SNP table
-    SNPTable = _make_snp_table2(Stable, scaffold, p2c)
-
-    # Do per-scaffold aggregating
-    CoverageTable = make_coverage_table(covT, clonT, clonTR, mLen, scaffold, SNPTable, min_freq=min_freq)
-
-    # Make linkage network and calculate linkage
-    mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
-    LDdb = inStrain.linkage.calculate_ld(mm_to_position_graph, min_snp, snv2mm2counts=snv2mm2counts, scaffold=scaffold)
-
-    # Make a Scaffold profile to return
-    Sprofile = scaffold_profile()
-    Sprofile.scaffold = scaffold
-    Sprofile.bam = bam
-    Sprofile.length = mLen
-    Sprofile.cumulative_scaffold_table = CoverageTable
-    Sprofile.raw_snp_table = SNPTable
-    Sprofile.raw_linkage_table = LDdb
-    Sprofile.covT = covT
-    Sprofile.clonT = clonT
-    Sprofile.clonTR = clonTR
-
-    # store extra things if required
-    if store_everything:
-        for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
-            setattr(Sprofile, att, eval(att))
-
-    # Make cummulative tables
-    Sprofile.make_cumulative_tables()
-
-    # Return
-    log_message +=  _get_log_message('profile_end', scaffold)
-    return Sprofile, log_message
-
 def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, start=0, **kwargs):
     # Get kwargs
     min_cov = int(kwargs.get('min_cov', 5))
@@ -662,25 +625,28 @@ def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_sn
             _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, RelPosition, bases, scaffold=scaffold)
             snv2mm2counts[RelPosition] = MMcounts
 
-def _get_log_message(kind, scaffold, split_number=False):
-    if kind == 'profile_start':
+def _get_log_message(kind, scaffold, split_number=None):
+    if split_number is not None:
+        scaffold = "{0}.{1}".format(scaffold, split_number)
+
+    if kind in ['profile_start', 'merge_start']:
         pid = os.getpid()
         process  = psutil.Process(os.getpid())
         bytes_used = process.memory_info().rss
         total_available_bytes = psutil.virtual_memory()
-        log_message = "\n{4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
+        log_message = "\n{6} {4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-                scaffold, time.time())
+                scaffold, time.time(), kind)
         return log_message
 
-    elif kind == 'profile_end':
+    elif kind in ['profile_end', 'merge_end']:
         pid = os.getpid()
         process  = psutil.Process(os.getpid())
         bytes_used = process.memory_info().rss
         total_available_bytes = psutil.virtual_memory()
-        return "\n{4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
+        return "\n{6} {4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-                scaffold, time.time())
+                scaffold, time.time(), kind)
 
 def _dlist():
     return defaultdict(list)
@@ -735,6 +701,20 @@ def merge_basewise(mm2array_list):
     for mm in mms:
         mm2bases[mm] = pd.concat([mm2array[mm] for mm2array in mm2array_list if mm in mm2array], verify_integrity=True)
     return mm2bases
+
+def merge_special(vals, thing):
+    return True
+    # NAME2TYPE = {'coverage':'int32', 'clonality':'float32', 'snpCounted':'bool'}
+    #
+    # mm2bases = {}
+    #
+    # mms = set()
+    # for mm2bases in mm2array_list:
+    #     mms = mms.union(set(mm2bases.keys()))
+    #
+    # for mm in mms:
+    #     mm2bases[mm] = pd.concat([mm2array[mm] for mm2array in mm2array_list if mm in mm2array], verify_integrity=True)
+    # return mm2bases
 
 
     # mm2bases = {}
@@ -1118,12 +1098,6 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
 
         table['mm'].append(mm)
 
-    # if debug == True:
-    #     covs = _mm_counts_to_counts(covT, max(list(covT.keys())))
-    #     zero_pos = [i+1 for i,x in enumerate(covs) if x==0]
-    #     print(zero_pos)
-    #     print(len(zero_pos))
-
     return pd.DataFrame(table)
 
 def estimate_breadth(coverage):
@@ -1154,27 +1128,6 @@ def _clonT_to_table(clonT):
 
     else:
         return pd.DataFrame()
-    # for mm, x in clonT.items():
-    #     items += [(c, i) for i, c in enumerate(x) if c == c]
-    #     mms += [mm]*(len(items) - len(mms))
-    # db = pd.DataFrame({'clonality':[i[0] for i in items], 'mm':mms,
-    #                     'position':[i[1] for i in items]})
-    # db['position'] = db['position'].astype(int)
-    #return db
-
-# def _clonT_to_table(clonT):
-#     '''
-#     Much more RAM efficient way of doing this than before!
-#     '''
-#     items = []
-#     mms = []
-#     for mm, x in clonT.items():
-#         items += [(c, i) for i, c in enumerate(x) if c == c]
-#         mms += [mm]*(len(items) - len(mms))
-#     db = pd.DataFrame({'clonality':[i[0] for i in items], 'mm':mms,
-#                         'position':[i[1] for i in items]})
-#     db['position'] = db['position'].astype(int)
-#     return db
 
 def _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, position, bases,
                         min_freq=0.05, scaffold=False):
@@ -1196,20 +1149,12 @@ def _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, position, bases,
                 mm = R2M[read_name]
             else:
                 mm = 0
-            #local_min_snp = mm2min[mm]
 
             try:
                 val = pileupread.alignment.query_sequence[pileupread.query_position]
-                #val_counts = mm2counts[mm][P2C[val]]
-
-                # search here for debug
-                # if (scaffold == 'N5_271_010G1_scaffold_1') & ((position == '2130') | (position == '2139')):
-                #     print('At position {0}, mm {1}'.format(position, mm))
-                #     print("{0} - {1}".format(read_name, val))#, val_counts))
 
                 # if value is not the consensus value
                 if val in bases:
-                #if val_counts >= local_min_snp and float(val_counts) / sum(mm2counts[mm]) >= min_freq:
                     # this read is of a variant position
                     read_to_snvs[mm][read_name].append(position + ":" + val)
             except KeyError: # This would be like an N or something not A/C/T/G

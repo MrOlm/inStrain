@@ -10,6 +10,7 @@ import logging
 import argparse
 import pandas as pd
 from Bio import SeqIO
+from subprocess import call
 from datetime import datetime
 from collections import defaultdict
 

@@ -2172,69 +2172,69 @@ class test_strains():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test9()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test10()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test13()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test14()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test15()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
+
+        self.setUp()
+        self.test9()
+        self.tearDown()
+
+        self.setUp()
+        self.test10()
+        self.tearDown()
+
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
+
+        self.setUp()
+        self.test13()
+        self.tearDown()
+
+        self.setUp()
+        self.test14()
+        self.tearDown()
+
+        self.setUp()
+        self.test15()
+        self.tearDown()
 
         self.setUp()
         self.test16()
@@ -2536,7 +2536,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide --skip_plot_generation".format(self.script, self.sorted_bam, \
             self.extra_single_scaff, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2563,7 +2563,7 @@ class test_strains():
             print("!!!!!")
             print(thing, val)
 
-            cmd = "inStrain profile {1} {2} -o {3} --{4} {5} -p 6 --store_everything".format(self.script, self.sorted_bam, \
+            cmd = "inStrain profile {1} {2} -o {3} --{4} {5} -p 6 --store_everything --skip_plot_generation".format(self.script, self.sorted_bam, \
                 self.extra_single_scaff, base, thing, val)
             inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
             Sprofile = inStrain.SNVprofile.SNVprofile(base)
@@ -3097,9 +3097,10 @@ class test_special():
         self.test3()
         self.tearDown()
 
-        self.setUp()
-        self.test4()
-        self.tearDown()
+        # YOU SHOULD START THIS UP AGAIN! IT NEEDS TO BE RUN ON A v1.3 IS IS THE PROGRAM
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
 
     def test1(self):
         '''
@@ -3172,14 +3173,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
+    test_filter_reads().run()
     test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_readcomparer().run()
-    # test_special().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_readcomparer().run()
+    test_special().run()
 
     print('everything is working swimmingly!')

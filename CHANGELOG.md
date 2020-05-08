@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0a] - 2020-05-08
+- Paralellization of individual scaffolds is done now, using splits of ~3000bp
+
 ## [1.2.14] - 2020-05-04
 - RAM log actually reports min RAM usage now
 - Dont store mm_reads_to_snvs by default
