@@ -23,7 +23,7 @@ import seaborn as sns
 def process_logs(IS_loc):
     logging.shutdown()
     logloc = os.path.join(IS_loc, 'log/log.log')
-    report_run_stats(logloc, most_recent=False, printToo=True, save=True)
+    report_run_stats(logloc, most_recent=False, printToo=True, debug=True, save=True)
 
 def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=False, plot=True):
     if logloc == None:
@@ -74,12 +74,18 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
                 traceback.print_exc()
 
 def profile_plot(Ldb, saveloc=None):
-    ldb = Ldb[Ldb['log_type'] == 'Special_profile']
-    rdb, sys_ram = _load_profile_logtable(ldb)
+    #ldb = Ldb[Ldb['log_type'] == 'profile']
+    rdb, sys_ram = _load_profile_logtable(Ldb)
 
-    plt.scatter(rdb['adjusted_start'], rdb['percent_RAM'])
+    db = rdb[rdb['command'] == 'profile']
+    plt.scatter(db['adjusted_start'], db['percent_RAM'], color='red', label='split profiling')
+
+    db = rdb[rdb['command'] == 'merge']
+    plt.scatter(db['adjusted_start'], db['percent_RAM'], color='blue', label='split merging')
+
     plt.xlabel('Runtime (seconds)')
     plt.ylabel('System RAM available at start of thread\n(% of the {0} system)'.format(humanbytes(sys_ram)))
+    plt.legend()
 
     if saveloc != None:
         plt.gcf().savefig(saveloc, bbox_inches='tight')
@@ -218,8 +224,8 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report = ''
 
     # Set up
-    ldb = Ldb[Ldb['log_type'] == 'Special_profile']
-    rdb, sys_ram = _load_profile_logtable(ldb)
+    #ldb = Ldb[Ldb['log_type'] == 'profile']
+    rdb, sys_ram = _load_profile_logtable(Ldb)
 
     if len(rdb) == 0:
         return ''
@@ -234,15 +240,31 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
     PIDs = len(rdb['PID'].unique())
 
+    db = rdb[rdb['command'] == 'profile']
+    mdb = rdb[rdb['command'] == 'merge']
+
     report += "{0:30}\t{1}\n".format("Wall time for Profile", td_format(runtime))
+    report += "{0:30}\t{1}\n".format("User time profiling splits", td_format(None, seconds=db['runtime'].sum()))
+    report += "{0:30}\t{1}\n".format("User time merging splits", td_format(None, seconds=mdb['runtime'].sum()))
     report += "{0:30}\t{1}\n".format("Total number processes used", PIDs)
     report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
     report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/PIDs)*100)
-    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(rdb['scaffold'].unique()))
-    report += "{0:30}\t{1}\n".format("Average time per scaffold", td_format(None, seconds=rdb['runtime'].mean()))
-    report += "{0:30}\t{1}\n".format("Median time per scaffold", td_format(None, seconds=rdb['runtime'].median()))
-    report += "{0:30}\t{1}\n".format("Maximum scaffold time", td_format(None, seconds=rdb['runtime'].max()))
-    report += "{0:30}\t{1}\n".format("Longest running scaffold", rdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['scaffold'].unique()))
+
+    # Report on splits
+    report += "{0:30}\t{1}\n".format("Average profile time per split", td_format(None, seconds=db['runtime'].mean()))
+    report += "{0:30}\t{1}\n".format("Average time per split", td_format(None, seconds=db['runtime'].mean()))
+    report += "{0:30}\t{1}\n".format("Median time per split", td_format(None, seconds=db['runtime'].median()))
+    report += "{0:30}\t{1}\n".format("Maximum split time", td_format(None, seconds=db['runtime'].max()))
+    report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+
+    # Report on merges
+    report += "{0:30}\t{1}\n".format("Average time per merge", td_format(None, seconds=mdb['runtime'].mean()))
+    report += "{0:30}\t{1}\n".format("Median time per merge", td_format(None, seconds=mdb['runtime'].median()))
+    report += "{0:30}\t{1}\n".format("Maximum merge time", td_format(None, seconds=mdb['runtime'].max()))
+    report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+
+    # Report on RAM
     report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
     report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
     report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
@@ -294,12 +316,16 @@ def _gen_failures_report(Ldb):
         report = "No failures"
     return report
 
-def _load_profile_logtable(ldb):
+def _load_profile_logtable(Ldb):
+    # Get the splits
+    ldb = Ldb[Ldb['log_type'].isin(['profile', 'merge'])]
+
     table = defaultdict(list)
     for i, row in ldb.iterrows():
         for thing, value in parse_parsable_string(row['parsable_string']).items():
             table[thing].append(value)
         table['time'].append(row['time'])
+        table['command'].append(row['log_type'])
     Ldb = pd.DataFrame(table)
 
     if len(Ldb) == 0:
@@ -311,28 +337,30 @@ def _load_profile_logtable(ldb):
     Ldb['system_RAM'] = Ldb['system_RAM'].astype(float)
     sys_ram = float(Ldb['total_RAM'].tolist()[0])
     first_time = Ldb['time'].min()
-    for scaffold, db in Ldb.groupby('scaffold'):
-        sdb = db[db['status'] == 'start']
-        edb = db[db['status'] == 'end']
+    for scaffold, ddb in Ldb.groupby('scaffold'):
+        for cmd, db in ddb.groupby('command'):
+            sdb = db[db['status'] == 'start']
+            edb = db[db['status'] == 'end']
 
-        table['scaffold'].append(scaffold)
-        table['PID'].append(db['PID'].tolist()[0])
+            table['scaffold'].append(scaffold)
+            table['PID'].append(db['PID'].tolist()[0])
 
-        table['start_time'].append(sdb['time'].tolist()[0])
-        table['adjusted_start'].append(sdb['time'].tolist()[0] - first_time)
-        table['start_process_RAM'].append(sdb['process_RAM'].tolist()[0])
-        table['start_system_RAM'].append(sdb['system_RAM'].tolist()[0])
+            table['start_time'].append(sdb['time'].tolist()[0])
+            table['adjusted_start'].append(sdb['time'].tolist()[0] - first_time)
+            table['start_process_RAM'].append(sdb['process_RAM'].tolist()[0])
+            table['start_system_RAM'].append(sdb['system_RAM'].tolist()[0])
 
-        if len(edb) > 0:
-            table['adjusted_end'].append(edb['time'].tolist()[0] - first_time)
-            table['end_process_RAM'].append(edb['process_RAM'].tolist()[0])
-            table['end_system_RAM'].append(edb['system_RAM'].tolist()[0])
-            table['end_time'].append(edb['time'].tolist()[0])
-        else:
-            for i in ['adjusted_end', 'end_process_RAM', 'end_system_RAM', 'end_time']:
-                table[i].append(np.nan)
+            if len(edb) > 0:
+                table['adjusted_end'].append(edb['time'].tolist()[0] - first_time)
+                table['end_process_RAM'].append(edb['process_RAM'].tolist()[0])
+                table['end_system_RAM'].append(edb['system_RAM'].tolist()[0])
+                table['end_time'].append(edb['time'].tolist()[0])
+            else:
+                for i in ['adjusted_end', 'end_process_RAM', 'end_system_RAM', 'end_time']:
+                    table[i].append(np.nan)
 
-        table['runs'].append(len(sdb))
+            table['runs'].append(len(sdb))
+            table['command'].append(cmd)
 
     db = pd.DataFrame(table)
     db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
@@ -492,23 +520,16 @@ def load_log(logfile):
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
-            # Special profile RAM and multiprocessing reporting
-            elif 'RAM. System has' in line:
+            # Profile reporting
+            elif (line.startswith('profile') | line.startswith('merge')):
                 linewords = [x.strip() for x in line.split()]
                 pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
-                            linewords[0], linewords[2], linewords[3], linewords[7], linewords[11], linewords[13])
+                            linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
 
-                table['log_type'].append('Special_profile')
-                table['time'].append(float(linewords[5]))
+                table['log_type'].append(linewords[0].split('_')[0])
+                table['time'].append(float(linewords[6]))
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
-                # table['scaffold'].append(linewords[0])
-                # table['PID'].append(linewords[2])
-                # table['status'].append(linewords[3])
-                # table['time'].append(linewords[5])
-                # table['process_RAM'].append(linewords[7])
-                # table['system_RAM'].append(linewords[11])
-                # table['total_RAM'].append(linewords[13])
 
             # Special Failure
             elif 'FAILURE' in line:
