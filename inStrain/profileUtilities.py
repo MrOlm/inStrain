@@ -329,10 +329,13 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
     Sprofiles = manager.list() # Holds the resulting Sprofiles
 
-    logging.debug('filling in queues')
+    logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
     # Fill in the queue with commands to profile splits
-    for cmd in cmd_groups:
+
+    for i, cmd in enumerate(cmd_groups):
         split_cmd_queue.put(cmd)
+        if i % 50 == 0:
+            logging.debug("{0} put in".format(i))
 
     if p > 1:
         # Start a number of processes to do this work
