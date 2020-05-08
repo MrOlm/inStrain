@@ -208,14 +208,19 @@ def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_di
 
         # Process another split
         if not available_index_queue.empty():
-            cmd = available_index_queue.get(True)
+            cmds = available_index_queue.get(True)
             try:
-                Split = split_profile_wrapper(cmd)
-                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = Split
-                log_list.put(Split.log)
-            except:
-                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-                log_list.put('FAILURE FOR SCAFFOLD {0} SPLIT {1}'.format(cmd.scaffold, cmd.split_number))
+                Splits = split_profile_wrapper_groups(cmds)
+                LOG = ''
+                for Split in Splits:
+                    Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
+                    LOG += Split.log + '\n'
+                log_list.put(LOG)
+            except Exception as e:
+                print(e)
+                for cmd in cmds:
+                    Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
+                log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
 
 def profile_contig_worker_singlethread(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits):
     '''
@@ -224,14 +229,20 @@ def profile_contig_worker_singlethread(available_index_queue, sprofile_cmd_queue
 
     # Procecss splits
     while not available_index_queue.empty():
-        cmd = available_index_queue.get(True)
+        cmds = available_index_queue.get(True)
         try:
-            Split = split_profile_wrapper(cmd)
-            Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = Split
-            log_list.put(Split.log)
-        except:
-            Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-            log_list.put('FAILURE FOR SCAFFOLD {0} SPLIT {1}'.format(cmd.scaffold, cmd.split_number))
+            Splits = split_profile_wrapper_groups(cmds)
+            LOG = ''
+            for Split in Splits:
+                Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
+                LOG += Split.log + '\n'
+            log_list.put(LOG)
+        except Exception as e:
+            print(e)
+            for cmd in cmds:
+                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
+            log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
+
 
     # Prepare merges
     got = []
@@ -306,7 +317,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
 
     logging.debug('setting up commands')
     # Set up commands
-    cmds, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
+    cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
 
     logging.debug('setting up queues')
     # Set up queues to be synced between the processes
@@ -320,7 +331,7 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
 
     logging.debug('filling in queues')
     # Fill in the queue with commands to profile splits
-    for cmd in cmds:
+    for cmd in cmd_groups:
         split_cmd_queue.put(cmd)
 
     if p > 1:
@@ -369,6 +380,9 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
             # Uncomment for debug
             # time.sleep(1)
             # print("split_cmd_queue {0}; sprofile_cmd_queue {1}; Sprofiles {2}; Sprofile dict {3}".format(split_cmd_queue.qsize(), sprofile_cmd_queue.qsize(), len(Sprofiles), len(Sprofile_dict)))
+            # if len(Sprofile_dict) == 3:
+            #     print(Sprofile_dict)
+            #     print(s2splits)
 
         # Finish up multi-processing
         logging.debug('Finished multiprocessing')
@@ -467,16 +481,35 @@ def split_profile_wrapper(cmd):
         logging.error("split exception- {0} pt {1}".format(str(cmd.scaffold), str(cmd.split_number)))
         return False
 
+def split_profile_wrapper_groups(cmds):
+    try:
+        results = []
+        for cmd in cmds:
+            results.append(_profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments))
+        return results
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
+        logging.error("split exception- {0} pt {1}".format(str(cmd.scaffold), str(cmd.split_number)))
+        return [False]
+
 def prepare_commands(Fdb, bam, args):
     '''
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
     '''
-    cmds = []
+
+    SECONDS = 60
+    processes = args.get('processes', 6)
+    s2p = args.get('s2p', None)
+
+    cmd_groups = []
     Sprofiles = {}
     Sdict = {}
     s2splits = {}
 
+    seconds = 0
+    cmds = []
     for scaff, db in Fdb.groupby('scaffold'):
         Sprofile = ScaffoldSplitObject(len(db))
         Sprofile.scaffold = scaff
@@ -492,14 +525,25 @@ def prepare_commands(Fdb, bam, args):
             cmd.start = row['start']
             cmd.end = row['end']
             cmd.split_number = int(row['split_number'])
+
+            # Add to the Sdict
+            Sdict[scaff + '.' + str(row['split_number'])] = None
+
+            # Add estimated seconds
+            seconds += s2p[scaff]
             cmds.append(cmd)
 
-            Sdict[scaff + '.' + str(row['split_number'])] = None
+            # See if you're done
+            if seconds >= SECONDS:
+                cmd_groups.append(cmds)
+                seconds = 0
+                cmds = []
 
         Sprofiles[scaff] = Sprofile
 
+    cmd_groups.append(cmds)
 
-    return cmds, Sdict, s2splits
+    return cmd_groups, Sdict, s2splits
 
 def calc_estimated_runtime(pairs):
     SLOPE_CONSTANT = 0.0061401594694834305
