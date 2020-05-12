@@ -619,20 +619,20 @@ def prepare_commands(Fdb, bam, args):
     Doing it in this way makes it use way less RAM
     '''
 
-    SECONDS = 60
     processes = args.get('processes', 6)
     s2p = args.get('s2p', None)
+    if s2p is not None:
+        SECONDS = min(60, sum(calc_estimated_runtime(s2p[scaff]) for scaff in Fdb['scaffold'].unique())/(processes+1))
+    else:
+        SECONDS = 60
 
     cmd_groups = []
-    Sprofiles = {}
     Sdict = {}
     s2splits = {}
 
     seconds = 0
     cmds = []
     for scaff, db in Fdb.groupby('scaffold'):
-        Sprofile = ScaffoldSplitObject(len(db))
-        Sprofile.scaffold = scaff
         s2splits[scaff] = len(db)
 
         for i, row in db.iterrows():
@@ -650,7 +650,7 @@ def prepare_commands(Fdb, bam, args):
             Sdict[scaff + '.' + str(row['split_number'])] = None
 
             # Add estimated seconds
-            seconds += s2p[scaff] / s2splits[scaff]
+            seconds += calc_estimated_runtime(s2p[scaff]) / s2splits[scaff]
             cmds.append(cmd)
 
             # See if you're done
@@ -659,8 +659,6 @@ def prepare_commands(Fdb, bam, args):
                 seconds = 0
                 cmds = []
 
-        Sprofiles[scaff] = Sprofile
-
     if len(cmds) > 0:
         cmd_groups.append(cmds)
 
@@ -668,7 +666,7 @@ def prepare_commands(Fdb, bam, args):
 
 def calc_estimated_runtime(pairs):
     SLOPE_CONSTANT = 0.0061401594694834305
-    return pairs * SLOPE_CONSTANT
+    return (pairs * SLOPE_CONSTANT) + 0.2
 
 def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     '''

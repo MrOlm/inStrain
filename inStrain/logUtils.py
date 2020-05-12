@@ -230,47 +230,58 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     if len(rdb) == 0:
         return ''
 
-    # Report on paralellization
+    db = rdb[rdb['command'] == 'profile']
+    mdb = rdb[rdb['command'] == 'merge']
+
+    # Overall wall time
     start = datetime.fromtimestamp(rdb['start_time'].min())
     end = datetime.fromtimestamp(rdb['end_time'].max())
     runtime = end - start
 
+    # User time
     parallel_time = rdb['runtime'].sum()
     avg_time = rdb['runtime'].mean()
 
+    # Number of processes used
     PIDs = len(rdb['PID'].unique())
 
-    db = rdb[rdb['command'] == 'profile']
-    mdb = rdb[rdb['command'] == 'merge']
-
     report += "{0:30}\t{1}\n".format("Wall time for Profile", td_format(runtime))
-    report += "{0:30}\t{1}\n".format("User time profiling splits", td_format(None, seconds=db['runtime'].sum()))
-    report += "{0:30}\t{1}\n".format("User time merging splits", td_format(None, seconds=mdb['runtime'].sum()))
-    report += "{0:30}\t{1}\n".format("Total number processes used", PIDs)
+    report += "{0:30}\t{1}\n".format("Total processes used (splits + merges)", PIDs)
     report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
-    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/PIDs)*100)
+    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(PIDs/2))*100)
     report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['scaffold'].unique()))
 
     # Report on splits
+    report += "\n"
+    report += "{0:30}\t{1}\n".format("User time profiling splits", td_format(None, seconds=db['runtime'].sum()))
+    report += "{0:30}\t{1:.1f}%\n".format("Profile paralell efficiency", ((db['runtime'].sum()/(db['end_time'].max() - db['start_time'].min()))/(PIDs/2))*100)
     report += "{0:30}\t{1}\n".format("Average profile time per split", td_format(None, seconds=db['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Average time per split", td_format(None, seconds=db['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per split", td_format(None, seconds=db['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum split time", td_format(None, seconds=db['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(d['end_time'].max() - d['start_time'].min()))*100) for p, d in db.groupby('PID')]))
 
     # Report on merges
+    report += "\n"
+    report += "{0:30}\t{1}\n".format("User time merging splits", td_format(None, seconds=mdb['runtime'].sum()))
+    report += "{0:30}\t{1:.1f}%\n".format("Merge paralell efficiency", ((mdb['runtime'].sum()/(mdb['end_time'].max() - mdb['start_time'].min()))/(PIDs/2))*100)
     report += "{0:30}\t{1}\n".format("Average time per merge", td_format(None, seconds=mdb['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per merge", td_format(None, seconds=mdb['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum merge time", td_format(None, seconds=mdb['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(d['end_time'].max() - d['start_time'].min()))*100) for p, d in mdb.groupby('PID')]))
 
     # Report on RAM
+    report += "\n"
     report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
     report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
     report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
     report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
     report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['start_system_RAM'].max()))
 
+    # Report on failures
+    report += "\n"
     report += '{0} scaffolds needed to be run a second time\n'.format(
             len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
 
@@ -335,7 +346,7 @@ def _load_profile_logtable(Ldb):
     Ldb['time'] = Ldb['time'].astype(float)
     Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
     Ldb['system_RAM'] = Ldb['system_RAM'].astype(float)
-    sys_ram = float(Ldb['total_RAM'].tolist()[0])
+    sys_ram = float(Ldb['total_RAM'].iloc[0])
     first_time = Ldb['time'].min()
     for scaffold, ddb in Ldb.groupby('scaffold'):
         for cmd, db in ddb.groupby('command'):
@@ -343,18 +354,18 @@ def _load_profile_logtable(Ldb):
             edb = db[db['status'] == 'end']
 
             table['scaffold'].append(scaffold)
-            table['PID'].append(db['PID'].tolist()[0])
+            table['PID'].append(db['PID'].iloc[0])
 
-            table['start_time'].append(sdb['time'].tolist()[0])
-            table['adjusted_start'].append(sdb['time'].tolist()[0] - first_time)
-            table['start_process_RAM'].append(sdb['process_RAM'].tolist()[0])
-            table['start_system_RAM'].append(sdb['system_RAM'].tolist()[0])
+            table['start_time'].append(sdb['time'].iloc[0])
+            table['adjusted_start'].append(sdb['time'].iloc[0] - first_time)
+            table['start_process_RAM'].append(sdb['process_RAM'].iloc[0])
+            table['start_system_RAM'].append(sdb['system_RAM'].iloc[0])
 
             if len(edb) > 0:
-                table['adjusted_end'].append(edb['time'].tolist()[0] - first_time)
-                table['end_process_RAM'].append(edb['process_RAM'].tolist()[0])
-                table['end_system_RAM'].append(edb['system_RAM'].tolist()[0])
-                table['end_time'].append(edb['time'].tolist()[0])
+                table['adjusted_end'].append(edb['time'].iloc[0] - first_time)
+                table['end_process_RAM'].append(edb['process_RAM'].iloc[0])
+                table['end_system_RAM'].append(edb['system_RAM'].iloc[0])
+                table['end_time'].append(edb['time'].iloc[0])
             else:
                 for i in ['adjusted_end', 'end_process_RAM', 'end_system_RAM', 'end_time']:
                     table[i].append(np.nan)

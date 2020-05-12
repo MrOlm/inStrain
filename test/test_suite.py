@@ -2832,7 +2832,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 1".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
         call(cmd, shell=True)

@@ -275,7 +275,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         # Generate splits
         table = defaultdict(list)
-        WINDOW_LEN = 3000
+        WINDOW_LEN = args.window_length
         for scaffold, sLen in s2l.items():
             for i, (split_start, split_end) in enumerate(iterate_splits(sLen, WINDOW_LEN)):
                 table['scaffold'].append(scaffold)

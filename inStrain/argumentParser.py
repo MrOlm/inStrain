@@ -143,7 +143,7 @@ def parse_args(args):
     Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')
     Oflags.add_argument("--min_snp", action="store", default=20, \
         help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
-    Oflags.add_argument("--min_fasta_reads", action="store", default=0, type=int,\
+    Oflags.add_argument("--min_fasta_reads", action="store", default=1, type=int,\
         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
     Oflags.add_argument('--store_everything', action='store_true', default=False,\
         help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
@@ -153,6 +153,8 @@ def parse_args(args):
         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
     Oflags.add_argument("--rarefied_coverage", action='store', default=50,\
         help='When calculating nucleotide diversity, also calculate a rarefied version with this much coverage')
+    Oflags.add_argument('--window_length', action='store', default=10000, type=int,\
+        help='Break scaffolds into windows of this length when profiling')
 
     # Other Parameters
     Iflags = profile_parser.add_argument_group('OTHER  OPTIONS')
