@@ -181,46 +181,96 @@ class profile_command():
     def __init__(self):
         pass
 
-def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles):
+def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread=False):
     '''
-    Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
+    Worker to profile splits
+    '''
+    while True:
+        # Get command
+        if not single_thread:
+            cmds = split_cmd_queue.get(True)
+        else:
+            try:
+                cmds = split_cmd_queue.get_nowait()
+            except:
+                return
+
+        # Process split
+        try:
+            Splits = split_profile_wrapper_groups(cmds)
+            LOG = ''
+            for Split in Splits:
+                Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
+                LOG += Split.log + '\n'
+            log_list.put(LOG)
+        except Exception as e:
+            print(e)
+            for cmd in cmds:
+                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
+            log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
+
+def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_thread=False):
+    '''
+    Worker to merge_cplits
     '''
 
     while True:
-        # If theres a merge to do, do it to free up the RAM
-        if not sprofile_cmd_queue.empty():
-            SSO = sprofile_cmd_queue.get(True)
+        if not single_thread:
+            cmd = sprofile_cmd_queue.get(True)
+        else:
             try:
-                Sprofile = SSO.merge()
-                log_list.put(Sprofile.merge_log)
-                Sprofiles.append(Sprofile)
-
-                # Clean up
-                SSO.delete_self()
-                del SSO
-
+                cmd = sprofile_cmd_queue.get_nowait()
             except:
-                log_list.put('FAIL')
-                Sprofiles.append(None)
+                return
 
-            # Do another loop
-            continue
+        scaff, splits = cmd
+        Sprofile = ScaffoldSplitObject(splits)
+        Sprofile.scaffold = scaff
+        for i in range(splits):
+            Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
+        Sprofile = Sprofile.merge()
+        Sprofiles.put(Sprofile)
 
-        # Process another split
-        if not available_index_queue.empty():
-            cmds = available_index_queue.get(True)
-            try:
-                Splits = split_profile_wrapper_groups(cmds)
-                LOG = ''
-                for Split in Splits:
-                    Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
-                    LOG += Split.log + '\n'
-                log_list.put(LOG)
-            except Exception as e:
-                print(e)
-                for cmd in cmds:
-                    Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-                log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
+# def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles):
+#     '''
+#     Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
+#     '''
+#
+#     while True:
+#         # If theres a merge to do, do it to free up the RAM
+#         if not sprofile_cmd_queue.empty():
+#             SSO = sprofile_cmd_queue.get(True)
+#             try:
+#                 Sprofile = SSO.merge()
+#                 log_list.put(Sprofile.merge_log)
+#                 Sprofiles.append(Sprofile)
+#
+#                 # Clean up
+#                 SSO.delete_self()
+#                 del SSO
+#
+#             except:
+#                 log_list.put('FAIL')
+#                 Sprofiles.append(None)
+#
+#             # Do another loop
+#             continue
+#
+#         # Process another split
+#         if not available_index_queue.empty():
+#             cmds = available_index_queue.get(True)
+#             try:
+#                 Splits = split_profile_wrapper_groups(cmds)
+#                 LOG = ''
+#                 for Split in Splits:
+#                     Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
+#                     LOG += Split.log + '\n'
+#                 log_list.put(LOG)
+#             except Exception as e:
+#                 print(e)
+#                 for cmd in cmds:
+#                     Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
+#                 log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
 
 def profile_contig_worker_singlethread(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits):
     '''
@@ -315,97 +365,98 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     # make a list of the scaffolds to multiprocess
     scaffolds = list(Fdb['scaffold'].unique())
 
-    logging.debug('setting up commands')
-    # Set up commands
+    logging.debug('Creating commands')
     cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
-    logging.debug('setting up queues')
-    # Set up queues to be synced between the processes
+    logging.debug('Create queues and shared things')
     manager = multiprocessing.Manager()
-
-    split_cmd_queue = manager.Queue() # Holds the commands to profile splits
-    sprofile_cmd_queue = manager.Queue() # Holds the commands to merge splits
-    log_list = manager.Queue() # Holds the resulting logs
+    split_cmd_queue = multiprocessing.Queue()
     Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
-    Sprofiles = manager.list() # Holds the resulting Sprofiles
+    log_list = multiprocessing.Queue()
+    sprofile_cmd_queue = multiprocessing.Queue()
+    sprofile_result_queue = multiprocessing.Queue()
+    Sprofiles = []
+
+    logging.debug("Submitting split tasks to queue")
+    for i, cmd_group in enumerate(cmd_groups):
+        split_cmd_queue.put(cmd_group)
+
+    logging.debug("Submitting merge tasks to queue")
+    for scaff, splits in s2splits.items():
+        sprofile_cmd_queue.put([scaff, splits])
+        #logging.debug("put {0}".format(i))
 
     if p > 1:
-        # Start a number of processes to do this work
-        logging.debug('setting up processes')
+        logging.debug('Establishing processes')
         processes = []
         for i in range(0, p):
-            processes.append(multiprocessing.Process(target=profile_contig_worker, args=(split_cmd_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles)))
-
-        logging.debug('starting processes')
+            processes.append(multiprocessing.Process(target=split_profile_worker, args=(split_cmd_queue, Sprofile_dict, log_list)))
         for proc in processes:
             proc.start()
 
         # Set up progress bar
-        pbar = tqdm(desc='Profiling splits: ', total=len(scaffolds))
+        pbar = tqdm(desc='Profiling splits: ', total=len(cmd_groups))
 
-        # Handle the queues
-        logging.debug('starting loop')
-        cmd_index = 0
-        while len(Sprofiles) < len(scaffolds):
+        # Get the splits
+        received_splits = 0
+        while received_splits < len(cmd_groups):
+            log = log_list.get()
+            logging.debug(log)
+            pbar.update(1)
+            received_splits += 1
 
-            # Fill in the queue with commands to profile splits, 500 at a time
-            while cmd_index < len(cmd_groups):
-                logging.debug("Filling cmd queue again- index {0}".format(cmd_index))
-                split_cmd_queue.put(cmd_groups[cmd_index])
-                cmd_index += 1
-                if cmd_index % 500 == 0:
-                    logging.debug("{0} put in".format(i))
-                    break
-
-            # Get the logs
-            try:
-                log_message = log_list.get(timeout=1)
-                logging.debug(log_message)
-            except:
-                pass
-
-            # See if there are any splits that are ready to be merged
-            got = []
-            for scaff, splits in s2splits.items():
-                num_ready = sum([Sprofile_dict[scaff + '.' + str(i)] is not None for i in range(splits)])
-                if num_ready == splits:
-                    Sprofile = ScaffoldSplitObject(splits)
-                    Sprofile.scaffold = scaff
-
-                    for i in range(splits):
-                        Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
-
-                    sprofile_cmd_queue.put(Sprofile)
-                    got.append(scaff)
-
-            # Handle scaffolds that made it into the Sprofile queue
-            for g in got:
-                pbar.update(1)
-                s2splits.pop(g)
-
-            # Uncomment for debug
-            # time.sleep(1)
-            # print("split_cmd_queue {0}; sprofile_cmd_queue {1}; Sprofiles {2}; Sprofile dict {3}".format(split_cmd_queue.qsize(), sprofile_cmd_queue.qsize(), len(Sprofiles), len(Sprofile_dict)))
-            # if len(Sprofile_dict) == 3:
-            #     print(Sprofile_dict)
-            #     print(s2splits)
-
-        # Finish up multi-processing
-        logging.debug('Finished multiprocessing')
+        # Close progress bar
+        pbar.close()
         for proc in processes:
             proc.terminate()
+
+        logging.debug('Establishing processes for merging')
+        processes = []
+        for i in range(0, p):
+            processes.append(multiprocessing.Process(target=merge_profile_worker, args=(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue)))
+        for proc in processes:
+            proc.start()
+
+        # Set up progress bar
+        pbar = tqdm(desc='Merging splits: ', total=len(scaffolds))
+
+        # Get results
+        received_profiles = 0
+        while received_profiles < len(scaffolds):
+            Sprofile = sprofile_result_queue.get()
+            logging.debug(Sprofile.merge_log)
+            pbar.update(1)
+            Sprofiles.append(Sprofile)
+            received_profiles += 1
+
+        # Close multi-processing
+        for proc in processes:
+            proc.terminate()
+
+        # Close progress bar
         pbar.close()
 
     else:
-        # Fill in the queue with commands to profile splits
-        logging.debug('filling in queues with {0} cmd groups'.format(len(cmd_groups)))
-        for i, cmd in enumerate(cmd_groups):
-            split_cmd_queue.put(cmd)
-            if i % 50 == 0:
-                logging.debug("{0} put in".format(i))
+        split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread=True)
+        logging.info("Done profiling splits")
 
-        profile_contig_worker_singlethread(split_cmd_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits)
+        # Get the splits
+        received_splits = 0
+        while received_splits < len(cmd_groups):
+            log = log_list.get()
+            logging.debug(log)
+            received_splits += 1
+
+        merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue, single_thread=True)
+
+        # Get results
+        received_profiles = 0
+        while received_profiles < len(scaffolds):
+            Sprofile = sprofile_result_queue.get()
+            logging.debug(Sprofile.merge_log)
+            Sprofiles.append(Sprofile)
+            received_profiles += 1
 
     # # Re-run failed scaffolds
     # failed_scaffs = set(scaffolds) - set([s.scaffold for s in Sprofiles if s is not None])
@@ -428,6 +479,61 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
 
     # return results
     return SNVprof
+
+def run_listener_loop(scaffolds, Sprofiles, cmd_groups, log_list, s2splits,
+                Sprofile_dict, sprofile_cmd_queue, pbar):
+
+    LastLoop = time.time()
+    while int(Sprofiles.qsize()) < len(scaffolds):
+
+        # Get the logs
+        _log_subloop(log_list, maxTime=30)
+
+        # See if there are any splits that are ready to be merged
+        if (time.time() - LastLoop) > 30:
+            _split_subloop(s2splits, Sprofile_dict, sprofile_cmd_queue, pbar)
+            LastLoop = time.time()
+    return
+
+def _log_subloop(log_list, maxTime=30):
+    '''
+    Retrieve logs for a max of 30 seconds
+    '''
+    start = time.time()
+    while not log_list.empty():
+        log_message = log_list.get(timeout=1)
+        logging.debug(log_message)
+        if time.time() - start > maxTime:
+            break
+    return
+
+def _split_subloop(s2splits, Sprofile_dict, sprofile_cmd_queue, pbar):
+    '''
+    Set up splits for max of 30 seconds
+    '''
+
+    got = []
+    t = time.time()
+    for scaff, splits in s2splits.items():
+        num_ready = sum([Sprofile_dict[scaff + '.' + str(i)] is not None for i in range(splits)])
+        if num_ready == splits:
+            Sprofile = ScaffoldSplitObject(splits)
+            Sprofile.scaffold = scaff
+
+            for i in range(splits):
+                Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
+
+            sprofile_cmd_queue.put(Sprofile)
+            got.append(scaff)
+
+    # Handle scaffolds that made it into the Sprofile queue
+    for g in got:
+        pbar.update(1)
+        s2splits.pop(g)
+
+    # Log
+    logging.debug("Special_Split_Subloop - {0} seconds".format(time.time() - t))
+
 
 def iterate_Fdbs(df, chunkSize=100):
     '''

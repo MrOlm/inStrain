@@ -28,6 +28,7 @@ import inStrain.deprecated_filter_reads
 import inStrain.profileUtilities
 import inStrain.readComparer
 import inStrain.argumentParser
+import inStrain.logUtils
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', -1)
@@ -2236,9 +2237,9 @@ class test_strains():
         # self.test15()
         # self.tearDown()
 
-        self.setUp()
+        self.setUp(destroy=True)
         self.test16()
-        # self.tearDown()
+        self.tearDown()
 
     def test0(self):
         '''
@@ -2831,13 +2832,30 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
         call(cmd, shell=True)
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
+
+        # Make sure the log of the new version is working
+        assert len(glob.glob(base + '/log/*')) == 3, base
+        Ldb = exp_IS.get_parsed_log()
+        rdb, sys_ram = inStrain.logUtils._load_profile_logtable(Ldb)
+
+        LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'merge']['scaffold'].tolist())
+        TRUE_SCAFFOLDS = set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
+        assert(LOGGED_SCAFFOLDS == TRUE_SCAFFOLDS)
+        # print(len(LOGGED_SCAFFOLDS))
+        # #TRUE_SCAFFOLDS = se
+        # print(rdb)
+        # print(Ldb['log_type'].value_counts())
+        # RR = [x for x in glob.glob(base + '/log/*') if 'runtime' in x][0]
+        # for line in open(RR, 'r').readlines():
+        #     line = line.strip()
+        #     print(line)
 
         # Check the detailed guys
         sAdb = sol_IS._get_attributes_file()

@@ -16,6 +16,7 @@ if __name__ != '__main__':
     import inStrain.profileUtilities
 
 import inStrain.profileUtilities
+import inStrain.logUtils
 
 class SNVprofile:
     '''
@@ -155,6 +156,16 @@ class SNVprofile:
             return loc
         else:
             logging.error('I dont know the location of {0}!'.format(name))
+
+    def get_parsed_log(self, most_recent=True):
+        logloc = os.path.join(self.get_location('log'), 'log.log')
+        Ldb = inStrain.logUtils.load_log(logloc)
+
+        # Filter the log
+        if most_recent:
+            Ldb = inStrain.logUtils.filter_most_recent(Ldb)
+
+        return Ldb
 
     def get_read_length(self):
         Rdb = self.get('read_report').head(1)
