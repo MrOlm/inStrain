@@ -30,30 +30,30 @@ import drep.d_analyze
 matplotlib.rcParams['pdf.fonttype'] = 42
 
 def mm_plot(db, left_val='breadth', right_val='coverage', title='',\
-           maxmm=15):
+           minANI=0.9):
     '''
     The input db for this is "mm_genome_info" from "makeGenomeWide" in genomeUtilities.py
     '''
-    db = db.sort_values('mm')
+    db = db.sort_values('ANI_level')
     sns.set_style('white')
 
     # breadth
     fig, ax1 = plt.subplots()
-    ax1.plot(db['mm'], db[left_val], ls='-', color='blue')
+    ax1.plot(db['ANI_level'], db[left_val], ls='-', color='blue')
     if left_val == 'breadth':
-        ax1.plot(db['mm'], estimate_breadth(db['coverage']), ls='--', color='lightblue')
+        ax1.plot(db['ANI_level'], estimate_breadth(db['coverage']), ls='--', color='lightblue')
     ax1.set_ylabel(left_val, color='blue')
-    ax1.set_xlabel('read mismatches')
+    ax1.set_xlabel('Minimum read ANI level')
     ax1.set_ylim(0,1)
 
     # coverage
     ax2 = ax1.twinx()
-    ax2.plot(db['mm'], db[right_val], ls='-', color='red')
+    ax2.plot(db['ANI_level'], db[right_val], ls='-', color='red')
     ax2.set_ylabel(right_val, color='red')
     ax2.set_ylim(0,)
 
     # asthetics
-    plt.xlim(0, maxmm)
+    plt.xlim(1, max(minANI, db['ANI_level'].min()))
 
     plt.title(title)
 
@@ -168,9 +168,10 @@ def load_windowed_metrics(scaffolds, s2l, rLen, metrics=None, window_len=None, A
         if cumulative_snv_table is False:
             logging.error("need cumulative_snv_table for snp_density")
             raise Exception
-        cdb = load_windowed_SNP_density(cumulative_snv_table, scaffolds, window_len, mms, ANI_levels, s2l)
-        cdb['metric'] = 'snp_density'
-        dbs.append(cdb)
+        if len(cumulative_snv_table) > 0:
+            cdb = load_windowed_SNP_density(cumulative_snv_table, scaffolds, window_len, mms, ANI_levels, s2l)
+            cdb['metric'] = 'snp_density'
+            dbs.append(cdb)
 
     if len(dbs) > 0:
         Wdb = pd.concat(dbs, sort=True)
@@ -281,7 +282,7 @@ def load_windowed_linkage(Ldb, scaffolds, window_len, mms, ANI_levels, s2l, on='
             ldb = Ldb[Ldb['scaffold'] == scaffold]
 
         for mm, ani in zip(mms, ANI_levels):
-            db = ldb[ldb['mm'] <= mm].drop_duplicates(subset=['scaffold', 'position_A', 'position_B'], keep='last')
+            db = ldb[ldb['mm'] <= int(mm)].drop_duplicates(subset=['scaffold', 'position_A', 'position_B'], keep='last')
             cov = db.set_index('position_A')[on].sort_index()
 
             db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold], full_len=False)
@@ -322,7 +323,7 @@ def load_windowed_SNP_density(Ldb, scaffolds, window_len, mms, ANI_levels, s2l):
             ldb = Ldb[Ldb['scaffold'] == scaffold]
 
         for mm, ani in zip(mms, ANI_levels):
-            db = ldb[ldb['mm'] <= mm].drop_duplicates(subset=['scaffold', 'position'], keep='last')
+            db = ldb[ldb['mm'] <= int(mm)].drop_duplicates(subset=['scaffold', 'position'], keep='last')
             cov = db.set_index('position')['refBase'].sort_index()
 
             db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold], full_len='count')
@@ -699,6 +700,7 @@ def linkage_decay_plot(db, chunkSize=5, min_vals=5, title=''):
     max_d = db['distance'].max()
     table = defaultdict(list)
     numberChunks = max_d // chunkSize + 1
+    db['distance'] = db['distance'].astype(int)
     for i in range(numberChunks):
         d = db[(db['distance'] >= int(i*chunkSize)) & (db['distance'] < int((i+1)*chunkSize))]
 
@@ -754,13 +756,14 @@ def read_filtering_plot(db, title=''):
     # Annotate every single Bar with its value, based on it's width
     offset = db['value'].max() / 12
     total = db[db['variable'] == 'Total mapped pairs']['value'].tolist()[0]
-    for i, p in enumerate(ax.patches):
-        if i == 0:
-            continue
-        width = p.get_width()
-        plt.text(offset + p.get_width(), p.get_y()+0.55*p.get_height(),
-                 '{:1.0f}%'.format((width/total)*100),
-                 ha='center', va='center')
+    if total > 0:
+        for i, p in enumerate(ax.patches):
+            if i == 0:
+                continue
+            width = p.get_width()
+            plt.text(offset + p.get_width(), p.get_y()+0.55*p.get_height(),
+                     '{:1.0f}%'.format((width/total)*100),
+                     ha='center', va='center')
 
     plt.title(title)
 
@@ -841,6 +844,7 @@ def linkage_decay_type(Odb, chunkSize=5, min_vals=2, title=''):
         else:
             db = Odb[Odb['link_type'] == lt]
 
+        db['distance'] = db['distance'].astype(int)
         for i in range(numberChunks):
             d = db[(db['distance'] >= int(i*chunkSize)) & (db['distance'] < int((i+1)*chunkSize))]
 
@@ -1085,7 +1089,7 @@ def plot_genome(genome, IS, **kwargs):
     GWdb = kwargs.get('GWdb', False)
 
     # FILTER BY BREADTH
-    mb = kwargs.get('minimum_breadth', 0)
+    mb = float(kwargs.get('minimum_breadth', 0))
     if mb > 0:
         if GWdb is False:
             GWdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=False)
@@ -1095,7 +1099,7 @@ def plot_genome(genome, IS, **kwargs):
             breadth = GWdb[GWdb['genome'] == genome]['breadth'].tolist()[0]
         except:
             breadth = 0
-        if breadth < mb:
+        if float(breadth) < mb:
             return False
 
     # FILTER BY GENOME LIST
@@ -1250,6 +1254,8 @@ def main(args):
                 traceback.print_exc()
                 logging.debug(traceback.format_exc())
 
+    logging.debug("Plotting plots finished")
+
 def validate_input(args):
     '''
     Validate and mess with the arguments a bit
@@ -1307,6 +1313,13 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         if Mdb is False:
             Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
         assert len(Mdb) > 0
+
+        # Add the number of read-pairs
+        #readLen = int(IS.get('read_report')['mean_pair_length'].tolist()[0])
+        readLen = int(IS.get_read_length())
+        Mdb['read_length'] = readLen
+        Mdb['mm'] = Mdb['mm'].astype(int)
+        Mdb['ANI_level'] = [(readLen - mm)/readLen for mm in Mdb['mm']]
     except:
         logging.error("Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
         traceback.print_exc()
@@ -1419,6 +1432,8 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         db = IS.get('cumulative_snv_table')
+        if len(db) == 0:
+            return
         db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last')\
                     .sort_index().drop(columns=['mm'])
         db = db[(db['cryptic'] == False)]
@@ -1585,6 +1600,8 @@ def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
 
         SNdb = IS.get('SNP_mutation_types')
         assert SNdb is not None
+        if len(SNdb) == 0:
+            return
         SNdb['key'] = ["{0}:{1}".format(s, p) for s, p in zip(SNdb['scaffold'], SNdb['position'])]
         k2t = SNdb.set_index('key')['mutation_type'].to_dict()
 

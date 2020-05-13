@@ -62,46 +62,51 @@ class ScaffoldSplitObject():
         '''
         log_message = _get_log_message('merge_start', self.scaffold)
 
-        if self.number_splits == 1:
-            Sprofile = self.split_dict[0].merge_single_profile()
-            log_message += _get_log_message('merge_end', self.scaffold)
-            Sprofile.merge_log = log_message
-            return Sprofile
-        else:
-            Sprofile = scaffold_profile()
-            # Handle value objects
-            for att in ['scaffold', 'bam', 'min_freq']:
-                vals = set([getattr(Split, att) for num, Split in self.split_dict.items()])
-                assert len(vals) == 1, vals
-                setattr(Sprofile, att, list(vals)[0])
+        try:
+            if self.number_splits == 1:
+                Sprofile = self.split_dict[0].merge_single_profile()
+                log_message += _get_log_message('merge_end', self.scaffold)
+                Sprofile.merge_log = log_message
+                return Sprofile
 
-            # Handle sum objects
-            for att in ['length']:
-                vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
-                setattr(Sprofile, att, sum(vals))
+            else:
+                Sprofile = scaffold_profile()
+                # Handle value objects
+                for att in ['scaffold', 'bam', 'min_freq']:
+                    vals = set([getattr(Split, att) for num, Split in self.split_dict.items()])
+                    assert len(vals) == 1, vals
+                    setattr(Sprofile, att, list(vals)[0])
 
-            # Handle dataframes
-            for att in ['raw_snp_table', 'raw_linkage_table']:
-                val = pd.concat([getattr(Split, att) for num, Split in self.split_dict.items()]).reset_index(drop=True)
-                setattr(Sprofile, att, val)
-
-            # Handle series
-            for att in ['covT', 'clonT', 'clonTR']:
-                vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
-                setattr(Sprofile, att, merge_basewise(vals))
-
-            # Handle extra things
-            for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
-                if hasattr(self.split_dict[0], att):
+                # Handle sum objects
+                for att in ['length']:
                     vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
-                    setattr(Sprofile, att, merge_special(vals, att))
+                    setattr(Sprofile, att, sum(vals))
 
-            Sprofile.make_cumulative_tables()
+                # Handle dataframes
+                for att in ['raw_snp_table', 'raw_linkage_table']:
+                    val = pd.concat([getattr(Split, att) for num, Split in self.split_dict.items()]).reset_index(drop=True)
+                    setattr(Sprofile, att, val)
 
-            log_message += _get_log_message('merge_end', self.scaffold)
-            Sprofile.merge_log = log_message
+                # Handle series
+                for att in ['covT', 'clonT', 'clonTR']:
+                    vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
+                    setattr(Sprofile, att, merge_basewise(vals))
 
-            return Sprofile
+                # Handle extra things
+                for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
+                    if hasattr(self.split_dict[0], att):
+                        vals = [getattr(Split, att) for num, Split in self.split_dict.items()]
+                        setattr(Sprofile, att, merge_special(vals, att))
+
+                Sprofile.make_cumulative_tables()
+
+                log_message += _get_log_message('merge_end', self.scaffold)
+                Sprofile.merge_log = log_message
+
+                return Sprofile
+        except:
+            logging.error("FAILURE MergeError {0}".format(self.scaffold))
+            return None
 
     def delete_self(self):
         '''
@@ -196,18 +201,12 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread
                 return
 
         # Process split
-        try:
-            Splits = split_profile_wrapper_groups(cmds)
-            LOG = ''
-            for Split in Splits:
-                Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
-                LOG += Split.log + '\n'
-            log_list.put(LOG)
-        except Exception as e:
-            print(e)
-            for cmd in cmds:
-                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-            log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
+        Splits = split_profile_wrapper_groups(cmds)
+        LOG = ''
+        for Split in Splits:
+            Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
+            LOG += Split.log + '\n'
+        log_list.put(LOG)
 
 def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_thread=False):
     '''
@@ -272,65 +271,8 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_th
 #                     Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
 #                 log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
 
-def profile_contig_worker_singlethread(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles, s2splits):
-    '''
-    Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
-    '''
-
-    # Procecss splits
-    while not available_index_queue.empty():
-        cmds = available_index_queue.get(True)
-        try:
-            Splits = split_profile_wrapper_groups(cmds)
-            LOG = ''
-            for Split in Splits:
-                Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
-                LOG += Split.log + '\n'
-            log_list.put(LOG)
-        except Exception as e:
-            print(e)
-            for cmd in cmds:
-                Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-            log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
 
 
-    # Prepare merges
-    got = []
-    for scaff, splits in s2splits.items():
-        num_ready = sum([Sprofile_dict[scaff + '.' + str(i)] is not None for i in range(splits)])
-        if num_ready == splits:
-            Sprofile = ScaffoldSplitObject(splits)
-            Sprofile.scaffold = scaff
-
-            for i in range(splits):
-                Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
-
-            sprofile_cmd_queue.put(Sprofile)
-            got.append(scaff)
-
-    # Do merges
-    while not sprofile_cmd_queue.empty():
-        SSO = sprofile_cmd_queue.get(True)
-        try:
-            Sprofile = SSO.merge()
-            log_list.put(Sprofile.merge_log)
-            Sprofiles.append(Sprofile)
-
-            # Clean up
-            SSO.delete_self()
-            del SSO
-        except:
-            log_list.put('FAIL')
-            Sprofiles.append(None)
-
-    # Handle logs
-    while not log_list.empty():
-        log_message = log_list.get(timeout=1)
-        logging.debug(log_message)
-
-
-    logging.debug('Finished multiprocessing')
-    return
 
 def profile_bam(bam, Fdb, r2m, **kwargs):
     '''
@@ -425,9 +367,10 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         received_profiles = 0
         while received_profiles < len(scaffolds):
             Sprofile = sprofile_result_queue.get()
-            logging.debug(Sprofile.merge_log)
+            if Sprofile is not None:
+                logging.debug(Sprofile.merge_log)
+                Sprofiles.append(Sprofile)
             pbar.update(1)
-            Sprofiles.append(Sprofile)
             received_profiles += 1
 
         # Close multi-processing
@@ -598,20 +541,20 @@ def split_profile_wrapper(cmd):
     except Exception as e:
         print(e)
         traceback.print_exc()
-        logging.error("split exception- {0} pt {1}".format(str(cmd.scaffold), str(cmd.split_number)))
+        logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
         return False
 
 def split_profile_wrapper_groups(cmds):
-    try:
-        results = []
-        for cmd in cmds:
+    results = []
+    for cmd in cmds:
+        try:
             results.append(_profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments))
-        return results
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("split exception- {0} pt {1}".format(str(cmd.scaffold), str(cmd.split_number)))
-        return [False]
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
+    return results
+
 
 def prepare_commands(Fdb, bam, args):
     '''
@@ -676,6 +619,10 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     '''
     # Log
     log_message = _get_log_message('profile_start', scaffold, split_number=split_number)
+
+    # For testing purposes
+    if ((scaffold == 'FailureScaffoldHeaderTesting') & (split_number == 1)):
+        assert False
 
     # Get kwargs
     min_cov = int(kwargs.get('min_cov', 5))

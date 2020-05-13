@@ -78,6 +78,7 @@ class test_plot():
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
 
         self.tearDown()
+        importlib.reload(logging)
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
@@ -113,16 +114,9 @@ class test_plot():
 
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
+        os.remove(location + '/log/log.log')
 
-        # cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.stb)
-        # print(cmd)
-        # call(cmd, shell=True)
-        #
-        # cmd = "inStrain profile_genes -i {0} -g {1}".format(location, self.genes)
-        # print(cmd)
-        # call(cmd, shell=True)
-
-        cmd = "inStrain plot -i {0} --debug".format(location)
+        cmd = "inStrain plot -i {0} -d".format(location)
         print(cmd)
         call(cmd, shell=True)
 
@@ -130,11 +124,23 @@ class test_plot():
         IS = inStrain.SNVprofile.SNVprofile(location)
         figs = glob.glob(IS.get_location('figures') + '*')
 
-        #assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+        # Make sure all figures are made
         for F in FIGS:
             assert len([f for f in figs if F in f]) == 1, F
         for fig in figs:
             assert os.path.getsize(fig) > 1000, fig
+
+        # Make sure logging works
+        log_log = IS.get_location('log') + 'log.log'
+        rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
+        got = False
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'Plot' in line:
+                    got += 1
+                #print(line)
+        assert got == 11, got # Its in there twice for random reasons
 
     def test2(self):
         '''
@@ -519,6 +525,8 @@ class test_SNVprofile():
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
         os.mkdir(self.test_dir)
+
+        importlib.reload(logging)
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
@@ -952,6 +960,44 @@ class test_gene_statistics():
                 #assert abs((ScaffCov-GeneCov)/ScaffCov) < 3
                 diffs.append(abs((ScaffCov-GeneCov)/ScaffCov))
         assert np.mean(diffs) < 0.16, np.mean(diffs) # The average difference is less than 16%
+        rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
+        os.remove(rr)
+
+        # Make sure it can make plots
+        importlib.reload(logging)
+        cmd = "inStrain plot -i {0}".format(location)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Run the IS plots
+        FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf', 'genomeWide_microdiveristy_metrics.pdf',
+                'readANI_distribution.pdf',
+                'ScaffoldInspection_plot.pdf',
+                'ReadFiltering_plot.pdf',
+                'GeneHistogram_plot.pdf']
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        figs = glob.glob(IS.get_location('figures') + '*')
+
+        # Make sure logging works
+        log_log = IS.get_location('log') + 'log.log'
+        rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
+        got = 0
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'Plot' in line:
+                    got += 1
+                print(line)
+        assert got == 8, got # Its in there twice for random reasons
+
+        # Make sure all figures are made
+        for F in FIGS:
+            assert len([f for f in figs if F in f]) == 1, F
+        for fig in figs:
+            assert os.path.getsize(fig) > 1000, fig
+
 
 
 class test_filter_reads():
@@ -2138,12 +2184,16 @@ class test_strains():
 
         self.sorted_bam = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+        self.failure_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
         self.fasta = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa'
         self.single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101.fasta'
         self.extra_single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101_extra.fasta'
+        self.failure_fasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.fa'
         self.cc_solution = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam.CB'
         self.pp_snp_solution = load_data_loc() + \
@@ -2173,72 +2223,77 @@ class test_strains():
             shutil.rmtree(self.test_dir)
 
     def run(self):
+        # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
         # self.setUp()
         # self.test0()
         # self.tearDown()
-        #
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test9()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test10()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test13()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test14()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test15()
-        # self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
+
+        self.setUp()
+        self.test9()
+        self.tearDown()
+
+        self.setUp()
+        self.test10()
+        self.tearDown()
+
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
+
+        self.setUp()
+        self.test13()
+        self.tearDown()
+
+        self.setUp()
+        self.test14()
+        self.tearDown()
+
+        self.setUp()
+        self.test15()
+        self.tearDown()
 
         self.setUp(destroy=True)
         self.test16()
+        self.tearDown()
+
+        self.setUp()
+        self.test17()
         self.tearDown()
 
     def test0(self):
@@ -2605,6 +2660,16 @@ class test_strains():
         # Load output
         assert len([f for f in glob.glob(base + '/output/*') if '.log' not in f]) == 4, glob.glob(base + '/output/*')
 
+        # Make sure the missing scaffold is reported
+        rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
+        got = False
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'weird_NAMED_scaff' in line:
+                    got = True
+        assert got
+
     def test9(self):
         '''
         Test the debug option
@@ -2640,22 +2705,6 @@ class test_strains():
                     logged = True
         Ldb = pd.DataFrame(table)
         assert len(Ldb) > 5
-
-        # # Figure out what is causing RAM
-        # table = defaultdict(list)
-        # with open(logfile) as o:
-        #     for line in o.readlines():
-        #         line = line.strip()
-        #         if 'RAM PROFILE' in line:
-        #             if 'TOTAL SIZE OF SPROFILE' in line:
-        #                 continue
-        #             table['thing'].append(line.split()[6])
-        #             table['size'].append(line.split()[7])
-        # Sdb = pd.DataFrame(table)
-        # Sdb['size'] = Sdb['size'].astype(float)
-        # Sdb = pd.DataFrame(Sdb.groupby('thing')['size'].sum())
-        # assert len(Sdb) > 0
-        # print(Sdb.sort_values('size', ascending=False))
 
     def test10(self):
         '''
@@ -2926,6 +2975,58 @@ class test_strains():
             else:
                 print("YOUR NOT CHECKING {0}".format(i))
 
+    def test17(self):
+        '''
+        Test scaffold failure
+        '''
+        # Set up
+        base = self.test_dir + 'test'
+
+        # Run program and make the split crash
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=3000 -d".format(self.script, self.failure_bam, \
+            self.failure_fasta, base)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you get a result
+        Odb = Sprofile.get('cumulative_scaffold_table')
+        assert len(Odb['scaffold'].unique()) == 1, Odb['scaffold'].unique()
+
+        # Make sure the missing scaffold is reported
+        rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
+        got = 0
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'FailureScaffoldHeaderTesting' in line:
+                    got += 1
+        assert got == 3, got
+        os.remove(rr)
+
+        # Make it not crash on that scaffold
+        importlib.reload(logging)
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=20000 -d".format(self.script, self.failure_bam, \
+            self.failure_fasta, base)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you get a result
+        Odb = Sprofile.get('cumulative_scaffold_table')
+        assert len(Odb['scaffold'].unique()) == 2, Odb['scaffold'].unique()
+
+        # Make sure the missing scaffold is reported
+        rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
+        got = 0
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'FailureScaffoldHeaderTesting' in line:
+                    got += 1
+        assert got == 2, got
+
+        # Make it crash on the gene profile
+
+
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
         d = d.sort_values('mm')
@@ -3191,14 +3292,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
+    test_filter_reads().run()
     test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_readcomparer().run()
-    # test_special().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_readcomparer().run()
+    test_special().run()
 
     print('everything is working swimmingly!')

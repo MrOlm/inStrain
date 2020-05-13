@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0a] - 2020-05-08
+## [1.3.0d] - 2020-05-08
+- Updating failure report to be better (including testing for split profiling and merging failures)
+- Updating plots to not make all those errors
+- Removed "MM" from all figures, replace with ANI level
+- Rdic is stored by default
+
+## [1.3.0a-c] - 2020-05-08
 - Paralellization of individual scaffolds is done now using windows
+- This required various performance tweaks to get right
 
 ## [1.2.14] - 2020-05-04
 - RAM log actually reports min RAM usage now

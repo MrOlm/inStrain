@@ -487,7 +487,7 @@ def get_paired_reads2(bam, scaff):
     try:
         iter = samfile.fetch(scaff)
     except ValueError:
-        logging.error("{0} is not in .bam file".format(scaff))
+        logging.error("FAILURE FilterReads {0} is not in .bam file".format(scaff))
         return {}
 
     for read in iter:

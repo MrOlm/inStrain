@@ -92,8 +92,38 @@ class Controller():
         except:
             return
         logging.debug("inStrain complete; shutting down logger and printing run stats (log location = {0})".format(logloc))
+        # reset_logging()
         logging.shutdown()
+        # handlers = logging.getLogger('').handlers
+        # for handler in handlers:
+        #     handler.close()
+        #     logging.getLogger('').removeHandler(handler)
         inStrain.logUtils.report_run_stats(logloc, most_recent=True, printToo=args.debug, debug=args.debug)
+
+# def reset_logging():
+#     '''
+#     https://stackoverflow.com/questions/12034393/import-side-effects-on-logging-how-to-reset-the-logging-module
+#     '''
+#     manager = logging.root.manager
+#     manager.disabled = logging.NOTSET
+#     for logger in manager.loggerDict.values():
+#         if isinstance(logger, logging.Logger):
+#             logger.setLevel(logging.NOTSET)
+#             logger.propagate = True
+#             logger.disabled = False
+#             logger.filters.clear()
+#             handlers = logger.handlers.copy()
+#             for handler in handlers:
+#                 # Copied from `logging.shutdown`.
+#                 try:
+#                     handler.acquire()
+#                     handler.flush()
+#                     handler.close()
+#                 except (OSError, ValueError):
+#                     pass
+#                 finally:
+#                     handler.release()
+#                 logger.removeHandler(handler)
 
 class ProfileController():
     '''
@@ -181,11 +211,12 @@ class ProfileController():
             Sprofile.store('detailed_read_report', dRR, 'pandas', "Details report on reads")
             del dRR
 
-        if args.store_everything:
-            if args.skip_mm_profiling:
-                Sprofile.store('Rdic', Rdic, 'pickle', 'list of filtered read pairs')
-            else:
-                Sprofile.store('Rdic', Rdic, 'dictionary', 'Read pair -> mismatches')
+        logging.debug("Storing Rdic")
+        if args.skip_mm_profiling:
+            Sprofile.store('Rdic', Rdic, 'pickle', 'list of filtered read pairs')
+        else:
+            Sprofile.store('Rdic', Rdic, 'dictionary', 'Read pair -> mismatches')
+        logging.debug("Done storing Rdic")
 
         # Save
         logging.info('Storing output')
@@ -249,12 +280,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 Output tables........ {0}
 Figures.............. {1}
+Logging.............. {2}
 
 See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         """.format(Sprofile.get_location('output'), \
-            Sprofile.get_location('figures'))
+            Sprofile.get_location('figures'),
+            Sprofile.get_location('log'))
         logging.info(message)
 
         return Sprofile

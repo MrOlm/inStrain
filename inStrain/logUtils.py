@@ -36,6 +36,8 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
         # Filter the log
         if most_recent:
             Ldb = filter_most_recent(Ldb)
+            assert len(Ldb['run_ID'].unique()) == 1
+            # assert len(Ldb[Ldb['log_type'].isin(['program_start', 'program_end'])]) == 2, len(Ldb[Ldb['log_type'].isin(['program_start', 'program_end'])])
     except BaseException as e:
         if debug:
             print('Failed to load log file - {1}'.format('None', str(e)))
@@ -73,9 +75,127 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
                 print('Failed to make profile plot - {1}'.format('None', str(e)))
                 traceback.print_exc()
 
+def load_log(logfile):
+    table = defaultdict(list)
+    with open(logfile) as o:
+        prev_line_2 = None
+        prev_line = None
+        run_ID = None
+        for line in o.readlines():
+            line = line.strip()
+
+            # load new inStrain run
+            if 'inStrain version' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+
+                run_ID = datetime.fromtimestamp(epoch_time).strftime('%Y%m%d_%H%M%S')
+                cmd = prev_line_2.strip().split('was:')[1].strip()
+
+                table['log_type'].append('program_start')
+                table['time'].append(epoch_time)
+                table['parsable_string'].append("version={0}; cmd={1}".format(linewords[5], cmd))
+                table['run_ID'].append(run_ID)
+
+            # load inStrain run finish
+            elif 'inStrain complete' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+
+                table['log_type'].append('program_end')
+                table['time'].append(epoch_time)
+                table['parsable_string'].append("loglog={0}".format(linewords[14][:-1]))
+                table['run_ID'].append(run_ID)
+
+            # regular checkpoints
+            elif 'Checkpoint' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+
+                table['log_type'].append('checkpoint')
+                table['time'].append(epoch_time)
+                table['run_ID'].append(run_ID)
+
+                if len(linewords) == 9:
+                    table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
+                else:
+                    table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
+
+            # Special gene multiprocessing reporting
+            elif 'SpecialPoint_genes' in line:
+                linewords = [x.strip() for x in line.split()]
+                pstring = "scaffold={0};PID={1};status={2}".format(
+                            linewords[1], linewords[3], linewords[4])
+
+                table['log_type'].append('Special_genes')
+                table['time'].append(float(linewords[5]))
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
+            elif "Plotting plot" in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+                pstring = "plot={0}".format(
+                            linewords[5])
+
+                table['log_type'].append('Plotting')
+                table['time'].append(epoch_time)
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
+            # Profile reporting
+            elif (line.startswith('profile') | line.startswith('merge')):
+                linewords = [x.strip() for x in line.split()]
+                pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
+                            linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
+
+                table['log_type'].append(linewords[0].split('_')[0])
+                table['time'].append(float(linewords[6]))
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
+            # Special Failure
+            elif 'FAILURE' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+                fail_type = linewords[4]
+                if fail_type == 'FilterReads':
+                    pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+                elif fail_type == 'SplitException':
+                    pstring = "type={0};scaffold={1};split={2}".format(fail_type, linewords[5], linewords[6])
+                elif fail_type == 'MergeError':
+                    pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+                else:
+                    pstring = "type={0}".format(fail_type)
+
+                table['log_type'].append('Failure')
+                table['time'].append(float(epoch_time))
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
+            # Failture that needs to be captured better
+            elif 'Double failure!' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+
+                table['log_type'].append('Failure')
+                table['time'].append(epoch_time)
+                table['parsable_string'].append("error={0}".format(line.strip()))
+                table['run_ID'].append(run_ID)
+
+            prev_line_2 = prev_line
+            prev_line = line
+
+    Ldb = pd.DataFrame(table)
+    #Ldb = add_run_IDs(Ldb)
+
+    return Ldb
+
 def profile_plot(Ldb, saveloc=None):
     #ldb = Ldb[Ldb['log_type'] == 'profile']
     rdb, sys_ram = _load_profile_logtable(Ldb)
+    if len(rdb) == 0:
+        return
 
     db = rdb[rdb['command'] == 'profile']
     plt.scatter(db['adjusted_start'], db['percent_RAM'], color='red', label='split profiling')
@@ -128,6 +248,15 @@ def generate_reports(Ldb, debug=False):
     name = 'Genes paralellization efficiency'
     try:
         report = _gen_genes_report(Ldb)
+        name2report[name] = report
+    except BaseException as e:
+        if debug:
+            print('Failed to make log for {0} - {1}'.format(name, str(e)))
+            traceback.print_exc()
+
+    name = 'Plotting'
+    try:
+        report = _gen_plotting_report(Ldb)
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -321,10 +450,59 @@ def _gen_genes_report(Ldb, detailed=False):
 def _gen_failures_report(Ldb):
     report = ''
     ldb = Ldb[Ldb['log_type'] == 'Failure']
-    for i, row in ldb.iterrows():
-        report += "Failure {0}\n".format(ldb['parsable_string'])
+    if len(ldb) > 0:
+        ldb['failure_type'] = [parse_parsable_string(p)['type'] for p in ldb['parsable_string']]
+
+        for t, db in ldb.groupby('failure_type'):
+            table = defaultdict(list)
+            for i, row in db.iterrows():
+                for thing, value in parse_parsable_string(row['parsable_string']).items():
+                    table[thing].append(value)
+                table['time'].append(row['time'])
+            fdb = pd.DataFrame(table)
+
+            if t == 'FilterReads':
+                report += "The following scaffolds were not in the bam file:\n"
+                for s in fdb['scaffold'].unique():
+                    report += s + '\n'
+                report += '\n'
+
+            elif t == 'SplitException':
+                report += "The following splits failed during profiling:\n"
+                for i, row in fdb.iterrows():
+                    report += "{0} split {1}\n".format(row['scaffold'], row['split'])
+                report += '\n'
+
+            elif t == 'MergeError':
+                report += "The following scaffolds could not be profiled due to mering errors:\n"
+                for i, row in fdb.iterrows():
+                    report += "{0}\n".format(row['scaffold'])
+                report += '\n'
+
+            else:
+                report += "I dont know how to report {0} failures\n".format(t)
+                for i, row in fdb.iterrows():
+                    report += str(row) + '\n'
+                report += '\n'
+
     if report == '':
         report = "No failures"
+    return report
+
+def _gen_plotting_report(Ldb):
+    report = ''
+    ldb = Ldb[Ldb['log_type'] == 'Plotting']
+    if len(ldb) > 0:
+        ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
+        ldb = ldb.sort_values('time').reset_index(drop=True)
+        for i, row in ldb.iterrows():
+            if row['plot'] == 'finished':
+                break
+
+            start = row['time']
+            end = ldb.iloc[i+1]['time']
+            report += "Plot {0} took {1}\n".format(row['plot'], td_format(None, seconds=end-start))
+
     return report
 
 def _load_profile_logtable(Ldb):
@@ -411,8 +589,8 @@ def _load_genes_logtable(ldb):
 
     return db
 
-def td_format(td_object, seconds=False):
-    if seconds == False:
+def td_format(td_object, seconds=None):
+    if seconds is None:
         seconds = int(td_object.total_seconds())
     periods = [
         ('year',        60*60*24*365),
@@ -473,107 +651,6 @@ def filter_most_recent(Ldb):
     '''
     ID = Ldb.sort_values('time')['run_ID'].tolist()[-1]
     return Ldb[Ldb['run_ID'] == ID]
-
-def load_log(logfile):
-    table = defaultdict(list)
-    with open(logfile) as o:
-        prev_line_2 = None
-        prev_line = None
-        run_ID = None
-        for line in o.readlines():
-            line = line.strip()
-
-            # load new inStrain run
-            if 'inStrain version' in line:
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-
-                run_ID = datetime.fromtimestamp(epoch_time).strftime('%Y%m%d_%H%M%S')
-                cmd = prev_line_2.strip().split('was:')[1].strip()
-
-                table['log_type'].append('program_start')
-                table['time'].append(epoch_time)
-                table['parsable_string'].append("version={0}; cmd={1}".format(linewords[5], cmd))
-                table['run_ID'].append(run_ID)
-
-            # load inStrain run finish
-            elif 'inStrain complete' in line:
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-
-                table['log_type'].append('program_end')
-                table['time'].append(epoch_time)
-                table['parsable_string'].append("loglog={0}".format(linewords[14][:-1]))
-                table['run_ID'].append(run_ID)
-
-            # regular checkpoints
-            elif 'Checkpoint' in line:
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-
-                table['log_type'].append('checkpoint')
-                table['time'].append(epoch_time)
-                table['run_ID'].append(run_ID)
-
-                if len(linewords) == 9:
-                    table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
-                else:
-                    table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
-
-            # Special gene multiprocessing reporting
-            elif 'SpecialPoint_genes' in line:
-                linewords = [x.strip() for x in line.split()]
-                pstring = "scaffold={0};PID={1};status={2}".format(
-                            linewords[1], linewords[3], linewords[4])
-
-                table['log_type'].append('Special_genes')
-                table['time'].append(float(linewords[5]))
-                table['parsable_string'].append(pstring)
-                table['run_ID'].append(run_ID)
-
-            # Profile reporting
-            elif (line.startswith('profile') | line.startswith('merge')):
-                linewords = [x.strip() for x in line.split()]
-                pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
-                            linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
-
-                table['log_type'].append(linewords[0].split('_')[0])
-                table['time'].append(float(linewords[6]))
-                table['parsable_string'].append(pstring)
-                table['run_ID'].append(run_ID)
-
-            # Special Failure
-            elif 'FAILURE' in line:
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-                fail_type = linewords[3]
-                if fail_type == 'GENES_OUTER':
-                    pstring = "type={0}".format(fail_type)
-                else:
-                    pstring = "type={0}".format(fail_type)
-
-                table['log_type'].append('Failure')
-                table['time'].append(float(epoch_time))
-                table['parsable_string'].append(pstring)
-                table['run_ID'].append(run_ID)
-
-            # Failture that needs to be captured better
-            elif 'Double failure!' in line:
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-
-                table['log_type'].append('Failure')
-                table['time'].append(epoch_time)
-                table['parsable_string'].append("error={0}".format(line.strip()))
-                table['run_ID'].append(run_ID)
-
-            prev_line_2 = prev_line
-            prev_line = line
-
-    Ldb = pd.DataFrame(table)
-    #Ldb = add_run_IDs(Ldb)
-
-    return Ldb
 
 def log_fmt_to_epoch(ttime):
     # Old log format with no year

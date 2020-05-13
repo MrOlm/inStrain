@@ -303,8 +303,14 @@ class SNVprofile:
             Adb = self._get_attributes_file()
 
             if not same_versions(Adb.loc['version', 'value'], __version__):
-                logging.error("Warning! Your inStrain folder is from version {0}, while the installed version is {1}.\nIf you experience weird behavior, this might be why".format(
-                        Adb.loc['version', 'value'], __version__))
+                error_message = "Warning! Your inStrain folder is from version {0}, while the installed version is {1}.\nIf you experience weird behavior, this might be why".format(
+                        Adb.loc['version', 'value'], __version__)
+
+                # This is needed because otherwise will make a logger in error!
+                if logging.getLogger('').handlers:
+                    logging.error(error_message)
+                else:
+                    print(error_message)
 
             if self.location != self.get('location'):
                 self.store('location', self.location, 'value', 'Location of SNVprofile object')
@@ -544,7 +550,7 @@ class SNVprofile:
 
     def _load_dictionary(self, location):
         '''
-        Store a dictionary using json
+        Load a dictionary using json
         '''
         with open(location, 'r') as fp:
             return(json.load(fp))
