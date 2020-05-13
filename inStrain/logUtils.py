@@ -124,11 +124,23 @@ def load_log(logfile):
             # Special gene multiprocessing reporting
             elif 'SpecialPoint_genes' in line:
                 linewords = [x.strip() for x in line.split()]
-                pstring = "scaffold={0};PID={1};status={2}".format(
-                            linewords[1], linewords[3], linewords[4])
+                pstring = "scaffold={0};PID={1};status={2};what={3}".format(
+                            linewords[1], linewords[3], linewords[5], linewords[4])
 
                 table['log_type'].append('Special_genes')
-                table['time'].append(float(linewords[5]))
+                table['time'].append(float(linewords[6]))
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
+            # Genes reporting outside of the paralellized
+            elif 'SubPoint_genes' in line:
+                linewords = [x.strip() for x in line.split()]
+                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
+                pstring = "RAM={0};status={1};name={2}".format(
+                            linewords[8], linewords[5], linewords[4])
+
+                table['log_type'].append('SubPoint_genes')
+                table['time'].append(epoch_time)
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
@@ -159,12 +171,19 @@ def load_log(logfile):
                 linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 fail_type = linewords[4]
+
                 if fail_type == 'FilterReads':
                     pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+
                 elif fail_type == 'SplitException':
                     pstring = "type={0};scaffold={1};split={2}".format(fail_type, linewords[5], linewords[6])
+
                 elif fail_type == 'MergeError':
                     pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+
+                elif fail_type == 'GeneException':
+                    pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+
                 else:
                     pstring = "type={0}".format(fail_type)
 
@@ -377,19 +396,19 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Wall time for Profile", td_format(runtime))
     report += "{0:30}\t{1}\n".format("Total processes used (splits + merges)", PIDs)
     report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
-    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(PIDs/2))*100)
+    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(max(PIDs/2, 1)))*100)
     report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['scaffold'].unique()))
 
     # Report on splits
     report += "\n"
     report += "{0:30}\t{1}\n".format("User time profiling splits", td_format(None, seconds=db['runtime'].sum()))
-    report += "{0:30}\t{1:.1f}%\n".format("Profile paralell efficiency", ((db['runtime'].sum()/(db['end_time'].max() - db['start_time'].min()))/(PIDs/2))*100)
+    report += "{0:30}\t{1:.1f}%\n".format("Profile paralell efficiency", ((db['runtime'].sum()/(db['end_time'].max() - db['start_time'].min()))/(max(PIDs/2, 1)))*100)
     report += "{0:30}\t{1}\n".format("Average profile time per split", td_format(None, seconds=db['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Average time per split", td_format(None, seconds=db['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per split", td_format(None, seconds=db['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum split time", td_format(None, seconds=db['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
-    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(d['end_time'].max() - d['start_time'].min()))*100) for p, d in db.groupby('PID')]))
+    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(db['end_time'].max() - d['start_time'].min()))*100) for p, d in db.groupby('PID')]))
 
     # Report on merges
     report += "\n"
@@ -399,7 +418,7 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Median time per merge", td_format(None, seconds=mdb['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum merge time", td_format(None, seconds=mdb['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
-    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(d['end_time'].max() - d['start_time'].min()))*100) for p, d in mdb.groupby('PID')]))
+    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(mdb['end_time'].max() - d['start_time'].min()))*100) for p, d in mdb.groupby('PID')]))
 
     # Report on RAM
     report += "\n"
@@ -416,34 +435,101 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
     return report
 
+def _gen_checkpoint_report2(ldb, overall_runtime=None):
+    '''
+    ldb should have the columns:
+        name = name of checkpoint
+        status = start or end
+        RAM = RAM usage
+        time = time in epoch time
+    '''
+    if overall_runtime is None:
+        overall_runtime = ldb[ldb['status'] == 'end']['time'].max() - ldb[ldb['status'] == 'start']['time'].min()
+
+    report = ''
+    order = list(ldb['name'].unique())
+
+    for name in order:
+        db = ldb[ldb['name'] == name]
+        if len(db) > 2:
+            report += '{0} has problems and cannot be reported\n'.format(name)
+
+        elif len(db) == 2:
+            start = db[db['status'] == 'start'].iloc[0]['time']
+            end = db[db['status'] == 'end'].iloc[0]['time']
+            runtime = end - start
+
+            if 'RAM' in ldb.columns:
+                startram = int(db[db['status'] == 'start']['RAM'].tolist()[0])
+                endram = int(db[db['status'] == 'end']['RAM'].tolist()[0])
+                ram_change = endram-startram
+
+                if ram_change > 0:
+                    inc_dec = 'increased'
+                else:
+                    inc_dec = 'decreased'
+
+                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\tRAM use {4} by {3}\n'.format(name, td_format(None, seconds=runtime), (runtime/overall_runtime)*100, humanbytes(ram_change, sign=False), inc_dec)
+
+            else:
+                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
+
+        elif len(db) == 1:
+            start = start.strftime('%Y-%m-%d %H:%M:%S')
+            report += '{0:20} started at {1} and never finished\n'.format(name, start)
+
+    return report
+
 def _gen_genes_report(Ldb, detailed=False):
     report = ''
 
-    # Set up
+    # Set up checkpoint log
+    ldb = Ldb[Ldb['log_type'] == 'SubPoint_genes']
+    if len(ldb) > 0:
+        for i in ['name', 'status', 'RAM']:
+            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+        report += _gen_checkpoint_report2(ldb)
+        report += '\n'
+
+    # Set up paralellization log
     ldb = Ldb[Ldb['log_type'] == 'Special_genes']
-    rdb = _load_genes_logtable(ldb)
+    PGdb = _load_genes_logtable(ldb)
 
-    if len(rdb) == 0:
-        return ''
+    if len(PGdb) == 0:
+        return report
 
-    # Report on paralellization
+    # Generate report on paralellization as a whole
+    rdb = PGdb[PGdb['command'] == 'whole']
+
     start = datetime.fromtimestamp(rdb['start_time'].min())
     end = datetime.fromtimestamp(rdb['end_time'].max())
     runtime = end - start
-
     parallel_time = rdb['runtime'].sum()
     avg_time = rdb['runtime'].mean()
-
     PIDs = len(rdb['PID'].unique())
 
-    report += 'Gene calling paralellization occured for {0} and involved {1} processes\n'.format(td_format(runtime), PIDs)
-    report += 'An average of {0:.1f} processes were used during this time to profile {1} scaffolds\n'.format(
-                parallel_time/runtime.total_seconds(), len(rdb['scaffold'].unique()))
-    report += 'Scaffolds ran for an average of {0} (median {1}; longest {2})\n'.format(
-                td_format(None, seconds=rdb['runtime'].mean()), td_format(None, seconds=rdb['runtime'].median()),
-                td_format(None, seconds=rdb['runtime'].max()))
-    report += '{0} scaffolds needed to be run a second time\n'.format(
-            len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
+    # Report on paralelized steps as a whole
+    report += "{0:30}\t{1}\n".format("Wall time parallelized steps", td_format(runtime))
+    report += "{0:30}\t{1}\n".format("Total processes used", PIDs)
+    report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
+    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(PIDs))*100)
+    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(rdb['scaffold'].unique()))
+    report += "{0:30}\t{1}\n".format("Average time per scaffold", td_format(None, seconds=rdb['runtime'].mean()))
+    report += "{0:30}\t{1}\n".format("Median time per scaffold", td_format(None, seconds=rdb['runtime'].median()))
+    report += "{0:30}\t{1}\n".format("Maximum split scaffold", td_format(None, seconds=rdb['runtime'].max()))
+    report += "{0:30}\t{1}\n".format("Longest running scaffold", rdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(rdb['end_time'].max() - d['start_time'].min()))*100) for p, d in rdb.groupby('PID')]))
+
+    # Report on sub-paralalized steps
+    for step, db in PGdb.groupby('command'):
+        if step == 'whole':
+            continue
+
+        step_start = datetime.fromtimestamp(db['start_time'].min())
+        step_start = datetime.fromtimestamp(db['end_time'].max())
+        step_parallel_time = db['runtime'].sum()
+
+        report += "{0:30}\t{1:.1f}% of parallel runtime\n".format("Step {0}: ".format(step), (step_parallel_time/parallel_time)*100)
 
     return report
 
@@ -475,6 +561,12 @@ def _gen_failures_report(Ldb):
 
             elif t == 'MergeError':
                 report += "The following scaffolds could not be profiled due to mering errors:\n"
+                for i, row in fdb.iterrows():
+                    report += "{0}\n".format(row['scaffold'])
+                report += '\n'
+
+            elif t == 'GeneException':
+                report += "Genes on the following scaffolds could not be profiled due to errors durring profiling:\n"
                 for i, row in fdb.iterrows():
                     report += "{0}\n".format(row['scaffold'])
                 report += '\n'
@@ -572,17 +664,19 @@ def _load_genes_logtable(ldb):
     table = defaultdict(list)
     Ldb['time'] = Ldb['time'].astype(float)
     first_time = Ldb['time'].min()
-    for scaffold, db in Ldb.groupby('scaffold'):
-        sdb = db[db['status'] == 'start']
-        edb = db[db['status'] == 'end']
+    for scaffold, ddb in Ldb.groupby('scaffold'):
+        for cmd, db in ddb.groupby('what'):
+            sdb = db[db['status'] == 'start']
+            edb = db[db['status'] == 'end']
 
-        table['scaffold'].append(scaffold)
-        table['PID'].append(db['PID'].tolist()[0])
-        table['start_time'].append(sdb['time'].tolist()[0])
-        table['end_time'].append(edb['time'].tolist()[0])
-        table['adjusted_start'].append(sdb['time'].tolist()[0] - first_time)
-        table['adjusted_end'].append(edb['time'].tolist()[0] - first_time)
-        table['runs'].append(len(sdb))
+            table['scaffold'].append(scaffold)
+            table['PID'].append(db['PID'].tolist()[0])
+            table['start_time'].append(sdb['time'].tolist()[0])
+            table['end_time'].append(edb['time'].tolist()[0])
+            table['adjusted_start'].append(sdb['time'].tolist()[0] - first_time)
+            table['adjusted_end'].append(edb['time'].tolist()[0] - first_time)
+            table['runs'].append(len(sdb))
+            table['command'].append(cmd)
 
     db = pd.DataFrame(table)
     db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
@@ -613,9 +707,12 @@ def td_format(td_object, seconds=None):
     else:
         return "<1 second"
 
-def humanbytes(B):
+def humanbytes(B, sign=True):
     if B < 0:
-        unit = '- '
+        if sign:
+            unit = '- '
+        else:
+            unit = ''
         B = B * -1
     else:
         unit = ''

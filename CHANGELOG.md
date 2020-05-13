@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0e] - 2020-05-13
+- Re-write of genes profiling section
+- Suppress warnings made during plotting
+- Add real logging report to profile_genes
+- Add failure testing to profile_genes
+
 ## [1.3.0d] - 2020-05-08
 - Updating failure report to be better (including testing for split profiling and merging failures)
 - Updating plots to not make all those errors

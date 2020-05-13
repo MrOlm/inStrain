@@ -8,6 +8,7 @@ import h5py
 import pickle
 import logging
 import argparse
+import warnings
 import numpy as np
 import pandas as pd
 
@@ -523,10 +524,19 @@ class SNVprofile:
         return loaded
 
     def _store_pandas(self, obj, location):
-        obj.to_csv(location)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            obj.to_csv(location)
 
     def _load_pandas(self, location):
-        return pd.read_csv(location, index_col=0)
+        # This stupid thing is required because just calling the read_csv sometimes causes the warning
+        # /home/mattolm/.pyenv/versions/3.8.2/envs/3.8.2_testInstrain/lib/python3.8/site-packages/numpy/lib/
+        # arraysetops.py:569: FutureWarning: elementwise comparison failed; returning scalar
+        # instead, but in the future will perform elementwise comparison
+        # mask |= (ar1 == a)"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            return pd.read_csv(location, index_col=0)
 
     def _store_pickle(self, obj, location):
         f = open(location, 'wb')

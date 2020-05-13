@@ -817,7 +817,7 @@ class test_gene_statistics():
         # Run program
         base = self.test_dir + 'testN'
 
-        cmd = "inStrain profile_genes -i {1} -g {3} --store_everything".format(self.script, location, \
+        cmd = "inStrain profile_genes -i {1} -g {3} --store_everything -d".format(self.script, location, \
             base, self.genes)
         print(cmd)
         call(cmd, shell=True)
@@ -854,6 +854,17 @@ class test_gene_statistics():
                 #assert abs((ScaffCov-GeneCov)/ScaffCov) < 3
                 diffs.append(abs((ScaffCov-GeneCov)/ScaffCov))
         assert np.mean(diffs) < 0.15 # The average difference is less than 15%
+
+        # Make sure logs are good
+        # Make sure the missing scaffold is reported
+        rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
+        got = 0
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'calculate_gene_metrics' in line:
+                    got += 1
+        assert got == 1, got
 
     def test3(self):
         '''
@@ -998,7 +1009,8 @@ class test_gene_statistics():
         for fig in figs:
             assert os.path.getsize(fig) > 1000, fig
 
-
+    def test5(self):
+        pass
 
 class test_filter_reads():
     def setUp(self):
@@ -2194,6 +2206,8 @@ class test_strains():
             'N5_271_010G1_scaffold_101_extra.fasta'
         self.failure_fasta = load_data_loc() + \
             'N5_271_010G1_scaffold_failureScaffold.fa'
+        self.failure_genes = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.fa.genes.fna.fa'
         self.cc_solution = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam.CB'
         self.pp_snp_solution = load_data_loc() + \
@@ -2227,7 +2241,7 @@ class test_strains():
         # self.setUp()
         # self.test0()
         # self.tearDown()
-
+        #
         self.setUp()
         self.test1()
         self.tearDown()
@@ -2881,7 +2895,7 @@ class test_strains():
         '''
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 1".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6 -d".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
         call(cmd, shell=True)
@@ -2949,7 +2963,7 @@ class test_strains():
                         del e[r]
                         del s[r]
 
-                if i in ['raw_snp_table', 'cumulative_snv_table']:
+                if i in ['raw_snp_table', 'cumulative_snv_table', 'SNP_mutation_types']:
                     e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
 
@@ -2963,6 +2977,13 @@ class test_strains():
                         del e[r]
                         del s[r]
 
+                if i in ['genes_coverage', 'genes_clonality', 'genes_SNP_density']:
+                    e = e.sort_values(['gene', 'mm']).reset_index(drop=True)
+                    s = s.sort_values(['gene', 'mm']).reset_index(drop=True)
+
+                # if i in ['SNP_mutation_types']:
+                #     print(e)
+                #     print(i)
 
                 assert compare_dfs2(e, s, verbose=True), i
 
@@ -3023,8 +3044,29 @@ class test_strains():
                 if 'FailureScaffoldHeaderTesting' in line:
                     got += 1
         assert got == 2, got
+        os.remove(rr)
 
         # Make it crash on the gene profile
+        importlib.reload(logging)
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=20000 -d -g {4}".format(self.script, self.failure_bam, \
+            self.failure_fasta, base, self.failure_genes)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you get a result
+        Odb = Sprofile.get('cumulative_scaffold_table')
+        assert len(Odb['scaffold'].unique()) == 2, Odb['scaffold'].unique()
+
+        # Make sure the missing scaffold is reported
+        rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
+        got = 0
+        with open(rr, 'r') as o:
+            for line in o.readlines():
+                line = line.strip()
+                if 'FailureScaffoldHeaderTesting' in line:
+                    got += 1
+        assert got == 3, got
+        os.remove(rr)
 
 
 def _internal_verify_Sdb(Sdb):

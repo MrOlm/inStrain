@@ -1362,6 +1362,7 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
         cumulative_snv_table = kwargs.get('cumulative_snv_table')#, IS.get('cumulative_snv_table'))
         scaffold2length = IS.get('scaffold2length')
         rl = IS.get_read_length()
+        profiled_scaffolds = set(scaffold2length.keys())
 
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1377,7 +1378,8 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
     for genome, scaffolds in b2s.items():
         if not plot_genome(genome, IS, **kwargs):
             continue
-        Wdb, breaks, midpoints = load_windowed_metrics(scaffolds,
+        present_scaffolds = list(set(scaffolds).intersection(set(profiled_scaffolds)))
+        Wdb, breaks, midpoints = load_windowed_metrics(present_scaffolds,
                                 scaffold2length,
                                 rl,
                                 report_midpoints=True,
