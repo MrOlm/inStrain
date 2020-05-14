@@ -7,6 +7,7 @@ import time
 import glob
 import psutil
 import logging
+import warnings
 import argparse
 import traceback
 import multiprocessing
@@ -20,6 +21,10 @@ import concurrent.futures
 from concurrent import futures
 from inStrain import SNVprofile
 from collections import defaultdict
+
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    from Bio.codonalign.codonalphabet import default_codon_table
 
 import inStrain.SNVprofile
 import inStrain.controller
@@ -52,7 +57,7 @@ class Controller():
         IS.store('genes_table', GdbP, 'pandas', 'Location of genes in the associated genes_file')
         IS.store('genes_coverage', name2result['coverage'], 'pandas', 'Coverage of individual genes')
         IS.store('genes_clonality', name2result['clonality'], 'pandas', 'Clonality of individual genes')
-        IS.store('genes_SNP_density', name2result['SNP_density'], 'pandas', 'SNP density of individual genes')
+        IS.store('genes_SNP_count', name2result['SNP_density'], 'pandas', 'SNP density and counts of individual genes')
         IS.store('SNP_mutation_types', name2result['SNP_mutation_types'], 'pandas', 'The mutation types of SNPs')
 
         if vargs.get('store_everything', False):
@@ -304,22 +309,25 @@ def profile_genes(scaffold, **kwargs):
         del clonT
     log_message += "\nSpecialPoint_genes {0} PID {1} clonality end {2}".format(scaffold, pid, time.time())
 
-    # Calculate gene-level SNP desnsity
-    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_density start {2}".format(scaffold, pid, time.time())
-    Ldb = CumulativeSNVtable[CumulativeSNVtable['scaffold'] == scaffold]
-    if len(Ldb) == 0:
-        ldb = pd.DataFrame()
-    else:
-        ldb = calc_gene_snp_density(gdb, Ldb)
-    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_density end {2}".format(scaffold, pid, time.time())
-
     # Determine whether SNPs are synonmous or non-synonmous
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character start {2}".format(scaffold, pid, time.time())
+    Ldb = CumulativeSNVtable[CumulativeSNVtable['scaffold'] == scaffold]
     if len(Ldb) == 0:
         sdb = pd.DataFrame()
     else:
         sdb = Characterize_SNPs_wrapper(Ldb, gdb)
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character end {2}".format(scaffold, pid, time.time())
+
+    # Calculate gene-level SNP counts
+    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts start {2}".format(scaffold, pid, time.time())
+    if len(Ldb) == 0:
+        ldb = pd.DataFrame()
+        sublog = ''
+    else:
+        #ldb = calc_gene_snp_density(gdb, Ldb)
+        ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, scaffold=scaffold)
+    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts end {2}".format(scaffold, pid, time.time())
+    log_message += sublog
 
     log_message += "\nSpecialPoint_genes {0} PID {1} whole end {2}".format(scaffold, pid, time.time())
 
@@ -398,28 +406,178 @@ def calc_gene_clonality(gdb, clonT):
             table['mm'].append(mm)
 
     return pd.DataFrame(table)
+#
+# def calc_gene_snp_density(gdb, ldb):
+#     '''
+#     Gene-level and mm-level clonality
+#     '''
+#     table = defaultdict(list)
+#
+#     for mm in sorted(ldb['mm'].unique()):
+#         db = ldb[ldb['mm'] <= mm].drop_duplicates(subset=['scaffold', 'position'], keep='last')
+#         cov = db.set_index('position')['refBase'].sort_index()
+#         if len(cov) == 0:
+#             continue
+#
+#         for i, row in gdb.iterrows():
+#             gcov = cov.loc[int(row['start']):int(row['end'])]
+#             gLen = abs(row['end'] - row['start']) + 1
+#
+#             table['gene'].append(row['gene'])
+#             table['SNPs_per_bp'].append(len(gcov) / gLen)
+#             table['mm'].append(mm)
+#
+#     return pd.DataFrame(table)
 
-def calc_gene_snp_density(gdb, ldb):
-    '''
-    Gene-level and mm-level clonality
-    '''
-    table = defaultdict(list)
 
-    for mm in sorted(ldb['mm'].unique()):
-        db = ldb[ldb['mm'] <= mm].drop_duplicates(subset=['scaffold', 'position'], keep='last')
-        cov = db.set_index('position')['refBase'].sort_index()
-        if len(cov) == 0:
+
+def count_sites(seq, k=1, codon_table=None):
+    '''
+    From a nucleotide sequence and codon table, calculate S and N sites
+    '''
+    codon_lst = convert_to_codons(seq)
+
+    if codon_table is None:
+        codon_table = default_codon_table
+    S_site = 0.0  # synonymous sites
+    N_site = 0.0  # non-synonymous sites
+    purine = ('A', 'G')
+    pyrimidine = ('T', 'C')
+    base_tuple = ('A', 'T', 'C', 'G')
+    for codon in codon_lst:
+        neighbor_codon = {'transition': [], 'transversion': []}
+        # classify neighbor codons
+        codon = codon.replace('U', 'T')
+        if codon == '---':
             continue
+        if 'N' in codon:
+            continue
+        for n, i in enumerate(codon):
+            for j in base_tuple:
+                if i == j:
+                    pass
+                elif i in purine and j in purine:
+                    codon_chars = [c for c in codon]
+                    codon_chars[n] = j
+                    this_codon = ''.join(codon_chars)
+                    neighbor_codon['transition'].append(this_codon)
+                elif i in pyrimidine and j in pyrimidine:
+                    codon_chars = [c for c in codon]
+                    codon_chars[n] = j
+                    this_codon = ''.join(codon_chars)
+                    neighbor_codon['transition'].append(this_codon)
+                else:
+                    codon_chars = [c for c in codon]
+                    codon_chars[n] = j
+                    this_codon = ''.join(codon_chars)
+                    neighbor_codon['transversion'].append(this_codon)
+        # count synonymous and non-synonymous sites
+        #codon = codon.replace('T', 'U')
+        if (codon in ['TAG', 'TAA', 'TGA']):
+            #print("STOP DETECTED")
+            continue
+        aa = codon_table.forward_table[codon]
+        this_codon_N_site = this_codon_S_site = 0
+        for neighbor in neighbor_codon['transition']:
+            if neighbor in codon_table.stop_codons:
+                this_codon_N_site += 1
+            elif codon_table.forward_table[neighbor] == aa:
+                this_codon_S_site += 1
+            else:
+                this_codon_N_site += 1
+        for neighbor in neighbor_codon['transversion']:
+            if neighbor in codon_table.stop_codons:
+                this_codon_N_site += k
+            elif codon_table.forward_table[neighbor] == aa:
+                this_codon_S_site += k
+            else:
+                this_codon_N_site += k
+        norm_const = (this_codon_N_site + this_codon_S_site)/3
+        S_site += float(this_codon_S_site) / float(norm_const)
+        N_site += float(this_codon_N_site) / float(norm_const)
+    return (S_site, N_site)
+
+def convert_to_codons(seq):
+    codons = []
+    for c in zip(*(iter(seq),) * 3):
+        co = ''.join(c)
+        assert len(co) == 3
+        codons.append(co)
+    return codons
+
+def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
+    '''
+    Count the number of SNPs in each gene, as well as N and S sites
+
+    RELIES ON HAVING gene2sequence AS A GLOBAL (needed for multiprocessing speed)
+
+    Argumnets:
+        gdb = table of genes
+        ldb = Raw cumulative snp table for a single scaffold (mm-level)
+        sdb = SNP table with N and S and I annotated
+    '''
+    pid = os.getpid()
+
+    # Merge ldb and sdb
+    xdb = pd.merge(ldb, sdb[['position', 'mutation_type', 'gene']],
+            on=['position'], how='left').reset_index(drop=True)
+
+    # Calculate counts of N and S sites
+    log_message = "\nSpecialPoint_genes {0} PID {1} SNP_counts_SiteCalc start {2}".format(scaffold, pid, time.time())
+    table = defaultdict(list)
+    for i, row in gdb.iterrows():
+        try:
+            S_site, N_site = count_sites(gene2sequence[row['gene']])
+        except:
+            S_site = np.nan
+            N_site = np.nan
+
+        table['gene'].append(row['gene'])
+        table['S_sites'].append(S_site)
+        table['N_sites'].append(N_site)
+    SiteDb = pd.DataFrame(table)
+    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts_SiteCalc end {2}".format(scaffold, pid, time.time())
+
+    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts_geneCalc start {2}".format(scaffold, pid, time.time())
+    table = defaultdict(list)
+    for mm in sorted(xdb['mm'].unique()):
+        # Filter to this mm level and set up for quick indexing
+        fdb = xdb[xdb['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last').sort_values('position').set_index('position')
 
         for i, row in gdb.iterrows():
-            gcov = cov.loc[int(row['start']):int(row['end'])]
+            # Calculate gene length
             gLen = abs(row['end'] - row['start']) + 1
 
-            table['gene'].append(row['gene'])
-            table['SNPs_per_bp'].append(len(gcov) / gLen)
-            table['mm'].append(mm)
+            # Subset to this gene
+            db = fdb.loc[int(row['start']):int(row['end'])]
 
-    return pd.DataFrame(table)
+            # Report summary stuff
+            table['mm'].append(mm)
+            table['gene'].append(row['gene'])
+            table['gene_length'].append(gLen)
+            table['total_SNPs'].append(len(db))
+
+            # Report type counts
+            for allele_count, name in zip([1, 2], ['substitution', 'biallelic']):
+                table['{0}_total'.format(name)].append(len(db[db['allele_count'] == allele_count]))
+
+                for snp_type in ['N', 'S']:
+                    table["{0}_{1}".format(name, snp_type)].append(
+                    len(db[(db['allele_count'] == allele_count) & (db['mutation_type'] == snp_type)]))
+
+    GGdb = pd.DataFrame(table).merge(SiteDb, on='gene', how='left').reset_index(drop=True)
+    log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts_geneCalc end {2}".format(scaffold, pid, time.time())
+
+    # Calculate dn/ds
+    GGdb['dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+                                GGdb['substitution_N'], GGdb['N_sites'],
+                                GGdb['substitution_S'], GGdb['S_sites'])]
+    GGdb['pNpS_bialleleics'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+                                    GGdb['biallelic_N'], GGdb['N_sites'],
+                                    GGdb['biallelic_S'], GGdb['S_sites'])]
+    GGdb['SNPs_per_bp'] = [x/y if y > 0 else np.nan for x, y in zip(GGdb['total_SNPs'], GGdb['gene_length'])]
+
+    return GGdb, log_message
 
 def Characterize_SNPs_wrapper(Ldb, gdb):
     '''
@@ -653,7 +811,7 @@ def get_gene_info(IS,  ANI_level=0):
     Gdb = IS.get('genes_table')
 
     # Load coverage, clonality, and SNPs
-    for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_density']:
+    for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_count']:
         db = IS.get(thing)
         if len(db) > 0:
             db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')

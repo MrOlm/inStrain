@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0f] - Unpushed
+- dN/dS for genes
+
 ## [1.3.0e] - 2020-05-13
 - Re-write of genes profiling section
 - Suppress warnings made during plotting

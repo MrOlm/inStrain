@@ -2898,7 +2898,7 @@ class test_strains():
         cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6 -d".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
-        call(cmd, shell=True)
+        #call(cmd, shell=True)
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
@@ -2924,14 +2924,18 @@ class test_strains():
         sAdb = sol_IS._get_attributes_file()
         eAdb = exp_IS._get_attributes_file()
 
+        # Handle name changes
+        o2n = {'genes_SNP_density':'genes_SNP_count'}
+
         for i, row in sAdb.iterrows():
             print("checking {0}".format(i))
 
             if i in ['location', 'version', 'bam_loc', 'genes_fileloc', 'window_table']:
                 continue
 
-            e = exp_IS.get(i)
             s = sol_IS.get(i)
+            if i in o2n:    i = o2n[i]
+            e = exp_IS.get(i)
 
             if i in ['scaffold_list']:
                 if not compare_lists(e, s, verbose=True, check_order=False):
@@ -2945,7 +2949,7 @@ class test_strains():
 
             elif i in ['window_table', 'raw_linkage_table', 'raw_snp_table', 'cumulative_scaffold_table',
                         'cumulative_snv_table', 'read_report', 'genes_table', 'genes_coverage',
-                        'genes_clonality', 'genes_SNP_density', 'SNP_mutation_types']:
+                        'genes_clonality', 'genes_SNP_count', 'SNP_mutation_types']:
 
                 if i in ['window_table', 'read_report']:
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
@@ -2977,9 +2981,15 @@ class test_strains():
                         del e[r]
                         del s[r]
 
-                if i in ['genes_coverage', 'genes_clonality', 'genes_SNP_density']:
+                if i in ['genes_coverage', 'genes_clonality']:
                     e = e.sort_values(['gene', 'mm']).reset_index(drop=True)
                     s = s.sort_values(['gene', 'mm']).reset_index(drop=True)
+
+                if i in ['genes_SNP_count']:
+                    e = e.sort_values(['gene', 'mm']).reset_index(drop=True)
+                    s = s.sort_values(['gene', 'mm']).reset_index(drop=True)
+
+                    e = e[list(s.columns)]
 
                 # if i in ['SNP_mutation_types']:
                 #     print(e)
@@ -2995,6 +3005,7 @@ class test_strains():
 
             else:
                 print("YOUR NOT CHECKING {0}".format(i))
+                print(s)
 
     def test17(self):
         '''
