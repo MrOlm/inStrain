@@ -29,6 +29,7 @@ setup(name='inStrain',
           'networkx',
           'h5py',
           'psutil',
-          'drep'
+          'drep',
+          'lmfit'
       ],
       zip_safe=False)

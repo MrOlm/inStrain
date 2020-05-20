@@ -158,6 +158,7 @@ class ProfileController():
 
         # Set up .fasta file
         FAdb, s2s = self.load_fasta(args)
+        s2l = {s:len(s2s[s]) for s in list(s2s.keys())}
 
         # Load dictionary of paired reads
         scaffolds = list(FAdb['scaffold'].unique())
@@ -217,6 +218,10 @@ class ProfileController():
         else:
             Sprofile.store('Rdic', Rdic, 'dictionary', 'Read pair -> mismatches')
         logging.debug("Done storing Rdic")
+
+        # Store the .fasta location
+        Sprofile.store('fasta_loc', os.path.abspath(args.fasta), 'value', 'Location of .fasta file used during profile')
+        Sprofile.store('scaffold2length', s2l, 'dictionary', 'Dictionary of scaffold 2 length')
 
         # Save
         logging.info('Storing output')
@@ -390,23 +395,28 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Write output files
         '''
         logging.debug("Writing output files now")
-        out_base = Sprofile.get_location('output') + os.path.basename(Sprofile.get('location')) + '_'
 
-        # Write the scaffold profile
-        db = Sprofile.get_nonredundant_scaffold_table()
-        db.to_csv(out_base + 'scaffold_info.tsv', index=False, sep='\t')
+        for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage']:
+            Sprofile.generate(t)
+        Sprofile.generate('read_report', **vars(args))
 
-        # Write the SNP frequencies
-        db = Sprofile.get_nonredundant_snv_table()
-        db.to_csv(out_base + 'SNVs.tsv', index=False, sep='\t')
-
-        # Write the linkage
-        db = Sprofile.get_nonredundant_linkage_table()
-        db.to_csv(out_base + 'linkage.tsv', index=False, sep='\t')
-
-        # Write the read report
-        RR = Sprofile.get('read_report')
-        inStrain.filter_reads.write_read_report(RR, out_base + 'read_report.tsv', **vars(args))
+        # out_base = Sprofile.get_location('output') + os.path.basename(Sprofile.get('location')) + '_'
+        #
+        # # Write the scaffold profile
+        # db = Sprofile.get_nonredundant_scaffold_table()
+        # db.to_csv(out_base + 'scaffold_info.tsv', index=False, sep='\t')
+        #
+        # # Write the SNP frequencies
+        # db = Sprofile.get_nonredundant_snv_table()
+        # db.to_csv(out_base + 'SNVs.tsv', index=False, sep='\t')
+        #
+        # # Write the linkage
+        # db = Sprofile.get_nonredundant_linkage_table()
+        # db.to_csv(out_base + 'linkage.tsv', index=False, sep='\t')
+        #
+        # # Write the read report
+        # RR = Sprofile.get('read_report')
+        # inStrain.filter_reads.write_read_report(RR, out_base + 'read_report.tsv', **vars(args))
 
     def filter_fasta(self, FAdb, s2p, min_reads=0):
         '''
@@ -417,9 +427,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         # Sort scaffolds based on the number of reads
         FAdb['filtered_pairs'] = FAdb['scaffold'].map(s2p)
-        FAdb.sort_values('filtered_pairs', inplace=True, ascending=False)
+        FAdb = FAdb.sort_values('filtered_pairs', ascending=False)
 
-        # Split scaffolds that are going to take more than 1 min to run
         return FAdb
 
 def load_scaff_list(list):

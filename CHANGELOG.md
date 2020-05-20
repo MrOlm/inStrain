@@ -4,7 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0f] - Unpushed
+## [1.3.0g] - Unpushed
+- Add a 5 second timeout for single thread runs
+- Store fasta_loc during profile
+- Store scaffold 2 length from profile, not from within the profiled splits
+- iRep can now be calculated
+- Replace _mm_counts_to_counts_shrunk_ with a version that preserves base order
+- Add "object_type" to IS profile objects
+- If interrupted during profile, kill all processes
+- Output tables are all made using the "generate" command of SNVprofile
+- Big changes to the actual output tables
+
+## [1.3.0f] - 2020-05-13
 - dN/dS for genes
 
 ## [1.3.0e] - 2020-05-13

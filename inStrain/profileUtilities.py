@@ -106,6 +106,7 @@ class ScaffoldSplitObject():
                 return Sprofile
         except:
             logging.error("FAILURE MergeError {0}".format(self.scaffold))
+            traceback.print_exc()
             return None
 
     def delete_self(self):
@@ -196,7 +197,7 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread
             cmds = split_cmd_queue.get(True)
         else:
             try:
-                cmds = split_cmd_queue.get_nowait()
+                cmds = split_cmd_queue.get(timeout=5)
             except:
                 return
 
@@ -218,7 +219,7 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_th
             cmd = sprofile_cmd_queue.get(True)
         else:
             try:
-                cmd = sprofile_cmd_queue.get_nowait()
+                cmd = sprofile_cmd_queue.get(timeout=5)
             except:
                 return
 
@@ -343,10 +344,15 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         # Get the splits
         received_splits = 0
         while received_splits < len(cmd_groups):
-            log = log_list.get()
-            logging.debug(log)
-            pbar.update(1)
-            received_splits += 1
+            try:
+                log = log_list.get()
+                logging.debug(log)
+                pbar.update(1)
+                received_splits += 1
+            except KeyboardInterrupt:
+                for proc in processes:
+                    proc.terminate()
+                break
 
         # Close progress bar
         pbar.close()
@@ -366,12 +372,15 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         # Get results
         received_profiles = 0
         while received_profiles < len(scaffolds):
-            Sprofile = sprofile_result_queue.get()
-            if Sprofile is not None:
-                logging.debug(Sprofile.merge_log)
-                Sprofiles.append(Sprofile)
-            pbar.update(1)
-            received_profiles += 1
+            try:
+                Sprofile = sprofile_result_queue.get()
+                if Sprofile is not None:
+                    logging.debug(Sprofile.merge_log)
+                    Sprofiles.append(Sprofile)
+                pbar.update(1)
+                received_profiles += 1
+            except KeyboardInterrupt:
+                break
 
         # Close multi-processing
         for proc in processes:
@@ -387,16 +396,20 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         # Get the splits
         received_splits = 0
         while received_splits < len(cmd_groups):
-            log = log_list.get()
-            logging.debug(log)
-            received_splits += 1
+            try:
+                log = log_list.get(timeout=5)
+                logging.debug(log)
+                received_splits += 1
+            except:
+                logging.warning("Missing splits; {0} {1}".format(cmd_groups, split_cmd_queue))
+                assert False
 
         merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue, single_thread=True)
 
         # Get results
         received_profiles = 0
         while received_profiles < len(scaffolds):
-            Sprofile = sprofile_result_queue.get()
+            Sprofile = sprofile_result_queue.get(timeout=5)
             logging.debug(Sprofile.merge_log)
             Sprofiles.append(Sprofile)
             received_profiles += 1
@@ -978,19 +991,29 @@ def _mm_counts_to_counts(MMcounts, maxMM=100):
     else:
         return counts
 
-def _mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
+def mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
     '''
-    Take mm counts and return just counts
-    THIS IS WITH THE SHRUNK DATAFRAME
+    Converts shunken mm-level items (e.g. covT) to a 1-d array
 
-    If fill_zeros is an int, at the end make sure the array is of that lengths
+    Arguments:
+        MMcounts: covT or similar object for a single scaffold
+        maxMM: The maximum mm level to be allowed into the final array
+        fill_zeros: If an int, fill 0s to make the array this length
+
+    Returns:
+        A 1-d array of counts
+
     '''
-    counts = pd.Series()
+    if fill_zeros:
+        counts = pd.Series(index=np.arange(fill_zeros))
+    else:
+        counts = pd.Series()
+
     for mm, count in [(mm, count) for mm, count in MMcounts.items() if mm <= maxMM]:
         counts = counts.add(count, fill_value=0)
 
     if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        counts = counts.fillna(0)
 
     return counts
 
@@ -1143,7 +1166,7 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
     #CLdb = _clonT_to_table(clonT)
     for mm in sorted(list(covT.keys())):
 
-        covs = _mm_counts_to_counts_shrunk(covT, mm, fill_zeros=lengt)
+        covs = mm_counts_to_counts_shrunk(covT, mm, fill_zeros=int(lengt))
 
         if len(covs) == 0:
             covs = pd.Series([0]*lengt)
@@ -1396,8 +1419,9 @@ def gen_snv_profile(Sprofiles, **kwargs):
     Sprofile = inStrain.SNVprofile.SNVprofile(location)
 
     # Add some things
+    Sprofile.store('object_type', 'profile', 'value', 'Type of SNVprofile (profile or compare)')
     Sprofile.store('bam_loc', bam_list[0], 'value', 'Location of .bam file')
-    Sprofile.store('scaffold_list', scaffold_list, 'list', '1d list of scaffolds, in same order as counts_table')
+    Sprofile.store('scaffold_list', scaffold_list, 'list', '1d list of scaffolds that were profiled')
     Sprofile.store('scaffold2length', scaffold2length, 'dictionary', 'Dictionary of scaffold 2 length')
     Sprofile.store('raw_linkage_table', pd.concat(raw_link_dbs).reset_index(drop=True),
                     'pandas', 'Raw table of linkage information')

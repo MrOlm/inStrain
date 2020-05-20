@@ -133,13 +133,13 @@ def load_log(logfile):
                 table['run_ID'].append(run_ID)
 
             # Genes reporting outside of the paralellized
-            elif 'SubPoint_genes' in line:
+            elif ('SubPoint_genes' in line) | ('SubPoint_genomeLevel' in line):
                 linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 pstring = "RAM={0};status={1};name={2}".format(
                             linewords[8], linewords[5], linewords[4])
 
-                table['log_type'].append('SubPoint_genes')
+                table['log_type'].append(linewords[3])
                 table['time'].append(epoch_time)
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
@@ -267,6 +267,16 @@ def generate_reports(Ldb, debug=False):
     name = 'Genes paralellization efficiency'
     try:
         report = _gen_genes_report(Ldb)
+        name2report[name] = report
+    except BaseException as e:
+        if debug:
+            print('Failed to make log for {0} - {1}'.format(name, str(e)))
+            traceback.print_exc()
+
+    # Make the genes report
+    name = 'Geneome level report'
+    try:
+        report = _gen_geneomelevel_report(Ldb)
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -477,6 +487,19 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None):
         elif len(db) == 1:
             start = start.strftime('%Y-%m-%d %H:%M:%S')
             report += '{0:20} started at {1} and never finished\n'.format(name, start)
+
+    return report
+
+def _gen_geneomelevel_report(Ldb, detailed=False):
+    report = ''
+
+    # Set up checkpoint log
+    ldb = Ldb[Ldb['log_type'] == 'SubPoint_genomeLevel']
+    if len(ldb) > 0:
+        for i in ['name', 'status', 'RAM']:
+            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+        report += _gen_checkpoint_report2(ldb)
+        report += '\n'
 
     return report
 

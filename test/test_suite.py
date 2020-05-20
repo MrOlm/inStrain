@@ -29,6 +29,7 @@ import inStrain.profileUtilities
 import inStrain.readComparer
 import inStrain.argumentParser
 import inStrain.logUtils
+import inStrain.irep_utilities
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', -1)
@@ -239,8 +240,6 @@ class test_plot():
         for fig in figs:
             assert os.path.getsize(fig) > 1000
 
-
-
 class test_genome_wide():
     def setUp(self):
         self.test_dir = load_random_test_dir()
@@ -256,6 +255,8 @@ class test_genome_wide():
             'N5_271_010G1_scaffold_101_extra.fasta'
         self.RC_Loc = load_data_loc() + \
             'ReadComparer_v0.8'
+        self.iRep_test_set = load_data_loc() + \
+            'test_iRep.p'
 
         self.tearDown()
 
@@ -284,6 +285,10 @@ class test_genome_wide():
         self.test4()
         self.tearDown()
 
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
     def test0(self):
         '''
         Just run the program
@@ -292,19 +297,19 @@ class test_genome_wide():
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
 
-        cmd = "inStrain genome_wide -i {0} -s {1}".format(location, self.stb)
+        cmd = "inStrain genome_wide -i {0} -s {1} -d".format(location, self.stb)
         print(cmd)
         call(cmd, shell=True)
 
         # Load output
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 4, len(files)
+        files = [f for f in files if 'genome_info' in f]
+        assert len(files) == 1, files
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert 'mm' not in db.columns
-            # print(db.head())
+            print(db.head())
         #print(IS)
 
     def test1(self):
@@ -324,8 +329,7 @@ class test_genome_wide():
 
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        files = [f for f in files if 'read_report' not in f]
+        files = [f for f in files if 'genome_info' in f]
         assert len(files) == 1, [len(files), files]
         for f in files:
             db = pd.read_csv(f, sep='\t')
@@ -338,8 +342,7 @@ class test_genome_wide():
 
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        files = [f for f in files if 'read_report' not in f]
+        files = [f for f in files if 'genome_info' in f]
         assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
@@ -352,8 +355,7 @@ class test_genome_wide():
 
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        files = [f for f in files if 'read_report' not in f]
+        files = [f for f in files if 'genome_info' in f]
         assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
@@ -367,8 +369,7 @@ class test_genome_wide():
 
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        files = [f for f in files if 'read_report' not in f]
+        files = [f for f in files if 'genome_info' in f]
         assert len(files) == 1
         for f in files:
             db = pd.read_csv(f, sep='\t')
@@ -440,6 +441,48 @@ class test_genome_wide():
             db = pd.read_csv(f, sep='\t')
             assert 'mm' in list(db.columns)
 
+    def test5(self):
+        '''
+        Test iRep methods
+        '''
+        # Load pickled test data
+        Test_sets = pickle.load( open( self.iRep_test_set, "rb" ) )
+
+        # Make sure they all work
+        for t_set in Test_sets:
+            order, length, gc, windows,  OLTwidnows, LTwidnows, raw_iRep, iRep = t_set
+
+            # Make windows into df
+            Idb = pd.DataFrame({'index':windows[0], 'coverage':windows[1]})
+            GCdb = pd.DataFrame({'index':gc[0], 'GC_content':gc[1]})
+            Idb = pd.merge(Idb, GCdb, on='index')
+
+            # Using Chris' array, filter
+            Idb = inStrain.irep_utilities._iRep_filter_windows(Idb, on='coverage')
+            Idb = inStrain.irep_utilities._iRep_gc_bias(Idb)
+
+            # Log transform
+            Idb['coverage_OLT'] = inStrain.irep_utilities._iRep_log_transform(Idb['coverage'])
+            Idb['coverage_LT'] = inStrain.irep_utilities._iRep_log_transform(Idb['corrected_coverage'])
+
+            assert len(LTwidnows[1]) == len(OLTwidnows[1])
+
+            assert len(Idb['coverage_OLT'].tolist()) == len(OLTwidnows[1])
+            for x, y in zip(Idb['coverage_OLT'].tolist(), OLTwidnows[1]):
+                if abs(x - y) > 0.0001:
+                    assert False, [x, y]
+
+            assert len(Idb['coverage_LT'].tolist()) == len(LTwidnows[1])
+            for x, y in zip(Idb['coverage_LT'].tolist(), LTwidnows[1]):
+                if abs(x - y) > 0.0001:
+                    assert False, [x, y]
+
+            # Get raw iRep values
+            r = inStrain.irep_utilities._calc_iRep(Idb, length, on='coverage_OLT')
+            i = inStrain.irep_utilities._calc_iRep(Idb, length, on='coverage_LT')
+
+            assert abs(r - raw_iRep) < 0.0001, "raw is diff! {0} {1}".format(r, raw_iRep)
+            assert abs(i - iRep) < 0.0001, print("iRep is diff! {0} {1}".format(i, iRep))
 
 class test_quickProfile():
     def setUp(self):
@@ -2241,74 +2284,74 @@ class test_strains():
         # self.setUp()
         # self.test0()
         # self.tearDown()
+
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
         #
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        self.setUp()
-        self.test10()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
-        self.test13()
-        self.tearDown()
-
-        self.setUp()
-        self.test14()
-        self.tearDown()
-
-        self.setUp()
-        self.test15()
-        self.tearDown()
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test9()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test10()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test13()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test14()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test15()
+        # self.tearDown()
 
         self.setUp(destroy=True)
         self.test16()
-        self.tearDown()
+        #self.tearDown()
 
-        self.setUp()
-        self.test17()
-        self.tearDown()
+        # self.setUp()
+        # self.test17()
+        # self.tearDown()
 
     def test0(self):
         '''
@@ -2898,29 +2941,179 @@ class test_strains():
         cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6 -d".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
-        #call(cmd, shell=True)
+        call(cmd, shell=True)
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
 
-        # Make sure the log of the new version is working
+        # Print what the output of the solutions directory looks like
+        if True:
+            s_out_files = glob.glob(exp_IS.get_location('output') + os.path.basename(
+                                    exp_IS.get('location')) + '_*')
+            print("The output has {0} tables".format(len(s_out_files)))
+            for f in s_out_files:
+                name = os.path.basename(f)
+                print("{1}\n{0}\n{1}".format(name, '-'*len(name)))
+
+                if 'read_report.tsv' in name:
+                    s = pd.read_csv(f, sep='\t', header=1)
+                else:
+                    s = pd.read_csv(f, sep='\t')
+                print(s.head())
+                print()
+
+
+        # MAKE SURE LOG IS WORKING
         assert len(glob.glob(base + '/log/*')) == 3, base
         Ldb = exp_IS.get_parsed_log()
         rdb, sys_ram = inStrain.logUtils._load_profile_logtable(Ldb)
 
         LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'merge']['scaffold'].tolist())
-        TRUE_SCAFFOLDS = set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
+        TRUE_SCAFFOLDS = \
+            set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
         assert(LOGGED_SCAFFOLDS == TRUE_SCAFFOLDS)
-        # print(len(LOGGED_SCAFFOLDS))
-        # #TRUE_SCAFFOLDS = se
-        # print(rdb)
-        # print(Ldb['log_type'].value_counts())
-        # RR = [x for x in glob.glob(base + '/log/*') if 'runtime' in x][0]
-        # for line in open(RR, 'r').readlines():
-        #     line = line.strip()
-        #     print(line)
 
-        # Check the detailed guys
+        # CHECK OUTPUT FILES
+        e_out_files = glob.glob(exp_IS.get_location('output') + os.path.basename(
+                                exp_IS.get('location')) + '_*')
+        s_out_files = glob.glob(sol_IS.get_location('output') + os.path.basename(
+                                sol_IS.get('location')) + '_*')
+
+        for s_file in s_out_files:
+            name = os.path.basename(s_file).split('v1.2.14_')[1]
+            e_file = [e for e in e_out_files if name in os.path.basename(e)]
+
+            print("checking {0}".format(name))
+
+            if len(e_file) == 1:
+                #print("Both have {0}!".format(name))
+
+                e = pd.read_csv(e_file[0], sep='\t')
+                s = pd.read_csv(s_file, sep='\t')
+
+                if name in ['linkage.tsv']:
+                    e = e.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
+
+                    # Delete random ones
+                    rand = ['r2_normalized', 'd_prime_normalized']
+                    for r in rand:
+                        del e[r]
+                        del s[r]
+
+                if name in ['SNVs.tsv']:
+                    e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
+
+                    for col in ['mutation_type', 'mutation', 'gene']:
+                        del e[col]
+
+                if name in ['scaffold_info.tsv']:
+                    e = e.sort_values(['scaffold']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold']).reset_index(drop=True)
+
+                    rand = ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']
+                    for r in rand:
+                        del e[r]
+                        del s[r]
+
+                if name in ['read_report.tsv']:
+                    e = pd.read_csv(e_file[0], sep='\t', header=1)
+                    s = pd.read_csv(s_file, sep='\t', header=1)
+
+                    e = e.sort_values(['scaffold']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold']).reset_index(drop=True)
+
+                if name in ['gene_info.tsv']:
+                    e = e.sort_values(['scaffold', 'gene']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'gene']).reset_index(drop=True)
+
+                    new_cols = list(set(e.columns) - set(s.columns))
+                    for c in new_cols:
+                        del e[c]
+
+                    del s['min_ANI']
+
+                # Re-arange column order
+                assert set(e.columns) == set(s.columns), name
+                s = s[list(e.columns)]
+
+                assert compare_dfs2(e, s, verbose=True), name
+
+            else:
+                #print("Both dont have {0}!".format(name))
+                if name in ['genomeWide_scaffold_info.tsv']:
+                    e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
+
+                    e = pd.read_csv(e_file[0], sep='\t')
+                    s = pd.read_csv(s_file, sep='\t')
+
+                    old2new = {'std_cov':'coverage_std'}
+                    removed = ['mean_clonality']
+                    for r in removed:
+                        del s[r]
+                    s = s.rename(columns=old2new)
+
+                    new_cols = list(set(e.columns) - set(s.columns))
+                    for c in new_cols:
+                        del e[c]
+
+                    e = e.sort_values(['genome']).reset_index(drop=True)
+                    s = s.sort_values(['genome']).reset_index(drop=True)
+                    assert set(e.columns) == set(s.columns), [set(e.columns) - set(s.columns)]
+
+                    # Re-order columns
+                    assert set(e.columns) == set(s.columns),\
+                            [set(e.columns) - set(s.columns)]
+                    e = e[list(s.columns)]
+                    s = s[list(s.columns)]
+
+                    changed_cols = ['coverage_std',
+                                    'rarefied_mean_microdiversity']
+                    for c in changed_cols:
+                        del e[c]
+                        del s[c]
+
+                elif name in ['genomeWide_read_report.tsv']:
+                    e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
+
+                    e = pd.read_csv(e_file[0], sep='\t')
+                    s = pd.read_csv(s_file, sep='\t')
+
+                    new_cols = list(set(e.columns) - set(s.columns))
+                    for c in new_cols:
+                        del e[c]
+
+                    removed_cols = ['unfiltered_reads', 'pass_pairing_filter', 'pass_min_mapq', 'unfiltered_singletons', 'filtered_priority_reads', 'mean_insert_distance', 'mean_pair_length', 'pass_min_insert', 'pass_max_insert', 'pass_filter_cutoff', 'mean_PID', 'mean_mistmaches', 'median_insert', 'mean_mapq_score', 'unfiltered_pairs', 'filtered_singletons', 'unfiltered_priority_reads', 'filtered_pairs']
+                    for r in removed_cols:
+                        del s[r]
+
+                    e = e.sort_values(['genome']).reset_index(drop=True)
+                    s = s.sort_values(['genome']).reset_index(drop=True)
+                    assert set(e.columns) == set(s.columns), [set(s.columns) - set(e.columns)]
+
+                elif name in ['SNP_mutation_types.tsv']:
+                    e_file = [e for e in e_out_files if 'SNVs.tsv' in os.path.basename(e)]
+
+                    e = pd.read_csv(e_file[0], sep='\t')
+                    s = pd.read_csv(s_file, sep='\t')
+
+                    e = e[~e['mutation_type'].isna()]
+                    del e['cryptic']
+
+                    e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
+
+                else:
+                    assert False, name
+
+                # Re-arange column order
+                assert set(e.columns) == set(s.columns), name
+                s = s[list(e.columns)]
+
+                assert compare_dfs2(e, s, verbose=True), name
+
+        # CHECK ATTRIBUTES
         sAdb = sol_IS._get_attributes_file()
         eAdb = exp_IS._get_attributes_file()
 
@@ -3345,14 +3538,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_filter_reads().run()
+    # test_filter_reads().run()
     test_strains().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_readcomparer().run()
-    test_special().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_readcomparer().run()
+    # test_special().run()
 
     print('everything is working swimmingly!')

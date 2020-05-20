@@ -64,14 +64,16 @@ class Controller():
             IS.store('gene2sequence', gene2sequence, 'pickle', 'Dicitonary of gene -> nucleotide sequence')
 
         # Store the output
-        out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
-        Gdb = get_gene_info(IS)
-        Gdb.to_csv(out_base + 'gene_info.tsv', index=False, sep='\t')
-
-        try:
-            name2result['SNP_mutation_types'].to_csv(out_base + 'SNP_mutation_types.tsv', index=False, sep='\t')
-        except:
-            pass
+        IS.generate('gene_info')
+        IS.generate("SNVs")
+        # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
+        # Gdb = get_gene_info(IS)
+        # Gdb.to_csv(out_base + 'gene_info.tsv', index=False, sep='\t')
+        #
+        # try:
+        #     name2result['SNP_mutation_types'].to_csv(out_base + 'SNP_mutation_types.tsv', index=False, sep='\t')
+        # except:
+        #     pass
 
     def validate_input(self, args):
         '''
@@ -122,7 +124,7 @@ def gene_profile_worker(gene_cmd_queue, gene_result_queue, single_thread=False):
             cmds = gene_cmd_queue.get(True)
         else:
             try:
-                cmds = gene_cmd_queue.get_nowait()
+                cmds = gene_cmd_queue.get(timeout=5)
             except:
                 return
 
@@ -247,7 +249,7 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
         # Get the genes
         recieved_profiles = 0
         while recieved_profiles < len(cmd_groups):
-            GPs = gene_result_queue.get()
+            GPs = gene_result_queue.get(timeout=5)
             recieved_profiles += 1
             pbar.update(1)
             for GP in GPs:
@@ -813,12 +815,15 @@ def get_gene_info(IS,  ANI_level=0):
     # Load coverage, clonality, and SNPs
     for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_count']:
         db = IS.get(thing)
-        if len(db) > 0:
-            db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
-            del db['mm']
-            Gdb = pd.merge(Gdb, db, on='gene', how='left')
-        else:
+        if db is None:
             logging.debug('Skipping {0} gene calculation; you have none'.format(thing))
+            continue
+        if len(db) == 0:
+            logging.debug('Skipping {0} gene calculation; you have none'.format(thing))
+            continue
+        db = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+        del db['mm']
+        Gdb = pd.merge(Gdb, db, on='gene', how='left')
 
     Gdb['min_ANI'] = ANI_level
 

@@ -4,6 +4,8 @@ import os
 import csv
 import sys
 import glob
+import scipy
+import psutil
 import logging
 import argparse
 import traceback
@@ -21,50 +23,294 @@ import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.profileUtilities
 import inStrain.quickProfile
+import inStrain.irep_utilities
 
-# VERSION 0.1.1
-# 10/12/19
-# Made mm work better
+class Controller():
 
-# VERSION 0.1.0
-# 10/12/19
-# Lots of little changes to make this work as a script
+    def main(self, args):
+        '''
+        The main method when run on the command line
+        '''
+        # Parse arguments
+        IS, vargs = self.validate_input(args)
 
-# VERSION 0.0.9
-# 9/27/19
-# RC now is mm-afied
+        # Load scaffold to bin and bin to length; put in IS
+        logging.debug('Loading scaffold to bin')
+        self.prepare_genome_wide(IS, vargs)
 
-# VERSION 0.0.8
-# 9/23/19
-# Fix a bug with read comparer loading
+        # Make the genome-wide information table for a profile object
+        object_type = IS.get('object_type')
+        if object_type is None:
+            logging.error("Theres no object type! This is bad! I'll assume profile")
+            object_type = 'profile'
 
-# VERSION 0.0.7
-# 8/28/19
-# Make read comparer compatible with inStrain v0.6
+        if object_type == 'profile':
+            # Generate and store the genome level info
+            GIdb = genomeLevel_from_IS(IS, **vargs)
+            IS.store('genome_level_info', GIdb, 'pandas', 'Table of genome-level information')
 
-# VERSION 0.0.6
-# 8/9/19
-# Add read comparer
+            # Store the output
+            IS.generate('genome_info')
+            IS.generate('SNVs')
 
-# VERSION 0.0.5
-# 6/5/19
-# Make the mm-afied scaffold table
+            # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
+            # GIdb.to_csv(out_base + 'genome_info.tsv', index=False, sep='\t')
 
-# VERSION 0.0.4
-# 6/4/19
-# Fixed a bug with read reports
+            # Store the SNV output
+            # IS.generate('SNVs')
 
-# VERSION 0.0.3
-# 4/30/19
-# Add expected breadth
+        # Make the genome-wide information table for a compare object
+        elif object_type == 'compare':
+            pass
+        #
+        # # Figure out output base
+        # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
+        #
+        #
+        # # Do genome info
+        # try:
+        #     gdb = genomeWideFromIS(IS, 'scaffold_info', mm_level=mm_level)
+        #     gdb.to_csv(out_base + 'genomeWide_scaffold_info.tsv', index=False, sep='\t')
+        # except:
+        #     logging.debug("GenomeWide scaffold info failed ", exc_info=1)
+        #     #traceback.print_exc()
+        #
+        # # Do read report
+        # try:
+        #     gdb = genomeWideFromIS(IS, 'read_report', mm_level=mm_level)
+        #     gdb.to_csv(out_base + 'genomeWide_read_report.tsv', index=False, sep='\t')
+        # except:
+        #     logging.debug("GenomeWide read report failed ", exc_info=1)
+        #     #traceback.print_exc()
+        #
+        # # Do read comparer
+        # try:
+        #     gdb = genomeWideFromIS(IS, 'read_compaer', mm_level=mm_level)
+        #     gdb.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
+        # except:
+        #     logging.debug("GenomeWide compare failed ", exc_info=1)
+        #     # traceback.print_exc()
 
-# VERSION 0.0.2
-# 4/29/19
-# Many edits
+    def validate_input(self, args):
+        '''
+        Validate and mess with the arguments a bit
+        '''
+        # Make sure the IS object is OK
+        assert os.path.exists(args.IS)
+        IS = inStrain.SNVprofile.SNVprofile(args.IS)
 
-# VERSION 0.0.1
-# 4/29/19
-# Created from https://biotite.berkeley.edu/j/user/mattolm/notebooks/NIH_Infants/Twins/TwinsStudy_4_typeStrainAudit_2_compareMadness_2.ipynb
+        # Set up the logger
+        log_loc = IS.get_location('log') + 'log.log'
+        inStrain.controller.setup_logger(log_loc)
+
+        # Convert argument type
+        vargs = vars(args)
+        vargs.pop('IS')
+
+        return IS, vargs
+
+    def prepare_genome_wide(self, IS, vargs):
+        '''
+        Load and store the scaffold to bin file and bin to length file
+        '''
+        stb = load_scaff2bin(vargs.get('stb'), IS)
+
+        # Make bin to length
+        stl = IS.get('scaffold2length')
+        b2l = {}
+        for scaffold, bin in stb.items():
+            if bin not in b2l:
+                b2l[bin] = 0
+            if scaffold in stl:
+                b2l[bin] += stl[scaffold]
+            else:
+                logging.error("FAILURE StbError {0} {1} no_length will not be considered as part of the genome".format(scaffold, bin))
+
+        # Store these
+        IS.store('scaffold2bin', stb, 'dictionary', 'Dictionary of scaffold 2 bin')
+        IS.store('bin2length', b2l, 'dictionary', 'Dictionary of bin 2 total length')
+
+def genomeLevel_from_IS(IS, **kwargs):
+    '''
+    Calculate genome-wide metrics based on scaffold-level info.
+
+    IS object must already have:
+        scaffold2bin
+        bin2length
+
+    Arguments:
+        IS = InStrain Profile object; must already be initialized
+
+    kwargs:
+        mm-level = If True, calculate all metrics on the mm-level
+    '''
+    logging.debug("SubPoint_genomeLevel genomeLevel_from_IS start RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    # Load necessary stuff from IS file
+    stb = IS.get('scaffold2bin')
+    b2l = IS.get('bin2length')
+    s2l = IS.get('scaffold2length')
+
+    # Calculate averaing and summing metrics from the scaffold table
+    db = IS.get('cumulative_scaffold_table')
+    gdb = _add_stb(db, stb)
+
+    # Handle mm level
+    mm_level = kwargs.get('mm_level', False)
+    if not mm_level:
+        gdb = gdb.sort_values('mm').drop_duplicates(
+                subset=['scaffold'], keep='last')\
+                .sort_values('scaffold')
+        gdb['mm'] = 1000
+
+    # Calculate genome level scaffold info
+    logging.debug("SubPoint_genomeLevel scaffold_info start RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    GSI_db = _genomeLevel_scaffold_info_v3(gdb, stb, b2l, **kwargs)
+
+    logging.debug("SubPoint_genomeLevel scaffold_info end RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    # Prepare to calculate coverage distribution metrics
+    table = defaultdict(list)
+    bin2scaffolds = calc_bin2scaffols(stb)
+    scaff2sequence = _load_scaff2sequence(IS, **kwargs)
+
+    relevant_genomes = calc_relevant_genomes(GSI_db, IS, **kwargs)
+    relevant_scaffolds = set()
+    for g in relevant_genomes:
+        for s in bin2scaffolds[g]:
+            relevant_scaffolds.add(s)
+    covT = IS.get('covT', scaffolds=relevant_scaffolds)
+
+    # Figure out total number of mms
+    if not mm_level:
+        mms = [1000]
+    else:
+        mms = calc_mms(covT)
+
+    # Calculate expensive coverage distribution metrics
+    logging.debug("SubPoint_genomeLevel coverage_info start RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    EG_db = genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes,
+                                        s2l, scaff2sequence, mms, **kwargs)
+
+    logging.debug("SubPoint_genomeLevel coverage_info end RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    # Calculate genome-level read mapping
+    rdb = IS.get('read_report')
+    rdb = rdb[rdb['scaffold'] != 'all_scaffolds']
+    rdb = _add_stb(rdb, stb)
+
+    logging.debug("SubPoint_genomeLevel read_report start RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    rdb = _genome_wide_rr(rdb, stb, **kwargs)
+
+    logging.debug("SubPoint_genomeLevel read_report end RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    # Calculate genome-level linkage metrics
+    ldb = IS.get('raw_linkage_table')
+    if not mm_level:
+        ldb = ldb.sort_values('mm').drop_duplicates(
+                subset=['scaffold', 'position_A', 'position_B'], keep='last')\
+                .sort_values(['scaffold', 'position_A', 'position_B'])
+        gdb['mm'] = 1000
+    ldb = _add_stb(ldb, stb)
+
+    logging.debug("SubPoint_genomeLevel linkage start RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
+
+    logging.debug("SubPoint_genomeLevel linkage end RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    # Merge
+    mdb = pd.merge(GSI_db, EG_db, on=['genome', 'mm'], how='outer')
+    mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
+    mdb = pd.merge(mdb, rdb, on=['genome'], how='left')
+
+    if not mm_level:
+        del mdb['mm']
+
+    logging.debug("SubPoint_genomeLevel genomeLevel_from_IS end RAM is {0}".format(
+                psutil.virtual_memory()[1]))
+
+    return mdb
+
+def _load_scaff2sequence(IS, **kwargs):
+    '''
+    Try and get scaff2sequence to GC-correct iRep. Return None if you cant
+    '''
+    if kwargs.get('fasta', None) is not None:
+        fasta_loc = kwargs.get('fasta')
+    else:
+        fasta_loc = IS.get('fasta_loc')
+
+    if fasta_loc is None:
+        logging.error("Do not have a .fasta file; will not GC correct iRep")
+        scaff2sequence = None
+    else:
+        try:
+            scaff2sequence = SeqIO.to_dict(SeqIO.parse(fasta_loc, "fasta"))
+        except:
+            logging.error("Could not load .fasta file {0}; will not GC correct iRep".format(fasta_loc))
+            scaff2sequence = None
+    return scaff2sequence
+
+def calc_relevant_genomes(GSI_db, IS, **kwargs):
+    '''
+    Depending on kwrags, determine which scaffolds should have expensive profiling done
+    '''
+    return set(GSI_db['genome'].tolist())
+
+def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
+                                scaff2sequence, mms, **kwargs):
+
+    table = defaultdict(list)
+    for genome, scaffolds in bin2scaffolds.items():
+        if genome not in relevant_genomes:
+            continue
+
+        # Sort the scaffolds
+        scaffolds = scaffolds.intersection(set(s2l.keys())) # THIS SHOULDN'T HAVE TO BE HERE!
+        scaffolds = sorted(scaffolds, key=s2l.get, reverse=True)
+
+        # Iterate for this genome
+        for mm in mms:
+
+            # Make a coverage array for this genome in it's entirety
+            covs, scaff2genome_index = generate_genome_coverage_array(covT, s2l, order=scaffolds, maxMM=mm, mask_edges=100)
+
+            # Try and get the GC_correction
+            gc_windows = None
+            if scaff2sequence is not None:
+                try:
+                    gc_windows = inStrain.irep_utilities.generate_gc_windows(scaffolds, scaff2sequence, mask_edges=100)
+                except:
+                    pass
+
+            # Calculate iRep
+            iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
+            logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
+
+            # Calculate medians and other variants
+            table['mm'].append(mm)
+            table['genome'].append(genome)
+            table['coverage_median'].append(int(np.median(covs)))
+            table['coverage_SEM'].append(scipy.stats.sem(covs))
+            table['coverage_std'].append(np.std(covs))
+            table['iRep'].append(iRep)
+            table['iRep_GC_corrected'].append(iRep_accessory['iRep_GC_corrected'])
+
+    adb = pd.DataFrame(table)
+    return adb
 
 def genomeWideFromIS(IS, thing, **kwargs):
     stb = IS.get('scaffold2bin')
@@ -240,6 +486,71 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
 
     return db
 
+def _genomeLevel_scaffold_info_v3(gdb, s2b, b2l, **kwargs):
+    '''
+    Private method for calculating genome-level scaffold info
+    '''
+    stb = s2b # This is because you also have the kwarg
+    table = defaultdict(list)
+    for mm in sorted(list(gdb['mm'].unique())):
+        # Get scaffold information at this mm
+        Odb = gdb[gdb['mm'] <= mm].sort_values('mm')\
+                .drop_duplicates(subset=['scaffold'], keep='last')
+
+        for genome, df in Odb.groupby('genome'):
+            cols = list(df.columns)
+
+            table['mm'].append(mm)
+            table['genome'].append(genome)
+
+            # Scaffolds
+            table['detected_scaffolds'].append(len(df))
+            table['true_scaffolds'].append(len([True for s, b in stb.items()
+                                                                if b == genome]))
+            table['true_length'].append(int(b2l[genome]))
+
+            # The summing columns
+            for col in ['SNPs', 'Referece_SNPs', 'BiAllelic_SNPs', 'MultiAllelic_SNPs', 'consensus_SNPs', 'population_SNPs']:
+                if col in cols:
+                    table[col].append(df[col].fillna(0).sum())
+
+            # Weighted average (over total length)
+            for col in ['breadth', 'coverage']:
+                table[col].append(sum([x * y for x, y in zip(df[col].fillna(0), df['length'])]) / b2l[genome])
+
+            # Weighted average (over detected scaffold length)
+            df['considered_length'] = [x*y for x,y in zip(
+                                        df['unmaskedBreadth'], df['length'])]
+            considered_leng = float(df['considered_length'].sum())
+
+            for col in ['mean_microdiverstiy', 'rarefied_mean_microdiversity']:
+                if col not in df.columns:
+                    continue
+                if considered_leng != 0:
+                    table[col].append(sum(x * y for x, y in zip(df[col].fillna(0), df['considered_length'])) / considered_leng)
+                else:
+                    table[col].append(np.nan)
+
+            # ANI
+            if 'consensus_SNPs' in cols:
+                if considered_leng != 0:
+                    table['conANI'].append((considered_leng - df['consensus_SNPs'].sum()) / considered_leng)
+                    table['popANI'].append((considered_leng - df['population_SNPs'].sum()) / considered_leng)
+                else:
+                    table['conANI'].append(0)
+                    table['popANI'].append(0)
+            else:
+                if considered_leng != 0:
+                    table['ANI'].append((considered_leng - df['SNPs'].sum()) / considered_leng)
+                else:
+                    table['ANI'].append(0)
+
+            # Special
+            table['unmaskedBreadth'].append(considered_leng / b2l[genome])
+            table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
+
+    db = pd.DataFrame(table)
+    return db
 
 # def _get_mm_db(obj):
 #     '''
@@ -251,19 +562,46 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
 #
 #     return db
 
-def _genome_wide_rr(gdb, stb, **kwrags):
+def _genome_wide_rr(gdb, s2b, **kwrags):
     '''
     THIS REALLY SHOULD USE SCAFFOLD LENGTH FOR A WEIGHTED AVERAGE!
     '''
+    stb = s2b
     table = defaultdict(list)
     for genome, df in gdb.groupby('genome'):
         table['genome'].append(genome)
         table['scaffolds'].append(len(df))
         for col in [c for c in list(df.columns) if c not in ['scaffold', 'genome']]:
+            if len(df[col].dropna()) == 0:
+                continue
             if col.startswith('pass') or col.startswith('unfiltered_') or col.startswith('filtered'):
-                table[col].append(df[col].sum())
+                table['reads_' + col].append(df[col].sum())
             else:
-                table[col].append(df[col].mean())
+                table['reads_' + col].append(df[col].mean())
+
+    return pd.DataFrame(table)
+
+def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
+    '''
+    From the raw_linkage_table, calculate average d' and r2 for each genome
+    '''
+    stb = s2b
+    table = defaultdict(list)
+    for mm in mms:
+        # Get scaffold information at this mm
+        Odb = ldb[ldb['mm'] <= mm].sort_values('mm')\
+                .drop_duplicates(subset=['scaffold', 'position_A', 'position_B'],
+                keep='last')
+
+        if len(Odb) == 0:
+            continue
+
+        for genome, df in Odb.groupby('genome'):
+            table['genome'].append(genome)
+            table['mm'].append(mm)
+            table['r2_mean'].append(df['r2'].mean())
+            table['d_prime_mean'].append(df['d_prime'].mean())
+            table['SNV_distance_mean'].append(df['distance'].mean())
 
     return pd.DataFrame(table)
 
@@ -451,79 +789,7 @@ def estimate_breadth(coverage):
     import numpy as np
     return (-1) * np.exp(-1 * ((0.883) * coverage)) + 1
 
-class Controller():
 
-    def main(self, args):
-        '''
-        The main method when run on the command line
-        '''
-        # Parse arguments
-        args = self.validate_input(args)
-        vargs = vars(args)
-        mm_level = vargs.get('mm_level', False)
-        IS = vargs.pop('IS')
-
-        # Read the scaffold to bin file
-        logging.debug('Loading scaffold to bin')
-        stb = load_scaff2bin(args.stb, IS)
-
-        # Make bin to length
-        try:
-            stl = IS.get('scaffold2length')
-            b2l = {}
-            for scaffold, bin in stb.items():
-                if bin not in b2l:
-                    b2l[bin] = 0
-                if scaffold in stl:
-                    b2l[bin] += stl[scaffold]
-        except:
-            logging.error('Could not make bin to length')
-            b2l = None
-
-        # Figure out output base
-        out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
-
-        # Store the scaffold to bin and bin to length file
-        IS.store('scaffold2bin', stb, 'dictionary', 'Dictionary of scaffold 2 bin')
-        IS.store('bin2length', b2l, 'dictionary', 'Dictionary of bin 2 total length')
-
-        # Do genome info
-        try:
-            gdb = genomeWideFromIS(IS, 'scaffold_info', mm_level=mm_level)
-            gdb.to_csv(out_base + 'genomeWide_scaffold_info.tsv', index=False, sep='\t')
-        except:
-            logging.debug("GenomeWide scaffold info failed ", exc_info=1)
-            #traceback.print_exc()
-
-        # Do read report
-        try:
-            gdb = genomeWideFromIS(IS, 'read_report', mm_level=mm_level)
-            gdb.to_csv(out_base + 'genomeWide_read_report.tsv', index=False, sep='\t')
-        except:
-            logging.debug("GenomeWide read report failed ", exc_info=1)
-            #traceback.print_exc()
-
-        # Do read comparer
-        try:
-            gdb = genomeWideFromIS(IS, 'read_compaer', mm_level=mm_level)
-            gdb.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
-        except:
-            logging.debug("GenomeWide compare failed ", exc_info=1)
-            # traceback.print_exc()
-
-    def validate_input(self, args):
-        '''
-        Validate and mess with the arguments a bit
-        '''
-        # Make sure the IS object is OK
-        assert os.path.exists(args.IS)
-        args.IS = inStrain.SNVprofile.SNVprofile(args.IS)
-
-        # Set up the logger
-        log_loc = args.IS.get_location('log') + 'log.log'
-        inStrain.controller.setup_logger(log_loc)
-
-        return args
 
 def _genome():
     return 'genome'
@@ -592,3 +858,68 @@ def gen_stb(fastas):
     if len(stb.keys()) == 0:
         raise Exception
     return stb
+
+def calc_bin2scaffols(stb):
+    b2s = {}
+    for scaffold, bin in stb.items():
+        if bin not in b2s:
+            b2s[bin] = set()
+        b2s[bin].add(scaffold)
+    return b2s
+
+def calc_mms(covT):
+    '''
+    Return a list of mms from scaffold to mm to cov
+    '''
+    mms = set()
+    for scaff, covt in covT.items():
+        mms = mms.union(covt.keys())
+    return sorted(list(mms))
+
+def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=0):
+    '''
+    Geneate a pandas series of coverage values indexed by genome position.
+
+    Arguments:
+        covT = The covT object (IS.get('covT')). In this case should have scaffold as well. (scaffold -> mm -> coverage array)
+        order = Order of scaffolds to use. Otherwise will just use the sorted order of s2l keys
+        s2l = Scaffold 2 length
+        maxMM = The maximum number of mms to make it into the final coverage array
+        mask_edges = Remove this much from the edge of each scaffold
+
+    Returns:
+        cov = Genome-wide array of coverage values
+        scaff2index_addition = Dictionary with the property: scaff2index_addition[scaffold] = scalar to sum to scaffold index to get genome_index
+    '''
+    arrs = []
+    tally = 0
+    scaff2index_addition = {}
+
+    if order is None:
+        order = sorted(list(s2l.keys()), key=s2l.get, reverse=True)
+
+    for scaff in order:
+        slen = s2l[scaff]
+
+        if scaff in covT:
+            cov = inStrain.profileUtilities.mm_counts_to_counts_shrunk(covT[scaff], maxMM=maxMM, fill_zeros=slen)
+        else:
+            cov = pd.Series(index=np.arange(fill_zeros))
+
+
+        if mask_edges:
+            assert len(cov) > (mask_edges * 2)
+            cov = cov[mask_edges:len(cov)-mask_edges]
+            slen = slen - (mask_edges * 2)
+
+        arrs.append(cov)
+
+        # Set the index addition
+        scaff2index_addition[scaff] = tally
+
+        # Update the tally
+        tally += slen
+
+    cov = pd.concat(arrs, verify_integrity=False, ignore_index=True).reset_index(drop=True)
+
+    return cov, scaff2index_addition

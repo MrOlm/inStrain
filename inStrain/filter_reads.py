@@ -357,6 +357,9 @@ def write_read_report(RR, location, **kwargs):
     values['min_mapq'] = kwargs.get('min_mapq', 2)
     values['pairing_filter'] = kwargs.get('pairing_filter', 'paired_only')
 
+    if location is None:
+        return values
+
     # Write header
     os.remove(location) if os.path.exists(location) else None
     f = open(location, 'a')

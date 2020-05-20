@@ -18,6 +18,7 @@ if __name__ != '__main__':
 
 import inStrain.profileUtilities
 import inStrain.logUtils
+import inStrain.filter_reads
 
 class SNVprofile:
     '''
@@ -158,6 +159,114 @@ class SNVprofile:
         else:
             logging.error('I dont know the location of {0}!'.format(name))
 
+    def generate(self, name, store=True, return_table=False, **kwargs):
+        '''
+        Generate user-facing output tables based on information stored in the IS
+        '''
+        if name == 'SNVs':
+            column_order = ['scaffold', 'position', 'position_coverage', 'allele_count',
+                            'ref_base', 'con_base', 'var_base',
+                            'ref_freq', 'con_freq', 'var_freq',
+                            'A', 'C', 'T', 'G',
+                            'gene', 'mutation', 'mutation_type', 'cryptic']
+
+            # Get the base table
+            db = self.get_nonredundant_snv_table()
+
+            # Do you have the mutation types? If so, merge in
+            mdb = self.get('SNP_mutation_types')
+            if mdb is not None:
+                mdb = mdb[['scaffold', 'position', 'mutation_type', 'mutation', 'gene']]
+                db = pd.merge(db, mdb, how='left', on=['scaffold', 'position'])
+
+            # Do you have information about coverage? If so, merge in
+            pass
+
+            db = reorder_columns(db, column_order)
+
+        elif name == 'scaffold_info':
+            column_order = ['scaffold', 'length', 'coverage', 'breadth','nucl_diversity',
+                            'coverage_median', 'coverage_std', 'coverage_SEM',
+                            'breadth_minCov', 'breadth_expected',
+                            'nucl_diversity_median',
+                            'rarefied_nucl_diversity', 'rarefied_nucl_diversity_median',
+                            'breadth_rarefied',
+                            'conANI_reference', 'popANI_reference']
+
+            db = self.get_nonredundant_scaffold_table()
+            db = reorder_columns(db, column_order)
+
+        elif name == 'linkage':
+            column_order = ['scaffold', 'position_A', 'position_B', 'distance',
+                            'r2', 'd_prime']
+            db = self.get_nonredundant_linkage_table()
+            db = reorder_columns(db, column_order)
+
+        elif name == 'gene_info':
+            column_order = ['scaffold', 'gene', 'coverage', 'breadth','nucl_diversity'
+                             'start', 'end', 'gene_length', 'direction']
+
+            Gdb = self.get('genes_table')
+
+            for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_count']:
+                db = self.get(thing)
+                if db is None:
+                    logging.debug('Skipping {0} gene calculation; you have none'.format(thing))
+                    continue
+                if len(db) == 0:
+                    logging.debug('Skipping {0} gene calculation; you have none'.format(thing))
+                    continue
+                db = db.sort_values('mm').drop_duplicates(subset=['gene'], keep='last')
+                del db['mm']
+                Gdb = pd.merge(Gdb, db, on='gene', how='left')
+
+            db = Gdb
+            db = reorder_columns(db, column_order)
+
+        elif name == 'genome_info':
+            column_order = ['genome', 'coverage', 'breadth', 'nucl_diversity',
+                            'genome_length', 'true_scaffolds', 'detected_scaffolds',
+                            'coverage_median', 'coverage_std', 'coverage_SEM',
+                            'breadth_minCov', 'breadth_expected',
+                            'nucl_diversity_rarefied',
+                            'conANI_reference', 'popANI_reference',
+                            'iRep', 'iRep_GC_corrected',
+                            'linked_SNVs', 'SNV_distance_mean', 'r2_mean','d_prime_mean',
+                            'read_pairs_mapped']
+
+            db = self.get('genome_level_info')
+            db = reorder_columns(db, column_order)
+
+        elif name == 'read_report':
+            column_order = ['scaffold', 'pass_pairing_filter', 'filter_pairs']
+
+            db = self.get('read_report')
+            values = inStrain.filter_reads.write_read_report(db, None, **kwargs)
+
+            if store:
+                base = self.get_output_base()
+                location = base + name + '.tsv'
+                os.remove() if os.path.exists(location) else None
+                f = open(location, 'a')
+                f.write("# {0}\n".format(' '.join(["{0}:{1}".format(k, v) for k, v in values.items()])))
+
+                db = reorder_columns(db, column_order)
+                db.to_csv(f, index=False, sep='\t')
+
+                f.close()
+
+            if return_table:
+                return db
+            else:
+                return
+
+        if store:
+            out_base = self.get_output_base()
+            db.to_csv(out_base + name + '.tsv', index=False, sep='\t')
+
+        if return_table:
+            return db
+
     def get_parsed_log(self, most_recent=True):
         logloc = os.path.join(self.get_location('log'), 'log.log')
         Ldb = inStrain.logUtils.load_log(logloc)
@@ -167,6 +276,10 @@ class SNVprofile:
             Ldb = inStrain.logUtils.filter_most_recent(Ldb)
 
         return Ldb
+
+    def get_output_base(self):
+        return self.get_location('output') + \
+                    os.path.basename(self.get('location')) + '_'
 
     def get_read_length(self):
         Rdb = self.get('read_report').head(1)
@@ -859,6 +972,16 @@ def convert_SNVprofile(pickle_loc):
             logging.error('I dont know how to store {0}!'.format(attr))
             print(type(getattr(oIS, attr)))
             break
+
+def reorder_columns(db, column_order):
+    '''
+    Reorder columns in db baesd on column order
+
+    Any column not in the column_order will be added to the end
+    '''
+    columns = set(db.columns)
+    return db[[c for c in column_order if c in columns] \
+                + list(columns - set(column_order))]
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser(description= """
