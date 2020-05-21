@@ -107,7 +107,7 @@ class SNVdata:
             self.snv_table.to_csv(genome + ".freq",sep='\t')#, quoting=csv.QUOTE_NONE)
             self.clonality_table.to_csv(genome + ".clonal",sep='\t')#, quoting=csv.QUOTE_NONE)
             self.r2linkage_table.to_csv(genome + ".linkage",sep='\t')#, quoting=csv.QUOTE_NONE)
-            self.read_report.to_csv(genome + ".readFiltering",sep='\t')#', quoting=csv.QUOTE_NONE)
+            self.mapping_info.to_csv(genome + ".readFiltering",sep='\t')#', quoting=csv.QUOTE_NONE)
 
             f = open(genome + ".data", 'wb')
             pickle.dump(self.__dict__, f, 2)
@@ -367,7 +367,7 @@ class SNVdata:
         subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(bam, self.positions, self.fasta_length, filter_cutoff, 3, 50, 2)
 
         # Save the read filtering report
-        self.read_report = Rdb
+        self.mapping_info = Rdb
 
         ### START SNP FINDING
 
@@ -697,7 +697,7 @@ def calc_SNV_linkage_network(read_to_snvs):
     return mm_to_snv_graph, mm_to_position_graph
 
 def _merge_tables_special(Cdb, Adb):
-    FIX_COLS = ['ANI', 'SNPs', 'unmaskedBreadth']
+    FIX_COLS = ['ANI', 'SNPs', 'breadth_minCov']
 
     # Handle edge-case where there are no SNPs
     if len(Adb) == 0:
@@ -786,7 +786,7 @@ def _clonT_to_clons(clonT, maxMM):
 def make_ANI_table(snpsCounted, basesCounted, lengt, scaff, covT,
             min_cov, Wdb):
     '''
-    Fill in the SNP table with the SNPs and unmaskedBreadth for each scaffold and mm
+    Fill in the SNP table with the SNPs and breadth_minCov for each scaffold and mm
     '''
     table = defaultdict(list)
     # fill in all SNP information
@@ -804,7 +804,7 @@ def make_ANI_table(snpsCounted, basesCounted, lengt, scaff, covT,
         table['scaffold'].append(scaff)
         table['mm'].append(mm)
         table['SNPs'].append(counted_snps)
-        #table['unmaskedBreadth'].append(counted_bases / lengt)
+        #table['breadth_minCov'].append(counted_bases / lengt)
         if counted_bases == 0:
             table['ANI'].append(0)
         else:

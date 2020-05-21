@@ -43,9 +43,9 @@ def characterize_snp(gene_index, gene_starts, seqs, gene_direction, snv_table):
                 original_sequence = original_sequence.reverse_complement()
 
             new_sequence = original_sequence.tomutable()
-            new_sequence[snp_start] = snp['varBase']
+            new_sequence[snp_start] = snp['var_base']
             if new_sequence[snp_start] == original_sequence[snp_start]:
-                new_sequence[snp_start] = snp['conBase']
+                new_sequence[snp_start] = snp['con_base']
             new_sequence = new_sequence.toseq()
 
             if gene_direction[gene] == '-1':

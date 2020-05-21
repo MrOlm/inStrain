@@ -226,7 +226,7 @@ There will always be a file titled "attributes.tsv". This describes some basic i
   covT	/home/mattolm/Bio_scripts/TestingHouse/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam.v6.IS/raw_data/covT.hd5	special	Scaffold -> mm -> position based coverage
   snpsCounted	/home/mattolm/Bio_scripts/TestingHouse/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam.v6.IS/raw_data/snpsCounted.hd5	special	Scaffold -> mm -> position based True/False on if a SNPs is there
   clonT	/home/mattolm/Bio_scripts/TestingHouse/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam.v6.IS/raw_data/clonT.hd5	special	Scaffold -> mm -> position based clonality
-  read_report	/home/mattolm/Bio_scripts/TestingHouse/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam.v6.IS/raw_data/read_report.csv.gz	pandas	Report on reads
+  mapping_info	/home/mattolm/Bio_scripts/TestingHouse/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam.v6.IS/raw_data/mapping_info.csv.gz	pandas	Report on reads
 
 This is what the columns correspond to:
 
@@ -278,7 +278,7 @@ Behind the scenes, inStrain actually calculates pretty much all metrics for ever
 
 For most of the output that inStrain makes in the output folder, it removes the "mm" column and just gives the results for the maximum number of mismatches. However, it's often helpful to explore other mismatches levels, to see how parameters vary with more or less stringent mappings. Much of the data stored in "read_data" is on the mismatch level. Here's an example of what the looks like (this is the cumulative_scaffold_table)::
 
-  ,scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,unmaskedBreadth,SNPs,expected_breadth,ANI,mm
+  ,scaffold,length,breadth,coverage,coverage_median,coverage_std,bases_w_0_coverage,mean_clonality,median_clonality,unmaskedBreadth,SNPs,breadth_expected,ANI,mm
   0,N5_271_010G1_scaffold_102,1144,0.9353146853146853,5.106643356643357,5,2.932067325774674,74,1.0,1.0,0.6145104895104895,0,0.9889923642060382,1.0,0
   1,N5_271_010G1_scaffold_102,1144,0.9353146853146853,6.421328671328672,6,4.005996333777764,74,0.9992001028104149,1.0,0.6748251748251748,0,0.9965522492489882,1.0,1
   2,N5_271_010G1_scaffold_102,1144,0.9423076923076923,7.3627622377622375,7,4.2747074564903285,66,0.9993874800638958,1.0,0.7928321678321678,0,0.998498542620078,1.0,2

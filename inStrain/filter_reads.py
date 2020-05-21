@@ -27,7 +27,7 @@ class Controller():
         vargs = vars(args)
         del vargs['bam']
 
-        detailed_report = vargs.get('deatiled_read_report', False)
+        detailed_report = vargs.get('deatiled_mapping_info', False)
         generate_sam = vargs.get('generate_sam', False)
         out_folder = vargs.get('output', False)
 
@@ -59,11 +59,11 @@ class Controller():
         '''
         assert os.path.isdir(out_folder)
 
-        RR_loc = os.path.join(out_folder, 'read_report.csv')
-        write_read_report(RR, RR_loc, **kwargs)
+        RR_loc = os.path.join(out_folder, 'mapping_info.csv')
+        write_mapping_info(RR, RR_loc, **kwargs)
 
         if dRR is not None:
-            RR_loc = os.path.join(out_folder, 'deatiled_read_report.csv')
+            RR_loc = os.path.join(out_folder, 'deatiled_mapping_info.csv')
             dRR.to_csv(RR_loc, index=False, sep='\t')
 
 def load_paired_reads2(bam, scaffolds, **kwargs):
@@ -78,7 +78,7 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
         RR_detailed: A detailed read report
     '''
     # Parse the kwargs
-    detailed_report = kwargs.get('deatiled_read_report', False)
+    detailed_report = kwargs.get('deatiled_mapping_info', False)
 
     # Get the pairs
     scaff2pair2info = get_paired_reads_multi2(bam, scaffolds, **kwargs)
@@ -98,7 +98,7 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
         **kwargs)
 
     if detailed_report:
-        dRR = make_detailed_read_report(scaff2pair2info, pairTOinfo=pair2info, version=2)
+        dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
         return pair2infoF, RR, dRR
 
     else:
@@ -198,7 +198,7 @@ def _merge_info(i1, i2):
             -1,
             -1], dtype="int64")
 
-def make_detailed_read_report(scaff2pair2info, pairTOinfo=dict(), version=2):
+def make_detailed_mapping_info(scaff2pair2info, pairTOinfo=dict(), version=2):
     '''
     Make a detailed pandas dataframe from pair2info
     '''
@@ -268,7 +268,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
     '''
     assert type(kwargs.get('priority_reads', 'none')) != type(set())
     priority_reads = priority_reads_set
-    profile_scaffolds = kwargs.get('scaffold_level_read_report', None)
+    profile_scaffolds = kwargs.get('scaffold_level_mapping_info', None)
 
     #item2order
     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
@@ -348,7 +348,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
 
     return pd.concat([Adb, Sdb]).reset_index(drop=True)
 
-def write_read_report(RR, location, **kwargs):
+def write_mapping_info(RR, location, **kwargs):
     # Get header materials
     values = {}
     values['filter_cutoff'] = kwargs.get('filter_cutoff', 0.97)
@@ -539,7 +539,7 @@ def get_paired_reads2(bam, scaff):
 
     return pair2info
 
-def read_report_wrapper(args, FAdb):
+def mapping_info_wrapper(args, FAdb):
     # Get paired reads
     scaffolds = list(FAdb['scaffold'].tolist())
     scaff2pair2info, scaff2total = get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
@@ -548,4 +548,4 @@ def read_report_wrapper(args, FAdb):
     RR = makeFilterReport(scaff2pair2info, scaff2total, **vars(args))
 
     # Save report
-    write_read_report(RR, args.read_report, **vars(args))
+    write_mapping_info(RR, args.mapping_info, **vars(args))

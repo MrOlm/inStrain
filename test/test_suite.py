@@ -34,6 +34,74 @@ import inStrain.irep_utilities
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', -1)
 
+# Name translations going from version 1.2 to 1.3
+twelve2thirteen = {
+"baseCoverage":"position_coverage",
+"refBase":"ref_base",
+"conBase":'con_base',
+"varBase":'var_base',
+"varFreq":"var_freq",
+"conFreq":"con_freq",
+'refFreq':'ref_freq',
+'coverage_median':'coverage_median',
+'std_cov':'coverage_std',
+'microdiversity':'nucl_diversity',
+'mean_microdiversity':'nucl_diversity',
+'median_microdiversity':'nucl_diversity_median',
+'masked_breadth':'breadth_minCov',
+'unmaskedBreadth':'breadth_minCov',
+'rarefied_breadth':'breadth_rarefied',
+'expected_breadth':'breadth_expected',
+'rarefied_mean_microdiversity':'nucl_diversity_rarefied',
+'rarefied_median_microdiversity':'nucl_diversity_rarefied_median',
+'median_cov':'coverage_median',
+'Reference_SNPs':'SNS_count',
+'conANI':'conANI_reference',
+'popANI':'popANI_reference',
+'SNPs':'divergent_site_count',
+'true_length':'length',
+'total_SNPs':'divergent_site_count',
+'population_SNPs':'population_divergent_sites',
+'consensus_SNPs':'consensus_divergent_sites',
+'filtered_pairs':'filtered_read_pair_count',
+'SNPs':'divergent_site_count',
+'SNS_S_count':''
+}
+
+# Removed from version 1.3
+del_thirteen = {'bases_w_0_coverage',
+                'mean_clonality',
+                'median_clonality',
+                'BiAllelic_SNPs',
+                'SNPs_per_bp',
+                'MultiAllelic_SNPs',
+                'clonality',
+                'min_ANI'
+                }
+
+new_thirteen = {'linked_SNV_count',
+                'SNV_distance_mean',
+                'coverage_SEM',
+                'r2_mean',
+                'iRep_GC_corrected',
+                'iRep',
+                'd_prime_mean',
+                'coverage_SEM',
+                'SNV_count',
+                'SNS_S_count',
+                'S_sites',
+                'SNV_N_count',
+                'SNS_N_count',
+                'N_sites',
+                'dNdS_substitutions',
+                'SNV_S_count',
+                'pNpS_variants',
+                'gene_length'
+                #'SNS_count'
+                }
+# Other change
+# read_report -> mapping_info
+
 def load_data_loc():
     return os.path.join(str(os.getcwd()), \
         'test_data/')
@@ -1815,16 +1883,16 @@ class test_readcomparer():
         S = inStrain.SNVprofile.SNVprofile(self.IS)
         db = S.get('cumulative_snv_table')
 
-        db.at['refBase', 0] = np.nan
-        db.at['conBase', 0] = np.nan
-        db.at['refBase', 1] = 'W'
-        db.at['conBase', 1] = 'Y'
+        db.at['ref_base', 0] = np.nan
+        db.at['con_base', 0] = np.nan
+        db.at['ref_base', 1] = 'W'
+        db.at['con_base', 1] = 'Y'
 
-        db['conBase'] = [x if x in P2C else 'X' for x in db['conBase']]
-        db['refBase'] = [x if x in P2C else 'X' for x in db['conBase']]
+        db['con_base'] = [x if x in P2C else 'X' for x in db['con_base']]
+        db['ref_base'] = [x if x in P2C else 'X' for x in db['con_base']]
 
-        db['conBase'] = db['conBase'].map(P2C).astype(int)
-        db['refBase'] = db['refBase'].map(P2C).astype(int)
+        db['con_base'] = db['con_base'].map(P2C).astype(int)
+        db['ref_base'] = db['ref_base'].map(P2C).astype(int)
 
     def test4(self):
         '''
@@ -2120,10 +2188,10 @@ class test_readcomparer():
 
         # Make a consensus SNP in table1
         table['position'].append(1)
-        table['conBase'].append('A')
-        table['refBase'].append('C')
-        table['varBase'].append('A')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('A')
+        table['ref_base'].append('C')
+        table['var_base'].append('A')
+        table['position_coverage'].append(100)
         table['A'].append(100)
         table['C'].append(0)
         table['G'].append(0)
@@ -2133,10 +2201,10 @@ class test_readcomparer():
 
         # Make a population SNP in table1
         table['position'].append(2)
-        table['conBase'].append('A')
-        table['refBase'].append('C')
-        table['varBase'].append('C')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('A')
+        table['ref_base'].append('C')
+        table['var_base'].append('C')
+        table['position_coverage'].append(100)
         table['A'].append(60)
         table['C'].append(40)
         table['G'].append(0)
@@ -2159,10 +2227,10 @@ class test_readcomparer():
 
         # Make a consensus SNP in table1
         table['position'].append(1)
-        table['conBase'].append('T')
-        table['refBase'].append('C')
-        table['varBase'].append('T')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('T')
+        table['ref_base'].append('C')
+        table['var_base'].append('T')
+        table['position_coverage'].append(100)
         table['A'].append(0)
         table['C'].append(0)
         table['G'].append(0)
@@ -2172,10 +2240,10 @@ class test_readcomparer():
 
         # Make a population SNP in table1
         table['position'].append(2)
-        table['conBase'].append('T')
-        table['refBase'].append('C')
-        table['varBase'].append('G')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('T')
+        table['ref_base'].append('C')
+        table['var_base'].append('G')
+        table['position_coverage'].append(100)
         table['A'].append(0)
         table['C'].append(0)
         table['G'].append(40)
@@ -2193,10 +2261,10 @@ class test_readcomparer():
         table = defaultdict(list)
 
         table['position'].append(1)
-        table['conBase'].append('A')
-        table['refBase'].append('C')
-        table['varBase'].append('A')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('A')
+        table['ref_base'].append('C')
+        table['var_base'].append('A')
+        table['position_coverage'].append(100)
         table['A'].append(80)
         table['C'].append(20)
         table['G'].append(0)
@@ -2206,10 +2274,10 @@ class test_readcomparer():
 
         # Make a population SNP in table1
         table['position'].append(2)
-        table['conBase'].append('G')
-        table['refBase'].append('C')
-        table['varBase'].append('C')
-        table['baseCoverage'].append(100)
+        table['con_base'].append('G')
+        table['ref_base'].append('C')
+        table['var_base'].append('C')
+        table['position_coverage'].append(100)
         table['A'].append(0)
         table['C'].append(40)
         table['G'].append(60)
@@ -2345,7 +2413,7 @@ class test_strains():
         # self.test15()
         # self.tearDown()
 
-        self.setUp(destroy=True)
+        self.setUp(destroy=False)
         self.test16()
         #self.tearDown()
 
@@ -2385,7 +2453,7 @@ class test_strains():
 
         # Parse CCs dumb SNV table
         CPdb = CC_object.snv_table
-        CPdb['varBase'] = [s.split(':')[1] for s in CPdb['SNV']]
+        CPdb['var_base'] = [s.split(':')[1] for s in CPdb['SNV']]
         CPdb['loc'] = [int(s.split(':')[0].split('_')[-1]) for s in CPdb['SNV']]
         CPdb['scaff'] = ['_'.join(s.split(':')[0].split('_')[:-1]) for s in CPdb['SNV']]
         CPdb = CPdb.drop_duplicates(subset=['scaff','loc'])
@@ -2855,7 +2923,7 @@ class test_strains():
                 if mm <= row['mm']:
                     if row['position'] in covs:
                         cov += covs[row['position']]
-            assert row['baseCoverage'] == cov, [cov, row['baseCoverage'], row]
+            assert row['position_coverage'] == cov, [cov, row['position_coverage'], row]
 
     def test14(self):
         '''
@@ -2941,7 +3009,7 @@ class test_strains():
         cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6 -d".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
-        call(cmd, shell=True)
+        #call(cmd, shell=True)
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
@@ -2955,7 +3023,7 @@ class test_strains():
                 name = os.path.basename(f)
                 print("{1}\n{0}\n{1}".format(name, '-'*len(name)))
 
-                if 'read_report.tsv' in name:
+                if 'mapping_info.tsv' in name:
                     s = pd.read_csv(f, sep='\t', header=1)
                 else:
                     s = pd.read_csv(f, sep='\t')
@@ -2989,7 +3057,7 @@ class test_strains():
                 #print("Both have {0}!".format(name))
 
                 e = pd.read_csv(e_file[0], sep='\t')
-                s = pd.read_csv(s_file, sep='\t')
+                s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)
 
                 if name in ['linkage.tsv']:
                     e = e.sort_values(['scaffold', 'position_A', 'position_B']).reset_index(drop=True)
@@ -3012,10 +3080,21 @@ class test_strains():
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
 
-                    rand = ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']
+                    # TRANSLATE THE OLD VERSION
+                    s = s.rename(columns=twelve2thirteen)
+                    for r in del_thirteen:
+                        if r in s.columns:
+                            del s[r]
+                    for r in new_thirteen:
+                        if r in e.columns:
+                            del e[r]
+
+                    rand = ['nucl_diversity_rarefied', 'nucl_diversity_rarefied_median']
                     for r in rand:
-                        del e[r]
-                        del s[r]
+                        if r in e.columns:
+                            del e[r]
+                        if r in s.columns:
+                            del s[r]
 
                 if name in ['read_report.tsv']:
                     e = pd.read_csv(e_file[0], sep='\t', header=1)
@@ -3028,48 +3107,73 @@ class test_strains():
                     e = e.sort_values(['scaffold', 'gene']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'gene']).reset_index(drop=True)
 
-                    new_cols = list(set(e.columns) - set(s.columns))
-                    for c in new_cols:
-                        del e[c]
+                    # TRANSLATE THE OLD VERSION
+                    s = s.rename(columns=twelve2thirteen)
+                    for r in del_thirteen:
+                        if r in s.columns:
+                            del s[r]
+                    for r in new_thirteen:
+                        if r in e.columns:
+                            del e[r]
 
-                    del s['min_ANI']
+                    rand = ['SNS_count', 'divergent_site_count']
+                    for r in rand:
+                        if r in e.columns:
+                            del e[r]
+                        if r in s.columns:
+                            del s[r]
 
                 # Re-arange column order
-                assert set(e.columns) == set(s.columns), name
+                assert set(e.columns) == set(s.columns),\
+                    [name,
+                     set(e.columns) - set(s.columns),\
+                     set(s.columns) - set(e.columns)]
                 s = s[list(e.columns)]
+                e = e[list(e.columns)]
 
                 assert compare_dfs2(e, s, verbose=True), name
 
             else:
                 #print("Both dont have {0}!".format(name))
-                if name in ['genomeWide_scaffold_info.tsv']:
+                if name in ['read_report.tsv']:
+                    e_file = [e for e in e_out_files if 'mapping_info.tsv' in os.path.basename(e)]
+
+                    e = pd.read_csv(e_file[0], sep='\t', header=1)
+                    s = pd.read_csv(s_file, sep='\t', header=1)
+
+                    e = e.sort_values(['scaffold']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold']).reset_index(drop=True)
+
+                elif name in ['genomeWide_scaffold_info.tsv']:
                     e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
 
                     e = pd.read_csv(e_file[0], sep='\t')
-                    s = pd.read_csv(s_file, sep='\t')
+                    s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)
 
-                    old2new = {'std_cov':'coverage_std'}
-                    removed = ['mean_clonality']
-                    for r in removed:
-                        del s[r]
-                    s = s.rename(columns=old2new)
+                    for r in del_thirteen:
+                        if r in s.columns:
+                            del s[r]
+                    s = s.rename(columns=twelve2thirteen)
 
-                    new_cols = list(set(e.columns) - set(s.columns))
-                    for c in new_cols:
-                        del e[c]
+                    NEW_HERE = {'coverage_median', 'SNV_count', 'SNS_count',
+                                'nucl_diversity', 'filtered_read_pair_count'}
+                    for c in new_thirteen.union(NEW_HERE):
+                        if c in e.columns:
+                            del e[c]
 
                     e = e.sort_values(['genome']).reset_index(drop=True)
                     s = s.sort_values(['genome']).reset_index(drop=True)
-                    assert set(e.columns) == set(s.columns), [set(e.columns) - set(s.columns)]
 
                     # Re-order columns
                     assert set(e.columns) == set(s.columns),\
-                            [set(e.columns) - set(s.columns)]
+                        [set(e.columns) - set(s.columns),\
+                         set(s.columns) - set(e.columns)]
+
                     e = e[list(s.columns)]
                     s = s[list(s.columns)]
 
                     changed_cols = ['coverage_std',
-                                    'rarefied_mean_microdiversity']
+                                    'nucl_diversity_rarefied']
                     for c in changed_cols:
                         del e[c]
                         del s[c]
@@ -3078,15 +3182,25 @@ class test_strains():
                     e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
 
                     e = pd.read_csv(e_file[0], sep='\t')
-                    s = pd.read_csv(s_file, sep='\t')
+                    s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)
+
+                    # TRANSLATE THE OLD VERSION
+                    s = s.rename(columns=twelve2thirteen)
+                    for r in del_thirteen:
+                        if r in s.columns:
+                            del s[r]
+                    for r in new_thirteen:
+                        if r in e.columns:
+                            del e[r]
 
                     new_cols = list(set(e.columns) - set(s.columns))
                     for c in new_cols:
                         del e[c]
 
-                    removed_cols = ['unfiltered_reads', 'pass_pairing_filter', 'pass_min_mapq', 'unfiltered_singletons', 'filtered_priority_reads', 'mean_insert_distance', 'mean_pair_length', 'pass_min_insert', 'pass_max_insert', 'pass_filter_cutoff', 'mean_PID', 'mean_mistmaches', 'median_insert', 'mean_mapq_score', 'unfiltered_pairs', 'filtered_singletons', 'unfiltered_priority_reads', 'filtered_pairs']
+                    removed_cols = ['unfiltered_reads', 'pass_pairing_filter', 'pass_min_mapq', 'unfiltered_singletons', 'filtered_priority_reads', 'mean_insert_distance', 'mean_pair_length', 'pass_min_insert', 'pass_max_insert', 'pass_filter_cutoff', 'mean_PID', 'mean_mistmaches', 'median_insert', 'mean_mapq_score', 'unfiltered_pairs', 'filtered_singletons', 'unfiltered_priority_reads', 'filtered_pairs', 'scaffolds']
                     for r in removed_cols:
-                        del s[r]
+                        if r in s.columns:
+                            del s[r]
 
                     e = e.sort_values(['genome']).reset_index(drop=True)
                     s = s.sort_values(['genome']).reset_index(drop=True)
@@ -3096,7 +3210,7 @@ class test_strains():
                     e_file = [e for e in e_out_files if 'SNVs.tsv' in os.path.basename(e)]
 
                     e = pd.read_csv(e_file[0], sep='\t')
-                    s = pd.read_csv(s_file, sep='\t')
+                    s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)
 
                     e = e[~e['mutation_type'].isna()]
                     del e['cryptic']
@@ -3108,7 +3222,11 @@ class test_strains():
                     assert False, name
 
                 # Re-arange column order
-                assert set(e.columns) == set(s.columns), name
+                assert set(e.columns) == set(s.columns),\
+                    [name,
+                     set(e.columns) - set(s.columns),\
+                     set(s.columns) - set(e.columns)]
+
                 s = s[list(e.columns)]
 
                 assert compare_dfs2(e, s, verbose=True), name
@@ -3118,7 +3236,7 @@ class test_strains():
         eAdb = exp_IS._get_attributes_file()
 
         # Handle name changes
-        o2n = {'genes_SNP_density':'genes_SNP_count'}
+        o2n = {'genes_SNP_density':'genes_SNP_count', 'read_report':'mapping_info'}
 
         for i, row in sAdb.iterrows():
             print("checking {0}".format(i))
@@ -3141,12 +3259,22 @@ class test_strains():
                 assert compare_dicts(e, s, verbose=True), i
 
             elif i in ['window_table', 'raw_linkage_table', 'raw_snp_table', 'cumulative_scaffold_table',
-                        'cumulative_snv_table', 'read_report', 'genes_table', 'genes_coverage',
+                        'cumulative_snv_table', 'mapping_info', 'genes_table', 'genes_coverage',
                         'genes_clonality', 'genes_SNP_count', 'SNP_mutation_types']:
 
-                if i in ['window_table', 'read_report']:
+                # TRANSLATE THE OLD VERSION
+                s = s.rename(columns=twelve2thirteen)
+                for r in del_thirteen:
+                    if r in s.columns:
+                        del s[r]
+                for r in new_thirteen:
+                    if r in e.columns:
+                        del e[r]
+
+                if i in ['window_table', 'mapping_info']:
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
+                    e = e.rename(columns={'filtered_pairs':'filtered_read_pair_count'})
 
                 if i in ['raw_linkage_table']:
                     continue
@@ -3169,10 +3297,12 @@ class test_strains():
                     s = s.sort_values(['scaffold', 'mm']).reset_index(drop=True)
 
                     # Delete random ones
-                    rand = ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']
+                    rand = ['nucl_diversity_rarefied', 'nucl_diversity_rarefied_median']
                     for r in rand:
-                        del e[r]
-                        del s[r]
+                        if r in e.columns:
+                            del e[r]
+                        if r in s.columns:
+                            del s[r]
 
                 if i in ['genes_coverage', 'genes_clonality']:
                     e = e.sort_values(['gene', 'mm']).reset_index(drop=True)
@@ -3184,9 +3314,13 @@ class test_strains():
 
                     e = e[list(s.columns)]
 
-                # if i in ['SNP_mutation_types']:
-                #     print(e)
-                #     print(i)
+                # Re-arange column order
+                assert set(e.columns) == set(s.columns),\
+                    [i,
+                     set(e.columns) - set(s.columns),\
+                     set(s.columns) - set(e.columns)]
+
+                s = s[list(e.columns)]
 
                 assert compare_dfs2(e, s, verbose=True), i
 
@@ -3276,7 +3410,7 @@ class test_strains():
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
         d = d.sort_values('mm')
-        for thing in ['unmaskedBreadth', 'coverage', 'median_cov']:
+        for thing in ['unmaskedBreadth', 'coverage', 'coverage_median']:
             assert d[thing].tolist() == sorted(d[thing].tolist()), d
 
         clons = [1-c for c in d['mean_clonality']]

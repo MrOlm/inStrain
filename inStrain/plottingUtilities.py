@@ -105,7 +105,7 @@ def load_windowed_metrics(scaffolds, s2l, rLen, metrics=None, window_len=None, A
                         raw_linkage_table=False, cumulative_snv_table=False):
 
     if metrics is None:
-        metrics = ['coverage', 'microdiversity', 'linkage', 'snp_density']
+        metrics = ['coverage', 'nucl_diversity', 'linkage', 'snp_density']
 
     if type(metrics) != type([]):
         print("Metrics must be a list")
@@ -150,12 +150,12 @@ def load_windowed_metrics(scaffolds, s2l, rLen, metrics=None, window_len=None, A
 #         cdb = load_windowed_coverage_or_clonality(IS, 'clonality', scaffolds, window_len, mms, ANI_levels, s2l)
 #         cdb['metric'] = 'clonality'
 #         dbs.append(cdb)
-    if 'microdiversity' in metrics:
+    if 'nucl_diversity' in metrics:
         if clonTs == False:
             logging.error("need clonTs for microdiversity")
             raise Exception
-        cdb = load_windowed_coverage_or_clonality('microdiversity', clonTs, scaffolds, window_len, mms, ANI_levels, s2l)
-        cdb['metric'] = 'microdiversity'
+        cdb = load_windowed_coverage_or_clonality('nucl_diversity', clonTs, scaffolds, window_len, mms, ANI_levels, s2l)
+        cdb['metric'] = 'nucl_diversity'
         dbs.append(cdb)
     if 'linkage' in metrics:
         if raw_linkage_table is False:
@@ -210,7 +210,7 @@ def load_windowed_coverage_or_clonality(thing, covTs, scaffolds, window_len, mms
     '''
     if thing == 'coverage':
         item = 'covT'
-    elif thing == 'microdiversity':
+    elif thing == 'nucl_diversity':
         item = 'clonT'
     else:
         print("idk what {0} is".format(thing))
@@ -324,7 +324,7 @@ def load_windowed_SNP_density(Ldb, scaffolds, window_len, mms, ANI_levels, s2l):
 
         for mm, ani in zip(mms, ANI_levels):
             db = ldb[ldb['mm'] <= int(mm)].drop_duplicates(subset=['scaffold', 'position'], keep='last')
-            cov = db.set_index('position')['refBase'].sort_index()
+            cov = db.set_index('position')['ref_base'].sort_index()
 
             db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold], full_len='count')
             db['scaffold'] = scaffold
@@ -396,7 +396,7 @@ def _get_mm(IS, ANI, rLen = None):
 
     if rLen == None:
         rLen = IS.get_read_length()
-        #rLen = IS.get('read_report')['mean_pair_length'].tolist()[0]
+        #rLen = IS.get('mapping_info')['mean_pair_length'].tolist()[0]
     mm = int(round((rLen - (rLen * ANI))))
     return mm
 
@@ -593,7 +593,7 @@ def genomeWide_microdiveristy_metrics_plot(Wdb, breaks, title=''):
         ax[0] = plt.gca()
 
     i = 0
-    for metric in ['linkage', 'snp_density', 'coverage', 'microdiversity']:
+    for metric in ['linkage', 'snp_density', 'coverage', 'nucl_diversity']:
     #for metric, wdb in Wdb.groupby('metric'):
         if metric not in set(Wdb['metric'].tolist()):
             continue
@@ -668,24 +668,24 @@ def prepare_read_ani_dist_plot(IS):
         for genome, df in Odb.groupby('genome'):
             table['mm'].append(mm)
             table['genome'].append(genome)
-            table['true_length'].append(int(b2l[genome]))
+            table['length'].append(int(b2l[genome]))
 
             for col in ['coverage']:
                 table[col].append(sum(x * y for x, y in zip(df[col], df['length'])) / b2l[genome])
     db = pd.DataFrame(table)
 
     # Add the number of read-pairs
-    #readLen = int(IS.get('read_report')['mean_pair_length'].tolist()[0])
+    #readLen = int(IS.get('mapping_info')['mean_pair_length'].tolist()[0])
     readLen = int(IS.get_read_length())
     db['read_length'] = readLen
     db['mm'] = db['mm'].astype(int)
-    db['read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['true_length'])]
+    db['read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
     db['ANI_level'] = [(readLen - mm)/readLen for mm in db['mm']]
 
     return db
 
 def major_allele_freq_plot(db, title=''):
-    db['major_allele_freq'] = [max(x, y) for x, y in zip(db['varFreq'], db['refFreq'])]
+    db['major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
     sns.distplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False)
 
     plt.xlim(0.5, 1)
@@ -782,7 +782,7 @@ def scaffold_inspection_plot(Wdb, breaks, midpoints, title=''):
         ax[0] = plt.gca()
 
     i = 0
-    for metric in ['linkage', 'snp_density', 'coverage', 'microdiversity']:
+    for metric in ['linkage', 'snp_density', 'coverage', 'nucl_diversity']:
     #for metric, wdb in Wdb.groupby('metric'):
         if metric not in set(Wdb['metric'].tolist()):
             continue
@@ -886,7 +886,7 @@ def calc_link_type(row, k2t):
         return np.nan
 
 def gene_histogram_plot(db, title=''):
-    COLS = ['coverage', 'microdiversity', 'SNPs_per_bp']
+    COLS = ['coverage', 'nucl_diversity', 'SNPs_per_bp']
 
      # Get set up for multiple rows
     i = len(set(db.columns).intersection(set(COLS)))
@@ -1315,7 +1315,7 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
 
         # Add the number of read-pairs
-        #readLen = int(IS.get('read_report')['mean_pair_length'].tolist()[0])
+        #readLen = int(IS.get('mapping_info')['mean_pair_length'].tolist()[0])
         readLen = int(IS.get_read_length())
         Mdb['read_length'] = readLen
         Mdb['mm'] = Mdb['mm'].astype(int)
@@ -1513,7 +1513,7 @@ def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         # Prepare
-        Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'read_report', mm_level=True)
+        Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'mapping_info', mm_level=True)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1646,7 +1646,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
         stb = IS.get('scaffold2bin')
         Gdb = inStrain.genomeUtilities._add_stb(db, stb)
         if 'clonality' in Gdb.columns:
-            Gdb['microdiversity'] = 1 - Gdb['clonality']
+            Gdb['nucl_diversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0
     except:
         logging.error("Skipping plot 9 - you don't have all required information. You need to run inStrain profile_genes first")

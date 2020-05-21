@@ -15,7 +15,7 @@ This gives basic information about the scaffolds in your sample at the highest a
 
 .. csv-table:: scaffold_info.tsv
 
-  scaffold,length,breadth,coverage,median_cov,std_cov,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,expected_breadth,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,conANI,popANI
+  scaffold,length,breadth,coverage,coverage_median,coverage_std,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,breadth_expected,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,conANI,popANI
   S3_003_000X1_scaffold_21039,1049,0.9609151572926596,7.778836987607247,9,3.6242339424115295,41,0.9984115827692688,1.0,0.0015884172307313313,0.0,0.7836034318398475,0.9989601856174312,1,0,1,0,0,0,1.0,1.0
   S3_003_000X1_scaffold_21063,1048,0.3721374045801527,0.6698473282442748,0,0.978669048484894,658,,,,,0.0,0.4464898509344126,0,0,0,0,0,0,0.0,0.0
   S3_003_000X1_scaffold_21081,1047,0.2082139446036294,0.2082139446036294,0,0.4060306612513717,829,,,,,0.0,0.1679418203027453,0,0,0,0,0,0,0.0,0.0
@@ -34,10 +34,10 @@ breadth
 coverage
   The average depth of coverage on the scaffold. If half the bases in a scaffold have 5 reads on them, and the other half have 10 reads, the coverage of the scaffold will be 7.5
 
-median_cov
+coverage_median
   The median coverage value of all bases in the scaffold, included bases with 0 coverage
 
-std_cov
+coverage_std
   The standard deviation of all coverage values
 
 bases_w_0_coverage
@@ -61,7 +61,7 @@ unmaskedBreadth
 SNPs
   The total number of SNPs called on this scaffold
 
-expected_breadth
+breadth_expected
   This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, etc.)
 
 SNPs
@@ -88,12 +88,12 @@ conANI
 popANI
   The average nucleotide identity between the reads in the sample and the .fasta file based on consensus SNPs. Calculated using the formula ANI = (unmaskedBreadth * length) - population_SNPs)/ (unmaskedBreadth * length))
 
-read_report.tsv
+mapping_info.tsv
 +++++++++++++++++
 
 This provides an overview of the number of reads that map to each scaffold, and some basic metrics about their quality.
 
-.. csv-table:: read_report.tsv
+.. csv-table:: mapping_info.tsv
 
   scaffold,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
   all_scaffolds,3802370,1790817,1674511,1784011,1790699,1790817,1668496,2.7480758782164787,293.0713925543481,23.46918082640493,298.38404705785126,246.0,0.9906729188638016
@@ -156,7 +156,7 @@ This describes the SNPs that are detected in this mapping.
 
 .. csv-table:: SNVs.tsv
 
-  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,cryptic,baseCoverage,varFreq,refFreq
+  scaffold,position,ref_base,A,C,T,G,con_base,var_base,allele_count,cryptic,position_coverage,var_freq,ref_freq
   S3_003_000X1_scaffold_21039,833,C,2,7,0,0,C,A,2,False,9,0.2222222222222222,0.7777777777777778
   S3_003_000X1_scaffold_20,99,C,0,0,5,0,T,A,1,False,5,0.0,1.0
   S3_003_000X1_scaffold_20,123,A,0,0,0,11,G,A,1,False,11,0.0,1.0
@@ -171,16 +171,16 @@ scaffold
 position
   The genomic position of the SNP
 
-refBase
+ref_base
   The reference base in the .fasta file at that position
 
 A, C, T, and G
   The number of mapped reads encoding each of the bases
 
-conBase
+con_base
   The consensus base; the base that is supported by the most reads
 
-varBase
+var_base
   Variant base; the base with the second most reads
 
 morphia
@@ -189,17 +189,17 @@ morphia
 cryptic
   If a SNP is cryptic, it means that it is detected when using a lower read mismatch threshold, but becomes undetected when you move to a higher read mismatch level. See "dealing with mm" in the advanced_use section for more details on what this means.
 
-baseCoverage
+position_coverage
   The total number of reads at this position
 
-varFreq
-  The fraction of reads supporting the varBase
+var_freq
+  The fraction of reads supporting the var_base
 
-refFreq
-  The fraction of reds supporting the refBase
+ref_freq
+  The fraction of reds supporting the ref_base
 
-conFreq
-  The fraction of reds supporting the conBase
+con_freq
+  The fraction of reds supporting the con_base
 
 linkage.tsv
 +++++++++++++++++
@@ -446,7 +446,7 @@ This describes whether SNPs are synonymous, nonsynonymous, or intergenic
 
 .. csv-table:: SNP_mutation_types.tsv
 
-  scaffold,position,refBase,A,C,T,G,conBase,varBase,allele_count,baseCoverage,varFreq,refFreq,mutation_type,mutation,gene
+  scaffold,position,ref_base,A,C,T,G,con_base,var_base,allele_count,position_coverage,var_freq,ref_freq,mutation_type,mutation,gene
   S3_002_056W1_scaffold_121,2134,C,0,3,2,0,C,T,2,5,0.4,0.6,N,N:H936Y,S3_002_056W1_scaffold_121_2
   S3_002_056W1_scaffold_121,8509,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G459R,S3_002_056W1_scaffold_121_11
   S3_002_056W1_scaffold_121,8510,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G460E,S3_002_056W1_scaffold_121_11
@@ -476,19 +476,19 @@ This is a genome-wide version of the scaffold report described above. See above 
 
 .. csv-table:: genomeWide_scaffold_info.tsv
 
-  genome,detected_scaffolds,true_scaffolds,true_length,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,breadth,coverage,std_cov,mean_clonality,conANI,popANI,unmaskedBreadth,expected_breadth
+  genome,detected_scaffolds,true_scaffolds,length,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,breadth,coverage,coverage_std,mean_clonality,conANI,popANI,unmaskedBreadth,breadth_expected
   S3_002_S3_002_000X1_S3_002_000X1_scaffold_633.fasta.fa,1,1,19728,24,5,19,0,7,5,0.9462185725871858,4.5430859691808605,2.7106449701139903,0.998095248422326,0.9992792421746294,0.999485172981878,0.4922952149229522,0.9818945976123048
   S3_002_S3_002_000X1_S3_002_000X1_scaffold_980.fasta.fa,1,1,11440,0,0,0,0,0,0,0.10113636363636364,0.10113636363636364,0.3015092031543595,,0.0,0.0,0.0,0.08543195678460236
   S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_1.fasta.fa,1,1,21455,0,0,0,0,0,0,0.5250058261477512,0.925378699603822,1.1239958370555831,0.9985388128180482,1.0,1.0,0.010207410859939408,0.5582933883068741
   S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_22.fasta.fa,1,1,15306,62,2,60,0,10,2,0.9562263164771984,4.977525153534561,4.1617488447219975,0.9939042740586184,0.9983668136534378,0.9996733627306876,0.4000392003136025,0.9876630284821302
   S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_24.fasta.fa,1,1,10383,64,6,58,0,18,6,0.9650390060676104,4.310507560435327,2.783478652159297,0.9912517160274896,0.9957865168539326,0.9985955056179776,0.4114417798324184,0.9777670126398924
 
-genomeWide_read_report.tsv
+genomeWide_mapping_info.tsv
 ++++++++++++
 
 This is a genome-wide version of the read report described above. See above for column descriptions.
 
-.. csv-table:: genomeWide_read_report.tsv
+.. csv-table:: genomeWide_mapping_info.tsv
 
   genome,scaffolds,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
   S2_002_005G1_phage_Clostridioides_difficile.fasta,1,10605,5062,5048,5062,5062,5062,5048,0.3832477281706835,312.3638877913868,1.3024496246542872,293.6845120505729,308.0,0.998581261373412

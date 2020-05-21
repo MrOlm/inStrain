@@ -185,26 +185,38 @@ class SNVprofile:
             db = reorder_columns(db, column_order)
 
         elif name == 'scaffold_info':
-            column_order = ['scaffold', 'length', 'coverage', 'breadth','nucl_diversity',
+            column_order = ['scaffold', 'length', 'coverage', 'breadth',
+                            'nucl_diversity',
                             'coverage_median', 'coverage_std', 'coverage_SEM',
                             'breadth_minCov', 'breadth_expected',
                             'nucl_diversity_median',
-                            'rarefied_nucl_diversity', 'rarefied_nucl_diversity_median',
+                            'nucl_diversity_rarefied', 'nucl_diversity_rarefied_median',
                             'breadth_rarefied',
-                            'conANI_reference', 'popANI_reference']
+                            'conANI_reference', 'popANI_reference',
+                            'SNS_count', 'SNV_count', 'divergent_site_count']
 
             db = self.get_nonredundant_scaffold_table()
             db = reorder_columns(db, column_order)
 
         elif name == 'linkage':
             column_order = ['scaffold', 'position_A', 'position_B', 'distance',
-                            'r2', 'd_prime']
+                            'r2', 'd_prime',
+                            'r2_normalized', 'd_prime_normalized',
+                            'allele_A', 'allele_a',
+                            'allele_B', 'allele_b',
+                            'countab', 'countAb', 'countaB', 'countAB', 'total']
             db = self.get_nonredundant_linkage_table()
             db = reorder_columns(db, column_order)
 
         elif name == 'gene_info':
-            column_order = ['scaffold', 'gene', 'coverage', 'breadth','nucl_diversity'
-                             'start', 'end', 'gene_length', 'direction']
+            column_order = ['scaffold', 'gene', 'gene_length',
+                            'coverage', 'breadth', 'breadth_minCov', 'nucl_diversity',
+                             'start', 'end', 'direction', 'partial',
+                             'dNdS_substitutions', 'pNpS_variants',
+                             'SNV_count', 'SNV_S_count', 'SNV_N_count',
+                             'SNS_count', 'SNS_S_count', 'SNS_N_count',
+                             'N_sites', 'S_sites',
+                             'divergent_site_count']
 
             Gdb = self.get('genes_table')
 
@@ -225,23 +237,23 @@ class SNVprofile:
 
         elif name == 'genome_info':
             column_order = ['genome', 'coverage', 'breadth', 'nucl_diversity',
-                            'genome_length', 'true_scaffolds', 'detected_scaffolds',
+                            'length', 'true_scaffolds', 'detected_scaffolds',
                             'coverage_median', 'coverage_std', 'coverage_SEM',
                             'breadth_minCov', 'breadth_expected',
                             'nucl_diversity_rarefied',
                             'conANI_reference', 'popANI_reference',
                             'iRep', 'iRep_GC_corrected',
-                            'linked_SNVs', 'SNV_distance_mean', 'r2_mean','d_prime_mean',
-                            'read_pairs_mapped']
+                            'linked_SNV_count', 'SNV_distance_mean', 'r2_mean','d_prime_mean',
+                            'filtered_read_pair_count']
 
             db = self.get('genome_level_info')
             db = reorder_columns(db, column_order)
 
-        elif name == 'read_report':
-            column_order = ['scaffold', 'pass_pairing_filter', 'filter_pairs']
+        elif name == 'mapping_info':
+            column_order = ['scaffold', 'pass_pairing_filter', 'filtered_pairs']
 
-            db = self.get('read_report')
-            values = inStrain.filter_reads.write_read_report(db, None, **kwargs)
+            db = self.get('mapping_info')
+            values = inStrain.filter_reads.write_mapping_info(db, None, **kwargs)
 
             if store:
                 base = self.get_output_base()
@@ -282,7 +294,7 @@ class SNVprofile:
                     os.path.basename(self.get('location')) + '_'
 
     def get_read_length(self):
-        Rdb = self.get('read_report').head(1)
+        Rdb = self.get('mapping_info').head(1)
         return float(Rdb.loc[0, 'mean_pair_length'])
 
     def verify(self):
@@ -965,8 +977,8 @@ def convert_SNVprofile(pickle_loc):
             # nIS.store('clonT', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'clonality'),
             #         'special', "Scaffold -> mm -> position based clonality")
 
-        elif attr == 'read_report':
-            nIS.store('read_report', getattr(oIS, attr), 'pandas', "Report on reads")
+        elif attr == 'mapping_info':
+            nIS.store('mapping_info', getattr(oIS, attr), 'pandas', "Report on reads")
 
         else:
             logging.error('I dont know how to store {0}!'.format(attr))

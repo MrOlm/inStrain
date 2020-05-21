@@ -402,9 +402,9 @@ def calc_gene_clonality(gdb, clonT):
             except :
                 microdiversity = np.nan
 
-            table['clonality'].append(gcov.mean())
-            table['microdiversity'].append(microdiversity)
-            table['masked_breadth'].append(len(gcov) / gLen)
+            #table['clonality'].append(gcov.mean())
+            table['nucl_diversity'].append(microdiversity)
+            table['breadth_minCov'].append(len(gcov) / gLen)
             table['mm'].append(mm)
 
     return pd.DataFrame(table)
@@ -417,7 +417,7 @@ def calc_gene_clonality(gdb, clonT):
 #
 #     for mm in sorted(ldb['mm'].unique()):
 #         db = ldb[ldb['mm'] <= mm].drop_duplicates(subset=['scaffold', 'position'], keep='last')
-#         cov = db.set_index('position')['refBase'].sort_index()
+#         cov = db.set_index('position')['ref_base'].sort_index()
 #         if len(cov) == 0:
 #             continue
 #
@@ -557,14 +557,14 @@ def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
             table['mm'].append(mm)
             table['gene'].append(row['gene'])
             table['gene_length'].append(gLen)
-            table['total_SNPs'].append(len(db))
+            table['divergent_site_count'].append(len(db))
 
             # Report type counts
-            for allele_count, name in zip([1, 2], ['substitution', 'biallelic']):
-                table['{0}_total'.format(name)].append(len(db[db['allele_count'] == allele_count]))
+            for allele_count, name in zip([1, 2], ['SNS', 'SNV']):
+                table['{0}_count'.format(name)].append(len(db[db['allele_count'] == allele_count]))
 
                 for snp_type in ['N', 'S']:
-                    table["{0}_{1}".format(name, snp_type)].append(
+                    table["{0}_{1}_count".format(name, snp_type)].append(
                     len(db[(db['allele_count'] == allele_count) & (db['mutation_type'] == snp_type)]))
 
     GGdb = pd.DataFrame(table).merge(SiteDb, on='gene', how='left').reset_index(drop=True)
@@ -572,12 +572,13 @@ def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
 
     # Calculate dn/ds
     GGdb['dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
-                                GGdb['substitution_N'], GGdb['N_sites'],
-                                GGdb['substitution_S'], GGdb['S_sites'])]
-    GGdb['pNpS_bialleleics'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
-                                    GGdb['biallelic_N'], GGdb['N_sites'],
-                                    GGdb['biallelic_S'], GGdb['S_sites'])]
-    GGdb['SNPs_per_bp'] = [x/y if y > 0 else np.nan for x, y in zip(GGdb['total_SNPs'], GGdb['gene_length'])]
+                                GGdb['SNS_N_count'], GGdb['N_sites'],
+                                GGdb['SNS_S_count'], GGdb['S_sites'])]
+    GGdb['pNpS_variants'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+                                    GGdb['SNV_N_count'], GGdb['N_sites'],
+                                    GGdb['SNV_S_count'], GGdb['S_sites'])]
+    # GGdb['SNPs_per_bp'] = [x/y if y > 0 else np.nan for x, y in \
+    #                     zip(GGdb['divergent_site_count'], GGdb['gene_length'])]
 
     return GGdb, log_message
 
@@ -650,9 +651,9 @@ def characterize_SNPs(gdb, Sdb):
             # Make the new sequence
             snp_start = row['position'] - db['start'].tolist()[0]
             new_sequence = original_sequence.tomutable()
-            new_sequence[snp_start] = row['varBase']
+            new_sequence[snp_start] = row['var_base']
             if new_sequence[snp_start] == original_sequence[snp_start]:
-                new_sequence[snp_start] = row['conBase']
+                new_sequence[snp_start] = row['con_base']
             new_sequence = new_sequence.toseq()
 
             # Translate
@@ -836,6 +837,6 @@ def _get_mm(IS, ANI):
     if ANI > 1:
         ANI = ANI / 100
 
-    rLen = IS.get('read_report')['mean_pair_length'].tolist()[0]
+    rLen = IS.get('mapping_info')['mean_pair_length'].tolist()[0]
     mm = int(round((rLen - (rLen * ANI))))
     return mm

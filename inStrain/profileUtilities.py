@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import pysam
+import scipy
 import psutil
 import random
 import logging
@@ -869,7 +870,7 @@ def _update_covT(covT, MMcounts, position, mLen):
         covT[mm][position] = sum(count)
 
 def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
-        pos, scaff, mLen, refBase, min_cov=5, min_covR=50, min_freq=.05):
+        pos, scaff, mLen, ref_base, min_cov=5, min_covR=50, min_freq=.05):
     '''
     Add information to SNP table. Update basesCounted and snpsCounted
 
@@ -884,14 +885,14 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
         *  There are more than min_cov number of bases counted
         *  There are more than min_freq percent of reads at the variant base
         *  The number of variant bases is more than the null model for that coverage
-    *  If those are satisfied twice, the base with the highest count is stored as the "varBase",
-       and the the bases with the second highest is the "refBase"
+    *  If those are satisfied twice, the base with the highest count is stored as the "var_base",
+       and the the bases with the second highest is the "ref_base"
 
     What is anySNP?
     *  For at least one mm position, there was a SNP called
 
     What is bases?
-    *  A set of bases that are the varBase or refBase at least once
+    *  A set of bases that are the var_base or ref_base at least once
 
     What are the things that are being missed?
     *  The case where theres only one base that meets the chriteria above, but its
@@ -909,7 +910,7 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
         *  Right now only 2+ are being shown; so it will be easy to filter others out
     *  Throw in a check for if there's only one bases that fits that chriteria,
        is it not the reference base?
-    *  Add "refbase" back into the table to make it easier to compare SNP tables
+    *  Add "ref_base" back into the table to make it easier to compare SNP tables
 
     '''
     anySNP = False
@@ -917,7 +918,7 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
     ret_counts = np.zeros(4, dtype=int)
     for mm in sorted(list(MMcounts.keys())):
         counts = _mm_counts_to_counts(MMcounts, mm)
-        snp, morphia = call_snv_site(counts, refBase, min_cov=min_cov, min_freq=min_freq) # Call SNP
+        snp, morphia = call_snv_site(counts, ref_base, min_cov=min_cov, min_freq=min_freq) # Call SNP
 
         # Update clonality
         if mm not in clonT:
@@ -936,25 +937,25 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
 
         elif snp != -1: # means this is a SNP
 
-           # calculate varBase
+           # calculate var_base
            counts_temp = list(counts)
            counts_temp[P2C[snp]] = 0
-           varbase = C2P[list(counts_temp).index(sorted(counts_temp)[-1])] # this fixes the varbase = refbase error when there's a tie - alexcc 5/8/2019
+           var_base = C2P[list(counts_temp).index(sorted(counts_temp)[-1])] # this fixes the var_base = ref_base error when there's a tie - alexcc 5/8/2019
 
            Stable['scaffold'].append(scaff)
            Stable['position'].append(pos)
-           Stable['refBase'].append(refBase)
+           Stable['ref_base'].append(ref_base)
            for b, c in zip(['A', 'C', 'T', 'G'], counts):
                Stable[b].append(c)
-           Stable['conBase'].append(snp)
-           Stable['varBase'].append(varbase)
+           Stable['con_base'].append(snp)
+           Stable['var_base'].append(var_base)
            Stable['mm'].append(mm)
            Stable['allele_count'].append(morphia)
 
            if morphia >= 2:
                anySNP = True
                bases.add(snp)
-               bases.add(varbase)
+               bases.add(var_base)
                ret_counts = counts
 
            elif (morphia == 1) & (anySNP == True):
@@ -1020,7 +1021,7 @@ def mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
 
 P2C = {'A':0, 'C':1, 'T':2, 'G':3}
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
-def call_snv_site(counts, refBase, min_cov=5, min_freq=0.05, model=None):
+def call_snv_site(counts, ref_base, min_cov=5, min_freq=0.05, model=None):
     '''
     Determines whether a site has a variant based on its nucleotide count frequencies.
 
@@ -1061,7 +1062,7 @@ def call_snv_site(counts, refBase, min_cov=5, min_freq=0.05, model=None):
         return C2P[np.argmax(counts)], i
 
     # If theres only 1, see if its the reference base
-    elif (i == 1) & (C2P[np.argmax(counts)] != refBase):
+    elif (i == 1) & (C2P[np.argmax(counts)] != ref_base):
         return C2P[np.argmax(counts)], i
 
     # That means this is a super polymorphic position with no dominant bases
@@ -1120,38 +1121,48 @@ def _get_basewise_clons2(clonT, MM, fill_zeros=False):
 def _calc_snps(Odb, mm, min_freq=0.05):
     '''
     Calculate the number of reference SNPs, bi-allelic SNPs, multi-allelic SNPs (>2), total SNPs, consensus_SNPs, and poplation_SNPs
+
+    Vocabulary:
+
+    SNS_count = (number of substitutions) (allele_count = 1 and ref != con)
+    SNV_count = number of SNVs (allele_count > 1)
+
+    con_snps = con != ref and allele count > 0
+    pop_snps = confusing
     '''
     if len(Odb) == 0:
-        return [0, 0, 0, 0, 0, 0]
+        return [0, 0, 0, 0, 0]
 
     db = Odb[Odb['mm'] <= mm].sort_values('mm').drop_duplicates(subset=['position'], keep='last')
 
-    ref_snps = len(db[(db['allele_count'] == 1)])
-    bi_snps = len(db[(db['allele_count'] == 2)])
-    multi_snps = len(db[(db['allele_count'] > 2)])
+    SNS_count = len(db[(db['allele_count'] == 1)])
+    SNV_count = len(db[db['allele_count'] > 1])
 
-    con_snps = len(db[(db['conBase'] != db['refBase']) & (db['allele_count'] > 0)])
+    # bi_snps = len(db[(db['allele_count'] == 2)])
+    # multi_snps = len(db[(db['allele_count'] > 2)])
+
+    con_snps = len(db[(db['con_base'] != db['ref_base']) & (db['allele_count'] > 0)])
 
     # One pool of population SNPs are those of morphia 1 where con != ref
-    p1 = len(db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 1)])
+    p1 = len(db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 1)])
 
     # Another pool is when its biallelic but neither are the reference
-    p2 = len(db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 2) & (db['refBase'] != db['varBase'])])
+    p2 = len(db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 2) & (db['ref_base'] != db['var_base'])])
 
     # Finally, and the hardest to detect, are morphia of three where
     p3 = 0
-    pdb = db[(db['refBase'] != db['conBase']) & (db['allele_count'] == 3) & (db['refBase'] != db['varBase'])]
+    pdb = db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 3) & (db['ref_base'] != db['var_base'])]
     for i, row in pdb.iterrows():
         # Below is trying to get the count of Ns; but there is no count of Ns
-        if row['refBase'] not in ['A', 'C', 'T', 'G']:
+        if row['ref_base'] not in ['A', 'C', 'T', 'G']:
             continue
 
-        if not inStrain.readComparer.is_present(int(row[row['refBase']]), int(row['baseCoverage']), null_model, float(min_freq)):
+        if not inStrain.readComparer.is_present(int(row[row['ref_base']]), int(row['position_coverage']), null_model, float(min_freq)):
             p3 += 1
 
     pop_snps = p1 + p2 + p3
 
-    return [ref_snps, bi_snps, multi_snps, len(db), con_snps, pop_snps]
+    return [SNS_count, SNV_count, len(db), con_snps, pop_snps]
 
 def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.05, debug=False):
     '''
@@ -1172,7 +1183,7 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
             covs = pd.Series([0]*lengt)
 
         nonzeros = np.count_nonzero(covs)
-        zeros = lengt - nonzeros
+        #zeros = lengt - nonzeros
 
         # Get clonalities
         clons = _get_basewise_clons2(clonT, mm)
@@ -1180,7 +1191,10 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
 
         counted_bases = len(clons)
         rarefied_bases = len(Rclons)
-        ref_snps, bi_snps, multi_snps, counted_snps, con_snps, pop_snps = _calc_snps(SNPTable, mm, min_freq=min_freq)
+        #ref_snps, bi_snps, multi_snps, counted_snps, con_snps, pop_snps = _calc_snps(SNPTable, mm, min_freq=min_freq)
+        SNS_count, SNV_count, div_site_count, con_snps, pop_snps = \
+                    _calc_snps(SNPTable, mm, min_freq=min_freq)
+
         #counted_snps = _calc_counted_bases(snpsCounted, mm)
 
         assert len(covs) == lengt, [covs, lengt, mm]
@@ -1190,51 +1204,55 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
         table['length'].append(lengt)
         table['breadth'].append(nonzeros/lengt)
         table['coverage'].append(np.mean(covs))
-        table['median_cov'].append(int(np.median(covs)))
-        table['std_cov'].append(np.std(covs))
-        table['bases_w_0_coverage'].append(zeros)
+        table['coverage_median'].append(int(np.median(covs)))
+        table['coverage_std'].append(np.std(covs))
+        table['coverage_SEM'].append(scipy.stats.sem(covs))
+        #table['bases_w_0_coverage'].append(zeros)
 
         if len(clons) > 0:
             mean_c = np.mean(clons)
             median_c = np.median(clons)
-            table['mean_clonality'].append(mean_c)
-            table['median_clonality'].append(median_c)
-            table['mean_microdiversity'].append(1-mean_c)
-            table['median_microdiversity'].append(1-median_c)
+            # table['mean_clonality'].append(mean_c)
+            # table['median_clonality'].append(median_c)
+            table['nucl_diversity'].append(1-mean_c)
+            table['nucl_diversity_median'].append(1-median_c)
         else:
-            table['mean_clonality'].append(np.nan)
-            table['median_clonality'].append(np.nan)
-            table['mean_microdiversity'].append(np.nan)
-            table['median_microdiversity'].append(np.nan)
+            # table['mean_clonality'].append(np.nan)
+            # table['median_clonality'].append(np.nan)
+            table['nucl_diversity'].append(np.nan)
+            table['nucl_diversity_median'].append(np.nan)
 
         if len(Rclons) > 0:
             mean_c = np.mean(Rclons)
             median_c = np.median(Rclons)
-            table['rarefied_mean_microdiversity'].append(1-mean_c)
-            table['rarefied_median_microdiversity'].append(1-median_c)
+            table['nucl_diversity_rarefied'].append(1-mean_c)
+            table['nucl_diversity_rarefied_median'].append(1-median_c)
         else:
-            table['rarefied_mean_microdiversity'].append(np.nan)
-            table['rarefied_median_microdiversity'].append(np.nan)
+            table['nucl_diversity_rarefied'].append(np.nan)
+            table['nucl_diversity_rarefied_median'].append(np.nan)
 
-        table['unmaskedBreadth'].append(len(clons) / lengt)
-        table['rarefied_breadth'].append(rarefied_bases / lengt)
-        table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
+        table['breadth_minCov'].append(counted_bases / lengt)
+        table['breadth_rarefied'].append(rarefied_bases / lengt)
+        table['breadth_expected'].append(estimate_breadth(table['coverage'][-1]))
 
-        table['SNPs'].append(counted_snps)
+        table['divergent_site_count'].append(div_site_count) # divergent_sites
 
-        table['Reference_SNPs'].append(ref_snps)
-        table['BiAllelic_SNPs'].append(bi_snps)
-        table['MultiAllelic_SNPs'].append(multi_snps)
+        table['SNS_count'].append(SNS_count) # SNS_count
+        table['SNV_count'].append(SNV_count)
 
-        table['consensus_SNPs'].append(con_snps)
-        table['population_SNPs'].append(pop_snps)
+        # table['SNV_count_biallelic'].append(multi_snps)
+        # table['BiAllelic_SNPs'].append(bi_snps) # SNV_count_biallelic
+        # table['MultiAllelic_SNPs'].append(multi_snps) # SNV_count
+
+        table['consensus_divergent_sites'].append(con_snps)
+        table['population_divergent_sites'].append(pop_snps)
 
         if counted_bases == 0:
-            table['conANI'].append(0)
-            table['popANI'].append(0)
+            table['conANI_reference'].append(0)
+            table['popANI_reference'].append(0)
         else:
-            table['conANI'].append((counted_bases - con_snps)/ counted_bases)
-            table['popANI'].append((counted_bases - pop_snps)/ counted_bases)
+            table['conANI_reference'].append((counted_bases - con_snps)/ counted_bases)
+            table['popANI_reference'].append((counted_bases - pop_snps)/ counted_bases)
 
         table['mm'].append(mm)
 
@@ -1323,7 +1341,7 @@ def _make_snp_table(Stable):
         try:
             Sdb = pd.DataFrame(Stable)
             Sdb['scaffold'] = Sdb['scaffold'].astype('category')
-            Sdb['conBase'] = Sdb['conBase'].astype('category')
+            Sdb['con_base'] = Sdb['con_base'].astype('category')
         except KeyError:
             #logging.info("No SNPs detected!")
             Sdb = pd.DataFrame()
@@ -1342,7 +1360,7 @@ def _make_snp_table2(Stable, scaffold, p2c):
         SNPTable['cryptic'] = SNPTable['cryptic'].fillna(False)
 
         # Calc base coverage
-        SNPTable['baseCoverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
+        SNPTable['position_coverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
 
     del Stable
     return SNPTable
@@ -1354,12 +1372,12 @@ def _parse_Sdb(sdb):
     if len(sdb) == 0:
         return sdb
 
-    sdb['varFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
-                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['varBase'], sdb['baseCoverage'])]
-    sdb['conFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
-                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['conBase'], sdb['baseCoverage'])]
-    sdb['refFreq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s if v in ['A','C','T','G'] else np.nan for a,c,t,g,v,s in zip(\
-                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['refBase'], sdb['baseCoverage'])]
+    sdb['var_freq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
+                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['var_base'], sdb['position_coverage'])]
+    sdb['con_freq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s for a,c,t,g,v,s in zip(\
+                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['con_base'], sdb['position_coverage'])]
+    sdb['ref_freq'] = [[a,c,t,g][['A','C','T','G'].index(v)]/s if v in ['A','C','T','G'] else np.nan for a,c,t,g,v,s in zip(\
+                        sdb['A'], sdb['C'], sdb['T'], sdb['G'], sdb['ref_base'], sdb['position_coverage'])]
 
     return sdb
 
@@ -1410,7 +1428,7 @@ def gen_snv_profile(Sprofiles, **kwargs):
         for col in ['A', 'C', 'G', 'T', 'mm', 'position']:
             raw_snp_table[col] = raw_snp_table[col].astype(int)
             raw_snp_table['scaffold'] = raw_snp_table['scaffold'].astype('category')
-            raw_snp_table['conBase'] = raw_snp_table['conBase'].astype('category')
+            raw_snp_table['con_base'] = raw_snp_table['con_base'].astype('category')
 
     # convert to numpy array
     #counts_table = np.array(counts_table)

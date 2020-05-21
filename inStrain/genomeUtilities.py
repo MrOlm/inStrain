@@ -77,8 +77,8 @@ class Controller():
         #
         # # Do read report
         # try:
-        #     gdb = genomeWideFromIS(IS, 'read_report', mm_level=mm_level)
-        #     gdb.to_csv(out_base + 'genomeWide_read_report.tsv', index=False, sep='\t')
+        #     gdb = genomeWideFromIS(IS, 'mapping_info', mm_level=mm_level)
+        #     gdb.to_csv(out_base + 'genomeWide_mapping_info.tsv', index=False, sep='\t')
         # except:
         #     logging.debug("GenomeWide read report failed ", exc_info=1)
         #     #traceback.print_exc()
@@ -202,16 +202,19 @@ def genomeLevel_from_IS(IS, **kwargs):
                 psutil.virtual_memory()[1]))
 
     # Calculate genome-level read mapping
-    rdb = IS.get('read_report')
+    rdb = IS.get('mapping_info')
     rdb = rdb[rdb['scaffold'] != 'all_scaffolds']
     rdb = _add_stb(rdb, stb)
 
-    logging.debug("SubPoint_genomeLevel read_report start RAM is {0}".format(
+    logging.debug("SubPoint_genomeLevel mapping_info start RAM is {0}".format(
                 psutil.virtual_memory()[1]))
 
     rdb = _genome_wide_rr(rdb, stb, **kwargs)
+    rdb = rdb.rename(columns={'reads_filtered_pairs':'filtered_read_pair_count'})
+    if 'reads_pass_pairing_filter' in rdb.columns:
+        del rdb['reads_pass_pairing_filter']
 
-    logging.debug("SubPoint_genomeLevel read_report end RAM is {0}".format(
+    logging.debug("SubPoint_genomeLevel mapping_info end RAM is {0}".format(
                 psutil.virtual_memory()[1]))
 
     # Calculate genome-level linkage metrics
@@ -327,8 +330,8 @@ def genomeWideFromIS(IS, thing, **kwargs):
         assert _validate_b2l(gdb, b2l)
         return _genome_wide_si_2(gdb, stb, b2l, **kwargs)
 
-    if thing == 'read_report':
-        db = IS.get('read_report')
+    if thing == 'mapping_info':
+        db = IS.get('mapping_info')
         db = db[db['scaffold'] != 'all_scaffolds']
         gdb = _add_stb(db, stb)
         return _genome_wide_rr(gdb, stb, **kwargs)
@@ -363,7 +366,7 @@ def makeGenomeWide(thing, db, stb, b2l=None, **kwargs):
 #     if thing == 'mm_genome_info':
 #         return _genome_wide_mm_genomeInfo(gdb, stb, b2l, **kwargs)
 
-    if thing == 'read_report':
+    if thing == 'mapping_info':
         return _genome_wide_rr(gdb, stb, **kwargs)
 
     elif thing == 'scaffold_info':
@@ -425,7 +428,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
             # Scaffolds
             table['detected_scaffolds'].append(len(df))
             table['true_scaffolds'].append(len([True for s, b in stb.items() if b == genome]))
-            table['true_length'].append(int(b2l[genome]))
+            table['length'].append(int(b2l[genome]))
 
             # The summing columns
             for col in ['SNPs', 'Referece_SNPs', 'BiAllelic_SNPs', 'MultiAllelic_SNPs', 'consensus_SNPs', 'population_SNPs']:
@@ -433,11 +436,11 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                     table[col].append(df[col].fillna(0).sum())
 
             # Weighted average (over total length)
-            for col in ['breadth', 'coverage', 'std_cov']:
+            for col in ['breadth', 'coverage', 'coverage_std']:
                 table[col].append(sum([x * y for x, y in zip(df[col].fillna(0), df['length'])]) / b2l[genome])
 
             # Weighted average (over detected scaffold length)
-            df['considered_length'] = [x*y for x,y in zip(df['unmaskedBreadth'], df['length'])]
+            df['considered_length'] = [x*y for x,y in zip(df['breadth_minCov'], df['length'])]
             considered_leng = float(df['considered_length'].sum())
 
             # To maintain backwards compatibility
@@ -449,7 +452,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                 else:
                     table[col].append(np.nan)
 
-            for col in ['mean_microdiverstiy', 'rarefied_mean_microdiversity']:
+            for col in ['mean_microdiverstiy', 'nucl_diversity_rarefied']:
                 if col not in df.columns:
                     continue
                 if considered_leng != 0:
@@ -460,11 +463,11 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
             # ANI
             if 'consensus_SNPs' in cols:
                 if considered_leng != 0:
-                    table['conANI'].append((considered_leng - df['consensus_SNPs'].sum()) / considered_leng)
-                    table['popANI'].append((considered_leng - df['population_SNPs'].sum()) / considered_leng)
+                    table['conANI_reference'].append((considered_leng - df['consensus_SNPs'].sum()) / considered_leng)
+                    table['popANI_reference'].append((considered_leng - df['population_SNPs'].sum()) / considered_leng)
                 else:
-                    table['conANI'].append(0)
-                    table['popANI'].append(0)
+                    table['conANI_reference'].append(0)
+                    table['popANI_reference'].append(0)
             else:
                 if considered_leng != 0:
                     table['ANI'].append((considered_leng - df['SNPs'].sum()) / considered_leng)
@@ -472,14 +475,14 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                     table['ANI'].append(0)
             #table['detected_scaff_length'].append(df['length'].sum())
 
-            table['unmaskedBreadth'].append(considered_leng / b2l[genome])
-            table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
+            table['breadth_minCov'].append(considered_leng / b2l[genome])
+            table['breadth_expected'].append(estimate_breadth(table['coverage'][-1]))
 
     db = pd.DataFrame(table)
 
     # Add back microdiversity
-    if (('mean_microdiversity' not in df.columns) & ('mean_clonality' in df.columns)):
-        db['mean_microdiversity'] = 1 - db['mean_clonality']
+    if (('nucl_diversity' not in df.columns) & ('mean_clonality' in df.columns)):
+        db['nucl_diversity'] = 1 - db['mean_clonality']
 
     if not mm_level:
         del db['mm']
@@ -507,10 +510,11 @@ def _genomeLevel_scaffold_info_v3(gdb, s2b, b2l, **kwargs):
             table['detected_scaffolds'].append(len(df))
             table['true_scaffolds'].append(len([True for s, b in stb.items()
                                                                 if b == genome]))
-            table['true_length'].append(int(b2l[genome]))
+            table['length'].append(int(b2l[genome]))
 
             # The summing columns
-            for col in ['SNPs', 'Referece_SNPs', 'BiAllelic_SNPs', 'MultiAllelic_SNPs', 'consensus_SNPs', 'population_SNPs']:
+            for col in ['SNS_count', 'SNV_count', 'divergent_site_count',
+                    'consensus_divergent_sites', 'population_divergent_sites']:
                 if col in cols:
                     table[col].append(df[col].fillna(0).sum())
 
@@ -520,10 +524,10 @@ def _genomeLevel_scaffold_info_v3(gdb, s2b, b2l, **kwargs):
 
             # Weighted average (over detected scaffold length)
             df['considered_length'] = [x*y for x,y in zip(
-                                        df['unmaskedBreadth'], df['length'])]
+                                        df['breadth_minCov'], df['length'])]
             considered_leng = float(df['considered_length'].sum())
 
-            for col in ['mean_microdiverstiy', 'rarefied_mean_microdiversity']:
+            for col in ['nucl_diversity', 'nucl_diversity_rarefied']:
                 if col not in df.columns:
                     continue
                 if considered_leng != 0:
@@ -532,22 +536,17 @@ def _genomeLevel_scaffold_info_v3(gdb, s2b, b2l, **kwargs):
                     table[col].append(np.nan)
 
             # ANI
-            if 'consensus_SNPs' in cols:
+            if 'consensus_divergent_sites' in cols:
                 if considered_leng != 0:
-                    table['conANI'].append((considered_leng - df['consensus_SNPs'].sum()) / considered_leng)
-                    table['popANI'].append((considered_leng - df['population_SNPs'].sum()) / considered_leng)
+                    table['conANI_reference'].append((considered_leng - df['consensus_divergent_sites'].sum()) / considered_leng)
+                    table['popANI_reference'].append((considered_leng - df['population_divergent_sites'].sum()) / considered_leng)
                 else:
-                    table['conANI'].append(0)
-                    table['popANI'].append(0)
-            else:
-                if considered_leng != 0:
-                    table['ANI'].append((considered_leng - df['SNPs'].sum()) / considered_leng)
-                else:
-                    table['ANI'].append(0)
+                    table['conANI_reference'].append(0)
+                    table['popANI_reference'].append(0)
 
             # Special
-            table['unmaskedBreadth'].append(considered_leng / b2l[genome])
-            table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
+            table['breadth_minCov'].append(considered_leng / b2l[genome])
+            table['breadth_expected'].append(estimate_breadth(table['coverage'][-1]))
 
     db = pd.DataFrame(table)
     return db
@@ -570,7 +569,7 @@ def _genome_wide_rr(gdb, s2b, **kwrags):
     table = defaultdict(list)
     for genome, df in gdb.groupby('genome'):
         table['genome'].append(genome)
-        table['scaffolds'].append(len(df))
+        #table['scaffolds'].append(len(df))
         for col in [c for c in list(df.columns) if c not in ['scaffold', 'genome']]:
             if len(df[col].dropna()) == 0:
                 continue
@@ -602,6 +601,7 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
             table['r2_mean'].append(df['r2'].mean())
             table['d_prime_mean'].append(df['d_prime'].mean())
             table['SNV_distance_mean'].append(df['distance'].mean())
+            table['linked_SNV_count'].append(len(df))
 
     return pd.DataFrame(table)
 
@@ -613,18 +613,18 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
 #         # Scaffolds
 #         table['detected_scaffolds'].append(len(df))
 #         table['true_scaffolds'].append(len([True for s, b in stb.items() if b == genome]))
-#         table['true_length'].append(int(b2l[genome]))
+#         table['length'].append(int(b2l[genome]))
 
 #         # The summing columns
 #         for col in ['SNPs']:
 #             table[col].append(df[col].sum())
 
 #         # Weighted average (over total length)
-#         for col in ['breadth', 'coverage', 'std_cov']:
+#         for col in ['breadth', 'coverage', 'coverage_std']:
 #             table[col].append(sum(x * y for x, y in zip(df[col], df['length'])) / b2l[genome])
 
 #         # Weighted average (over detected scaffold length)
-#         df['considered_length'] = [x*y for x,y in zip(df['unmaskedBreadth'], df['length'])]
+#         df['considered_length'] = [x*y for x,y in zip(df['breadth_minCov'], df['length'])]
 #         considered_leng = df['considered_length'].sum()
 #         for col in ['mean_clonality']:
 #             table[col].append(sum(x * y for x, y in zip(df[col], df['considered_length'])) / considered_leng)
@@ -636,8 +636,8 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
 #             table['ANI'].append(0)
 #         #table['detected_scaff_length'].append(df['length'].sum())
 
-#         table['unmaskedBreadth'].append(considered_leng / b2l[genome])
-#         table['expected_breadth'].append(estimate_breadth(table['coverage'][-1]))
+#         table['breadth_minCov'].append(considered_leng / b2l[genome])
+#         table['breadth_expected'].append(estimate_breadth(table['coverage'][-1]))
 
 #     return pd.DataFrame(table)
 
@@ -646,7 +646,7 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
 #     JupyterNotebooks/Infant_Eukaryotes/Euks_13_mappingListGamma_bams_2_load_v2_2.ipynb
 #     '''
 #     gdb['genome'] = gdb['scaffold'].map(stb)
-#     gdb['considered_length'] = [x*y for x,y in zip(gdb['unmaskedBreadth'], gdb['length'])]
+#     gdb['considered_length'] = [x*y for x,y in zip(gdb['breadth_minCov'], gdb['length'])]
 
 #     # Add blanks for scaffolds that aren't there
 #     #bdb = pd.DataFrame({s:})
@@ -665,11 +665,11 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
 #             table[col].append(db[col].max())
 
 #         # Weighted average columns
-#         for col in ['breadth', 'coverage', 'std_cov', 'unmaskedBreadth']:
+#         for col in ['breadth', 'coverage', 'coverage_std', 'breadth_minCov']:
 #             table[col].append(sum(x * y for x, y in zip(db[col], db['length'])) / sum(db['length']))
 
 #         # Special weighted average
-#         db['considered_length'] = [x*y for x,y in zip(db['unmaskedBreadth'], db['length'])]
+#         db['considered_length'] = [x*y for x,y in zip(db['breadth_minCov'], db['length'])]
 #         considered_leng = db['considered_length'].sum()
 
 #         if considered_leng != 0:
@@ -726,7 +726,7 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
                     table[col].append(db[col].sum())
 
             # Special ANI column
-            for col in ['ANI', 'popANI', 'conANI']:
+            for col in ['ANI', 'popANI_reference', 'conANI_reference']:
                 if col in list(db.columns):
                     if tcb == 0:
                         table[col].append(np.nan)
@@ -745,40 +745,40 @@ def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
 
     return db
 
-def _backfill_blanks(db, s2l):
-    scaffs = list(set(s2l.keys()) - set(db['scaffold'].unique()))
-    bdb = pd.DataFrame({'scaffold':scaffs, 'length':[s2l[s] for s in scaffs]})
+# def _backfill_blanks(db, s2l):
+#     scaffs = list(set(s2l.keys()) - set(db['scaffold'].unique()))
+#     bdb = pd.DataFrame({'scaffold':scaffs, 'length':[s2l[s] for s in scaffs]})
+#
+#     # make some adjustments
+#     bdb['bases_w_0_coverage'] = bdb['length']
+#
+#     # append
+#     db = db.append(bdb, sort=True)
+#
+#     # fill 0
+#     return db.fillna(0)
 
-    # make some adjustments
-    bdb['bases_w_0_coverage'] = bdb['length']
-
-    # append
-    db = db.append(bdb, sort=True)
-
-    # fill 0
-    return db.fillna(0)
-
-def interate_sdb_mm(sdb, on='genome', s2l=None, stb=None):
-    '''
-    For the dataframe, iterate through each mm and a dataframe with ALL scaffolds at that mm level
-    (including blanks)
-    '''
-    for g, db in sdb.groupby(on):
-        if s2l == None:
-            gs2l = db.set_index('scaffold')['length'].to_dict()
-        else:
-            gs2l = {s:s2l[s] for s in [x for x, b in stb.items() if b == g]}
-        mms = sorted(db['mm'].unique())
-        for mm in mms:
-            # get all the ones that you can
-            dd = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset='scaffold', keep='last')
-            #print("mm={0}; len={1}; tl={2}".format(mm, len(dd), len(s2l.keys())))
-
-            # backfill with blanks
-            dd = _backfill_blanks(dd, gs2l)
-            #print("mm={0}; len={1}; tl={2}".format(mm, len(dd), len(s2l.keys())))
-
-            yield g, mm, dd
+# def interate_sdb_mm(sdb, on='genome', s2l=None, stb=None):
+#     '''
+#     For the dataframe, iterate through each mm and a dataframe with ALL scaffolds at that mm level
+#     (including blanks)
+#     '''
+#     for g, db in sdb.groupby(on):
+#         if s2l == None:
+#             gs2l = db.set_index('scaffold')['length'].to_dict()
+#         else:
+#             gs2l = {s:s2l[s] for s in [x for x, b in stb.items() if b == g]}
+#         mms = sorted(db['mm'].unique())
+#         for mm in mms:
+#             # get all the ones that you can
+#             dd = db[db['mm'] <= mm].sort_values('mm').drop_duplicates(subset='scaffold', keep='last')
+#             #print("mm={0}; len={1}; tl={2}".format(mm, len(dd), len(s2l.keys())))
+#
+#             # backfill with blanks
+#             dd = _backfill_blanks(dd, gs2l)
+#             #print("mm={0}; len={1}; tl={2}".format(mm, len(dd), len(s2l.keys())))
+#
+#             yield g, mm, dd
 
 def estimate_breadth(coverage):
     '''

@@ -163,7 +163,7 @@ class ProfileController():
         # Load dictionary of paired reads
         scaffolds = list(FAdb['scaffold'].unique())
 
-        detailed_report = vargs.get('deatiled_read_report', False)
+        detailed_report = vargs.get('deatiled_mapping_info', False)
         if detailed_report:
             Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
         else:
@@ -207,9 +207,9 @@ class ProfileController():
         Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
 
         # Add the read report
-        Sprofile.store('read_report', RR, 'pandas', "Report on reads")
+        Sprofile.store('mapping_info', RR, 'pandas', "Report on reads")
         if dRR != None:
-            Sprofile.store('detailed_read_report', dRR, 'pandas', "Details report on reads")
+            Sprofile.store('detailed_mapping_info', dRR, 'pandas', "Details report on reads")
             del dRR
 
         logging.debug("Storing Rdic")
@@ -361,7 +361,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             **vars(args))
 
         # Make a report on these pair reads
-        #make_read_report(pair2info, pair2infoF, args)
+        #make_mapping_info(pair2info, pair2infoF, args)
 
         return pair2infoF, RR
 
@@ -398,7 +398,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage']:
             Sprofile.generate(t)
-        Sprofile.generate('read_report', **vars(args))
+        Sprofile.generate('mapping_info', **vars(args))
 
         # out_base = Sprofile.get_location('output') + os.path.basename(Sprofile.get('location')) + '_'
         #
@@ -415,8 +415,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         # db.to_csv(out_base + 'linkage.tsv', index=False, sep='\t')
         #
         # # Write the read report
-        # RR = Sprofile.get('read_report')
-        # inStrain.filter_reads.write_read_report(RR, out_base + 'read_report.tsv', **vars(args))
+        # RR = Sprofile.get('mapping_info')
+        # inStrain.filter_reads.write_mapping_info(RR, out_base + 'mapping_info.tsv', **vars(args))
 
     def filter_fasta(self, FAdb, s2p, min_reads=0):
         '''

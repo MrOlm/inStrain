@@ -335,11 +335,11 @@ def parse_validate(args):
 #
 #         db = S.get('cumulative_snv_table')
 #         if len(db) > 0:
-#             db['conBase'] = [x if x in P2C else 'X' for x in db['conBase']]
-#             db['refBase'] = [x if x in P2C else 'X' for x in db['conBase']]
+#             db['con_base'] = [x if x in P2C else 'X' for x in db['con_base']]
+#             db['ref_base'] = [x if x in P2C else 'X' for x in db['con_base']]
 #
-#             db['conBase'] = db['conBase'].map(P2C).astype('int8')
-#             db['refBase'] = db['refBase'].map(P2C).astype('int8')
+#             db['con_base'] = db['con_base'].map(P2C).astype('int8')
+#             db['ref_base'] = db['ref_base'].map(P2C).astype('int8')
 #         SNPtables.append(db)
 #         #
 #         # print(inp)
@@ -513,7 +513,7 @@ def _get_SNP_table(SNVprofile, scaffold, name):
             db = pd.DataFrame()
         else:
             db = db.sort_values('mm')
-            #db = db[['position', 'mm', 'conBase', 'refBase', 'varBase', 'baseCoverage', 'A', 'C', 'T', 'G', 'allele_count']]
+            #db = db[['position', 'mm', 'con_base', 'ref_base', 'var_base', 'position_coverage', 'A', 'C', 'T', 'G', 'allele_count']]
     else:
         db = pd.DataFrame()
 
@@ -700,29 +700,29 @@ def _calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
 #         # These represent relevant counts at these posisions
 #         if len(SNPtable1) > 0:
 #             s1_all = SNPtable1[[((m <= mm) & (p in covs))
-#                             for p, c, r, m in zip(SNPtable1['position'].values, SNPtable1['conBase'].values,
-#                             SNPtable1['refBase'].values, SNPtable1['mm'].values)]]
+#                             for p, c, r, m in zip(SNPtable1['position'].values, SNPtable1['con_base'].values,
+#                             SNPtable1['ref_base'].values, SNPtable1['mm'].values)]]
 #         else:
 #             s1_all = pd.DataFrame()
 #
 #         if len(SNPtable2) > 0:
 #             s2_all = SNPtable2[[((m <= mm) & (p in covs))
-#                             for p, c, r, m in zip(SNPtable2['position'].values, SNPtable2['conBase'].values,
-#                             SNPtable2['refBase'].values, SNPtable2['mm'].values)]]
+#                             for p, c, r, m in zip(SNPtable2['position'].values, SNPtable2['con_base'].values,
+#                             SNPtable2['ref_base'].values, SNPtable2['mm'].values)]]
 #         else:
 #             s2_all = pd.DataFrame()
 #
 #
 #         # These represent all cases where the consensus differs from the reference
 #         if len(s1_all) > 0:
-#             s1 = s1_all[s1_all['conBase'] != s1_all['refBase']]
-#             p2c1 = {p:b for p, b in zip(s1_all['position'], s1_all['conBase'])}
+#             s1 = s1_all[s1_all['con_base'] != s1_all['ref_base']]
+#             p2c1 = {p:b for p, b in zip(s1_all['position'], s1_all['con_base'])}
 #         else:
 #             s1 = pd.DataFrame()
 #
 #         if len(s2_all) > 0:
-#             s2 = s2_all[s2_all['conBase'] != s2_all['refBase']]
-#             p2c2 = {p:b for p, b in zip(s2_all['position'], s2_all['conBase'])}
+#             s2 = s2_all[s2_all['con_base'] != s2_all['ref_base']]
+#             p2c2 = {p:b for p, b in zip(s2_all['position'], s2_all['con_base'])}
 #         else:
 #             s2 = pd.DataFrame()
 #
@@ -797,13 +797,13 @@ def _calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
 #     return mm2ANI, mm2SNPlocs
 
 def _gen_blank_Mdb():
-    COLUMNS = ['position', 'conBase_1', 'refBase_1', 'varBase_1', 'baseCoverage_1',
-       'A_1', 'C_1', 'T_1', 'G_1', 'conBase_2', 'refBase_2', 'varBase_2',
-       'baseCoverage_2', 'A_2', 'C_2', 'T_2', 'G_2', 'consensus_SNP', 'population_SNP', 'mm']
+    COLUMNS = ['position', 'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
+       'A_1', 'C_1', 'T_1', 'G_1', 'con_base_2', 'ref_base_2', 'var_base_2',
+       'position_coverage_2', 'A_2', 'C_2', 'T_2', 'G_2', 'consensus_SNP', 'population_SNP', 'mm']
     return pd.DataFrame({c:[] for c in COLUMNS})
 
 def _gen_blank_SNPdb():
-    COLUMNS = ['position', 'conBase', 'refBase', 'varBase', 'baseCoverage',
+    COLUMNS = ['position', 'con_base', 'ref_base', 'var_base', 'position_coverage',
        'A', 'C', 'T', 'G']
     return pd.DataFrame({c:[] for c in COLUMNS})
 
@@ -855,7 +855,7 @@ def call_con_snps(row):
     '''
     Call a SNP if the consensus sequnces aren't the same
     '''
-    return row['conBase_1'] != row['conBase_2']
+    return row['con_base_1'] != row['con_base_2']
 
 def is_present(counts, total, model, min_freq):
     '''
@@ -872,22 +872,22 @@ def call_pop_snps(row, model, min_freq):
     1 and 2 don't share a minor allele
     '''
     # Are the consensus bases the same?
-    if row['conBase_1'] == row['conBase_2']:
+    if row['con_base_1'] == row['con_base_2']:
         return False
 
     # Is it a SNP in only one? If so, see if the reference is still there
-    if (row['conBase_1'] != row['conBase_1']) | (row['conBase_2'] != row['conBase_2']):
+    if (row['con_base_1'] != row['con_base_1']) | (row['con_base_2'] != row['con_base_2']):
 
         # In this case, is consensus allele still detected?
-        if (row['conBase_1'] != row['conBase_1']):
-            count = row['{0}_2'.format(row['refBase_2'])]
-            total = row['baseCoverage_2']
+        if (row['con_base_1'] != row['con_base_1']):
+            count = row['{0}_2'.format(row['ref_base_2'])]
+            total = row['position_coverage_2']
             if is_present(count, total, model, min_freq):
                 return False
 
-        elif (row['conBase_2'] != row['conBase_2']):
-            count = row['{0}_1'.format(row['refBase_1'])]
-            total = row['baseCoverage_1']
+        elif (row['con_base_2'] != row['con_base_2']):
+            count = row['{0}_1'.format(row['ref_base_1'])]
+            total = row['position_coverage_1']
             if is_present(count, total, model, min_freq):
                 return False
 
@@ -895,30 +895,30 @@ def call_pop_snps(row, model, min_freq):
 
     ### OK, so it's a SNP in both ###
 
-    # Look for conBase_1 in sample 2
+    # Look for con_base_1 in sample 2
     try:
-        count = row["{0}_2".format(row['conBase_1'])]
-        total = row['baseCoverage_2']
+        count = row["{0}_2".format(row['con_base_1'])]
+        total = row['position_coverage_2']
         if is_present(count, total, model, min_freq):
             return False
     except:
         print(row)
 
-    # Look for conBase_2 in sample 1
-    count = row["{0}_1".format(row['conBase_2'])]
-    total = row['baseCoverage_1']
+    # Look for con_base_2 in sample 1
+    count = row["{0}_1".format(row['con_base_2'])]
+    total = row['position_coverage_1']
     if is_present(count, total, model, min_freq):
         return False
 
     # Look for minor in both samples
     if 'allele_count_1' in row:
         if (row['allele_count_1'] > 1) & (row['allele_count_2'] > 1):
-            if row['varBase_1'] == row['varBase_2']:
+            if row['var_base_1'] == row['var_base_2']:
                 return False
 
     elif 'morphia_1' in row:
         if (row['morphia_1'] > 1) & (row['morphia_2'] > 1):
-            if row['varBase_1'] == row['varBase_2']:
+            if row['var_base_1'] == row['var_base_2']:
                 return False
 
     return True
@@ -957,7 +957,7 @@ def _is_snp(db1, db2, position, p2c1, p2c2, min_freq, model_to_use, debug=False,
     # Check if the consensus of db1 is a SNP in db2
     #counts2 = dd2.iloc[-1][C2P[con1]]
     counts2 = dd2.iloc[-1][con1]
-    total = dd2.iloc[-1]['baseCoverage']
+    total = dd2.iloc[-1]['position_coverage']
     if (counts2 >= model_to_use[total]) and ((float(counts2) / total) >= min_freq):
         pass
     else:
@@ -966,7 +966,7 @@ def _is_snp(db1, db2, position, p2c1, p2c2, min_freq, model_to_use, debug=False,
     # Check the opposite
     #counts1 = dd1.iloc[-1][C2P[con2]]
     counts1 = dd1.iloc[-1][con2]
-    total = dd1.iloc[-1]['baseCoverage']
+    total = dd1.iloc[-1]['position_coverage']
     if (counts1 >= model_to_use[total]) and ((float(counts1) / total) >= min_freq):
         pass
     else:

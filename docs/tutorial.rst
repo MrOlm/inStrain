@@ -157,11 +157,11 @@ The last note shows you where the plots and figures have been made. Here's a lis
 
   $ ls -lht N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/output/
   total 512
-  -rw-r--r--  1 mattolm  staff   545B Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_read_report.tsv
+  -rw-r--r--  1 mattolm  staff   545B Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_mapping_info.tsv
   -rw-r--r--  1 mattolm  staff   602B Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_genomeWide_scaffold_info.tsv
   -rw-r--r--  1 mattolm  staff    25K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_SNP_mutation_types.tsv
   -rw-r--r--  1 mattolm  staff   125K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_gene_info.tsv
-  -rw-r--r--  1 mattolm  staff    19K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_read_report.tsv
+  -rw-r--r--  1 mattolm  staff    19K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_mapping_info.tsv
   -rw-r--r--  1 mattolm  staff    14K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_linkage.tsv
   -rw-r--r--  1 mattolm  staff    26K Jan 23 15:16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS_SNVs.tsv
   mattolm@Matts-MacBook-Pro-3:~/Programs/testing_house/tutorial$ caffold_min1000.fa-vs-N5_271_010G1.IS_scaffold_info.tsv
