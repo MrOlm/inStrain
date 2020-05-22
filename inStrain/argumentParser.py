@@ -94,7 +94,7 @@ def parse_args(args):
     # fiflags.add_argument("-s", "--generate_sam", action="store", default=None, \
     #     help='Specify the location to write a .sam file with filtered reads only.')
     fiflags.add_argument("--scaffold_level_mapping_info", action="store_true", default=False, help='Store read filtering info for each scaffold')
-    fiflags.add_argument("--deatiled_mapping_info", action="store_true", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
+    fiflags.add_argument("--detailed_mapping_info", action="store_true", default=False, help='Make a detailed read report indicating deatils about each individual mapped read')
 
     # Make a parent parser for SNV calling
     variant_parent = argparse.ArgumentParser(add_help=False)

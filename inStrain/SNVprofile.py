@@ -175,9 +175,10 @@ class SNVprofile:
 
             # Do you have the mutation types? If so, merge in
             mdb = self.get('SNP_mutation_types')
-            if mdb is not None:
-                mdb = mdb[['scaffold', 'position', 'mutation_type', 'mutation', 'gene']]
-                db = pd.merge(db, mdb, how='left', on=['scaffold', 'position'])
+            if (mdb is not None):
+                if len(mdb) > 0:
+                    mdb = mdb[['scaffold', 'position', 'mutation_type', 'mutation', 'gene']]
+                    db = pd.merge(db, mdb, how='left', on=['scaffold', 'position'])
 
             # Do you have information about coverage? If so, merge in
             pass
@@ -258,7 +259,7 @@ class SNVprofile:
             if store:
                 base = self.get_output_base()
                 location = base + name + '.tsv'
-                os.remove() if os.path.exists(location) else None
+                os.remove(location) if os.path.exists(location) else None
                 f = open(location, 'a')
                 f.write("# {0}\n".format(' '.join(["{0}:{1}".format(k, v) for k, v in values.items()])))
 
@@ -977,8 +978,8 @@ def convert_SNVprofile(pickle_loc):
             # nIS.store('clonT', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'clonality'),
             #         'special', "Scaffold -> mm -> position based clonality")
 
-        elif attr == 'mapping_info':
-            nIS.store('mapping_info', getattr(oIS, attr), 'pandas', "Report on reads")
+        elif attr in ['mapping_info', 'read_report']:
+            nIS.store(attr, getattr(oIS, attr), 'pandas', "Report on reads")
 
         else:
             logging.error('I dont know how to store {0}!'.format(attr))

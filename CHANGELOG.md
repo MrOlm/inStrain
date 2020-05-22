@@ -14,6 +14,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 - If interrupted during profile, kill all processes
 - Output tables are all made using the "generate" command of SNVprofile
 - Big changes to the actual output tables
+- This version breaks lots of plots and the "compare" function! Watch out!
 
 ## [1.3.0f] - 2020-05-13
 - dN/dS for genes

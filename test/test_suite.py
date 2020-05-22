@@ -312,7 +312,7 @@ class test_genome_wide():
     def setUp(self):
         self.test_dir = load_random_test_dir()
         self.IS = load_data_loc() + \
-            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.IS.v1.3.0g/'
         self.stb = load_data_loc() + \
             'N5_271_010G1.maxbin2.stb'
         self.fasta = load_data_loc() + \
@@ -372,7 +372,7 @@ class test_genome_wide():
         # Load output
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genome_info' in f]
+        files = [f for f in files if (('genome_info' in f) & ('testdir_' in f))]
         assert len(files) == 1, files
         for f in files:
             db = pd.read_csv(f, sep='\t')
@@ -479,12 +479,11 @@ class test_genome_wide():
         # Load output
         IS = inStrain.SNVprofile.SNVprofile(location)
         files = glob.glob(IS.get_location('output') + '*')
-        files = [f for f in files if 'genomeWide' in f]
-        assert len(files) == 2
+        files = [f for f in files if 'genome_info' in f]
+        assert len(files) == 1, files
         for f in files:
             db = pd.read_csv(f, sep='\t')
-            if 'genomeWide_scaffold_info' in f:
-                assert 'mm' in list(db.columns)
+            assert 'mm' in list(db.columns)
 
     def test4(self):
         '''
@@ -747,7 +746,7 @@ class test_gene_statistics():
         self.old_IS = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.v4.IS'
         self.IS = load_data_loc() + \
-            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.IS.v1.3.0g'
         self.genes = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
         self.IS2 = load_data_loc() + \
@@ -984,6 +983,18 @@ class test_gene_statistics():
         location = os.path.join(self.test_dir, os.path.basename(self.IS2))
         shutil.copytree(self.IS2, location)
 
+        # Oh god this is horrible; re-name some variables
+        tis = inStrain.SNVprofile.SNVprofile(location)
+        db = tis.get('cumulative_snv_table')
+        db = db.rename(columns={'varBase':'var_base', 'conBase':'con_base'})
+        tis.store('cumulative_snv_table', db, 'pandas',
+                    'Cumulative SNP on mm level. Formerly snpLocations.pickle')
+
+        # db = tis.get('raw_snp_table')
+        # db = db.rename(columns={'var_base':'varBase', 'con_base':'conBase'})
+        # tis.store('raw_snv_table', db, 'pandas',
+        #             'Contains raw SNP information on a mm level')
+
         # Run program
         base = self.test_dir + 'testN'
 
@@ -994,7 +1005,7 @@ class test_gene_statistics():
 
         # Make sure it produced output
         rawfiles = glob.glob(location + '/output/*')
-        assert len(rawfiles) == 8, [rawfiles, location + '/output/*', len(rawfiles)]
+        assert len(rawfiles) == 7, [rawfiles, location + '/output/*', len(rawfiles)]
 
         # Internally verify
         IS = inStrain.SNVprofile.SNVprofile(location)
@@ -1056,7 +1067,7 @@ class test_gene_statistics():
 
         # Make sure it produced output
         rawfiles = glob.glob(location + '/output/*')
-        assert len(rawfiles) == 8, [rawfiles, location + '/output/*', len(rawfiles)]
+        assert len(rawfiles) == 7, [rawfiles, location + '/output/*', len(rawfiles)]
 
         # Internally verify
         IS = inStrain.SNVprofile.SNVprofile(location)
@@ -1085,40 +1096,40 @@ class test_gene_statistics():
         rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
         os.remove(rr)
 
-        # Make sure it can make plots
-        importlib.reload(logging)
-        cmd = "inStrain plot -i {0}".format(location)
-        print(cmd)
-        call(cmd, shell=True)
-
-        # Run the IS plots
-        FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf', 'genomeWide_microdiveristy_metrics.pdf',
-                'readANI_distribution.pdf',
-                'ScaffoldInspection_plot.pdf',
-                'ReadFiltering_plot.pdf',
-                'GeneHistogram_plot.pdf']
-
-        # Load output
-        IS = inStrain.SNVprofile.SNVprofile(location)
-        figs = glob.glob(IS.get_location('figures') + '*')
-
-        # Make sure logging works
-        log_log = IS.get_location('log') + 'log.log'
-        rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
-        got = 0
-        with open(rr, 'r') as o:
-            for line in o.readlines():
-                line = line.strip()
-                if 'Plot' in line:
-                    got += 1
-                print(line)
-        assert got == 8, got # Its in there twice for random reasons
-
-        # Make sure all figures are made
-        for F in FIGS:
-            assert len([f for f in figs if F in f]) == 1, F
-        for fig in figs:
-            assert os.path.getsize(fig) > 1000, fig
+        # # Make sure it can make plots
+        # importlib.reload(logging)
+        # cmd = "inStrain plot -i {0}".format(location)
+        # print(cmd)
+        # call(cmd, shell=True)
+        #
+        # # Run the IS plots
+        # FIGS = ['CoverageAndBreadth_vs_readMismatch.pdf', 'genomeWide_microdiveristy_metrics.pdf',
+        #         'readANI_distribution.pdf',
+        #         'ScaffoldInspection_plot.pdf',
+        #         'ReadFiltering_plot.pdf',
+        #         'GeneHistogram_plot.pdf']
+        #
+        # # Load output
+        # IS = inStrain.SNVprofile.SNVprofile(location)
+        # figs = glob.glob(IS.get_location('figures') + '*')
+        #
+        # # Make sure logging works
+        # log_log = IS.get_location('log') + 'log.log'
+        # rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
+        # got = 0
+        # with open(rr, 'r') as o:
+        #     for line in o.readlines():
+        #         line = line.strip()
+        #         if 'Plot' in line:
+        #             got += 1
+        #         print(line)
+        # assert got == 8, got # Its in there twice for random reasons
+        #
+        # # Make sure all figures are made
+        # for F in FIGS:
+        #     assert len([f for f in figs if F in f]) == 1, F
+        # for fig in figs:
+        #     assert os.path.getsize(fig) > 1000, fig
 
     def test5(self):
         pass
@@ -1172,7 +1183,7 @@ class test_filter_reads():
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain filter_reads {0} {1} -o {2} --scaffold_level_read_report".format(self.sorted_bam, \
+        cmd = "inStrain filter_reads {0} {1} -o {2} --scaffold_level_mapping_info".format(self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
@@ -1184,17 +1195,18 @@ class test_filter_reads():
         assert len(Rdb) == 179, len(Rdb)
 
         # Make it make the detailed read report
-        cmd = "inStrain filter_reads {0} {1} -o {2} --deatiled_read_report".format(self.sorted_bam, \
+        cmd = "inStrain filter_reads {0} {1} -o {2} --detailed_mapping_info".format(self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
 
         # Make sure it produced output
         files = glob.glob(base + '/*')
+        print(files)
         assert len(files) == 2
-        Rdb = pd.read_csv(files[0], sep='\t', header=1)
+        Rdb = pd.read_csv([f for f in files if 'detailed' not in f][0], sep='\t', header=1)
         assert len(Rdb) == 179, len(Rdb)
-        RRdb = pd.read_csv(files[1], sep='\t', header=1)
+        RRdb = pd.read_csv([f for f in files if 'detailed' in f][0], sep='\t', header=1)
         assert len(RRdb) == 41257
 
 
@@ -1206,11 +1218,11 @@ class test_filter_reads():
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         scaffolds = list(scaff2sequence.keys())
         s2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
-        db = inStrain.filter_reads.make_detailed_read_report(s2pair2info, version=1)
+        db = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info, version=1)
 
         # Run version 2 to get scaffold to pairs to info
         s2pair2info2 = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
-        db2 = inStrain.filter_reads.make_detailed_read_report(s2pair2info2)
+        db2 = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info2)
 
         # Make sure they get the same base reads
         assert len(db) == len(db2[db2['reads'] == 2])
@@ -1271,7 +1283,7 @@ class test_filter_reads():
         RRo = inStrain.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
 
         # Test out the read filtering report
-        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, scaffold_level_read_report=True, **kwargs)
+        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, scaffold_level_mapping_info=True, **kwargs)
 
         for col in ['singletons']:
             assert RR['unfiltered_' + col].tolist()[0] > 0
@@ -1306,14 +1318,14 @@ class test_filter_reads():
         assert RR['filtered_priority_reads'].tolist()[0] == 0
 
         # Try out allowing singletons
-        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_read_report=True, **kwargs)
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_mapping_info=True, **kwargs)
         for col in ['singletons']:
             assert RRs['unfiltered_' + col].tolist()[0] > 0
         assert RRs['unfiltered_priority_reads'].tolist()[0] == 0
         assert RRs['filtered_priority_reads'].tolist()[0] == 0
 
         # Try out priority_reads
-        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_read_report=True, pairTOinfo=pair2info2, priority_reads_set=priority_reads, **kwargs)
+        RRs = inStrain.filter_reads.makeFilterReport2(s2pair2info2, scaffold_level_mapping_info=True, pairTOinfo=pair2info2, priority_reads_set=priority_reads, **kwargs)
         for col in ['singletons']:
             assert RRs['unfiltered_' + col].tolist()[0] > 0
         assert RRs['unfiltered_priority_reads'].tolist()[0] > 0
@@ -1467,8 +1479,8 @@ class test_filter_reads():
             if cov1 != cov2:
                 cov_diffs += 1
 
-            cl1 = db1['mean_clonality'].tolist()[0]
-            cl2 = db2['mean_clonality'].tolist()[0]
+            cl1 = db1['nucl_diversity'].tolist()[0]
+            cl2 = db2['nucl_diversity'].tolist()[0]
             if cl1 != cl2:
                 cl_diffs += 1
 
@@ -2353,73 +2365,73 @@ class test_strains():
         # self.test0()
         # self.tearDown()
 
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test9()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test10()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test13()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test14()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test15()
-        # self.tearDown()
+        self.setUp()
+        self.test1()
+        self.tearDown()
 
-        self.setUp(destroy=False)
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
+
+        self.setUp()
+        self.test9()
+        self.tearDown()
+
+        self.setUp()
+        self.test10()
+        self.tearDown()
+
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
+
+        self.setUp()
+        self.test13()
+        self.tearDown()
+
+        self.setUp()
+        self.test14()
+        self.tearDown()
+
+        self.setUp()
+        self.test15()
+        self.tearDown()
+
+        self.setUp(destroy=True)
         self.test16()
-        #self.tearDown()
+        self.tearDown()
 
-        # self.setUp()
-        # self.test17()
-        # self.tearDown()
+        self.setUp()
+        self.test17()
+        self.tearDown()
 
     def test0(self):
         '''
@@ -2728,7 +2740,7 @@ class test_strains():
         _internal_verify_Sdb(Odb)
 
         # Check the read report
-        rloc = glob.glob(Sprofile.get_location('output') + '*read_report.tsv')[0]
+        rloc = glob.glob(Sprofile.get_location('output') + '*mapping_info.tsv')[0]
         with open(rloc) as f:
             first_line = f.readline()
         assert "filter_cutoff:0.8" in first_line
@@ -2749,7 +2761,7 @@ class test_strains():
             inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
             Sprofile = inStrain.SNVprofile.SNVprofile(base)
 
-            rloc = glob.glob(Sprofile.get_location('output') + 'test_read_report.tsv')[0]
+            rloc = glob.glob(Sprofile.get_location('output') + 'test_mapping_info.tsv')[0]
             with open(rloc) as f:
                 first_line = f.readline()
             assert "{0}:{1}".format(thing, val) in first_line, [first_line, thing, val]
@@ -2847,7 +2859,7 @@ class test_strains():
 
         # Make sure you actually filtered out the scaffolds
         Sdb = pd.read_csv(glob.glob(base + '/output/*scaffold_info.tsv')[0], sep='\t')
-        Rdb = pd.read_csv(glob.glob(base + '/output/*read_report.tsv')[0], sep='\t', header=1)
+        Rdb = pd.read_csv(glob.glob(base + '/output/*mapping_info.tsv')[0], sep='\t', header=1)
         print("{0} of {1} scaffolds have >10 reads".format(len(Rdb[Rdb['filtered_pairs'] >= 10]),
                     len(Rdb)))
         assert len(Sdb['scaffold'].unique()) == len(Rdb[Rdb['filtered_pairs'] >= 10]['scaffold'].unique()) - 1
@@ -2942,7 +2954,7 @@ class test_strains():
 
         # Make sure it produced output
         assert os.path.isdir(base)
-        assert len(glob.glob(base + '/output/*')) == 8
+        assert len(glob.glob(base + '/output/*')) == 6, len(glob.glob(base + '/output/*'))
         assert len(glob.glob(base + '/log/*')) == 3
 
         # Make sure the output makes sense
@@ -2972,7 +2984,7 @@ class test_strains():
 
         # Make sure it produced output
         assert os.path.isdir(base)
-        assert len(glob.glob(base + '/output/*')) == 8
+        assert len(glob.glob(base + '/output/*')) == 6
 
         # Make sure the output makes sense
         S1 = inStrain.SNVprofile.SNVprofile(base)
@@ -2982,8 +2994,8 @@ class test_strains():
         counts0 = sum([len(x[2]) if 2 in x else 0 for s, x in clontR.items()])
 
         # Make sure its in the genome_wide table
-        gdb = pd.read_csv(glob.glob(base + '/output/*genomeWide_scaffold_info*.tsv')[0], sep='\t')
-        assert 'rarefied_mean_microdiversity' in gdb.columns, gdb.head()
+        gdb = pd.read_csv(glob.glob(base + '/output/*genome_info*.tsv')[0], sep='\t')
+        assert 'nucl_diversity' in gdb.columns, gdb.head()
 
         # Run again with different rarefied coverage
         base = self.test_dir + 'test2'
@@ -3009,7 +3021,7 @@ class test_strains():
         cmd = "inStrain profile {1} {2} -o {3} -g {4} --skip_plot_generation -p 6 -d".format(self.script, self.sorted_bam, \
             self.fasta, base, self.genes)
         print(cmd)
-        #call(cmd, shell=True)
+        call(cmd, shell=True)
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
@@ -3096,7 +3108,7 @@ class test_strains():
                         if r in s.columns:
                             del s[r]
 
-                if name in ['read_report.tsv']:
+                if name in ['mapping_info.tsv']:
                     e = pd.read_csv(e_file[0], sep='\t', header=1)
                     s = pd.read_csv(s_file, sep='\t', header=1)
 
@@ -3410,35 +3422,35 @@ class test_strains():
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
         d = d.sort_values('mm')
-        for thing in ['unmaskedBreadth', 'coverage', 'coverage_median']:
+        for thing in ['breadth_minCov', 'coverage', 'coverage_median']:
             assert d[thing].tolist() == sorted(d[thing].tolist()), d
 
-        clons = [1-c for c in d['mean_clonality']]
-        micros = [c for c in d['mean_microdiversity']]
-        for c, m in zip(clons, micros):
-            if c == c:
-                assert abs(c - m) < 0.0001, [c, m, scaff, d]
+        # clons = [1-c for c in d['mean_clonality']]
+        # micros = [c for c in d['mean_microdiversity']]
+        # for c, m in zip(clons, micros):
+        #     if c == c:
+        #         assert abs(c - m) < 0.0001, [c, m, scaff, d]
 
-    sdb = Sdb[Sdb['unmaskedBreadth'] > 0]
+    sdb = Sdb[Sdb['breadth_minCov'] > 0]
     for col in sdb.columns:
-        if col in ['rarefied_mean_microdiversity', 'rarefied_median_microdiversity']:
+        if col in ['nucl_diversity_rarefied', 'nucl_diversity_rarefied_median']:
             continue
         if len(sdb[sdb[col].isna()]) > 0:
             print(col)
             print(sdb[sdb[col].isna()])
 
     for i, row in Sdb.iterrows():
-        if row['consensus_SNPs'] > 0:
-            assert row['conANI'] != 0
+        if row['consensus_divergent_sites'] > 0:
+            assert row['conANI_reference'] != 0
 
-    assert Sdb['conANI'].max() <= 1
-    assert Sdb['unmaskedBreadth'].max() <= 1
+    assert Sdb['conANI_reference'].max() <= 1
+    assert Sdb['breadth_minCov'].max() <= 1
     assert Sdb['breadth'].max() <= 1
 
-    if 'rarefied_breadth' not in sdb.columns:
+    if 'breadth_rarefied' not in sdb.columns:
         assert len(sdb) == len(sdb.dropna())
     else:
-        sdb = sdb[sdb['rarefied_breadth'] > 0]
+        sdb = sdb[sdb['breadth_rarefied'] > 0]
         assert len(sdb) == len(sdb.dropna())
 
 def _internal_verify_OdbSdb(Odb, Sdb):
@@ -3449,7 +3461,7 @@ def _internal_verify_OdbSdb(Odb, Sdb):
     # Ensure internal consistancy between Sdb and Cdb at the lowest mm
     low_mm = Sdb['mm'].min()
     for scaff, db in Sdb[Sdb['mm'] == low_mm].groupby('scaffold'):
-        snps = Odb['SNPs'][(Odb['scaffold'] == scaff) & (Odb['mm'] \
+        snps = Odb['divergent_site_count'][(Odb['scaffold'] == scaff) & (Odb['mm'] \
                 == low_mm)].fillna(0).tolist()[0]
         assert snps == len(db), [snps, len(db), scaff, low_mm]
 
@@ -3457,7 +3469,7 @@ def _internal_verify_OdbSdb(Odb, Sdb):
     odb = Odb.sort_values('mm').drop_duplicates(subset='scaffold', keep='last')
     for scaff, db in Sdb.sort_values('mm').drop_duplicates(subset=['scaffold'\
                     ,'position'], keep='last').groupby('scaffold'):
-        snps = odb['SNPs'][(odb['scaffold'] == scaff)].fillna(0).tolist()[0]
+        snps = odb['divergent_site_count'][(odb['scaffold'] == scaff)].fillna(0).tolist()[0]
         assert snps == len(db), [snps, len(db), scaff]
 
 def compare_dfs(db1, db2, round=4, verbose=False):
@@ -3672,14 +3684,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
+    test_filter_reads().run()
     test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
     # test_plot().run()
     # test_readcomparer().run()
-    # test_special().run()
+    test_special().run()
 
     print('everything is working swimmingly!')

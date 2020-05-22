@@ -163,7 +163,7 @@ class ProfileController():
         # Load dictionary of paired reads
         scaffolds = list(FAdb['scaffold'].unique())
 
-        detailed_report = vargs.get('deatiled_mapping_info', False)
+        detailed_report = vargs.get('detailed_mapping_info', False)
         if detailed_report:
             Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
         else:

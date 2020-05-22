@@ -41,8 +41,13 @@ class Controller():
         # Make the genome-wide information table for a profile object
         object_type = IS.get('object_type')
         if object_type is None:
-            logging.error("Theres no object type! This is bad! I'll assume profile")
-            object_type = 'profile'
+            if IS.get('comparisonsTable') is None:
+                object_type = 'profile'
+            else:
+                object_type = 'compare'
+            # logging.error("Theres no object type! This is bad! I'll assume profile")
+            # print(IS)
+            # object_type = 'profile'
 
         if object_type == 'profile':
             # Generate and store the genome level info
@@ -53,6 +58,11 @@ class Controller():
             IS.generate('genome_info')
             IS.generate('SNVs')
 
+        else:
+            self.prepare_genome_wide(IS, vargs)
+            gdb = genomeWideFromIS(IS, 'read_compaer', **vargs)
+            out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
+            gdb.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
             # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
             # GIdb.to_csv(out_base + 'genome_info.tsv', index=False, sep='\t')
 
@@ -60,8 +70,8 @@ class Controller():
             # IS.generate('SNVs')
 
         # Make the genome-wide information table for a compare object
-        elif object_type == 'compare':
-            pass
+        # elif object_type == 'compare':
+        #     pass
         #
         # # Figure out output base
         # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
@@ -217,27 +227,31 @@ def genomeLevel_from_IS(IS, **kwargs):
     logging.debug("SubPoint_genomeLevel mapping_info end RAM is {0}".format(
                 psutil.virtual_memory()[1]))
 
-    # Calculate genome-level linkage metrics
-    ldb = IS.get('raw_linkage_table')
-    if not mm_level:
-        ldb = ldb.sort_values('mm').drop_duplicates(
-                subset=['scaffold', 'position_A', 'position_B'], keep='last')\
-                .sort_values(['scaffold', 'position_A', 'position_B'])
-        gdb['mm'] = 1000
-    ldb = _add_stb(ldb, stb)
-
-    logging.debug("SubPoint_genomeLevel linkage start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
-
-    ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
-
-    logging.debug("SubPoint_genomeLevel linkage end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
-
     # Merge
     mdb = pd.merge(GSI_db, EG_db, on=['genome', 'mm'], how='outer')
-    mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
     mdb = pd.merge(mdb, rdb, on=['genome'], how='left')
+
+    # Calculate genome-level linkage metrics
+    ldb = IS.get('raw_linkage_table')
+    if len(ldb) > 0:
+        if not mm_level:
+            ldb = ldb.sort_values('mm').drop_duplicates(
+                    subset=['scaffold', 'position_A', 'position_B'], keep='last')\
+                    .sort_values(['scaffold', 'position_A', 'position_B'])
+            gdb['mm'] = 1000
+        ldb = _add_stb(ldb, stb)
+
+        logging.debug("SubPoint_genomeLevel linkage start RAM is {0}".format(
+                    psutil.virtual_memory()[1]))
+
+        ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
+
+        logging.debug("SubPoint_genomeLevel linkage end RAM is {0}".format(
+                    psutil.virtual_memory()[1]))
+
+
+        mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
+
 
     if not mm_level:
         del mdb['mm']
@@ -683,11 +697,12 @@ def _genome_wide_linkage(ldb, s2b, mms, **kwrags):
 
 #     return pd.DataFrame(table)
 
-def _genome_wide_readComparer(gdb, stb, b2l, **kwargs):
+def _genome_wide_readComparer(gdb, s2b, b2l, **kwargs):
     '''
     Now this does work on the genome level
     '''
     mm_level = kwargs.get('mm_level', False)
+    stb = s2b
 
     if not mm_level:
         gdb = gdb.sort_values('mm').drop_duplicates(
@@ -904,11 +919,11 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
         if scaff in covT:
             cov = inStrain.profileUtilities.mm_counts_to_counts_shrunk(covT[scaff], maxMM=maxMM, fill_zeros=slen)
         else:
-            cov = pd.Series(index=np.arange(fill_zeros))
+            cov = pd.Series(index=np.arange(slen))
 
 
         if mask_edges:
-            assert len(cov) > (mask_edges * 2)
+            assert len(cov) >= (mask_edges * 2), [len(cov), scaff, slen]
             cov = cov[mask_edges:len(cov)-mask_edges]
             slen = slen - (mask_edges * 2)
 

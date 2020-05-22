@@ -27,7 +27,7 @@ class Controller():
         vargs = vars(args)
         del vargs['bam']
 
-        detailed_report = vargs.get('deatiled_mapping_info', False)
+        detailed_report = vargs.get('detailed_mapping_info', False)
         generate_sam = vargs.get('generate_sam', False)
         out_folder = vargs.get('output', False)
 
@@ -63,7 +63,7 @@ class Controller():
         write_mapping_info(RR, RR_loc, **kwargs)
 
         if dRR is not None:
-            RR_loc = os.path.join(out_folder, 'deatiled_mapping_info.csv')
+            RR_loc = os.path.join(out_folder, 'detailed_mapping_info.csv')
             dRR.to_csv(RR_loc, index=False, sep='\t')
 
 def load_paired_reads2(bam, scaffolds, **kwargs):
@@ -78,7 +78,7 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
         RR_detailed: A detailed read report
     '''
     # Parse the kwargs
-    detailed_report = kwargs.get('deatiled_mapping_info', False)
+    detailed_report = kwargs.get('detailed_mapping_info', False)
 
     # Get the pairs
     scaff2pair2info = get_paired_reads_multi2(bam, scaffolds, **kwargs)
