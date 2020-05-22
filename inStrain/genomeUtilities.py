@@ -939,6 +939,6 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
         # Update the tally
         tally += slen
 
-    cov = pd.concat(arrs, verify_integrity=False, ignore_index=True).reset_index(drop=True)
+    cov = pd.concat(arrs, verify_integrity=False, ignore_index=True).reset_index(drop=True).fillna(0)
 
     return cov, scaff2index_addition
