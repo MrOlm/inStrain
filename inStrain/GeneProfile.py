@@ -249,7 +249,9 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
         # Get the genes
         recieved_profiles = 0
         while recieved_profiles < len(cmd_groups):
+            logging.debug('going to grab at {0}'.format(recieved_profiles))
             GPs = gene_result_queue.get(timeout=5)
+            logging.debug('did a grab at {0}'.format(recieved_profiles))
             recieved_profiles += 1
             pbar.update(1)
             for GP in GPs:

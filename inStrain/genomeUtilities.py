@@ -314,8 +314,12 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
                     pass
 
             # Calculate iRep
-            iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
-            logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
+            try:
+                iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
+                logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
+            except:
+                logging.warning("FAILURE iRepError {0} {1}".format(genome, mm))
+                iRep = np.nan
 
             # Calculate medians and other variants
             table['mm'].append(mm)

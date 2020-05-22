@@ -512,6 +512,11 @@ class test_genome_wide():
         '''
         Test iRep methods
         '''
+        # Make sure it can run on a random thing
+        iRep, iRep_junk = inStrain.irep_utilities.calculate_iRep_from_coverage_array(
+                            np.array([5]*50000 + [6]*50000 + [7]*50000), 1)
+        assert abs(iRep - 1.62) < 0.01
+
         # Load pickled test data
         Test_sets = pickle.load( open( self.iRep_test_set, "rb" ) )
 

@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0g] - Unpushed
+## [1.3.0h] - 2020-05-22
+- Add some logging to gene profile in single thread mode
+- Add the ability to catch iRep failures
+
+## [1.3.0g] - 2020-05-21
 - Add a 5 second timeout for single thread runs
 - Store fasta_loc during profile
 - Store scaffold 2 length from profile, not from within the profiled splits

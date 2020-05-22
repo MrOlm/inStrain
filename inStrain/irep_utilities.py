@@ -186,6 +186,7 @@ def _calc_iRep(db, length, on='coverage_OLT', FilterChriteria=None):
     dif = float(length)/float(windows)
     Xs = [int(i * dif) + 1 for i, value in enumerate(Ys, 0)]
     Xt, Yt = trim_data((Xs, Ys), xy = True)
+    db = pd.DataFrame({'index':Xt, 'cov':Yt})
     m, b, fit, r2, info = fit_coverage((Xt, Yt, None, True))
     iRep = 2**(m * length)
 
