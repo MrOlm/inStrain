@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0i] - UNCOMITTED
+- Fix bug with small scaffolds and add test to catch it
+- Change --min_fasta_reads to --min_scaffold_reads
+- Add --min_genome_coverage to profile, along with tests to make sure it works
+- Handle iRepErro and StbErrors now
+
 ## [1.3.0h] - 2020-05-22
 - Add some logging to gene profile in single thread mode
 - Add the ability to catch iRep failures

@@ -148,6 +148,7 @@ class ProfileController():
         """
         logging.info(message)
         logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'filter_reads'))
+        #inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "start")
 
         # global s2l # make ths global so we can access it later.
 
@@ -178,8 +179,12 @@ class ProfileController():
         # Get scaffold to paired reads (useful for multiprocessing)
         s2p = RR.set_index('scaffold')['filtered_pairs'].to_dict()
 
+        # Get the read length
+        rl = float(RR.loc[0, 'mean_pair_length'])
+
         # Filter the .fasta file
-        FAdb = self.filter_fasta(FAdb, s2p, args.min_fasta_reads)
+        FAdb = self.filter_fasta(FAdb, s2p, s2l, rl, **vargs)
+        assert len(FAdb) > 0, "No scaffolds passed initial filtering based on numbers of mapped reads"
 
         if args.skip_mm_profiling:
             Rset = set(Rdic.keys())
@@ -388,6 +393,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if args.fdr == 0:
             args.fdr = 1e-6
 
+        # Make sure you have a .stb if needed
+        if args.min_genome_coverage != 0:
+            assert args.stb != [], 'If you adjust the minimum genome coverage, you need to provide an .stb!'
+
         return args
 
     def write_output(self, Sprofile, args):
@@ -418,10 +427,19 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         # RR = Sprofile.get('mapping_info')
         # inStrain.filter_reads.write_mapping_info(RR, out_base + 'mapping_info.tsv', **vars(args))
 
-    def filter_fasta(self, FAdb, s2p, min_reads=0):
+    def filter_fasta(self, FAdb, s2p, s2l, rl, **kwargs):
         '''
         Filter the .fasta file based on the min number of mapped paired reads
         '''
+        min_reads = kwargs.get('min_scaffold_reads', 0)
+        min_genome_coverage = kwargs.get('min_genome_coverage', 0)
+
+        if min_genome_coverage > 0:
+            FAdb = _filter_genome_coverage(FAdb, s2l, s2p, rl, min_genome_coverage, kwargs.get('stb'))
+
+        if len(FAdb) == 0:
+            return FAdb
+
         # Remove scaffolds without the min number of reads
         FAdb = FAdb[[True if (s2p[s] >= min_reads) else False for s in FAdb['scaffold']]]
 
@@ -430,6 +448,35 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         FAdb = FAdb.sort_values('filtered_pairs', ascending=False)
 
         return FAdb
+
+def _filter_genome_coverage(FAdb, s2l, s2p, rl, min_genome_coverage, stb_loc):
+    '''
+    Calcualte the coverage of genomes based on the read filtering, and only keep scaffolds that are above the threshold
+
+    stb_loc should be a list, direct from argument parser
+    '''
+    cdb = FAdb.drop_duplicates(subset=['scaffold'])
+    cdb['read_pairs'] = cdb['scaffold'].map(s2p)
+    cdb['length'] = cdb['scaffold'].map(s2l)
+
+    stb = inStrain.genomeUtilities.load_scaff2bin(stb_loc)
+    cdb = inStrain.genomeUtilities._add_stb(cdb, stb)
+
+    xdb = cdb.groupby('genome')[['read_pairs', 'length']].agg(sum).reset_index()
+    xdb['genome_bases'] = xdb['read_pairs'] * rl
+    xdb['coverage'] = xdb['genome_bases'] / xdb['length']
+    genome_to_rm = set(xdb[xdb['coverage'] < min_genome_coverage]['genome'].tolist())
+
+    scaffolds_to_rm_1 = set(cdb[cdb['genome'].isin(genome_to_rm)]['scaffold'].tolist())
+    scaffolds_to_rm_2 = set(cdb[cdb['genome'].isna()]['scaffold'].tolist())
+    scaffolds_to_rm = scaffolds_to_rm_1.union(scaffolds_to_rm_2)
+
+    logging.info("{0} of {1} genomes have less than {2}x estimated coverage".format(
+            len(genome_to_rm), len(xdb['genome'].unique()), min_genome_coverage))
+    logging.info("{0} of the original {1} scaffolds are removed ({2} have a low coverage genome; {3} have no genome)".format(
+            len(scaffolds_to_rm), len(cdb['scaffold'].unique()), len(scaffolds_to_rm_1), len(scaffolds_to_rm_2)))
+
+    return FAdb[~FAdb['scaffold'].isin(scaffolds_to_rm)]
 
 def load_scaff_list(list):
     '''
@@ -662,7 +709,7 @@ def _sort_index_bam(bam, rm_ori=False):
 #         help='Minimum SNP frequency to confirm a SNV (both this AND the 0.  001 percent FDR snp count cutoff must be true).')
 #     parser.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
 #         help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
-#     parser.add_argument("--min_fasta_reads", action="store", default=0, type=int,\
+#     parser.add_argument("--min_scaffold_reads", action="store", default=0, type=int,\
 #         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
 #     parser.add_argument("--scaffolds_to_profile", action="store",\
 #         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')

@@ -141,10 +141,12 @@ def parse_args(args):
 
     # Other Parameters
     Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')
+    Oflags.add_argument("--min_scaffold_reads", action="store", default=1, type=int,\
+        help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
+    Oflags.add_argument("--min_genome_coverage", action="store", default=0, type=float,\
+        help='Minimum number of reads mapping to a genome to proceed with profiling it. MUST profile .stb if this is set')
     Oflags.add_argument("--min_snp", action="store", default=20, \
         help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
-    Oflags.add_argument("--min_fasta_reads", action="store", default=1, type=int,\
-        help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
     Oflags.add_argument('--store_everything', action='store_true', default=False,\
         help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
     Oflags.add_argument('--skip_mm_profiling', action='store_true', default=False,\

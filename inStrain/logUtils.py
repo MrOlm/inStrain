@@ -2,6 +2,7 @@ import os
 import sys
 import h5py
 import time
+import psutil
 import shutil
 import logging
 import traceback
@@ -183,6 +184,14 @@ def load_log(logfile):
 
                 elif fail_type == 'GeneException':
                     pstring = "type={0};scaffold={1}".format(fail_type, linewords[5])
+
+                elif fail_type == 'StbError':
+                    pstring = "type={0};scaffold={1};bin={2};stb_type={3}".format(
+                                fail_type, linewords[5], linewords[6], linewords[7])
+
+                elif fail_type == 'iRepError':
+                    pstring = "type={0};genome={1};mm={2}".format(
+                                fail_type, linewords[5], linewords[6])
 
                 else:
                     pstring = "type={0}".format(fail_type)
@@ -594,6 +603,19 @@ def _gen_failures_report(Ldb):
                     report += "{0}\n".format(row['scaffold'])
                 report += '\n'
 
+            elif t == 'StbError':
+                report += "The following scaffolds were in the .stb file given, but not the original .fasta file " \
+                        + "used for profiling. They will not be considered in genomeLevel operations:\n"
+                for i, row in fdb.iterrows():
+                    report += "{0} (intended for genome {1})\n".format(row['scaffold'], row['bin'])
+                report += '\n'
+
+            elif t == 'iRepError':
+                report += "The following genomes failed to calculate iRep for an unknown reason:\n"
+                for i, row in fdb.iterrows():
+                    report += "{0} (mm {1})\n".format(row['genome'], row['mm'])
+                report += '\n'
+
             else:
                 report += "I dont know how to report {0} failures\n".format(t)
                 for i, row in fdb.iterrows():
@@ -784,3 +806,36 @@ def log_fmt_to_epoch(ttime):
         datetimeobject = datetime.strptime(ttime,oldformat)
 
     return datetimeobject.timestamp()
+
+def log_checkpoint(class, task, status, inc_children=True):
+    '''
+    Log a checkpoint for the program in the debug under "log" status
+
+    Arguments:
+        class  = where is this log comming from ("main_profile", "GeneProfile", etc.)
+        task   = what is the task that you're logging ("load globals", "run loop", etc.)
+        stauts = either the string "start" and "end"
+        inc_children = include child processes as well
+
+    Results:
+        Make the following log message:
+        "Checkpoint class task status RAM"
+
+        When split on tabs, this has the following structure:
+        "Checkpoint" = linewords[3]
+        class = linewords[4]
+        task = linewords[5]
+        start/end = linewords[6]
+        RAM = linewords[7]
+    '''
+    current_process = psutil.Process(os.getpid())
+    mem = current_process.memory_info().rss
+    for child in current_process.children(recursive=True):
+        try:
+            mem += child.memory_info().rss
+        except:
+            pass
+
+    assert status in ['start', 'end'], [class, task, status]
+
+    logging.debug("Checkpoint {0} {1} {2} {3}".format(class, task, status, mem))

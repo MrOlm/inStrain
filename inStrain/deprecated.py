@@ -833,7 +833,7 @@ def parse_arguments(args):
         help='Minimum SNP frequency to confirm a SNV (both this AND the 0.  001 percent FDR snp count cutoff must be true).')
     parser.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
         help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
-    parser.add_argument("--min_fasta_reads", action="store", default=0, type=int,\
+    parser.add_argument("--min_scaffold_reads", action="store", default=0, type=int,\
         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
     parser.add_argument("--scaffolds_to_profile", action="store",\
         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')

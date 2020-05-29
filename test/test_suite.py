@@ -30,6 +30,7 @@ import inStrain.readComparer
 import inStrain.argumentParser
 import inStrain.logUtils
 import inStrain.irep_utilities
+import inStrain.genomeUtilities
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', -1)
@@ -97,10 +98,7 @@ new_thirteen = {'linked_SNV_count',
                 'SNV_S_count',
                 'pNpS_variants',
                 'gene_length'
-                #'SNS_count'
                 }
-# Other change
-# read_report -> mapping_info
 
 def load_data_loc():
     return os.path.join(str(os.getcwd()), \
@@ -2330,6 +2328,10 @@ class test_strains():
             'N5_271_010G1_scaffold_min1000.fa'
         self.single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101.fasta'
+        self.small_fasta = load_data_loc() + \
+            'SmallScaffold.fa'
+        self.small_bam = load_data_loc() + \
+            'SmallScaffold.fa.sorted.bam'
         self.extra_single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101_extra.fasta'
         self.failure_fasta = load_data_loc() + \
@@ -2352,6 +2354,8 @@ class test_strains():
             'scaffList.txt'
         self.genes = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
+        self.stb = load_data_loc() + \
+            'GenomeCoverages.stb'
 
         if destroy:
             if os.path.isdir(self.test_dir):
@@ -2436,6 +2440,10 @@ class test_strains():
 
         self.setUp()
         self.test17()
+        self.tearDown()
+
+        self.setUp()
+        self.test18()
         self.tearDown()
 
     def test0(self):
@@ -2850,13 +2858,13 @@ class test_strains():
 
     def test10(self):
         '''
-        Test min number of reads filtered
+        Test min number of reads filtered and min number of genome coverage
         '''
         # Set up
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_fasta_reads 10 --skip_genome_wide".format(self.script, self.sorted_bam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_scaffold_reads 10 --skip_genome_wide".format(self.script, self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2868,6 +2876,46 @@ class test_strains():
         print("{0} of {1} scaffolds have >10 reads".format(len(Rdb[Rdb['filtered_pairs'] >= 10]),
                     len(Rdb)))
         assert len(Sdb['scaffold'].unique()) == len(Rdb[Rdb['filtered_pairs'] >= 10]['scaffold'].unique()) - 1
+
+        # Try min_genome_coverage
+
+        # Make sure it fails with no .stb
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 5 --skip_genome_wide".format(self.script, self.sorted_bam, \
+            self.fasta, base)
+        exit_code = call(cmd, shell=True)
+        assert exit_code == 1
+
+        # Run it with an .stb
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 5  -s {4} --skip_genome_wide".format(
+            self.script, self.sorted_bam, self.fasta, base, self.stb)
+        exit_code = call(cmd, shell=True)
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you actually filtered out the scaffolds
+        Sdb = pd.read_csv(glob.glob(base + '/output/*scaffold_info.tsv')[0], sep='\t')
+        Rdb = pd.read_csv(glob.glob(base + '/output/*mapping_info.tsv')[0], sep='\t', header=1)
+        assert len(Rdb) == 179
+        assert len(Sdb) == 42
+
+        # Run it with an .stb and coverage that cannot be hit
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 100  -s {4} --skip_genome_wide".format(
+            self.script, self.sorted_bam, self.fasta, base, self.stb)
+        exit_code = call(cmd, shell=True)
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+        assert exit_code == 1
+
+        # Run it with an .stb and coverage that is low
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 1.1  -s {4} --skip_genome_wide".format(
+            self.script, self.sorted_bam, self.fasta, base, self.stb)
+        exit_code = call(cmd, shell=True)
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you actually filtered out the scaffolds
+        Sdb = pd.read_csv(glob.glob(base + '/output/*scaffold_info.tsv')[0], sep='\t')
+        Rdb = pd.read_csv(glob.glob(base + '/output/*mapping_info.tsv')[0], sep='\t', header=1)
+        assert len(Rdb) == 179
+        assert len(Sdb) > 42
+
 
     def test11(self):
         '''
@@ -3423,6 +3471,20 @@ class test_strains():
         assert got == 3, got
         os.remove(rr)
 
+    def test18(self):
+        '''
+        Test providing a .fasta file with a really small scaffold
+        '''
+        base = self.test_dir + 'testR'
+
+        cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(self.small_bam, self.small_fasta, \
+            base)
+        print(cmd)
+        call(cmd, shell=True)
+
+        IS = inStrain.SNVprofile.SNVprofile(base)
+        db = IS.get('genome_level_info')
+        assert db is not None
 
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
@@ -3595,28 +3657,37 @@ class test_special():
             'N5_271_010G1_scaffold_963.fasta'
         self.IS = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+        self.small_fasta = load_data_loc() + \
+            'SmallScaffold.fa'
+        self.small_bam = load_data_loc() + \
+            'SmallScaffold.fa.sorted.bam'
+        self.genes = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa.genes.fna'
+        self.stb = load_data_loc() + \
+            'GenomeCoverages.stb'
+
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
 
         # YOU SHOULD START THIS UP AGAIN! IT NEEDS TO BE RUN ON A v1.3 IS IS THE PROGRAM
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
+        self.setUp()
+        self.test4()
+        self.tearDown()
 
     def test1(self):
         '''
@@ -3679,8 +3750,12 @@ class test_special():
         '''
         Test other --run_statistics
         '''
+        # Super quick profile run
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
-        shutil.copytree(self.IS, location)
+        cmd = "inStrain profile {0} {1} -o {2} -s {3} -g {4} --skip_plot_generation".format(
+            self.small_bam, self.small_fasta, location, self.stb, self.genes)
+        print(cmd)
+        call(cmd, shell=True)
 
         cmd = "inStrain other --run_statistics {0} --debug".format(location)
         print(cmd)
@@ -3689,12 +3764,12 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_filter_reads().run()
-    test_strains().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
+    # test_filter_reads().run()
+    # test_strains().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
     # test_plot().run()
     # test_readcomparer().run()
     test_special().run()

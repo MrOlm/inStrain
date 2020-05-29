@@ -145,7 +145,7 @@ To see the command-line options, check the help::
                           [--max_insert_relative MAX_INSERT_RELATIVE]
                           [--min_insert MIN_INSERT] [-c MIN_COV] [-f MIN_FREQ]
                           [-fdr FDR] [-s MIN_SNP]
-                          [--min_fasta_reads MIN_FASTA_READS]
+                          [--min_scaffold_reads min_scaffold_reads]
                           [--store_everything] [--skip_mm_profiling]
                           [--scaffolds_to_profile SCAFFOLDS_TO_PROFILE]
                           bam fasta
@@ -194,7 +194,7 @@ To see the command-line options, check the help::
     -s MIN_SNP, --min_snp MIN_SNP
                           Absolute minimum number of reads connecting two SNPs
                           to calculate LD between them. (default: 20)
-    --min_fasta_reads MIN_FASTA_READS
+    --min_scaffold_reads min_scaffold_reads
                           Minimum number of reads mapping to a scaffold to
                           proceed with profiling it (default: 0)
     --store_everything    Store intermediate dictionaries in the pickle file;

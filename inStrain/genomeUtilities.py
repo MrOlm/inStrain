@@ -7,6 +7,7 @@ import glob
 import scipy
 import psutil
 import logging
+import warnings
 import argparse
 import traceback
 
@@ -131,6 +132,7 @@ class Controller():
         for scaffold, bin in stb.items():
             if bin not in b2l:
                 b2l[bin] = 0
+
             if scaffold in stl:
                 b2l[bin] += stl[scaffold]
             else:
@@ -289,6 +291,9 @@ def calc_relevant_genomes(GSI_db, IS, **kwargs):
 
 def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
                                 scaff2sequence, mms, **kwargs):
+    '''
+    THIS IS ALL CALCULATED WITH MASKED EDGES OF SCAFFOLDS
+    '''
 
     table = defaultdict(list)
     for genome, scaffolds in bin2scaffolds.items():
@@ -320,15 +325,23 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
             except:
                 logging.warning("FAILURE iRepError {0} {1}".format(genome, mm))
                 iRep = np.nan
+                iRep_accessory = {'iRep_GC_corrected':np.nan}
 
             # Calculate medians and other variants
+            if len(covs) == 0:
+                covs = pd.Series([0])
+
             table['mm'].append(mm)
             table['genome'].append(genome)
-            table['coverage_median'].append(int(np.median(covs)))
-            table['coverage_SEM'].append(scipy.stats.sem(covs))
-            table['coverage_std'].append(np.std(covs))
             table['iRep'].append(iRep)
             table['iRep_GC_corrected'].append(iRep_accessory['iRep_GC_corrected'])
+
+            # Dont print annoying runtime warnings here
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                table['coverage_median'].append(int(np.median(covs)))
+                table['coverage_SEM'].append(scipy.stats.sem(covs))
+                table['coverage_std'].append(np.std(covs))
 
     adb = pd.DataFrame(table)
     return adb
@@ -927,9 +940,12 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
 
 
         if mask_edges:
-            assert len(cov) >= (mask_edges * 2), [len(cov), scaff, slen]
-            cov = cov[mask_edges:len(cov)-mask_edges]
-            slen = slen - (mask_edges * 2)
+            if len(cov) >= (mask_edges * 2):
+                cov = cov[mask_edges:len(cov)-mask_edges]
+                slen = slen - (mask_edges * 2)
+            else: # really short scaffold
+                cov = pd.Series()
+                slen = 0
 
         arrs.append(cov)
 
