@@ -2374,65 +2374,65 @@ class test_strains():
         # self.test0()
         # self.tearDown()
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        self.setUp()
-        self.test10()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
-        self.test13()
-        self.tearDown()
-
-        self.setUp()
-        self.test14()
-        self.tearDown()
-
-        self.setUp()
-        self.test15()
-        self.tearDown()
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test9()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test10()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test13()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test14()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test15()
+        # self.tearDown()
 
         self.setUp(destroy=True)
         self.test16()
@@ -2825,36 +2825,38 @@ class test_strains():
         Test the debug option
 
         v0.5.1 - Actually this should happen all the time now...
+        v1.2.0 - This test is obsolete now
         '''
-        # Run Matts program
-        base = self.test_dir + 'testMatt'
-        # cmd = "{0} {1} {2} -o {3} -l 0.95 --store_everything --debug".format(self.script, self.sorted_bam, \
+        pass
+        # # Run Matts program
+        # base = self.test_dir + 'testMatt'
+        # # cmd = "{0} {1} {2} -o {3} -l 0.95 --store_everything --debug".format(self.script, self.sorted_bam, \
+        # #     self.fasta, base)
+        # cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
         #     self.fasta, base)
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
-            self.fasta, base)
-        print(cmd)
-        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
-        Sprofile = inStrain.SNVprofile.SNVprofile(base)
-
-        # Open the log
-        logfile = Sprofile.get_location('log') + 'log.log'
-
-        table = defaultdict(list)
-        with open(logfile) as o:
-            for line in o.readlines():
-                line = line.strip()
-                if 'RAM. System has' in line:
-                    linewords = [x.strip() for x in line.split()]
-                    table['scaffold'].append(linewords[0])
-                    table['PID'].append(linewords[2])
-                    table['status'].append(linewords[3])
-                    table['time'].append(linewords[5])
-                    table['process_RAM'].append(linewords[7])
-                    table['system_RAM'].append(linewords[11])
-                    table['total_RAM'].append(linewords[13])
-                    logged = True
-        Ldb = pd.DataFrame(table)
-        assert len(Ldb) > 5
+        # print(cmd)
+        # inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        # Sprofile = inStrain.SNVprofile.SNVprofile(base)
+        #
+        # # Open the log
+        # logfile = Sprofile.get_location('log') + 'log.log'
+        #
+        # table = defaultdict(list)
+        # with open(logfile) as o:
+        #     for line in o.readlines():
+        #         line = line.strip()
+        #         if 'RAM. System has' in line:
+        #             linewords = [x.strip() for x in line.split()]
+        #             table['scaffold'].append(linewords[0])
+        #             table['PID'].append(linewords[2])
+        #             table['status'].append(linewords[3])
+        #             table['time'].append(linewords[5])
+        #             table['process_RAM'].append(linewords[7])
+        #             table['system_RAM'].append(linewords[11])
+        #             table['total_RAM'].append(linewords[13])
+        #             logged = True
+        # Ldb = pd.DataFrame(table)
+        # assert len(Ldb) > 5
 
     def test10(self):
         '''
@@ -3099,9 +3101,10 @@ class test_strains():
         # MAKE SURE LOG IS WORKING
         assert len(glob.glob(base + '/log/*')) == 3, base
         Ldb = exp_IS.get_parsed_log()
-        rdb, sys_ram = inStrain.logUtils._load_profile_logtable(Ldb)
+        rdb = inStrain.logUtils._load_profile_logtable(Ldb)
 
-        LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'merge']['scaffold'].tolist())
+        print(rdb.head(20))
+        LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'MergeProfile']['unit'].tolist())
         TRUE_SCAFFOLDS = \
             set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
         assert(LOGGED_SCAFFOLDS == TRUE_SCAFFOLDS)
@@ -3477,14 +3480,17 @@ class test_strains():
         '''
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(self.small_bam, self.small_fasta, \
+        cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation --debug".format(self.small_bam, self.small_fasta, \
             base)
         print(cmd)
         call(cmd, shell=True)
 
         IS = inStrain.SNVprofile.SNVprofile(base)
+
         db = IS.get('genome_level_info')
         assert db is not None
+        assert len(glob.glob(base + '/log/*')) == 3
+
 
 def _internal_verify_Sdb(Sdb):
     for scaff, d in Sdb.groupby('scaffold'):
@@ -3672,19 +3678,18 @@ class test_special():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
+        self.setUp()
+        self.test1()
+        self.tearDown()
 
-        # YOU SHOULD START THIS UP AGAIN! IT NEEDS TO BE RUN ON A v1.3 IS IS THE PROGRAM
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
         self.setUp()
         self.test4()
         self.tearDown()
@@ -3764,12 +3769,12 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_filter_reads().run()
-    # test_strains().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
+    test_strains().run()
+    test_filter_reads().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
     # test_plot().run()
     # test_readcomparer().run()
     test_special().run()

@@ -5,7 +5,6 @@ from ._version import __version__
 import os
 import sys
 import h5py
-import psutil
 import logging
 import argparse
 import pandas as pd
@@ -134,12 +133,9 @@ class ProfileController():
         '''
         The main method when run on the command line
         '''
-
         # Parse arguments
-        #args = parse_arguments(sys_args)
         if args.output == 'inStrain':
             args.output = args.fasta.split(".")[0].split("/")[-1] #default prefix is now fasta prefix -alexcc 5/8/2019
-
         args = self.validate_arguments(args)
         message = """\
 ***************************************************
@@ -147,8 +143,7 @@ class ProfileController():
 ***************************************************
         """
         logging.info(message)
-        logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'filter_reads'))
-        #inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "start")
+        inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "start")
 
         # global s2l # make ths global so we can access it later.
 
@@ -200,14 +195,14 @@ class ProfileController():
         vargs['s2s'] = s2s
         vargs['s2p'] = s2p
 
-        logging.debug('Checkpoint {1} end RAM is {0}'.format(psutil.virtual_memory()[1], 'filter_reads'))
+        inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "end")
         message = """\
 ***************************************************
 .:: inStrain profile Step 2. Profile scaffolds ::..
 ***************************************************
         """
         logging.info(message)
-        logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'profile_scaffolds'))
+        inStrain.logUtils.log_checkpoint("main_profile", "profile_scaffolds", "start")
 
         Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
 
@@ -235,7 +230,7 @@ class ProfileController():
         # Run the rest of things
         args.IS = Sprofile.location
 
-        logging.debug('Checkpoint {1} end RAM is {0}'.format(psutil.virtual_memory()[1], 'profile_scaffolds'))
+        inStrain.logUtils.log_checkpoint("main_profile", "profile_scaffolds", "end")
         # See if you can profile genes as well
         message = """\
 ***************************************************
@@ -244,10 +239,10 @@ class ProfileController():
         """
         logging.info(message)
         if args.gene_file != None:
-            logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'profile_genes'))
+            inStrain.logUtils.log_checkpoint("main_profile", "profile_genes", "start")
             args.IS = Sprofile.location
             Controller().profile_genes_operation(args)
-            logging.debug('Checkpoint {1} end RAM is {0}'.format(psutil.virtual_memory()[1], 'profile_genes'))
+            inStrain.logUtils.log_checkpoint("main_profile", "profile_genes", "end")
         else:
             logging.info('Nevermind! You didnt include a genes file')
 
@@ -259,10 +254,10 @@ class ProfileController():
         """
         logging.info(message)
         if not args.skip_genome_wide:
-            logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'genome_wide'))
+            inStrain.logUtils.log_checkpoint("main_profile", "genome_wide", "start")
             args.IS = Sprofile.location
             Controller().genome_wide_operation(args)
-            logging.debug('Checkpoint {1} end RAM is {0}'.format(psutil.virtual_memory()[1], 'genome_wide'))
+            inStrain.logUtils.log_checkpoint("main_profile", "genome_wide", "end")
         else:
             logging.info('Nevermind! You chose to skip genome_wide')
 
@@ -274,11 +269,11 @@ class ProfileController():
         """
         logging.info(message)
         if not args.skip_plot_generation:
-            logging.debug('Checkpoint {1} start RAM is {0}'.format(psutil.virtual_memory()[1], 'making_plots'))
+            inStrain.logUtils.log_checkpoint("main_profile", "making_plots", "start")
             args.IS = Sprofile.location
             args.plots = 'a'
             Controller().plot_operation(args)
-            logging.debug('Checkpoint {1} end RAM is {0}'.format(psutil.virtual_memory()[1], 'making_plots'))
+            inStrain.logUtils.log_checkpoint("main_profile", "making_plots", "end")
         else:
             logging.info('Nevermind! You chose to skip making plots')
 

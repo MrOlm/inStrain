@@ -21,6 +21,7 @@ from collections import defaultdict
 import inStrain.linkage
 import inStrain.SNVprofile
 import inStrain.readComparer
+import inStrain.logUtils
 
 from ._version import __version__
 
@@ -61,12 +62,12 @@ class ScaffoldSplitObject():
         '''
         Merge the split dict in order to make a scaffold profile
         '''
-        log_message = _get_log_message('merge_start', self.scaffold)
+        log_message = inStrain.logUtils.get_worker_log('MergeProfile', self.scaffold, 'start')
 
         try:
             if self.number_splits == 1:
                 Sprofile = self.split_dict[0].merge_single_profile()
-                log_message += _get_log_message('merge_end', self.scaffold)
+                log_message += inStrain.logUtils.get_worker_log('MergeProfile', self.scaffold, 'end')
                 Sprofile.merge_log = log_message
                 return Sprofile
 
@@ -101,7 +102,7 @@ class ScaffoldSplitObject():
 
                 Sprofile.make_cumulative_tables()
 
-                log_message += _get_log_message('merge_end', self.scaffold)
+                log_message += inStrain.logUtils.get_worker_log('MergeProfile', self.scaffold, 'end')
                 Sprofile.merge_log = log_message
 
                 return Sprofile
@@ -632,7 +633,8 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     Start and end are both inclusive and 0-based
     '''
     # Log
-    log_message = _get_log_message('profile_start', scaffold, split_number=split_number)
+    unit = "{0}.{1}".format(scaffold, split_number)
+    log_message = inStrain.logUtils.get_worker_log('SplitProfile', unit, 'start')
 
     # For testing purposes
     if ((scaffold == 'FailureScaffoldHeaderTesting') & (split_number == 1)):
@@ -719,7 +721,7 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     #Sprofile.make_cumulative_tables()
 
     # Return
-    log_message +=  _get_log_message('profile_end', scaffold, split_number=split_number)
+    log_message += inStrain.logUtils.get_worker_log('SplitProfile', unit, 'end')
     Sprofile.log = log_message
 
     return Sprofile
@@ -756,28 +758,28 @@ def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_sn
             _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, RelPosition, bases, scaffold=scaffold)
             snv2mm2counts[RelPosition] = MMcounts
 
-def _get_log_message(kind, scaffold, split_number=None):
-    if split_number is not None:
-        scaffold = "{0}.{1}".format(scaffold, split_number)
-
-    if kind in ['profile_start', 'merge_start']:
-        pid = os.getpid()
-        process  = psutil.Process(os.getpid())
-        bytes_used = process.memory_info().rss
-        total_available_bytes = psutil.virtual_memory()
-        log_message = "\n{6} {4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
-                pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-                scaffold, time.time(), kind)
-        return log_message
-
-    elif kind in ['profile_end', 'merge_end']:
-        pid = os.getpid()
-        process  = psutil.Process(os.getpid())
-        bytes_used = process.memory_info().rss
-        total_available_bytes = psutil.virtual_memory()
-        return "\n{6} {4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
-                pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-                scaffold, time.time(), kind)
+# def _get_log_message(kind, scaffold, split_number=None):
+#     if split_number is not None:
+#         scaffold = "{0}.{1}".format(scaffold, split_number)
+#
+#     if kind in ['profile_start', 'merge_start']:
+#         pid = os.getpid()
+#         process  = psutil.Process(os.getpid())
+#         bytes_used = process.memory_info().rss
+#         total_available_bytes = psutil.virtual_memory()
+#         log_message = "\n{6} {4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
+#                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
+#                 scaffold, time.time(), kind)
+#         return log_message
+#
+#     elif kind in ['profile_end', 'merge_end']:
+#         pid = os.getpid()
+#         process  = psutil.Process(os.getpid())
+#         bytes_used = process.memory_info().rss
+#         total_available_bytes = psutil.virtual_memory()
+#         return "\n{6} {4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
+#                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
+#                 scaffold, time.time(), kind)
 
 def _dlist():
     return defaultdict(list)

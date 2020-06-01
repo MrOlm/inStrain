@@ -5,7 +5,6 @@ import csv
 import sys
 import glob
 import scipy
-import psutil
 import logging
 import warnings
 import argparse
@@ -25,6 +24,7 @@ import inStrain.controller
 import inStrain.profileUtilities
 import inStrain.quickProfile
 import inStrain.irep_utilities
+import inStrain.logUtils
 
 class Controller():
 
@@ -156,8 +156,7 @@ def genomeLevel_from_IS(IS, **kwargs):
     kwargs:
         mm-level = If True, calculate all metrics on the mm-level
     '''
-    logging.debug("SubPoint_genomeLevel genomeLevel_from_IS start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "genomeLevel_from_IS", "start")
 
     # Load necessary stuff from IS file
     stb = IS.get('scaffold2bin')
@@ -177,13 +176,11 @@ def genomeLevel_from_IS(IS, **kwargs):
         gdb['mm'] = 1000
 
     # Calculate genome level scaffold info
-    logging.debug("SubPoint_genomeLevel scaffold_info start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "scaffold_info", "start")
 
     GSI_db = _genomeLevel_scaffold_info_v3(gdb, stb, b2l, **kwargs)
 
-    logging.debug("SubPoint_genomeLevel scaffold_info end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "scaffold_info", "end")
 
     # Prepare to calculate coverage distribution metrics
     table = defaultdict(list)
@@ -204,30 +201,26 @@ def genomeLevel_from_IS(IS, **kwargs):
         mms = calc_mms(covT)
 
     # Calculate expensive coverage distribution metrics
-    logging.debug("SubPoint_genomeLevel coverage_info start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "coverage_info", "start")
 
     EG_db = genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes,
                                         s2l, scaff2sequence, mms, **kwargs)
 
-    logging.debug("SubPoint_genomeLevel coverage_info end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "coverage_info", "end")
 
     # Calculate genome-level read mapping
     rdb = IS.get('mapping_info')
     rdb = rdb[rdb['scaffold'] != 'all_scaffolds']
     rdb = _add_stb(rdb, stb)
 
-    logging.debug("SubPoint_genomeLevel mapping_info start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "mapping_info", "start")
 
     rdb = _genome_wide_rr(rdb, stb, **kwargs)
     rdb = rdb.rename(columns={'reads_filtered_pairs':'filtered_read_pair_count'})
     if 'reads_pass_pairing_filter' in rdb.columns:
         del rdb['reads_pass_pairing_filter']
 
-    logging.debug("SubPoint_genomeLevel mapping_info end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "mapping_info", "end")
 
     # Merge
     mdb = pd.merge(GSI_db, EG_db, on=['genome', 'mm'], how='outer')
@@ -243,13 +236,11 @@ def genomeLevel_from_IS(IS, **kwargs):
             gdb['mm'] = 1000
         ldb = _add_stb(ldb, stb)
 
-        logging.debug("SubPoint_genomeLevel linkage start RAM is {0}".format(
-                    psutil.virtual_memory()[1]))
+        inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "start")
 
         ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
 
-        logging.debug("SubPoint_genomeLevel linkage end RAM is {0}".format(
-                    psutil.virtual_memory()[1]))
+        inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "end")
 
 
         mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
@@ -258,8 +249,7 @@ def genomeLevel_from_IS(IS, **kwargs):
     if not mm_level:
         del mdb['mm']
 
-    logging.debug("SubPoint_genomeLevel genomeLevel_from_IS end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GenomeLevel", "genomeLevel_from_IS", "end")
 
     return mdb
 

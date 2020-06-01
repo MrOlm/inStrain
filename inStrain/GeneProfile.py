@@ -5,7 +5,6 @@ import csv
 import sys
 import time
 import glob
-import psutil
 import logging
 import warnings
 import argparse
@@ -29,6 +28,7 @@ with warnings.catch_warnings():
 import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.profileUtilities
+import inStrain.logUtils
 
 class Controller():
     '''
@@ -155,8 +155,7 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     GdbP = List of gene locations
     gene2sequenceP = Dicitonary of gene -> nucleotide sequence
     '''
-    logging.debug("SubPoint_genes calculate_gene_metrics start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "calculate_gene_metrics", "start")
 
     # Get key word arguments for the wrapper
     p = int(kwargs.get('processes', 6))
@@ -173,8 +172,7 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     kwargs['s2g'] = s2g
 
     # Make global objects for the profiling
-    logging.debug("SubPoint_genes make_globals start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "make_globals", "start")
     global CumulativeSNVtable
     CumulativeSNVtable = IS.get('cumulative_snv_table')
     if len(CumulativeSNVtable) > 0:
@@ -193,16 +191,14 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
 
     global Gdb
     Gdb = GdbP
-    logging.debug("SubPoint_genes make_globals end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "make_globals", "end")
 
     # Generate commands and queue them
     logging.debug('Creating commands')
     cmd_groups = [x for x in iterate_commands(scaffolds_to_profile, Gdb, kwargs)]
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
-    logging.debug("SubPoint_genes create_queue start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "create_queue", "start")
     gene_cmd_queue = multiprocessing.Queue()
     gene_result_queue = multiprocessing.Queue()
     GeneProfiles = []
@@ -210,8 +206,7 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     for cmd_group in cmd_groups:
         gene_cmd_queue.put(cmd_group)
 
-    logging.debug("SubPoint_genes create_queue end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "create_queue", "end")
 
     if p > 1:
         logging.debug('Establishing processes')
@@ -259,16 +254,13 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
                     logging.debug(GP[4])
                     GeneProfiles.append(GP)
 
-    logging.debug("SubPoint_genes return_results start RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "return_results", "start")
     name2result = {}
     for i, name in enumerate(['coverage', 'clonality', 'SNP_density', 'SNP_mutation_types']):
         name2result[name] = pd.concat([G[i] for G in GeneProfiles])
-    logging.debug("SubPoint_genes return_results end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "return_results", "end")
 
-    logging.debug("SubPoint_genes calculate_gene_metrics end RAM is {0}".format(
-                psutil.virtual_memory()[1]))
+    inStrain.logUtils.log_checkpoint("GeneProfile", "calculate_gene_metrics", "end")
     return name2result
 
 def profile_genes(scaffold, **kwargs):

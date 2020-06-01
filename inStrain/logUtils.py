@@ -61,7 +61,7 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
             continue
         else:
             saveloc = save
-            figloc = save + '.ramProfile.png'
+            figloc = save + '.mem_usage.png'
 
         with open(saveloc, 'w') as o:
             for name, report in name2report.items():
@@ -84,10 +84,10 @@ def load_log(logfile):
         run_ID = None
         for line in o.readlines():
             line = line.strip()
+            linewords = [x.strip() for x in line.split()]
 
             # load new inStrain run
             if 'inStrain version' in line:
-                linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
 
                 run_ID = datetime.fromtimestamp(epoch_time).strftime('%Y%m%d_%H%M%S')
@@ -100,7 +100,6 @@ def load_log(logfile):
 
             # load inStrain run finish
             elif 'inStrain complete' in line:
-                linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
 
                 table['log_type'].append('program_end')
@@ -109,22 +108,22 @@ def load_log(logfile):
                 table['run_ID'].append(run_ID)
 
             # regular checkpoints
-            elif 'Checkpoint' in line:
-                linewords = [x.strip() for x in line.split()]
+            elif (len(linewords) > 3) and ('Checkpoint' == linewords[3]):
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
 
                 table['log_type'].append('checkpoint')
                 table['time'].append(epoch_time)
                 table['run_ID'].append(run_ID)
-
-                if len(linewords) == 9:
-                    table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
-                else:
-                    table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
+                table['parsable_string'].append("class={0};name={1};status={2};RAM={3}".format(
+                        linewords[4], linewords[5], linewords[6], linewords[7]))
+                #
+                # if len(linewords) == 9:
+                #     table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
+                # else:
+                #     table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
 
             # Special gene multiprocessing reporting
             elif 'SpecialPoint_genes' in line:
-                linewords = [x.strip() for x in line.split()]
                 pstring = "scaffold={0};PID={1};status={2};what={3}".format(
                             linewords[1], linewords[3], linewords[5], linewords[4])
 
@@ -133,20 +132,7 @@ def load_log(logfile):
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
-            # Genes reporting outside of the paralellized
-            elif ('SubPoint_genes' in line) | ('SubPoint_genomeLevel' in line):
-                linewords = [x.strip() for x in line.split()]
-                epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
-                pstring = "RAM={0};status={1};name={2}".format(
-                            linewords[8], linewords[5], linewords[4])
-
-                table['log_type'].append(linewords[3])
-                table['time'].append(epoch_time)
-                table['parsable_string'].append(pstring)
-                table['run_ID'].append(run_ID)
-
             elif "Plotting plot" in line:
-                linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 pstring = "plot={0}".format(
                             linewords[5])
@@ -157,19 +143,26 @@ def load_log(logfile):
                 table['run_ID'].append(run_ID)
 
             # Profile reporting
-            elif (line.startswith('profile') | line.startswith('merge')):
-                linewords = [x.strip() for x in line.split()]
-                pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
-                            linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
+            elif (len(linewords) > 3) and ('WorkerLog' == linewords[0]):
+                pstring = "unit={0};PID={1};status={2};process_RAM={3};command={4}".format(
+                        linewords[2], linewords[6], linewords[3], linewords[4], linewords[1])
 
-                table['log_type'].append(linewords[0].split('_')[0])
-                table['time'].append(float(linewords[6]))
+                table['log_type'].append(linewords[0])
+                table['time'].append(float(linewords[5]))
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
+            # elif (line.startswith('profile') | line.startswith('merge')):
+            #     pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
+            #                 linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
+            #
+            #     table['log_type'].append(linewords[0].split('_')[0])
+            #     table['time'].append(float(linewords[6]))
+            #     table['parsable_string'].append(pstring)
+            #     table['run_ID'].append(run_ID)
+
             # Special Failure
             elif 'FAILURE' in line:
-                linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 fail_type = linewords[4]
 
@@ -203,7 +196,6 @@ def load_log(logfile):
 
             # Failture that needs to be captured better
             elif 'Double failure!' in line:
-                linewords = [x.strip() for x in line.split()]
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
 
                 table['log_type'].append('Failure')
@@ -221,18 +213,18 @@ def load_log(logfile):
 
 def profile_plot(Ldb, saveloc=None):
     #ldb = Ldb[Ldb['log_type'] == 'profile']
-    rdb, sys_ram = _load_profile_logtable(Ldb)
+    rdb = _load_profile_logtable(Ldb)
     if len(rdb) == 0:
         return
 
     db = rdb[rdb['command'] == 'profile']
-    plt.scatter(db['adjusted_start'], db['percent_RAM'], color='red', label='split profiling')
+    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='red', label='split profiling')
 
     db = rdb[rdb['command'] == 'merge']
-    plt.scatter(db['adjusted_start'], db['percent_RAM'], color='blue', label='split merging')
+    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='blue', label='split merging')
 
     plt.xlabel('Runtime (seconds)')
-    plt.ylabel('System RAM available at start of thread\n(% of the {0} system)'.format(humanbytes(sys_ram)))
+    plt.ylabel('RAM usage)')
     plt.legend()
 
     if saveloc != None:
@@ -252,10 +244,11 @@ def generate_reports(Ldb, debug=False):
             print('Failed to make log for {0} - {1}'.format(name, str(e)))
             traceback.print_exc()
 
-    # Make the checkpoint report
+    # Make the main checkpoint report
     name = 'Checkpoints'
     try:
-        report = _gen_checkpoint_report(Ldb, OVERALL_RUNTIME)
+        ldb = Ldb[Ldb['log_type'] == 'checkpoint']
+        report = _gen_checkpoint_report2(ldb, overall_runtime=OVERALL_RUNTIME.total_seconds(), log_class='main_profile')
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -392,13 +385,13 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
     # Set up
     #ldb = Ldb[Ldb['log_type'] == 'profile']
-    rdb, sys_ram = _load_profile_logtable(Ldb)
+    rdb = _load_profile_logtable(Ldb)
 
     if len(rdb) == 0:
         return ''
 
-    db = rdb[rdb['command'] == 'profile']
-    mdb = rdb[rdb['command'] == 'merge']
+    db = rdb[rdb['command'] == 'SplitProfile']
+    mdb = rdb[rdb['command'] == 'MergeProfile']
 
     # Overall wall time
     start = datetime.fromtimestamp(rdb['start_time'].min())
@@ -416,7 +409,7 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Total processes used (splits + merges)", PIDs)
     report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
     report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(max(PIDs/2, 1)))*100)
-    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['scaffold'].unique()))
+    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['unit'].unique()))
 
     # Report on splits
     report += "\n"
@@ -426,7 +419,7 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Average time per split", td_format(None, seconds=db['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per split", td_format(None, seconds=db['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum split time", td_format(None, seconds=db['runtime'].max()))
-    report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['unit'].iloc[0])
     report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(db['end_time'].max() - d['start_time'].min()))*100) for p, d in db.groupby('PID')]))
 
     # Report on merges
@@ -436,25 +429,37 @@ def _gen_profileRAM_report(Ldb, detailed=False):
     report += "{0:30}\t{1}\n".format("Average time per merge", td_format(None, seconds=mdb['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per merge", td_format(None, seconds=mdb['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum merge time", td_format(None, seconds=mdb['runtime'].max()))
-    report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['scaffold'].iloc[0])
+    report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['unit'].iloc[0])
     report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(mdb['end_time'].max() - d['start_time'].min()))*100) for p, d in mdb.groupby('PID')]))
 
     # Report on RAM
     report += "\n"
-    report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
-    report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
-    report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
-    report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
-    report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['start_system_RAM'].max()))
+    for name, ndb in zip(["Split profiling", 'Split merging'], [db, mdb]):
+        report += "{0:35}\t{1}\n".format("{0} per-process strating RAM".format(name),
+                    ["{0}".format(humanbytes(d['start_process_RAM'].iloc[0])) for p, d in ndb.groupby('PID')])
+        report += "{0:35}\t{1}\n".format("{0} per-process final RAM".format(name),
+                    ["{0}".format(humanbytes(d['start_process_RAM'].iloc[-1])) for p, d in ndb.groupby('PID')])
+        report += "{0:35}\t{1}\n".format("{0} per-process minimum RAM".format(name),
+                    ["{0}".format(humanbytes(d['start_process_RAM'].min())) for p, d in ndb.groupby('PID')])
+        report += "{0:35}\t{1}\n".format("{0} per-process maximum RAM".format(name),
+                    ["{0}".format(humanbytes(d['start_process_RAM'].max())) for p, d in ndb.groupby('PID')])
+
+    # # Report on RAM
+    # report += "\n"
+    # report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
+    # report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
+    # report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
+    # report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
+    # report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['start_system_RAM'].max()))
 
     # Report on failures
     report += "\n"
     report += '{0} scaffolds needed to be run a second time\n'.format(
-            len(rdb[rdb['runs'] > 1]['scaffold'].unique()))
+            len(rdb[rdb['runs'] > 1]['unit'].unique()))
 
     return report
 
-def _gen_checkpoint_report2(ldb, overall_runtime=None):
+def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
     '''
     ldb should have the columns:
         name = name of checkpoint
@@ -462,6 +467,21 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None):
         RAM = RAM usage
         time = time in epoch time
     '''
+    # Parse the parseable strings
+    ldb = ldb[ldb['log_type'] == 'checkpoint']
+    if len(ldb) > 0:
+        for i in ['name', 'class', 'status', 'RAM']:
+            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+    else:
+        return ''
+
+    # Subset to a specific class
+    if log_class is not None:
+        ldb = ldb[ldb['class'] == log_class]
+    if len(ldb) == 0:
+        return ''
+
+    # Handle the overall runtime
     if overall_runtime is None:
         overall_runtime = ldb[ldb['status'] == 'end']['time'].max() - ldb[ldb['status'] == 'start']['time'].min()
 
@@ -488,10 +508,14 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None):
                 else:
                     inc_dec = 'decreased'
 
-                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\tRAM use {4} by {3}\n'.format(name, td_format(None, seconds=runtime), (runtime/overall_runtime)*100, humanbytes(ram_change, sign=False), inc_dec)
+                report += '{0:20} took {1:15} ({2:4.1f}% of overall)\tRAM went from {5} to {6} ({4} by {3})\n'.format(
+                            name, td_format(None, seconds=runtime), (runtime/overall_runtime)*100,
+                            humanbytes(ram_change, sign=False), inc_dec,
+                            humanbytes(startram, sign=False),
+                            humanbytes(endram, sign=False))
 
             else:
-                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
+                report += '{0:20} took {1:15} ({2:4.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
 
         elif len(db) == 1:
             start = start.strftime('%Y-%m-%d %H:%M:%S')
@@ -503,12 +527,7 @@ def _gen_geneomelevel_report(Ldb, detailed=False):
     report = ''
 
     # Set up checkpoint log
-    ldb = Ldb[Ldb['log_type'] == 'SubPoint_genomeLevel']
-    if len(ldb) > 0:
-        for i in ['name', 'status', 'RAM']:
-            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
-        report += _gen_checkpoint_report2(ldb)
-        report += '\n'
+    report += _gen_checkpoint_report2(Ldb, log_class='GenomeLevel')
 
     return report
 
@@ -516,12 +535,8 @@ def _gen_genes_report(Ldb, detailed=False):
     report = ''
 
     # Set up checkpoint log
-    ldb = Ldb[Ldb['log_type'] == 'SubPoint_genes']
-    if len(ldb) > 0:
-        for i in ['name', 'status', 'RAM']:
-            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
-        report += _gen_checkpoint_report2(ldb)
-        report += '\n'
+    report += _gen_checkpoint_report2(Ldb, log_class='GeneProfile')
+    report += '\n'
 
     # Set up paralellization log
     ldb = Ldb[Ldb['log_type'] == 'Special_genes']
@@ -643,16 +658,15 @@ def _gen_plotting_report(Ldb):
     return report
 
 def _load_profile_logtable(Ldb):
-    # Get the splits
-    ldb = Ldb[Ldb['log_type'].isin(['profile', 'merge'])]
-
+    # Parse the initial datatable
+    ldb = Ldb[(Ldb['log_type'] == 'WorkerLog')]
     table = defaultdict(list)
     for i, row in ldb.iterrows():
         for thing, value in parse_parsable_string(row['parsable_string']).items():
             table[thing].append(value)
         table['time'].append(row['time'])
-        table['command'].append(row['log_type'])
     Ldb = pd.DataFrame(table)
+    Ldb = Ldb[Ldb['command'].isin(['MergeProfile', 'SplitProfile'])]
 
     if len(Ldb) == 0:
         return Ldb, None
@@ -660,29 +674,27 @@ def _load_profile_logtable(Ldb):
     table = defaultdict(list)
     Ldb['time'] = Ldb['time'].astype(float)
     Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
-    Ldb['system_RAM'] = Ldb['system_RAM'].astype(float)
-    sys_ram = float(Ldb['total_RAM'].iloc[0])
     first_time = Ldb['time'].min()
-    for scaffold, ddb in Ldb.groupby('scaffold'):
+
+    # Generate this on a per-unit level
+    for scaffold, ddb in Ldb.groupby('unit'):
         for cmd, db in ddb.groupby('command'):
             sdb = db[db['status'] == 'start']
             edb = db[db['status'] == 'end']
 
-            table['scaffold'].append(scaffold)
+            table['unit'].append(scaffold)
             table['PID'].append(db['PID'].iloc[0])
 
             table['start_time'].append(sdb['time'].iloc[0])
             table['adjusted_start'].append(sdb['time'].iloc[0] - first_time)
             table['start_process_RAM'].append(sdb['process_RAM'].iloc[0])
-            table['start_system_RAM'].append(sdb['system_RAM'].iloc[0])
 
             if len(edb) > 0:
                 table['adjusted_end'].append(edb['time'].iloc[0] - first_time)
                 table['end_process_RAM'].append(edb['process_RAM'].iloc[0])
-                table['end_system_RAM'].append(edb['system_RAM'].iloc[0])
                 table['end_time'].append(edb['time'].iloc[0])
             else:
-                for i in ['adjusted_end', 'end_process_RAM', 'end_system_RAM', 'end_time']:
+                for i in ['adjusted_end', 'end_process_RAM', 'end_time']:
                     table[i].append(np.nan)
 
             table['runs'].append(len(sdb))
@@ -691,9 +703,8 @@ def _load_profile_logtable(Ldb):
     db = pd.DataFrame(table)
     db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
     db['RAM_usage'] = [s-e for s,e in zip(db['end_process_RAM'], db['start_process_RAM'])]
-    db['percent_RAM'] = [(s/sys_ram) * 100 for s in db['end_system_RAM']]
 
-    return db, sys_ram
+    return db
 
 def _load_genes_logtable(ldb):
     table = defaultdict(list)
@@ -807,15 +818,15 @@ def log_fmt_to_epoch(ttime):
 
     return datetimeobject.timestamp()
 
-def log_checkpoint(class, task, status, inc_children=True):
+def log_checkpoint(log_class, name, status, inc_children=True):
     '''
     Log a checkpoint for the program in the debug under "log" status
 
     Arguments:
-        class  = where is this log comming from ("main_profile", "GeneProfile", etc.)
-        task   = what is the task that you're logging ("load globals", "run loop", etc.)
-        stauts = either the string "start" and "end"
-        inc_children = include child processes as well
+        log_class    = where is this log comming from ("main_profile", "GeneProfile", etc.)
+        name         = what is the task that you're logging ("load globals", "run loop", etc.)
+        stauts       = either the string "start" and "end"
+        inc_children = include child processes as well in RAM tally
 
     Results:
         Make the following log message:
@@ -830,12 +841,50 @@ def log_checkpoint(class, task, status, inc_children=True):
     '''
     current_process = psutil.Process(os.getpid())
     mem = current_process.memory_info().rss
-    for child in current_process.children(recursive=True):
-        try:
-            mem += child.memory_info().rss
-        except:
-            pass
+    if inc_children:
+        for child in current_process.children(recursive=True):
+            try:
+                mem += child.memory_info().rss
+            except:
+                pass
 
-    assert status in ['start', 'end'], [class, task, status]
+    assert status in ['start', 'end'], [log_class, name, status]
 
-    logging.debug("Checkpoint {0} {1} {2} {3}".format(class, task, status, mem))
+    logging.debug("Checkpoint {0} {1} {2} {3}".format(log_class, name, status, mem))
+
+def get_worker_log(worker_type, unit, status, inc_children=False):
+    '''
+    Return a string with log information intended to be generated within a worker process
+
+    Arguments:
+        worker_type  = The type of worker this is
+        unit         = The unit this worker is currently processing
+        status       = start / end
+        inc_children = include child processes as well in RAM tally
+
+    Returns:
+        A string with the following structure:
+        "WorkerLog worker_type unit status RAM time PID"
+
+        "WorkerLog" = linewords[0]
+        worker_type = linewords[1]
+        unit = linewords[2]
+        status = linewords[3]
+        ram = linewords[4]
+        time = linewords[5]
+        PID = linewords[6]
+
+    '''
+    pid = os.getpid()
+    current_process = psutil.Process(pid)
+    mem = current_process.memory_info().rss
+    if inc_children:
+        for child in current_process.children(recursive=True):
+            try:
+                mem += child.memory_info().rss
+            except:
+                pass
+
+    assert status in ['start', 'end'], [log_class, name, status]
+
+    return "\nWorkerLog {0} {1} {2} {3} {4} {5}".format(worker_type, unit, status, mem, time.time(), pid)
