@@ -163,6 +163,8 @@ class SNVprofile:
         '''
         Generate user-facing output tables based on information stored in the IS
         '''
+
+        report_mm_level = kwargs.get('mm_level', False)
         if name == 'SNVs':
             column_order = ['scaffold', 'position', 'position_coverage', 'allele_count',
                             'ref_base', 'con_base', 'var_base',
@@ -249,6 +251,13 @@ class SNVprofile:
 
             db = self.get('genome_level_info')
             db = reorder_columns(db, column_order)
+
+            if not report_mm_level:
+                if 'mm' in db.columns:
+                    db = db.sort_values('mm').drop_duplicates(
+                            subset=['genome'], keep='last')\
+                            .sort_values('genome')
+                    del db['mm']
 
         elif name == 'mapping_info':
             column_order = ['scaffold', 'pass_pairing_filter', 'filtered_pairs']

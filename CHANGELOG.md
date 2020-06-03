@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0i] - UNCOMITTED
+## [1.3.0j] - 2020-06-02
+- Make a argparse group for mm_level; calc GW on the mm level
+- Plots work again
+- Delete a pbar update that was crashing gene profiling in single thread mode (I think?)
+- Fix partial gene identification problem
+- If .sorted.bam in the name of the .bam file, dont try and sort it
+- There can only be a maximum of 1000 jobs when filtering reads; hopefully cuts way down on queue access
+
+## [1.3.0i] - 2020-06-01
 - Fix bug with small scaffolds and add test to catch it
 - Change --min_fasta_reads to --min_scaffold_reads
 - Add --min_genome_coverage to profile, along with tests to make sure it works

@@ -117,8 +117,15 @@ def parse_args(args):
     Rflags = geneomewide_parent.add_argument_group('GENOME WIDE OPTIONS')
     Rflags.add_argument('-s', '--stb', help="Scaffold to bin. This can be a file with each line listing a scaffold and a bin name, tab-seperated. This can also be a space-seperated list of .fasta files, with one genome per .fasta file. If nothing is provided, all scaffolds will be treated as belonging to the same genome",
                         nargs='*', default=[])
-    Rflags.add_argument('--mm_level', help="Create files on the mm level (see documentation for info)",
+
+
+    # Make a parent for handling mm
+    mm_parent = argparse.ArgumentParser(add_help=False)
+    Rflags = mm_parent.add_argument_group('READ ANI OPTIONS')
+    Rflags.add_argument('--mm_level', help="Create output files on the mm level (see documentation for info)",
                         action='store_true', default=False)
+    Rflags.add_argument('--skip_mm_profiling', action='store_true', default=False,\
+        help="Dont perform analysis on an mm level; saves RAM and time; impacts plots and raw_data")
 
     '''
     ####### Arguments for profile operation ######
@@ -137,7 +144,7 @@ def parse_args(args):
         help='Instead of using the fasta ID (space in header before space), use the full header. Needed for some mapping tools (including bbMap)')
 
     profile_parser = subparsers.add_parser("profile",formatter_class=SmartFormatter,\
-                    parents = [profile_parent, parent_parser, readfilter_parent, readoutput_parent, variant_parent, genes_parent, geneomewide_parent], add_help=False)
+                    parents = [profile_parent, parent_parser, readfilter_parent, readoutput_parent, variant_parent, genes_parent, geneomewide_parent, mm_parent], add_help=False)
 
     # Other Parameters
     Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')
@@ -149,8 +156,6 @@ def parse_args(args):
         help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
     Oflags.add_argument('--store_everything', action='store_true', default=False,\
         help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
-    Oflags.add_argument('--skip_mm_profiling', action='store_true', default=False,\
-        help="Dont perform analysis on an mm level; saves RAM and time")
     Oflags.add_argument("--scaffolds_to_profile", action="store",\
         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
     Oflags.add_argument("--rarefied_coverage", action='store', default=50,\
@@ -223,7 +228,7 @@ def parse_args(args):
     '''
     # Make a parent for profile to go above the system arguments
     genome_parser = subparsers.add_parser("genome_wide",formatter_class=SmartFormatter,\
-                    parents = [geneomewide_parent, genes_io, parent_parser], add_help=False)
+                    parents = [geneomewide_parent, genes_io, mm_parent, parent_parser], add_help=False)
 
     '''
     ####### Arguments for plot operation ######

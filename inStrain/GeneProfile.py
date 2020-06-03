@@ -248,7 +248,6 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
             GPs = gene_result_queue.get(timeout=5)
             logging.debug('did a grab at {0}'.format(recieved_profiles))
             recieved_profiles += 1
-            pbar.update(1)
             for GP in GPs:
                 if GP is not None:
                     logging.debug(GP[4])
@@ -753,7 +752,7 @@ def parse_prodigal_genes(gene_fasta):
         table['gene'].append(gene)
         table['scaffold'].append("_".join(gene.split("_")[:-1]))
         table['direction'].append(record.description.split("#")[3].strip())
-        table['partial'].append('partial=00' not in record.description)
+        table['partial'].append('partial=01' in record.description)
 
         # NOTE: PRODIGAL USES A 1-BASED INDEX AND WE USE 0, SO CONVERT TO 0 HERE
         table['start'].append(int(record.description.split("#")[1].strip())-1)

@@ -5,9 +5,11 @@ import sys
 import gzip
 import pysam
 import logging
+import random
 import argparse
 import numpy as np
 import pandas as pd
+import multiprocessing
 from tqdm import tqdm
 from Bio import SeqIO
 from collections import defaultdict
@@ -16,6 +18,8 @@ from concurrent import futures
 import traceback
 import itertools
 from collections import ChainMap
+
+import inStrain.logUtils
 
 class Controller():
 
@@ -66,6 +70,22 @@ class Controller():
             RR_loc = os.path.join(out_folder, 'detailed_mapping_info.csv')
             dRR.to_csv(RR_loc, index=False, sep='\t')
 
+def read_profile_worker(read_cmd_queue, read_result_queue, single_thread=False):
+    '''
+    Worker to filter reads
+    '''
+    while True:
+        if not single_thread:
+            cmds = read_cmd_queue.get(True)
+        else:
+            try:
+                cmds = read_cmd_queue.get(timeout=5)
+            except:
+                return
+
+        dicts, log = scaffold_profile_wrapper(cmds)
+        read_result_queue.put((dicts, log))
+
 def load_paired_reads2(bam, scaffolds, **kwargs):
     '''
     Load paired reads to be profiled
@@ -81,7 +101,7 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
     detailed_report = kwargs.get('detailed_mapping_info', False)
 
     # Get the pairs
-    scaff2pair2info = get_paired_reads_multi2(bam, scaffolds, **kwargs)
+    scaff2pair2info = get_paired_reads_multi(bam, scaffolds, **kwargs)
 
     # Handle paired-read filtering
     priority_reads_loc = kwargs.get('priority_reads', None)
@@ -393,40 +413,129 @@ def _evaluate_pair2(value, max_insert=1000000, filter_cutoff=-1, min_insert=-1,
         else:
             return False
 
-def get_paired_reads_multi2(bam, scaffolds, **kwargs):
+# def get_paired_reads_multi2(bam, scaffolds, **kwargs):
+#     '''
+#     Returns scaffold 2 read 2 info
+#     '''
+#     # Initialize dictionary
+#     dicts = []
+#     p = int(kwargs.get('processes', 6))
+#     ret_total = kwargs.get('ret_total', False)
+#
+#     # Do the multiprocessing
+#     if p > 1:
+#         executor = concurrent.futures.ProcessPoolExecutor(max_workers=p)
+#
+#         total_cmds = len([x for x in iterate_read_commands(scaffolds, bam, kwargs)])
+#
+#         wait_for = [executor.submit(scaffold_profile_wrapper2, cmd) for cmd in iterate_read_commands(scaffolds, bam, kwargs)]
+#
+#         for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Getting read pairs: '):
+#             try:
+#                 results = f.result()
+#                 dicts.append(results)
+#             except:
+#                 logging.error("We had a failure! Not sure where!")
+#
+#     else:
+#         for cmd in tqdm(iterate_read_commands(scaffolds, bam, kwargs), desc='Getting read pairs: ', total=len(scaffolds)):
+#             dicts.append(scaffold_profile_wrapper2(cmd))
+#
+#     # Try and save any ones that failed
+#     failed_scaffs = set(scaffolds) - set([dict[0] for dict in dicts])
+#     if len(failed_scaffs) > 0:
+#         logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
+#         for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
+#             dicts.append(scaffold_profile_wrapper2(cmd))
+#
+#     allPair2info = {}
+#     for s, pair2info in dicts:
+#         if pair2info != False:
+#             allPair2info[s] = {}
+#             for k, v in pair2info.items():
+#                 allPair2info[s][k] = v
+#
+#     return allPair2info
+
+def get_paired_reads_multi(bam, scaffolds, **kwargs):
     '''
     Returns scaffold 2 read 2 info
+
+    Modified version of get_paired_reads_multi2
     '''
     # Initialize dictionary
     dicts = []
     p = int(kwargs.get('processes', 6))
     ret_total = kwargs.get('ret_total', False)
 
+    # Make commands
+    cmd_groups = [x for x in iterate_command_groups(scaffolds, bam, kwargs)]
+
+    # Make queues
+    read_cmd_queue = multiprocessing.Queue()
+    read_result_queue = multiprocessing.Queue()
+
+    for cmd_group in cmd_groups:
+        read_cmd_queue.put(cmd_group)
+
+    inStrain.logUtils.log_checkpoint("FilterReads", "multiprocessing", "start")
+
     # Do the multiprocessing
     if p > 1:
-        executor = concurrent.futures.ProcessPoolExecutor(max_workers=p)
+        logging.debug("Establishing processes")
+        processes = []
+        for i in range(0, p):
+            processes.append(multiprocessing.Process(target=read_profile_worker, args=(read_cmd_queue, read_result_queue)))
+        for proc in processes:
+            proc.start()
 
-        total_cmds = len([x for x in iterate_read_commands(scaffolds, bam, kwargs)])
+        # Set up progress bar
+        pbar = tqdm(desc='Filtering reads: ', total=len(cmd_groups))
 
-        wait_for = [executor.submit(scaffold_profile_wrapper2, cmd) for cmd in iterate_read_commands(scaffolds, bam, kwargs)]
+        # Get the results
+        recieved_groups = 0
+        while recieved_groups < len(cmd_groups):
+            result_group = read_result_queue.get()
+            recieved_groups += 1
+            pbar.update(1)
 
-        for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Getting read pairs: '):
-            try:
-                results = f.result()
-                dicts.append(results)
-            except:
-                logging.error("We had a failure! Not sure where!")
+            assert len(result_group) == 2
+            results, log = result_group
+            for result in results:
+                dicts.append(result)
+            logging.debug(log)
+
+        # Close multi-processing
+        for proc in processes:
+            proc.terminate()
+
+        # Close progress bar
+        pbar.close()
 
     else:
-        for cmd in tqdm(iterate_read_commands(scaffolds, bam, kwargs), desc='Getting read pairs: ', total=len(scaffolds)):
-            dicts.append(scaffold_profile_wrapper2(cmd))
+        read_profile_worker(read_cmd_queue, read_result_queue, single_thread=True)
+        logging.info("Done profiling genes")
 
-    # Try and save any ones that failed
-    failed_scaffs = set(scaffolds) - set([dict[0] for dict in dicts])
-    if len(failed_scaffs) > 0:
-        logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
-        for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
-            dicts.append(scaffold_profile_wrapper2(cmd))
+        # Get the results
+        recieved_groups = 0
+        while recieved_groups < len(cmd_groups):
+            result_group = read_result_queue.get(timeout=5)
+            recieved_groups += 1
+
+            assert len(result_group) == 2
+            results, log = result_group
+            for result in results:
+                dicts.append(result)
+            logging.debug(log)
+
+    inStrain.logUtils.log_checkpoint("FilterReads", "multiprocessing", "end")
+
+    # # Try and save any ones that failed
+    # failed_scaffs = set(scaffolds) - set([dict[0] for dict in dicts])
+    # if len(failed_scaffs) > 0:
+    #     logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
+    #     for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
+    #         dicts.append(scaffold_profile_wrapper2(cmd))
 
     allPair2info = {}
     for s, pair2info in dicts:
@@ -452,6 +561,45 @@ def iterate_read_commands(scaffolds, bam, profArgs):
     for scaff in scaffolds:
         yield [scaff, bam]
 
+def iterate_command_groups(scaffolds, bam, profArgs):
+    '''
+    Break these scaffolds into a series of groups
+
+    A command group is a touple of [list of scaffolds, bam]
+    '''
+    cmds = []
+    number_groups = int(profArgs.get('ReadGroupSize', 1000))
+
+    if number_groups > len(scaffolds):
+        for scaff in scaffolds:
+            yield [[scaff], bam]
+
+    else:
+        scaffs = random.sample(scaffolds, len(scaffolds))
+        for n in range(number_groups):
+            yield [scaffs[n::number_groups], bam]
+
+def scaffold_profile_wrapper(cmd_group):
+    '''
+    Take a command group and get the reads
+    '''
+    results = []
+    log = ''
+
+    scaffolds, bam = cmd_group
+    for scaff in scaffolds:
+        try:
+            pair2info, cur_log = get_paired_reads(bam, scaff)
+            results.append([scaff, pair2info])
+            log += cur_log
+
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            logging.error("read filtering whole scaffold exception- {0}".format(scaff))
+            results.append([scaff, None])
+
+    return results, log
 
 def scaffold_profile_wrapper2(cmd):
     '''
@@ -470,16 +618,18 @@ def scaffold_profile_wrapper2(cmd):
         logging.error("whole scaffold exception- {0}".format(str(cmd[0])))
         return cmd[0], False
 
-def get_paired_reads2(bam, scaff):
+def get_paired_reads(bam, scaff):
     '''
     Filter reads from a .bam file
 
-    As opposed to get_paired_reads, this gets all reads and lets you filter out pairs (or not) later. This just means adding a bit to pair2info
+    Rhis gets all reads and lets you filter out pairs (or not) later.
 
     Returns:
         pair2info: dictionary of read pair -> (mismatches, insert distance (-1 if number of reads is not 2), mapq score (highest), combined length, number of reads,
                                                 reference_position_0, reference_position_1 (only used for small things))
     '''
+    log_message = inStrain.logUtils.get_worker_log('GetPairedReads', scaff, 'start')
+
     # item2order, to make things more readable
     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
 
@@ -491,7 +641,7 @@ def get_paired_reads2(bam, scaff):
         iter = samfile.fetch(scaff)
     except ValueError:
         logging.error("FAILURE FilterReads {0} is not in .bam file".format(scaff))
-        return {}
+        return {}, ''
 
     for read in iter:
         # Dont use unmapped reads
@@ -537,7 +687,78 @@ def get_paired_reads2(bam, scaff):
             pair2info[read.query_name][i2o['start']] = 0
             pair2info[read.query_name][i2o['stop']] = 0
 
-    return pair2info
+    log_message += inStrain.logUtils.get_worker_log('GetPairedReads', scaff, 'end')
+
+    return pair2info, log_message
+
+# def get_paired_reads2(bam, scaff):
+#     '''
+#     Filter reads from a .bam file
+#
+#     As opposed to get_paired_reads, this gets all reads and lets you filter out pairs (or not) later. This just means adding a bit to pair2info
+#
+#     Returns:
+#         pair2info: dictionary of read pair -> (mismatches, insert distance (-1 if number of reads is not 2), mapq score (highest), combined length, number of reads,
+#                                                 reference_position_0, reference_position_1 (only used for small things))
+#     '''
+#     # item2order, to make things more readable
+#     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+#
+#     # Initialize
+#     pair2info = {} # Information on pairs
+#     samfile = pysam.AlignmentFile(bam)
+#
+#     try:
+#         iter = samfile.fetch(scaff)
+#     except ValueError:
+#         logging.error("FAILURE FilterReads {0} is not in .bam file".format(scaff))
+#         return {}
+#
+#     for read in iter:
+#         # Dont use unmapped reads
+#         if read.get_reference_positions() == []:
+#             continue
+#
+#         # Add a read the first time you see it
+#         elif read.query_name not in pair2info:
+#             pair2info[read.query_name] = np.array([read.get_tag('NM'),
+#                                             -1,
+#                                             read.mapping_quality,
+#                                             read.infer_query_length(),
+#                                             1,
+#                                             read.get_reference_positions()[0],
+#                                             read.get_reference_positions()[-1]], dtype="int64")
+#
+#         # If we've seen this read's pair before
+#         elif read.query_name in pair2info:
+#             # Adjust the number of mismatches
+#             pair2info[read.query_name][i2o['nm']] = int(pair2info[read.query_name][i2o['nm']]) + int(read.get_tag('NM'))
+#
+#             # Adjust the number of reads
+#             pair2info[read.query_name][i2o['reads']] += 1
+#
+#             # Adjust the combined length
+#             pair2info[read.query_name][i2o['length']] += read.infer_query_length()
+#
+#             # Adjust the mapQ
+#             pair2info[read.query_name][i2o['mapq']] = max(pair2info[read.query_name][i2o['mapq']], read.mapping_quality)
+#
+#             # If the number of reads is 2, calculate insert size
+#             if pair2info[read.query_name][i2o['reads']] == 2:
+#                 if read.get_reference_positions()[-1] > pair2info[read.query_name][i2o['start']]:
+#                     pair2info[read.query_name][i2o['insert_distance']] = read.get_reference_positions()[-1] - pair2info[read.query_name][i2o['start']]
+#                 else:
+#                     pair2info[read.query_name][i2o['insert_distance']] = pair2info[read.query_name][i2o['stop']] - read.get_reference_positions()[0]
+#
+#             # Otherwise get rid of insert distance
+#             else:
+#                 pair2info[read.query_name][i2o['insert_distance']] = -1
+#
+#             # Get rid of start and stop; not needed anymore
+#             pair2info[read.query_name][i2o['start']] = 0
+#             pair2info[read.query_name][i2o['stop']] = 0
+#
+#     return pair2info
 
 def mapping_info_wrapper(args, FAdb):
     # Get paired reads

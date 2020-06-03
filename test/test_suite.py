@@ -144,6 +144,11 @@ class test_plot():
         self.genes = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa.genes.fna'
 
+        self.sorted_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+        self.fasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa'
+
         self.tearDown()
         importlib.reload(logging)
 
@@ -153,7 +158,7 @@ class test_plot():
 
     def run(self):
         self.setUp()
-        self.test1()
+        self.test1(view=False)
         self.tearDown()
 
         self.setUp()
@@ -168,7 +173,7 @@ class test_plot():
         self.test4()
         self.tearDown()
 
-    def test1(self):
+    def test1(self, view=False):
         '''
         Make sure all plots are made
         '''
@@ -179,9 +184,19 @@ class test_plot():
                 'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
                 'GeneHistogram_plot.pdf']
 
+        # !! Maybe when stable you can do this; for now you need to re-run it !!
         location = os.path.join(self.test_dir, os.path.basename(self.IS))
         shutil.copytree(self.IS, location)
-        os.remove(location + '/log/log.log')
+        for f in glob.glob(location + '/log/*'):
+            os.remove(f)
+
+        # Run program
+        # location = self.test_dir + 'test'
+        # cmd = "inStrain profile {1} {2} -o {3} -g {4} -s {5} --skip_plot_generation -p 6 -d".format(
+        #         'junk', self.sorted_bam, self.fasta, location, self.genes, self.stb)
+        # print(cmd)
+        # call(cmd, shell=True)
+        # os.remove(location + '/log/log.log')
 
         cmd = "inStrain plot -i {0} -d".format(location)
         print(cmd)
@@ -209,6 +224,9 @@ class test_plot():
                 #print(line)
         assert got == 11, got # Its in there twice for random reasons
 
+        if view:
+            assert False, "Get on the figures here: " + IS.get_location('figures')
+
     def test2(self):
         '''
         Make sure all RC plots are made
@@ -223,7 +241,7 @@ class test_plot():
         print(cmd)
         call(cmd, shell=True)
 
-        cmd = "inStrain plot -i {0}".format(location)
+        cmd = "inStrain plot -i {0} -d".format(location)
         print(cmd)
         call(cmd, shell=True)
 
@@ -372,10 +390,16 @@ class test_genome_wide():
         files = glob.glob(IS.get_location('output') + '*')
         files = [f for f in files if (('genome_info' in f) & ('testdir_' in f))]
         assert len(files) == 1, files
+
+        # Make sure mm level is False in the output
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert 'mm' not in db.columns
             print(db.head())
+
+        # Make sure mm level is True in the raw data
+        db = IS.get('genome_level_info')
+        assert 'mm' in db.columns
         #print(IS)
 
     def test1(self):
@@ -1217,15 +1241,17 @@ class test_filter_reads():
         '''
         Compare version 1 and 2 of getting paired reads
         '''
-        # Run version 1 to get scaffold to pairs to info
+        # Load
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         scaffolds = list(scaff2sequence.keys())
-        s2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
-        db = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info, version=1)
 
         # Run version 2 to get scaffold to pairs to info
-        s2pair2info2 = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        s2pair2info2 = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
         db2 = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info2)
+
+        # Run version 1 to get scaffold to pairs to info
+        s2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        db = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info, version=1)
 
         # Make sure they get the same base reads
         assert len(db) == len(db2[db2['reads'] == 2])
@@ -1500,16 +1526,27 @@ class test_readcomparer():
     def setUp(self):
         self.script = get_script_loc('readcomparer')
         self.test_dir = load_random_test_dir()
-        self.IS = load_data_loc() + \
-            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+
+        self.fasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa'
+        self.bam1 = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+        self.bam2 = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam'
+        self.IS1 = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS'
         self.IS2 = load_data_loc() + \
-            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS'
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS'
+        self.RC_Loc = load_data_loc() + \
+            'readComparer_v1.RC'
+
         self.SIS = load_data_loc() + \
             'Ecoli_ani.100.0.subset.sorted.bam.IS'
         self.SIS2 = load_data_loc() + \
             'Ecoli_ani.99.9.subset.sorted.bam.IS'
         self.SIS3 = load_data_loc() + \
             'Ecoli_ani.98.0.subset.sorted.bam.IS'
+
         self.scafflist = load_data_loc() + \
             'scaffList.txt'
         self.scafflistF = load_data_loc() + \
@@ -1524,6 +1561,10 @@ class test_readcomparer():
             shutil.rmtree(self.test_dir)
 
     def run(self):
+        # self.setUp()
+        # self.UPDATE_COMPARE_TEST_DATA()
+        # self.tearDown()
+
         self.setUp()
         self.testS()
         self.tearDown()
@@ -1564,14 +1605,15 @@ class test_readcomparer():
         self.test8()
         self.tearDown()
 
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
-        ### self.setUp()
-        ### self.test10()
-        ### self.tearDown()
+        # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
+        # # self.setUp()
+        # # self.test9()
+        # # self.tearDown()
+        #
+        # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
+        # # ### self.setUp()
+        # # ### self.test10()
+        # # ### self.tearDown()
 
         self.setUp()
         self.test11()
@@ -1581,14 +1623,44 @@ class test_readcomparer():
         self.test12()
         self.tearDown()
 
+    def UPDATE_COMPARE_TEST_DATA(self):
+        '''
+        Run inStrain on bam1 and bam2, and store the results where IS1 and IS2 are
+        '''
+        # Run the first one
+        base1 = self.test_dir + os.path.basename(self.IS1)
+        cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(self.bam1, self.fasta,
+                base1)
+        print(cmd)
+        code = call(cmd, shell=True)
+        assert code == 0, code
+
+        # Copy to new location
+        if os.path.isdir(self.IS1):
+            shutil.rmtree(self.IS1)
+        shutil.copytree(base1, self.IS1)
+
+        # Run the second one
+        base2 = self.test_dir + os.path.basename(self.IS2)
+        cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(self.bam2, self.fasta,
+                base2)
+        print(cmd)
+        code = call(cmd, shell=True)
+        assert code == 0, code
+
+        # Copy to new location
+        if os.path.isdir(self.IS2):
+            shutil.rmtree(self.IS2)
+        shutil.copytree(base2, self.IS2)
+
     def testS(self):
         '''
         Like test0 but quicker
         '''
         # Run program
-        base = self.test_dir + 'testR'
+        base = self.test_dir + 'RC_test'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base, self.scafflistF)
         print(cmd)
         call(cmd, shell=True)
@@ -1610,7 +1682,7 @@ class test_readcomparer():
         MSdb = RIS.get('pairwise_SNP_locations')
 
         # Make sure it's correct
-        S1 = inStrain.SNVprofile.SNVprofile(self.IS)
+        S1 = inStrain.SNVprofile.SNVprofile(self.IS1)
         S2 = inStrain.SNVprofile.SNVprofile(self.IS2)
         SRdb1 = S1.get_nonredundant_scaffold_table()
         SRdb2 = S2.get_nonredundant_scaffold_table()
@@ -1629,12 +1701,12 @@ class test_readcomparer():
             # Make sure self comparisons are equal to unmasked breadh
             o = db[(db['name1'] == t1) & (db['name2'] == t1)].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            tt1 = S1db['unmaskedBreadth'].tolist()[0]
+            tt1 = S1db['breadth_minCov'].tolist()[0]
             assert o - tt1 < 0.000001, [o, tt1]
 
             o = db[(db['name1'] == t2) & (db['name2'] == t2)].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            tt2 = S2db['unmaskedBreadth'].tolist()[0]
+            tt2 = S2db['breadth_minCov'].tolist()[0]
             assert o - tt2 < 0.0000001, [o, tt2]
 
             assert set(db[(db['name1'] == db['name2']) & (db['compared_bases_count'] > 0)]['coverage_overlap'].tolist()) == set([1])
@@ -1650,7 +1722,7 @@ class test_readcomparer():
             subset=['scaffold', 'name1', 'name2'], keep='last')\
             .sort_values('scaffold')
             d = dd[dd['name1'] != dd['name2']]
-            assert len(d) == 1
+            assert len(d) == 1, d
             co = d['coverage_overlap'].tolist()[0]
             assert co > (1 - (1-tt1) - (1-tt2)), "scaffold {4}; co is {0}, breadth 1 is {1}, breadh 2 is {2}, calculation is {3}".format(
                 co, tt1, tt2, (1 - (1-tt1) - (1-tt2)), scaff)
@@ -1687,9 +1759,9 @@ class test_readcomparer():
         All of these checks are on the internals; that is comparing self to self, basically
         '''
         # Run program
-        base = self.test_dir + 'testR'
+        base = self.test_dir + 'RC_test'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base)
         print(cmd)
         call(cmd, shell=True)
@@ -1701,6 +1773,11 @@ class test_readcomparer():
         rawfiles = glob.glob(base + '/raw_data/*')
         assert len(rawfiles) == 5
 
+        # THIS UPDATES THE RC_LOC!
+        if os.path.isdir(self.RC_Loc):
+            shutil.rmtree(self.RC_Loc)
+        shutil.copytree(base, self.RC_Loc)
+
         # Read the scaffold table
         Rdb = pd.read_csv(glob.glob(base + '/raw_data/*' + 'comparisonsTable.csv.gz')[0])
         # Rdb['name1'] = [x.split('-vs-')[1] for x in Rdb['name1']]
@@ -1711,7 +1788,7 @@ class test_readcomparer():
         MSdb = RIS.get('pairwise_SNP_locations')
 
         # Make sure it's correct
-        S1 = inStrain.SNVprofile.SNVprofile(self.IS)
+        S1 = inStrain.SNVprofile.SNVprofile(self.IS1)
         S2 = inStrain.SNVprofile.SNVprofile(self.IS2)
         SRdb1 = S1.get_nonredundant_scaffold_table()
         SRdb2 = S2.get_nonredundant_scaffold_table()
@@ -1733,12 +1810,12 @@ class test_readcomparer():
             # Make sure self comparisons are equal to unmasked breadh
             o = db[(db['name1'] == t1) & (db['name2'] == t1)].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            tt1 = S1db['unmaskedBreadth'].tolist()[0]
+            tt1 = S1db['breadth_minCov'].tolist()[0]
             assert o - tt1 < 0.000001, [o, tt1]
 
             o = db[(db['name1'] == t2) & (db['name2'] == t2)].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            tt2 = S2db['unmaskedBreadth'].tolist()[0]
+            tt2 = S2db['breadth_minCov'].tolist()[0]
             assert o - tt2 < 0.0000001, [o, tt2]
 
             # Make sure the mms work; breadth should only go up
@@ -1790,7 +1867,7 @@ class test_readcomparer():
         Test readcomparer functions
         '''
         # Load
-        S1 = inStrain.SNVprofile.SNVprofile(self.IS)
+        S1 = inStrain.SNVprofile.SNVprofile(self.IS1)
         S2 = inStrain.SNVprofile.SNVprofile(self.IS2)
 
         # Get the scaffolds to compare
@@ -1821,12 +1898,12 @@ class test_readcomparer():
 
             o = db[(db['name1'] == 't1') & (db['name2'] == 't1')].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            t = S1db['unmaskedBreadth'].tolist()[0]
+            t = S1db['breadth_minCov'].tolist()[0]
             assert o - t < 0.0001, [o, t]
 
             o = db[(db['name1'] == 't2') & (db['name2'] == 't2')].sort_values('mm')\
                     ['percent_genome_compared'].tolist()[-1]
-            t = S2db['unmaskedBreadth'].tolist()[0]
+            t = S2db['breadth_minCov'].tolist()[0]
             assert o - t < 0.0001, [o, t]
 
             if set(db[(db['name1'] == db['name2']) & (db['compared_bases_count'] > 0)]['coverage_overlap'].tolist()) != set([1]):
@@ -1848,7 +1925,7 @@ class test_readcomparer():
         # Run program normally
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons".format(self.script, self.IS1, self.IS2, \
             base)
         print(cmd)
         call(cmd, shell=True)
@@ -1856,7 +1933,7 @@ class test_readcomparer():
         # Run program with high min_cov
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3}.2 -c 50 --include_self_comparisons".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3}.2 -c 50 --include_self_comparisons".format(self.script, self.IS1, self.IS2, \
             base)
         print(cmd)
         call(cmd, shell=True)
@@ -1895,7 +1972,7 @@ class test_readcomparer():
         Test random things
         '''
         P2C = {'A':0, 'C':1, 'T':2, 'G':3, 'X':4}
-        S = inStrain.SNVprofile.SNVprofile(self.IS)
+        S = inStrain.SNVprofile.SNVprofile(self.IS1)
         db = S.get('cumulative_snv_table')
 
         db.at['ref_base', 0] = np.nan
@@ -1915,7 +1992,7 @@ class test_readcomparer():
         '''
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4}".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} -s {4}".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -1932,7 +2009,7 @@ class test_readcomparer():
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_coverage_overlap".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_coverage_overlap".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -1948,7 +2025,7 @@ class test_readcomparer():
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -1964,7 +2041,7 @@ class test_readcomparer():
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -1989,7 +2066,7 @@ class test_readcomparer():
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -2020,7 +2097,7 @@ class test_readcomparer():
         # Run program with compare_consensus_bases
         base = self.test_dir + 'testR2'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} --fdr 0.5 --store_mismatch_locations".format(self.script, self.IS, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} --fdr 0.5 --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
             base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -2179,7 +2256,7 @@ class test_readcomparer():
         '''
         Test skipping scaffolds
         '''
-        S1 = inStrain.SNVprofile.SNVprofile(self.IS)
+        S1 = inStrain.SNVprofile.SNVprofile(self.IS1)
         S2 = inStrain.SNVprofile.SNVprofile(self.IS2)
 
         s2l = S1.get('scaffold2length')
@@ -2319,13 +2396,15 @@ class test_strains():
         self.script = get_script_loc('inStrain')
 
         self.test_dir = load_random_test_dir()
-
         self.sorted_bam = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
-        self.failure_bam = load_data_loc() + \
-            'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
         self.fasta = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa'
+        self.genes = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa.genes.fna'
+
+        self.failure_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
         self.single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101.fasta'
         self.small_fasta = load_data_loc() + \
@@ -2374,65 +2453,65 @@ class test_strains():
         # self.test0()
         # self.tearDown()
 
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test9()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test10()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test13()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test14()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test15()
-        # self.tearDown()
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
+
+        self.setUp()
+        self.test9()
+        self.tearDown()
+
+        self.setUp()
+        self.test10()
+        self.tearDown()
+
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
+
+        self.setUp()
+        self.test13()
+        self.tearDown()
+
+        self.setUp()
+        self.test14()
+        self.tearDown()
+
+        self.setUp()
+        self.test15()
+        self.tearDown()
 
         self.setUp(destroy=True)
         self.test16()
@@ -2603,7 +2682,7 @@ class test_strains():
         subset_readsF = list(pair2infoF.keys())
 
         # Run Matts filter_reads in a different way still
-        scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
         pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
         pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
                         filter_cutoff=filter_cutoff, max_insert_relative=3,
@@ -2634,7 +2713,7 @@ class test_strains():
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
-        Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi2(self.sorted_bam, scaffolds)
+        Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
         pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
         pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
                         filter_cutoff=filter_cutoff, max_insert_relative=3,
@@ -3184,7 +3263,7 @@ class test_strains():
                         if r in e.columns:
                             del e[r]
 
-                    rand = ['SNS_count', 'divergent_site_count']
+                    rand = ['SNS_count', 'divergent_site_count', 'partial']
                     for r in rand:
                         if r in e.columns:
                             del e[r]
@@ -3360,6 +3439,14 @@ class test_strains():
                     e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
 
+                if i in ['genes_table']:
+                    rand = ['partial']
+                    for r in rand:
+                        if r in e.columns:
+                            del e[r]
+                        if r in s.columns:
+                            del s[r]
+
                 if i in ['cumulative_scaffold_table']:
                     e = e.sort_values(['scaffold', 'mm']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'mm']).reset_index(drop=True)
@@ -3427,7 +3514,7 @@ class test_strains():
                 line = line.strip()
                 if 'FailureScaffoldHeaderTesting' in line:
                     got += 1
-        assert got == 3, got
+        assert got == 4, got
         os.remove(rr)
 
         # Make it not crash on that scaffold
@@ -3449,7 +3536,7 @@ class test_strains():
                 line = line.strip()
                 if 'FailureScaffoldHeaderTesting' in line:
                     got += 1
-        assert got == 2, got
+        assert got == 3, got
         os.remove(rr)
 
         # Make it crash on the gene profile
@@ -3471,7 +3558,7 @@ class test_strains():
                 line = line.strip()
                 if 'FailureScaffoldHeaderTesting' in line:
                     got += 1
-        assert got == 3, got
+        assert got == 4, got
         os.remove(rr)
 
     def test18(self):
@@ -3775,8 +3862,8 @@ if __name__ == '__main__':
     test_gene_statistics().run()
     test_quickProfile().run()
     test_genome_wide().run()
-    # test_plot().run()
-    # test_readcomparer().run()
+    test_plot().run()
+    test_readcomparer().run()
     test_special().run()
 
     print('everything is working swimmingly!')

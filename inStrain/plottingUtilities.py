@@ -5,6 +5,7 @@ import sys
 import h5py
 import logging
 import traceback
+import warnings
 import numpy as np
 import scipy.cluster.hierarchy
 import scipy.spatial.distance as ssd
@@ -233,7 +234,7 @@ def load_windowed_coverage_or_clonality(thing, covTs, scaffolds, window_len, mms
 
         for mm, ani in zip(mms, ANI_levels):
             if item == 'covT':
-                cov = inStrain.profileUtilities._mm_counts_to_counts_shrunk(covT, mm)
+                cov = inStrain.profileUtilities.mm_counts_to_counts_shrunk(covT, mm)
                 if len(cov) == 0:
                     continue
                 db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold])
@@ -942,8 +943,10 @@ def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=
 
         # Plot
         plt.sca(t2a[thing])
-        _make_RC_dendrogram(linkage, names, xlabel=t2c[thing], subtitle_string=title, threshold=t2t[thing],
-                           name2color=name2color)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            _make_RC_dendrogram(linkage, names, xlabel=t2c[thing], subtitle_string=title, threshold=t2t[thing],
+                               name2color=name2color)
 
     # Fix axis labels 1
     for thing in ['av_cov', 'av_ani']:
@@ -1150,7 +1153,7 @@ def main(args):
     # Cache needed data
     if IS_TYPE == 'IS':
         try:
-            kwargs['GWdb'] = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
+            kwargs['GWdb'] = IS.get('genome_level_info')
         except:
             logging.error("Cannot cache scaffold info - you don't have all required information. You need to run inStrain genome_wide first")
             if debug:
@@ -1310,8 +1313,6 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         Mdb = kwargs.get('GWdb', False)
-        if Mdb is False:
-            Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'scaffold_info', mm_level=True)
         assert len(Mdb) > 0
 
         # Add the number of read-pairs
@@ -1509,11 +1510,46 @@ def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
     #plt.show()
     plt.close('all')
 
+# def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
+#     # Load the required data
+#     try:
+#         # Prepare
+#         Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'mapping_info', mm_level=True)
+#         print(Mdb)
+#         assert len(Mdb) > 0
+#     except:
+#         logging.error("Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
+#         traceback.print_exc()
+#         return
+#
+#     # Make the plot
+#     logging.info("Plotting plot 6")
+#     name = 'ReadFiltering_plot.pdf'
+#     pp = PdfPages(plot_dir + name)
+#
+#     for genome, mdb in Mdb.groupby('genome'):
+#         if not plot_genome(genome, IS, **kwargs):
+#             continue
+#         read_filtering_plot(mdb, title=genome)
+#         fig = plt.gcf()
+#         fig.set_size_inches(6, 4)
+#         fig.tight_layout()
+#         pp.savefig(fig)#, bbox_inches='tight')
+#         #plt.show()
+#         plt.close(fig)
+#
+#     # Save the figure
+#     pp.close()
+#     #plt.show()
+#     plt.close('all')
+
 def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         # Prepare
-        Mdb = inStrain.genomeUtilities.genomeWideFromIS(IS, 'mapping_info', mm_level=True)
+        Mdb = IS.get('mapping_info')
+        Mdb = Mdb[Mdb['scaffold'] == 'all_scaffolds']
+        Mdb['genome'] = 'all_scaffolds'
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1525,20 +1561,16 @@ def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
     name = 'ReadFiltering_plot.pdf'
     pp = PdfPages(plot_dir + name)
 
-    for genome, mdb in Mdb.groupby('genome'):
-        if not plot_genome(genome, IS, **kwargs):
-            continue
-        read_filtering_plot(mdb, title=genome)
-        fig = plt.gcf()
-        fig.set_size_inches(6, 4)
-        fig.tight_layout()
-        pp.savefig(fig)#, bbox_inches='tight')
-        #plt.show()
-        plt.close(fig)
+    read_filtering_plot(Mdb, title='all scaffolds')
+
+    fig = plt.gcf()
+    fig.set_size_inches(6, 4)
+    fig.tight_layout()
+    pp.savefig(fig)
+    plt.close(fig)
 
     # Save the figure
     pp.close()
-    #plt.show()
     plt.close('all')
 
 def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):

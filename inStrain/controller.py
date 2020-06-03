@@ -335,35 +335,35 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         return Fdb, scaff2sequence # also return s2l - alexcc 5/9/2019: Nah, make it scaff2sequence (s2s) (M.O. 6/10/19)
 
-    def load_paired_reads(self, args, FAdb):
-        '''
-        Load paired reads to be profiled
-
-        Return a dictionary of read pair -> info
-        '''
-        # Load paired reads
-        scaffolds = list(FAdb['scaffold'].unique())
-        scaff2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
-
-        # Merge into single
-        pair2info = {}
-        for scaff, p2i in scaff2pair2info.items():
-            for p, i in p2i.items():
-                pair2info[p] = i
-
-        # Make read report
-        logging.info('Making read report')
-        RR = inStrain.filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info, **vars(args))
-
-        # Filter the dictionary
-        logging.info('Filtering reads')
-        pair2infoF = inStrain.filter_reads.filter_paired_reads_dict(pair2info,
-            **vars(args))
-
-        # Make a report on these pair reads
-        #make_mapping_info(pair2info, pair2infoF, args)
-
-        return pair2infoF, RR
+    # def load_paired_reads(self, args, FAdb):
+    #     '''
+    #     Load paired reads to be profiled
+    #
+    #     Return a dictionary of read pair -> info
+    #     '''
+    #     # Load paired reads
+    #     scaffolds = list(FAdb['scaffold'].unique())
+    #     scaff2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
+    #
+    #     # Merge into single
+    #     pair2info = {}
+    #     for scaff, p2i in scaff2pair2info.items():
+    #         for p, i in p2i.items():
+    #             pair2info[p] = i
+    #
+    #     # Make read report
+    #     logging.info('Making read report')
+    #     RR = inStrain.filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info, **vars(args))
+    #
+    #     # Filter the dictionary
+    #     logging.info('Filtering reads')
+    #     pair2infoF = inStrain.filter_reads.filter_paired_reads_dict(pair2info,
+    #         **vars(args))
+    #
+    #     # Make a report on these pair reads
+    #     #make_mapping_info(pair2info, pair2infoF, args)
+    #
+    #     return pair2infoF, RR
 
     def validate_arguments(self, args):
         '''
@@ -629,8 +629,11 @@ def prepare_bam_fie(args):
         bam = _sort_index_bam(bam)
 
     elif bam[-4:] == '.bam':
+        # If there's an index, assume its sorted
         if (os.path.exists(bam + '.bai')) | ((os.path.exists(bam[:-4] + '.bai'))):
             pass
+
+        # If there's not an index...
         else:
             bam = _sort_index_bam(bam, rm_ori=False)
 
@@ -666,11 +669,15 @@ def _sort_index_bam(bam, rm_ori=False):
         logging.error('Bam file needs to end in .bam')
         sys.exit()
 
-    logging.info("sorting {0}".format(bam))
-    sorted_bam = bam[:-4] + '.sorted.bam'
-    cmd = ['samtools', 'sort', bam, '-o', sorted_bam]
-    print(' '.join(cmd))
-    call(cmd)
+    if 'sorted.bam' not in bam:
+        logging.info("sorting {0}".format(bam))
+        sorted_bam = bam[:-4] + '.sorted.bam'
+        cmd = ['samtools', 'sort', bam, '-o', sorted_bam]
+        print(' '.join(cmd))
+        call(cmd)
+    else:
+        sorted_bam = bam
+        rm_ori = False
 
     logging.info("Indexing {0}".format(sorted_bam))
     cmd = ['samtools', 'index', sorted_bam, sorted_bam + '.bai']

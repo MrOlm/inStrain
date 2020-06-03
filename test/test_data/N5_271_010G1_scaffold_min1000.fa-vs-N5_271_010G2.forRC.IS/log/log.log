@@ -1,0 +1,1968 @@
+20-06-02 10:06:01 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20-06-02 10:06:01 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/log/log.log***
+20-06-02 10:06:01 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/bin/inStrain profile /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS --skip_plot_generation
+
+20-06-02 10:06:01 DEBUG    inStrain version 1.3.0i was run 
+
+20-06-02 10:06:01 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+20-06-02 10:06:01 INFO     ***************************************************
+    ..:: inStrain profile Step 1. Filter reads ::..
+***************************************************
+        
+20-06-02 10:06:01 DEBUG    Checkpoint main_profile filter_reads start 151609344
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_0 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_1 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_3 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_4 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_2 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_5 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_5 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_6 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_4 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_7 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_2 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_6 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_7 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_8 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_9 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_10 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_3 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_1 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_11 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_8 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_12 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_13 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_9 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_14 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_11 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_10 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_15 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_16 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_12 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_13 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_17 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_18 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_14 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_19 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_17 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_16 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_20 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_21 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_0 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_18 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_20 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_21 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_22 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_23 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_24 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_19 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_25 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_23 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_26 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_27 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_24 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_28 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_27 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_29 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_22 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_25 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_30 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_31 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_26 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_29 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_32 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_33 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_31 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_30 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_34 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_15 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_35 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_33 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_36 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_34 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_38 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_37 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_35 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_32 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_39 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_36 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_37 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_40 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_41 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_42 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_28 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_43 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_39 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_42 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_44 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_41 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_40 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_45 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_46 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_47 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_43 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_48 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_45 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_47 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_49 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_50 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_44 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_46 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_51 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_52 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_48 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_38 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_53 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_51 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_54 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_50 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_52 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_49 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_56 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_55 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_58 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_54 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_57 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_59 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_53 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_60 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_56 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_61 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_55 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_58 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_62 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_57 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_63 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_59 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_64 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_65 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_60 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_66 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_63 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_61 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_67 reads
+20-06-02 10:06:01 DEBUG    running N5_271_010G1_scaffold_68 reads
+20-06-02 10:06:01 DEBUG    returning N5_271_010G1_scaffold_64 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_69 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_65 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_66 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_67 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_70 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_71 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_72 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_68 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_69 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_73 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_74 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_70 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_75 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_73 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_76 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_71 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_77 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_74 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_75 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_78 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_79 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_76 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_77 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_80 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_81 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_80 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_78 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_82 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_83 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_79 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_81 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_84 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_85 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_82 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_86 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_84 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_85 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_83 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_87 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_88 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_89 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_88 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_86 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_90 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_91 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_87 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_92 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_91 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_89 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_93 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_94 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_90 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_92 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_95 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_96 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_94 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_97 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_96 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_98 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_95 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_99 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_97 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_99 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_98 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_100 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_101 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_102 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_93 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_102 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_100 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_103 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_104 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_105 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_101 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_106 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_106 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_107 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_105 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_108 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_104 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_103 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_109 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_110 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_107 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_111 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_108 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_111 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_112 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_113 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_109 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_114 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_113 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_62 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_115 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_112 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_116 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_116 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_117 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_118 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_72 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_118 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_117 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_119 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_120 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_119 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_121 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_120 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_121 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_122 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_123 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_114 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_124 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_122 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_123 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_125 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_126 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_127 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_126 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_125 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_129 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_128 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_127 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_124 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_130 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_128 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_129 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_131 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_132 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_133 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_130 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_134 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_132 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_134 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_131 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_133 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_135 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_136 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_137 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_138 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_137 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_135 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_139 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_140 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_110 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_136 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_141 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_138 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_142 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_139 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_143 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_141 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_144 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_142 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_145 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_143 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_146 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_145 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_144 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_147 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_148 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_149 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_149 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_150 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_148 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_151 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_150 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_152 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_152 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_153 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_151 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_154 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_153 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_147 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_155 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_156 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_156 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_154 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_157 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_155 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_158 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_159 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_159 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_160 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_157 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_161 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_158 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_162 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_160 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_163 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_161 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_185 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_163 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_197 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_162 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_341 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_146 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_185 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_350 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_361 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_197 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_362 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_350 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_376 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_341 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_419 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_376 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_443 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_362 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_484 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_484 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_443 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_649 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_618 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_419 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_836 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_618 reads
+20-06-02 10:06:02 DEBUG    running N5_271_010G1_scaffold_963 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_836 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_361 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_140 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_115 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_649 reads
+20-06-02 10:06:02 DEBUG    returning N5_271_010G1_scaffold_963 reads
+20-06-02 10:06:02 INFO     Making read report
+20-06-02 10:06:02 DEBUG    running on all reads
+20-06-02 10:06:04 DEBUG    running on individual scaffolds
+20-06-02 10:06:04 INFO     Filtering reads
+20-06-02 10:06:04 INFO     9,435 read pairs remain after filtering
+20-06-02 10:06:04 DEBUG    Checkpoint main_profile filter_reads end 176246784
+20-06-02 10:06:04 INFO     ***************************************************
+.:: inStrain profile Step 2. Profile scaffolds ::..
+***************************************************
+        
+20-06-02 10:06:04 DEBUG    Checkpoint main_profile profile_scaffolds start 176558080
+20-06-02 10:06:04 DEBUG    setting up bam profile
+20-06-02 10:06:04 DEBUG    Creating commands
+20-06-02 10:06:04 DEBUG    There are 7 cmd groups
+20-06-02 10:06:04 DEBUG    Create queues and shared things
+20-06-02 10:06:04 DEBUG    Submitting split tasks to queue
+20-06-02 10:06:04 DEBUG    Submitting merge tasks to queue
+20-06-02 10:06:04 DEBUG    Establishing processes
+20-06-02 10:06:17 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_145.0 start 6533120 1591117564.772971 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_145.0 end 18558976 1591117564.889156 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_146.0 start 18468864 1591117564.889803 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_146.0 end 24989696 1591117565.367393 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_147.0 start 24903680 1591117565.368392 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_147.0 end 25124864 1591117565.51232 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_148.0 start 25124864 1591117565.5130508 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_148.0 end 25423872 1591117565.7098722 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_149.0 start 25423872 1591117565.710285 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_149.0 end 25587712 1591117565.7633522 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_15.0 start 25587712 1591117565.763951 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_15.0 end 27742208 1591117569.2501628 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_150.0 start 27742208 1591117569.25123 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_150.0 end 27811840 1591117569.313706 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_151.0 start 27811840 1591117569.314579 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_151.0 end 27889664 1591117569.6194031 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_152.0 start 27889664 1591117569.620076 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_152.0 end 27979776 1591117569.684651 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_153.0 start 27979776 1591117569.6853151 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_153.0 end 28045312 1591117569.791063 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_154.0 start 28045312 1591117569.791422 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_154.0 end 28160000 1591117570.203986 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_155.0 start 28160000 1591117570.204482 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_155.0 end 28233728 1591117570.539546 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_156.0 start 28233728 1591117570.540242 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_156.0 end 28282880 1591117570.60446 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_157.0 start 28282880 1591117570.6051111 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_157.0 end 28413952 1591117570.950575 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_158.0 start 28413952 1591117570.951177 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_158.0 end 28450816 1591117571.224449 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_159.0 start 28450816 1591117571.22486 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_159.0 end 28491776 1591117571.257799 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_16.0 start 28491776 1591117571.258176 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_16.0 end 28991488 1591117571.795728 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_160.0 start 28991488 1591117571.7964811 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_160.0 end 29028352 1591117571.86988 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_161.0 start 29028352 1591117571.870273 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_161.0 end 29089792 1591117571.891941 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_162.0 start 29089792 1591117571.89229 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_162.0 end 29171712 1591117572.164802 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_163.0 start 29171712 1591117572.1651788 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_163.0 end 29175808 1591117572.208941 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_17.0 start 29175808 1591117572.20957 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_17.0 end 29450240 1591117572.5123808 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_18.0 start 29450240 1591117572.5131378 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_18.0 end 30068736 1591117573.129972 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_185.0 start 30068736 1591117573.1308548 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_185.0 end 30130176 1591117573.561474 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_19.0 start 30130176 1591117573.562156 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_19.0 end 31154176 1591117574.579689 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_197.0 start 31154176 1591117574.580534 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_197.0 end 31305728 1591117575.1330738 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_2.0 start 31305728 1591117575.133693 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_2.0 end 32600064 1591117577.766413 26970
+
+20-06-02 10:06:18 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_40.0 start 6623232 1591117564.788676 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_40.0 end 19275776 1591117565.2835588 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_41.0 start 19189760 1591117565.284354 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_41.0 end 23408640 1591117565.571109 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_419.0 start 23322624 1591117565.571962 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_419.0 end 24399872 1591117565.835865 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_42.0 start 24399872 1591117565.836423 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_42.0 end 24567808 1591117566.395852 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_43.0 start 24567808 1591117566.396522 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_43.0 end 24895488 1591117566.980712 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_44.0 start 24895488 1591117566.98134 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_44.0 end 26324992 1591117567.765059 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_443.0 start 26329088 1591117567.765881 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_443.0 end 26673152 1591117568.1367922 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_45.0 start 26673152 1591117568.137372 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_45.0 end 26898432 1591117568.293225 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_46.0 start 26898432 1591117568.2939131 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_46.0 end 27713536 1591117568.558624 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_47.0 start 27717632 1591117568.559458 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_47.0 end 27865088 1591117568.724622 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_48.0 start 27865088 1591117568.7252579 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_48.0 end 28131328 1591117568.8591309 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_484.0 start 28131328 1591117568.859551 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_484.0 end 28135424 1591117568.901727 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_49.0 start 28135424 1591117568.902346 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_49.0 end 28258304 1591117569.231083 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_5.0 start 28258304 1591117569.231462 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_5.0 end 29085696 1591117570.31357 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_50.0 start 29085696 1591117570.314002 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_50.0 end 29167616 1591117570.372781 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_51.0 start 29167616 1591117570.373205 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_51.0 end 29179904 1591117570.447524 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_52.0 start 29179904 1591117570.4482298 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_52.0 end 29249536 1591117570.608733 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_53.0 start 29249536 1591117570.609351 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_53.0 end 29347840 1591117571.272596 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_54.0 start 29347840 1591117571.273298 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_54.0 end 29466624 1591117571.441078 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_55.0 start 29466624 1591117571.441727 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_55.0 end 29507584 1591117571.8979998 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_56.0 start 29507584 1591117571.89862 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_56.0 end 29573120 1591117572.107137 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_57.0 start 29573120 1591117572.108054 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_57.0 end 29757440 1591117572.575368 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_58.0 start 29757440 1591117572.57604 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_58.0 end 29782016 1591117572.798998 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_59.0 start 29782016 1591117572.7996202 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_59.0 end 29904896 1591117573.2135308 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_6.0 start 29904896 1591117573.2141829 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_6.0 end 31125504 1591117574.592266 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_60.0 start 31125504 1591117574.5928519 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_60.0 end 31150080 1591117574.915714 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_61.0 start 31150080 1591117574.9163141 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_61.0 end 31342592 1591117575.283983 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_618.0 start 31342592 1591117575.284634 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_618.0 end 31363072 1591117575.3424819 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_62.0 start 31363072 1591117575.343124 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_62.0 end 127660032 1591117578.392389 26972
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_63.0 start 127660032 1591117578.396745 26972
+WorkerLog SplitProfile N5_271_010G1_scaffold_63.0 end 127746048 1591117578.601577 26972
+
+20-06-02 10:06:18 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_115.0 start 6963200 1591117564.772417 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_115.0 end 123621376 1591117569.036793 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_116.0 start 123469824 1591117569.040289 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_116.0 end 123658240 1591117569.346857 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_117.0 start 123572224 1591117569.3475142 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_117.0 end 123879424 1591117569.5394182 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_118.0 start 123879424 1591117569.5401118 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_118.0 end 123879424 1591117569.613472 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_119.0 start 123879424 1591117569.614207 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_119.0 end 123916288 1591117569.7755039 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_12.0 start 123916288 1591117569.776222 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_12.0 end 124346368 1591117570.6266901 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_120.0 start 124346368 1591117570.6270568 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_120.0 end 124469248 1591117571.0164962 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_121.0 start 124469248 1591117571.0169559 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_121.0 end 124481536 1591117571.05286 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_122.0 start 124481536 1591117571.053559 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_122.0 end 124542976 1591117571.3762062 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_123.0 start 124542976 1591117571.376928 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_123.0 end 124604416 1591117571.475898 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_124.0 start 124604416 1591117571.4766662 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_124.0 end 124887040 1591117572.13445 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_125.0 start 124887040 1591117572.135296 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_125.0 end 124973056 1591117572.4584022 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_126.0 start 124973056 1591117572.458796 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_126.0 end 125009920 1591117572.7619588 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_127.0 start 125009920 1591117572.7623281 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_127.0 end 125120512 1591117573.0250711 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_128.0 start 125120512 1591117573.025527 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_128.0 end 125145088 1591117573.109495 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_129.0 start 125145088 1591117573.1101282 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_129.0 end 125243392 1591117573.38176 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_13.0 start 125243392 1591117573.382488 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_13.0 end 125632512 1591117574.208385 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_130.0 start 125632512 1591117574.20925 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_130.0 end 125657088 1591117574.292863 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_131.0 start 125657088 1591117574.293507 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_131.0 end 125784064 1591117574.537163 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_132.0 start 125784064 1591117574.5377018 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_132.0 end 125870080 1591117574.788438 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_133.0 start 125870080 1591117574.789073 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_133.0 end 125927424 1591117575.2043421 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_134.0 start 125927424 1591117575.2048 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_134.0 end 125968384 1591117575.248534 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_135.0 start 125968384 1591117575.248922 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_135.0 end 126005248 1591117575.28894 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_136.0 start 126005248 1591117575.289557 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_136.0 end 126066688 1591117575.37715 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_137.0 start 126066688 1591117575.377909 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_137.0 end 126070784 1591117575.463867 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_138.0 start 126070784 1591117575.464233 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_138.0 end 126164992 1591117575.7710662 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_139.0 start 126164992 1591117575.772295 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_139.0 end 126201856 1591117576.112643 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_14.0 start 126201856 1591117576.113325 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_14.0 end 126304256 1591117576.528297 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_140.0 start 126304256 1591117576.528678 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_140.0 end 126898176 1591117577.8313441 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_141.0 start 126857216 1591117577.832899 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_141.0 end 126885888 1591117577.977947 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_142.0 start 126885888 1591117577.9785962 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_142.0 end 126885888 1591117578.026488 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_143.0 start 126885888 1591117578.026859 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_143.0 end 126926848 1591117578.289357 26969
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_144.0 start 126926848 1591117578.290026 26969
+WorkerLog SplitProfile N5_271_010G1_scaffold_144.0 end 127008768 1591117578.65128 26969
+
+20-06-02 10:06:20 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_20.0 start 6520832 1591117564.777716 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_20.0 end 22671360 1591117565.008965 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_21.0 start 22589440 1591117565.009724 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_21.0 end 23293952 1591117565.3090072 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_22.0 start 23207936 1591117565.3097012 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_22.0 end 24502272 1591117565.613523 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_23.0 start 24502272 1591117565.613954 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_23.0 end 25554944 1591117565.783784 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_24.0 start 25559040 1591117565.78464 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_24.0 end 25956352 1591117566.5291321 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_25.0 start 25956352 1591117566.529879 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_25.0 end 26214400 1591117567.14359 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_26.0 start 26214400 1591117567.144264 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_26.0 end 27910144 1591117568.105052 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_27.0 start 27914240 1591117568.106261 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_27.0 end 28131328 1591117568.318563 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_28.0 start 28131328 1591117568.319229 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_28.0 end 28913664 1591117570.091566 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_29.0 start 28913664 1591117570.092438 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_29.0 end 29048832 1591117570.370615 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_3.0 start 29048832 1591117570.3716302 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_3.0 end 32727040 1591117572.6308029 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_30.0 start 32710656 1591117572.632054 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_30.0 end 32878592 1591117573.195586 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_31.0 start 32821248 1591117573.196092 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_31.0 end 32825344 1591117573.25166 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_32.0 start 32825344 1591117573.252013 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_32.0 end 32899072 1591117573.9110668 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_33.0 start 32899072 1591117573.9115589 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_33.0 end 32907264 1591117574.1012402 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_34.0 start 32907264 1591117574.1018822 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_34.0 end 32915456 1591117574.251298 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_341.0 start 32915456 1591117574.251741 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_341.0 end 33247232 1591117574.663487 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_35.0 start 33247232 1591117574.66434 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_35.0 end 33300480 1591117575.20833 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_350.0 start 33300480 1591117575.2087 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_350.0 end 33308672 1591117575.4863129 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_36.0 start 33308672 1591117575.487071 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_36.0 end 33353728 1591117575.944682 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_361.0 start 33353728 1591117575.945045 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_361.0 end 33632256 1591117576.654871 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_362.0 start 33632256 1591117576.655754 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_362.0 end 33669120 1591117576.9613671 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_37.0 start 33669120 1591117576.9620101 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_37.0 end 33763328 1591117577.139283 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_376.0 start 33763328 1591117577.139651 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_376.0 end 33783808 1591117577.292634 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_38.0 start 33783808 1591117577.2932549 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_38.0 end 34111488 1591117577.984077 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_39.0 start 34111488 1591117577.9845738 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_39.0 end 34148352 1591117578.46128 26971
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_4.0 start 34148352 1591117578.461932 26971
+WorkerLog SplitProfile N5_271_010G1_scaffold_4.0 end 36282368 1591117579.913152 26971
+
+20-06-02 10:06:20 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_64.0 start 6537216 1591117564.7888849 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_64.0 end 21868544 1591117565.149298 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_649.0 start 21786624 1591117565.1497972 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_649.0 end 130015232 1591117570.66747 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_65.0 start 129892352 1591117570.674481 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_65.0 end 129994752 1591117571.085241 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_66.0 start 129994752 1591117571.08573 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_66.0 end 129998848 1591117571.265045 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_67.0 start 129998848 1591117571.26559 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_67.0 end 130002944 1591117571.3492339 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_68.0 start 130002944 1591117571.3495748 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_68.0 end 130002944 1591117571.497057 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_69.0 start 130002944 1591117571.4976718 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_69.0 end 130002944 1591117571.569634 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_7.0 start 130002944 1591117571.5699909 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_7.0 end 130416640 1591117572.109956 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_70.0 start 130416640 1591117572.1105092 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_70.0 end 130420736 1591117572.1767948 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_71.0 start 130420736 1591117572.177502 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_71.0 end 130441216 1591117572.670315 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_72.0 start 130441216 1591117572.6706948 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_72.0 end 131100672 1591117575.104461 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_73.0 start 131100672 1591117575.107371 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_73.0 end 131108864 1591117575.1219609 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_74.0 start 131108864 1591117575.12256 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_74.0 end 131112960 1591117575.664709 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_75.0 start 131112960 1591117575.670134 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_75.0 end 131125248 1591117576.030944 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_76.0 start 131125248 1591117576.031611 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_76.0 end 131244032 1591117576.608635 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_77.0 start 131244032 1591117576.6096199 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_77.0 end 131244032 1591117576.900811 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_78.0 start 131244032 1591117576.9014888 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_78.0 end 131334144 1591117577.246918 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_79.0 start 131334144 1591117577.247593 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_79.0 end 131411968 1591117577.394204 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_8.0 start 131411968 1591117577.394909 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_8.0 end 132120576 1591117578.5117881 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_80.0 start 132120576 1591117578.512747 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_80.0 end 132120576 1591117578.647249 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_81.0 start 132120576 1591117578.647663 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_81.0 end 132120576 1591117578.909636 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_82.0 start 132120576 1591117578.9100502 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_82.0 end 132190208 1591117579.0139241 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_83.0 start 132190208 1591117579.01455 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_83.0 end 132202496 1591117579.262711 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_836.0 start 132202496 1591117579.2632132 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_836.0 end 132206592 1591117579.320287 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_84.0 start 132206592 1591117579.3210728 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_84.0 end 132206592 1591117579.364815 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_85.0 start 132206592 1591117579.365231 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_85.0 end 132206592 1591117579.413586 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_86.0 start 132206592 1591117579.413963 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_86.0 end 132308992 1591117579.6337228 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_87.0 start 132308992 1591117579.63408 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_87.0 end 132956160 1591117579.89148 26973
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_88.0 start 132956160 1591117579.891886 26973
+WorkerLog SplitProfile N5_271_010G1_scaffold_88.0 end 132976640 1591117580.100584 26973
+
+20-06-02 10:06:23 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_0.0 start 6459392 1591117564.765763 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_0.0 end 33968128 1591117570.541833 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_1.0 start 33878016 1591117570.546305 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_1.0 end 35905536 1591117574.716508 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_10.0 start 35770368 1591117574.718624 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_10.0 end 37117952 1591117576.293189 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_100.0 start 37023744 1591117576.294035 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_100.0 end 37150720 1591117576.660753 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_101.0 start 37150720 1591117576.661141 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_101.0 end 37228544 1591117577.107904 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_102.0 start 37228544 1591117577.1086879 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_102.0 end 37273600 1591117577.4978921 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_103.0 start 37273600 1591117577.498631 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_103.0 end 37437440 1591117577.864342 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_104.0 start 37437440 1591117577.864985 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_104.0 end 37502976 1591117577.961188 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_105.0 start 37502976 1591117577.961598 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_105.0 end 37638144 1591117578.0635982 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_106.0 start 37638144 1591117578.064249 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_106.0 end 37638144 1591117578.085831 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_107.0 start 37638144 1591117578.086474 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_107.0 end 37740544 1591117578.192994 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_108.0 start 37740544 1591117578.19389 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_108.0 end 37781504 1591117578.600696 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_109.0 start 37781504 1591117578.601107 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_109.0 end 37883904 1591117578.8745952 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_11.0 start 37883904 1591117578.8752651 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_11.0 end 37982208 1591117579.17133 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_110.0 start 37982208 1591117579.171755 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_110.0 end 39866368 1591117580.758278 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_111.0 start 39866368 1591117580.760988 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_111.0 end 39899136 1591117580.809483 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_112.0 start 39899136 1591117580.809791 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_112.0 end 39956480 1591117581.079919 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_113.0 start 39956480 1591117581.0803661 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_113.0 end 39956480 1591117581.282041 26968
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_114.0 start 39956480 1591117581.282444 26968
+WorkerLog SplitProfile N5_271_010G1_scaffold_114.0 end 44462080 1591117583.736397 26968
+
+20-06-02 10:06:30 DEBUG    
+WorkerLog SplitProfile N5_271_010G1_scaffold_89.0 start 40169472 1591117577.989077 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_89.0 end 40304640 1591117578.448143 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_9.0 start 40304640 1591117578.449119 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_9.0 end 36646912 1591117579.40719 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_90.0 start 35336192 1591117579.407868 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_90.0 end 35377152 1591117579.651042 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_91.0 start 35340288 1591117579.651437 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_91.0 end 35418112 1591117579.863281 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_92.0 start 35418112 1591117579.863669 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_92.0 end 35430400 1591117580.1687 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_93.0 start 35430400 1591117580.169173 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_93.0 end 37584896 1591117580.7435808 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_94.0 start 37584896 1591117580.7447062 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_94.0 end 37621760 1591117580.878081 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_95.0 start 37621760 1591117580.878422 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_95.0 end 37810176 1591117581.139956 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_96.0 start 37810176 1591117581.140588 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_96.0 end 37818368 1591117581.187217 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_963.0 start 37818368 1591117581.187777 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_963.0 end 148787200 1591117590.087848 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_97.0 start 144920576 1591117590.09583 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_97.0 end 144941056 1591117590.2740061 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_98.0 start 144801792 1591117590.274409 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_98.0 end 144809984 1591117590.4862468 26970
+
+WorkerLog SplitProfile N5_271_010G1_scaffold_99.0 start 144809984 1591117590.486635 26970
+WorkerLog SplitProfile N5_271_010G1_scaffold_99.0 end 144809984 1591117590.65872 26970
+
+20-06-02 10:06:30 DEBUG    Establishing processes for merging
+20-06-02 10:06:30 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_100 start 10854400 1591117590.811921 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_100 end 18763776 1591117590.868083 27028
+20-06-02 10:06:30 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_101 start 11096064 1591117590.8319192 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_101 end 19214336 1591117590.9100611 27027
+20-06-02 10:06:30 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_104 start 20185088 1591117590.921694 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_104 end 20754432 1591117590.9557068 27027
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_102 start 11218944 1591117590.8380291 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_102 end 21803008 1591117591.028932 27029
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_106 start 22417408 1591117591.036264 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_106 end 22433792 1591117591.042552 27029
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_103 start 19623936 1591117590.8793228 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_103 end 22990848 1591117591.098135 27028
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_107 start 22478848 1591117591.051869 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_107 end 23199744 1591117591.099951 27029
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_105 start 20865024 1591117590.968004 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_105 end 23535616 1591117591.1392791 27027
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_109 start 23339008 1591117591.115988 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_109 end 23379968 1591117591.149724 27029
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_11 start 23740416 1591117591.1497521 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_11 end 24915968 1591117591.417303 27027
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_10 start 13332480 1591117590.8337321 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_10 end 26013696 1591117591.451615 27026
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_108 start 23224320 1591117591.1153479 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_108 end 23625728 1591117591.4637508 27028
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_111 start 24965120 1591117591.426687 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_111 end 24969216 1591117591.466679 27027
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_113 start 23793664 1591117591.492424 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_113 end 23912448 1591117591.549702 27028
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_0 start 16285696 1591117590.807592 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_0 end 26759168 1591117591.616776 27024
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_1 start 16171008 1591117590.823919 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_1 end 27377664 1591117591.660525 27025
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_116 start 29319168 1591117591.64269 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_116 end 29347840 1591117591.686729 27024
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_118 start 29458432 1591117591.693891 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_118 end 29556736 1591117591.713072 27024
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_119 start 29511680 1591117591.72205 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_119 end 29511680 1591117591.739871 27024
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_110 start 24682496 1591117591.171777 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_110 end 25382912 1591117591.751002 27029
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_112 start 27394048 1591117591.473341 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_112 end 27631616 1591117591.833317 27026
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_121 start 27828224 1591117591.841824 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_121 end 27840512 1591117591.8473861 27026
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_117 start 28520448 1591117591.683734 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_117 end 28815360 1591117591.946232 27025
+20-06-02 10:06:31 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_123 start 28835840 1591117591.9599118 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_123 end 28844032 1591117591.988638 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_12 start 29990912 1591117591.752098 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_12 end 30777344 1591117591.999536 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_114 start 27713536 1591117591.502089 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_114 end 28188672 1591117592.014179 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_122 start 27852800 1591117591.857376 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_122 end 27910144 1591117592.060401 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_120 start 26251264 1591117591.7718558 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_120 end 26341376 1591117592.092632 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_115 start 26058752 1591117591.5766861 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_115 end 27746304 1591117592.090878 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_128 start 28323840 1591117592.111975 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_128 end 28327936 1591117592.137773 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_129 start 26435584 1591117592.115925 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_129 end 26484736 1591117592.172555 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_125 start 31211520 1591117592.009027 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_125 end 31264768 1591117592.2037601 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_130 start 26562560 1591117592.1815329 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_130 end 26562560 1591117592.212215 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_131 start 31084544 1591117592.212338 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_131 end 31084544 1591117592.233662 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_132 start 26566656 1591117592.220235 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_132 end 26566656 1591117592.2565372 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_134 start 26566656 1591117592.2653818 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_134 end 26660864 1591117592.2778418 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_135 start 26660864 1591117592.283963 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_135 end 26660864 1591117592.296652 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_133 start 31105024 1591117592.248914 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_133 end 31154176 1591117592.304796 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_137 start 31158272 1591117592.312234 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_137 end 31207424 1591117592.327787 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_126 start 29241344 1591117592.034698 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_126 end 29274112 1591117592.328233 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_136 start 26664960 1591117592.306337 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_136 end 26697728 1591117592.339724 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_124 start 29175808 1591117592.002321 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_124 end 29495296 1591117592.3708758 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_138 start 31215616 1591117592.3436532 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_138 end 31244288 1591117592.395062 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_139 start 29237248 1591117592.3439732 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_139 end 29245440 1591117592.40097 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_127 start 28180480 1591117592.073188 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_127 end 28205056 1591117592.4107351 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_142 start 29249536 1591117592.408204 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_142 end 29253632 1591117592.418298 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_144 start 29270016 1591117592.42882 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_144 end 29274112 1591117592.464939 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_143 start 28213248 1591117592.42912 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_143 end 28217344 1591117592.465842 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_145 start 29282304 1591117592.4730968 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_145 end 29310976 1591117592.50612 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_147 start 29327360 1591117592.518294 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_147 end 29339648 1591117592.5436952 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_13 start 28684288 1591117592.1592588 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_13 end 29106176 1591117592.593607 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_141 start 31256576 1591117592.406924 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_141 end 31277056 1591117592.612844 27024
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_149 start 29245440 1591117592.607815 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_149 end 29245440 1591117592.629322 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_14 start 26742784 1591117592.3536 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_14 end 27209728 1591117592.6398458 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_150 start 29245440 1591117592.638599 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_150 end 29257728 1591117592.658494 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_152 start 29261824 1591117592.664497 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_152 end 29265920 1591117592.6794329 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_153 start 29282304 1591117592.6873548 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_153 end 29282304 1591117592.701233 27028
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_146 start 28282880 1591117592.48107 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_146 end 28422144 1591117592.771607 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_140 start 30089216 1591117592.387376 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_140 end 30433280 1591117592.781054 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_148 start 29372416 1591117592.5556438 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_148 end 29396992 1591117592.807882 27027
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_156 start 30375936 1591117592.79752 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_156 end 30380032 1591117592.828502 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_155 start 28454912 1591117592.7869482 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_155 end 28459008 1591117592.8413959 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_159 start 28368896 1591117592.853693 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_159 end 28372992 1591117592.864523 27026
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_158 start 30380032 1591117592.8400698 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_158 end 30380032 1591117592.877595 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_151 start 27222016 1591117592.6574001 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_151 end 27271168 1591117592.912012 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_160 start 30265344 1591117592.8902001 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_160 end 30265344 1591117592.914956 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_161 start 27271168 1591117592.920958 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_161 end 27271168 1591117592.936231 27029
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_162 start 30265344 1591117592.925911 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_162 end 30273536 1591117592.9537642 27025
+20-06-02 10:06:32 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_163 start 27271168 1591117592.945705 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_163 end 27271168 1591117592.9639559 27029
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_157 start 29409280 1591117592.8212328 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_157 end 29413376 1591117593.059221 27027
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_154 start 29294592 1591117592.714902 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_154 end 29401088 1591117593.0994968 27028
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_16 start 28409856 1591117592.879318 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_16 end 28536832 1591117593.1328351 27026
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_185 start 29483008 1591117593.0751371 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_185 end 29573120 1591117593.140525 27027
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_15 start 30982144 1591117592.636928 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_15 end 31158272 1591117593.152274 27024
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_17 start 30298112 1591117592.972477 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_17 end 30584832 1591117593.287364 27025
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_197 start 28786688 1591117593.149198 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_197 end 28786688 1591117593.38623 27026
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_18 start 27344896 1591117592.983537 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_18 end 27672576 1591117593.489012 27029
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_20 start 32092160 1591117593.172576 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_20 end 32165888 1591117593.571965 27024
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_23 start 27934720 1591117593.5042381 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_23 end 27955200 1591117593.647312 27029
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_19 start 29437952 1591117593.117652 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_19 end 29577216 1591117593.6712892 27028
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_21 start 30609408 1591117593.3119922 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_21 end 30666752 1591117593.6768498 27025
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_22 start 28819456 1591117593.420604 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_22 end 28860416 1591117593.781739 27026
+20-06-02 10:06:33 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_25 start 27983872 1591117593.6642308 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_25 end 27983872 1591117593.88003 27029
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_2 start 30842880 1591117593.16531 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_2 end 28635136 1591117593.990319 27027
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_24 start 32145408 1591117593.601957 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_24 end 32317440 1591117594.085706 27024
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_27 start 30982144 1591117593.702035 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_27 end 30990336 1591117594.101352 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_31 start 30797824 1591117594.1187708 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_31 end 30797824 1591117594.132085 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_26 start 30023680 1591117593.696507 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_26 end 30040064 1591117594.174792 27028
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_29 start 28180480 1591117593.8966222 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_29 end 28188672 1591117594.251519 27029
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_34 start 28196864 1591117594.2625952 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_34 end 28205056 1591117594.2800682 27029
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_28 start 29118464 1591117593.815819 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_28 end 29413376 1591117594.290473 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_33 start 30052352 1591117594.1867762 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_33 end 30081024 1591117594.442487 27028
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_35 start 29433856 1591117594.3057542 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_35 end 29433856 1591117594.4599218 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_350 start 30257152 1591117594.4536371 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_350 end 30257152 1591117594.5010948 27028
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_36 start 29773824 1591117594.467703 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_36 end 29773824 1591117594.503586 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_30 start 31481856 1591117594.111569 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_30 end 31498240 1591117594.5156941 27024
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_362 start 29925376 1591117594.523395 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_362 end 29925376 1591117594.56895 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_37 start 31514624 1591117594.534558 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_37 end 31514624 1591117594.591109 27024
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_376 start 29937664 1591117594.5789719 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_376 end 29937664 1591117594.607014 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_341 start 28205056 1591117594.295403 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_341 end 28233728 1591117594.621036 27029
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_32 start 30990336 1591117594.149775 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_32 end 31178752 1591117594.6614778 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_39 start 29949952 1591117594.615573 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_39 end 29990912 1591117594.675443 27026
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_3 start 31318016 1591117594.029483 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_3 end 30257152 1591117594.710145 27027
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_40 start 31637504 1591117594.6799371 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_40 end 31662080 1591117594.74778 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_42 start 31596544 1591117594.7580101 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_42 end 31674368 1591117594.8172002 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_43 start 31682560 1591117594.8298318 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_43 end 31682560 1591117594.891239 27025
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_361 start 30392320 1591117594.5270982 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_361 end 30429184 1591117594.898477 27028
+20-06-02 10:06:34 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_41 start 29700096 1591117594.690999 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_41 end 29868032 1591117594.929197 27026
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_45 start 29884416 1591117594.9439309 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_45 end 29884416 1591117595.0024161 27026
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_419 start 31174656 1591117594.7371159 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_419 end 31186944 1591117595.039211 27027
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_38 start 31694848 1591117594.6157901 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_38 end 31703040 1591117595.040992 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_48 start 31711232 1591117595.05693 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_48 end 31711232 1591117595.1230621 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_484 start 31715328 1591117595.132252 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_484 end 31715328 1591117595.1380749 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_49 start 31715328 1591117595.145252 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_49 end 31715328 1591117595.176853 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_4 start 29286400 1591117594.648751 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_4 end 28438528 1591117595.239302 27029
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_443 start 30453760 1591117594.9248729 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_443 end 30457856 1591117595.249932 27028
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_50 start 29880320 1591117595.257385 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_50 end 29880320 1591117595.280603 27029
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_51 start 30294016 1591117595.265318 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_51 end 30298112 1591117595.29716 27028
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_47 start 31285248 1591117595.057346 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_47 end 31301632 1591117595.335686 27027
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_46 start 29995008 1591117595.021962 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_46 end 30015488 1591117595.350674 27026
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_44 start 31735808 1591117594.91806 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_44 end 31813632 1591117595.41693 27025
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_52 start 29814784 1591117595.289431 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_52 end 29814784 1591117595.465608 27029
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_57 start 29900800 1591117595.479317 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_57 end 29921280 1591117595.521046 27029
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_54 start 30371840 1591117595.354468 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_54 end 30375936 1591117595.5264142 27027
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_55 start 30023680 1591117595.367538 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_55 end 30040064 1591117595.536282 27026
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_53 start 30384128 1591117595.317578 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_53 end 30498816 1591117595.573066 27028
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_60 start 30543872 1591117595.585023 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_60 end 30543872 1591117595.6178849 27028
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_5 start 31965184 1591117595.1936269 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_5 end 30121984 1591117595.630303 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_618 start 30810112 1591117595.641495 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_618 end 30826496 1591117595.659159 27024
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_56 start 32305152 1591117595.431987 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_56 end 32350208 1591117595.686861 27025
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_58 start 30121984 1591117595.531927 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_58 end 30126080 1591117595.719413 27029
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_59 start 30539776 1591117595.538033 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_59 end 30539776 1591117595.755487 27027
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_63 start 30584832 1591117595.7006552 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_63 end 30609408 1591117595.9529972 27025
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_61 start 30572544 1591117595.6354182 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_61 end 30584832 1591117595.9769878 27028
+20-06-02 10:06:35 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_64 start 30150656 1591117595.7305448 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_64 end 30171136 1591117595.9785159 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_67 start 30203904 1591117595.994923 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_67 end 30203904 1591117596.013768 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_66 start 30609408 1591117595.996599 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_66 end 30654464 1591117596.060284 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_68 start 30228480 1591117596.0266728 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_68 end 30248960 1591117596.072148 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_69 start 30748672 1591117596.072014 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_69 end 30777344 1591117596.08635 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_70 start 30781440 1591117596.093368 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_70 end 30781440 1591117596.1185331 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_6 start 30220288 1591117595.562923 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_6 end 30642176 1591117596.1190841 27026
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_65 start 30498816 1591117595.965056 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_65 end 30523392 1591117596.160861 27025
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_73 start 30654464 1591117596.171489 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_73 end 30654464 1591117596.1790001 27025
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_62 start 30818304 1591117595.680737 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_62 end 30842880 1591117596.188694 27024
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_75 start 32337920 1591117596.2097778 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_75 end 32337920 1591117596.238419 27024
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_649 start 31879168 1591117595.792753 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_649 end 32071680 1591117596.299225 27027
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_71 start 30781440 1591117596.131131 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_71 end 30781440 1591117596.340416 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_77 start 32956416 1591117596.3162482 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_77 end 32956416 1591117596.360291 27027
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_74 start 30580736 1591117596.188271 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_74 end 30580736 1591117596.402134 27025
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_78 start 30781440 1591117596.351098 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_78 end 30781440 1591117596.4056802 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_7 start 30543872 1591117596.0880792 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_7 end 30572544 1591117596.500709 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_81 start 30818304 1591117596.524342 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_81 end 30818304 1591117596.557594 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_82 start 30785536 1591117596.572271 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_82 end 30785536 1591117596.629919 27029
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_79 start 32903168 1591117596.37236 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_79 end 32907264 1591117596.651755 27027
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_836 start 32911360 1591117596.664427 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_836 end 32923648 1591117596.6854599 27027
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_80 start 30785536 1591117596.429451 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_80 end 30785536 1591117596.6836522 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_76 start 32464896 1591117596.253411 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_76 end 32485376 1591117596.688044 27024
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_72 start 31354880 1591117596.1505861 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_72 end 31391744 1591117596.6907039 27026
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_84 start 30789632 1591117596.693032 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_84 end 30789632 1591117596.710804 27028
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_85 start 32923648 1591117596.693998 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_85 end 32923648 1591117596.7262259 27027
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_86 start 32522240 1591117596.703685 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_86 end 32526336 1591117596.841643 27024
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_8 start 30777344 1591117596.4265962 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_8 end 31285248 1591117596.917629 27025
+20-06-02 10:06:36 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_83 start 30806016 1591117596.6453571 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_83 end 30826496 1591117596.962313 27029
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_88 start 30797824 1591117596.726516 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_88 end 30797824 1591117597.043514 27028
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_89 start 32980992 1591117596.744315 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_89 end 32993280 1591117597.099463 27027
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_90 start 31559680 1591117596.932317 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_90 end 31559680 1591117597.107112 27025
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_87 start 31211520 1591117596.715455 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_87 end 31215616 1591117597.110442 27026
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_91 start 30834688 1591117596.977789 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_91 end 30834688 1591117597.166702 27029
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_96 start 30834688 1591117597.178103 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_96 end 30834688 1591117597.203197 27029
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_92 start 30801920 1591117597.0616431 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_92 end 30826496 1591117597.263231 27028
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_94 start 31703040 1591117597.1237571 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_94 end 31703040 1591117597.287211 27025
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_97 start 30830592 1591117597.2732 27028
+WorkerLog MergeProfile N5_271_010G1_scaffold_97 end 30830592 1591117597.3156748 27028
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_9 start 32768000 1591117596.857909 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_9 end 31031296 1591117597.307922 27024
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_99 start 31203328 1591117597.331095 27024
+WorkerLog MergeProfile N5_271_010G1_scaffold_99 end 31203328 1591117597.373517 27024
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_98 start 31596544 1591117597.3001769 27025
+WorkerLog MergeProfile N5_271_010G1_scaffold_98 end 31596544 1591117597.4189088 27025
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_93 start 33050624 1591117597.12378 27027
+WorkerLog MergeProfile N5_271_010G1_scaffold_93 end 33062912 1591117597.577046 27027
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_95 start 31219712 1591117597.135669 27026
+WorkerLog MergeProfile N5_271_010G1_scaffold_95 end 31248384 1591117597.577045 27026
+20-06-02 10:06:37 DEBUG    
+WorkerLog MergeProfile N5_271_010G1_scaffold_963 start 32751616 1591117597.2312052 27029
+WorkerLog MergeProfile N5_271_010G1_scaffold_963 end 32903168 1591117597.840199 27029
+20-06-02 10:06:37 DEBUG    Done processing scaffolds- making SNV profile
+20-06-02 10:06:44 DEBUG    Storing Rdic
+20-06-02 10:06:45 DEBUG    Done storing Rdic
+20-06-02 10:06:45 INFO     Storing output
+20-06-02 10:06:45 DEBUG    Writing output files now
+20-06-02 10:06:48 DEBUG    Checkpoint main_profile profile_scaffolds end 233431040
+20-06-02 10:06:48 INFO     ***************************************************
+  .:: inStrain profile Step 3. Profile genes ::..
+***************************************************
+        
+20-06-02 10:06:48 INFO     Nevermind! You didnt include a genes file
+20-06-02 10:06:48 INFO     ***************************************************
+.:: inStrain profile Step 4. Make genome-wide ::..
+***************************************************
+        
+20-06-02 10:06:48 DEBUG    Checkpoint main_profile genome_wide start 233431040
+20-06-02 10:06:48 DEBUG    Loading scaffold to bin
+20-06-02 10:06:48 INFO     Scaffold to bin will consider all scaffolds the same genome
+20-06-02 10:06:49 DEBUG    Checkpoint GenomeLevel genomeLevel_from_IS start 233431040
+20-06-02 10:06:50 DEBUG    Checkpoint GenomeLevel scaffold_info start 233410560
+20-06-02 10:06:50 DEBUG    Checkpoint GenomeLevel scaffold_info end 230670336
+20-06-02 10:06:51 DEBUG    Checkpoint GenomeLevel coverage_info start 244682752
+20-06-02 10:06:52 DEBUG    iRep all_scaffolds 0 {'kept_windows': 0.990787269681742, 'avg_cov': 2.447549492255616, 'r2': 0.9751230741374431, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 11.314568062739765, 'iRep_GC_corrected': True, 'unfiltered_iRep': 6.477141174018964}
+20-06-02 10:06:53 DEBUG    iRep all_scaffolds 1 {'kept_windows': 1.0, 'avg_cov': 3.6703497794645603, 'r2': 0.9787081659452782, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 7.329841634538326, 'iRep_GC_corrected': True, 'unfiltered_iRep': 5.17060047326969}
+20-06-02 10:06:54 DEBUG    iRep all_scaffolds 2 {'kept_windows': 1.0, 'avg_cov': 4.392684377884911, 'r2': 0.9793273677052919, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 5.181350604600069, 'iRep_GC_corrected': True, 'unfiltered_iRep': 4.125223515085656}
+20-06-02 10:06:54 DEBUG    iRep all_scaffolds 3 {'kept_windows': 1.0, 'avg_cov': 4.929231716073444, 'r2': 0.974666053954447, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 4.25383032196413, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.720685534738081}
+20-06-02 10:06:55 DEBUG    iRep all_scaffolds 4 {'kept_windows': 1.0, 'avg_cov': 5.321111908913735, 'r2': 0.9704647094311418, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.8528095230112123, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.5164313405496133}
+20-06-02 10:06:56 DEBUG    iRep all_scaffolds 5 {'kept_windows': 1.0, 'avg_cov': 5.67865832393066, 'r2': 0.9704287943142659, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.65787577368235, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.4361273088944886}
+20-06-02 10:06:58 DEBUG    iRep all_scaffolds 6 {'kept_windows': 1.0, 'avg_cov': 6.0327582316134984, 'r2': 0.9757257806931106, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.6418872966728686, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.4666272167480177}
+20-06-02 10:06:59 DEBUG    iRep all_scaffolds 7 {'kept_windows': 1.0, 'avg_cov': 6.357452046363729, 'r2': 0.9747740674979035, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.6361675691772932, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.4761282792937425}
+20-06-02 10:07:00 DEBUG    iRep all_scaffolds 8 {'kept_windows': 1.0, 'avg_cov': 6.724743050569289, 'r2': 0.9694512908894565, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.6975433178183055, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.5544130156119875}
+20-06-02 10:07:01 DEBUG    iRep all_scaffolds 9 {'kept_windows': 1.0, 'avg_cov': 7.03764078367012, 'r2': 0.968832646553742, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.72003477136191, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.5805650295108724}
+20-06-02 10:07:03 DEBUG    iRep all_scaffolds 10 {'kept_windows': 1.0, 'avg_cov': 7.361612473074161, 'r2': 0.9697194150501052, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.7870876011691483, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.65308397260373}
+20-06-02 10:07:04 DEBUG    iRep all_scaffolds 11 {'kept_windows': 1.0, 'avg_cov': 7.695103087496153, 'r2': 0.9679123260788595, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.852764116982572, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.701074055593784}
+20-06-02 10:07:05 DEBUG    iRep all_scaffolds 12 {'kept_windows': 1.0, 'avg_cov': 7.983596266283722, 'r2': 0.9650334071796808, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.90942755368159, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.7241722845410115}
+20-06-02 10:07:06 DEBUG    iRep all_scaffolds 13 {'kept_windows': 1.0, 'avg_cov': 8.205432352036107, 'r2': 0.962814520213737, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.8959134725007245, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.6944777380487883}
+20-06-02 10:07:08 DEBUG    iRep all_scaffolds 14 {'kept_windows': 1.0, 'avg_cov': 8.325432352036106, 'r2': 0.9619658753134266, 'fragMbp': 730.3313160324136, 'unfiltered_raw_iRep': 3.9398970474601485, 'iRep_GC_corrected': True, 'unfiltered_iRep': 3.7246045355711828}
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel coverage_info end 275505152
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel mapping_info start 267694080
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel mapping_info end 267694080
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel linkage start 264863744
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel linkage end 263098368
+20-06-02 10:07:08 DEBUG    Checkpoint GenomeLevel genomeLevel_from_IS end 263102464
+20-06-02 10:07:09 DEBUG    Checkpoint main_profile genome_wide end 256372736
+20-06-02 10:07:09 INFO     ***************************************************
+ .:: inStrain profile Step 5. Generate plots ::..
+***************************************************
+        
+20-06-02 10:07:09 INFO     Nevermind! You chose to skip making plots
+20-06-02 10:07:09 INFO     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+    ..:: inStrain profile finished ::..
+
+Output tables........ /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/output/
+Figures.............. /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/figures/
+Logging.............. /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/log/
+
+See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        
+20-06-02 10:07:09 DEBUG    inStrain complete; shutting down logger and printing run stats (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/log/log.log)
+20-06-02 10:07:11 DEBUG    findfont: Matching :family=sans-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0.
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmss10' (cmss10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmex10' (cmex10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Serif Display' (DejaVuSerifDisplay.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-BoldOblique.ttf) oblique normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBolIta.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Oblique.ttf) oblique normal 400 normal>) = 1.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymReg.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymReg.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Serif' (DejaVuSerif.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmr10' (cmr10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmmi10' (cmmi10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymReg.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymReg.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmsy10' (cmsy10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans' (DejaVuSans-BoldOblique.ttf) oblique normal bold normal>) = 1.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniIta.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralItalic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmb10' (cmb10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUni.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans Display' (DejaVuSansDisplay.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralBolIta.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans' (DejaVuSans.ttf) normal normal 400 normal>) = 0.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Serif' (DejaVuSerif-BoldItalic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFiveSym' (STIXSizFiveSymReg.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneral.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymBol.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans Mono' (DejaVuSansMono-Oblique.ttf) oblique normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DejaVu Sans' (DejaVuSans-Bold.ttf) normal normal bold normal>) = 0.33499999999999996
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'cmtt10' (cmtt10.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.Keyboard' (Keyboard.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Constantia' (Constantia.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Brahmi' (NotoSansBrahmi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Herculanum' (Herculanum.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial' (Arial Italic.ttf) italic normal 400 normal>) = 7.413636363636363
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Baskerville' (Baskerville.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Limbu' (NotoSansLimbu-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsSm' (STIXIntSmReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kohinoor Bangla' (KohinoorBangla.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial' (Arial.ttf) normal normal 400 normal>) = 6.413636363636363
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Georgia' (Georgia.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hoefler Text' (Hoefler Text Ornaments.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Narrow' (Arial Narrow Italic.ttf) italic normal 400 condensed>) = 11.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Chancery' (Apple Chancery.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Consolas' (Consolas Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Farah' (Farah.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Sundanese' (NotoSansSundanese-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Hanunoo' (NotoSansHanunoo-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Muna' (Muna.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Trebuchet MS' (Trebuchet MS.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kailasa' (Kailasa.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gill Sans MT' (Gill Sans MT.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Heiti TC' (STHeiti Medium.ttc) normal normal medium normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gulim' (Gulim.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Armenian' (NotoSansArmenian.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W0.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Buhid' (NotoSansBuhid-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Maru Gothic Pro' (ヒラギノ丸ゴ ProN W4.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Verdana' (Verdana.ttf) normal normal 400 normal>) = 3.6863636363636365
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Trebuchet MS' (Trebuchet MS Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W4.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Oriya MN' (Oriya MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Batak' (NotoSansBatak-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Devanagari MT' (DevanagariMT.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Marlett' (Marlett.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tw Cen MT' (Tw Cen MT Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Savoye LET' (Savoye LET.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Diwan Thuluth' (Diwan Thuluth.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Black' (Arial Black.ttf) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Heiti TC' (STHeiti Light.ttc) normal normal light normal>) = 10.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Cham' (NotoSansCham-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tamil Sangam MN' (Tamil Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Myanmar Sangam MN' (Myanmar Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'American Typewriter' (AmericanTypewriter.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Superclarendon' (SuperClarendon.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Raanana' (Raanana.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Corsiva Hebrew' (Corsiva.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Telugu Sangam MN' (Telugu Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF Compact Display' (SFCompactDisplay.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Corbel' (Corbel Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Galvji' (Galvji.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Verdana' (Verdana Italic.ttf) italic normal 400 normal>) = 4.6863636363636365
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Menlo' (Menlo.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Bamum' (NotoSansBamum-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W3.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Corbel' (Corbel Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Georgia' (Georgia Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Krungthep' (Krungthep.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Athelas' (Athelas.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MingLiU' (MingLiU.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PMingLiU' (PMingLiU.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.New York' (NewYorkItalic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Mincho ProN' (ヒラギノ明朝 ProN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Ol Chiki' (NotoSansOlChiki-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Lao MN' (Lao MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Coptic' (NotoSansCoptic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Microsoft Tai Le' (TaiLeb.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Consolas' (Consolas Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Hebrew' (ArialHB.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'KufiStandardGK' (KufiStandardGK.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Semibold.otf) normal normal semibold condensed>) = 10.44
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Thin.otf) normal normal 400 condensed>) = 10.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXVariants' (STIXVarBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Braille' (Apple Braille Outline 8 Dot.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS Gothic' (MS Gothic.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.Aqua Kana' (AquaKana.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUpSm' (STIXIntUpSmReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MingLiU_HKSCS-ExtB' (MingLiU_HKSCS-ExtB.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tahoma' (Tahoma Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Sinhala MN' (Sinhala MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gill Sans MT' (Gill Sans MT Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PT Mono' (PTMono.ttc) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Lucida Sans Unicode' (Lucida Sans Unicode.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Times New Roman' (Times New Roman Italic.ttf) italic normal roman normal>) = 11.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Meiryo' (Meiryo Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Perpetua' (Perpetua Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bangla Sangam MN' (Bangla Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Light.otf) normal normal light condensed>) = 10.44
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tagalog' (NotoSansTagalog-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'System Font' (SFNS.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Shavian' (NotoSansShavian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Avenir' (Avenir.ttc) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kohinoor Devanagari' (Kohinoor.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Al Tarikh' (Al Tarikh.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Courier New' (Courier New.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Constantia' (Constantia Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Braille' (Apple Braille Pinpoint 6 Dot.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MingLiU-ExtB' (MingLiU-ExtB.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Courier New' (Courier New Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Snell Roundhand' (SnellRoundhand.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Chalkduster' (Chalkduster.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Corbel' (Corbel.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Chakma' (NotoSansChakma-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gabriola' (Gabriola.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Avenir Next' (Avenir Next.ttc) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cambria Math' (Cambria Math.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Franklin Gothic Book' (Franklin Gothic Book.ttf) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PT Serif Caption' (PTSerifCaption.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Constantia' (Constantia Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W7.ttc) normal normal 700 normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeTwoSym' (STIXSizTwoSymReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Al Nile' (Al Nile.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Runic' (NotoSansRunic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFiveSym' (STIXSizFiveSymReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Meiryo' (Meiryo Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF Compact Text' (SFCompactTextItalic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DecoType Naskh' (DecoTypeNaskh.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Candara' (Candara Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Myanmar MN' (Myanmar MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Unicode MS' (Arial Unicode.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Marion' (Marion.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Cuneiform' (NotoSansCuneiform-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Damascus' (Damascus.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Cypriot' (NotoSansCypriot-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Marker Felt' (MarkerFelt.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Palatino Linotype' (Palatino Linotype Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tw Cen MT' (Tw Cen MT Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gurmukhi MN' (Gurmukhi MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Inscriptional Pahlavi' (NotoSansInscriptionalPahlavi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Samaritan' (NotoSansSamaritan-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Lao Sangam MN' (Lao Sangam MN.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans PhagsPa' (NotoSansPhagsPa-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Luminari' (Luminari.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Calibri' (Calibri Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gurmukhi MT' (Gurmukhi.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF Compact Text' (SFCompactText.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Mono' (SFNSMono.ttf) normal normal light normal>) = 10.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DIN Alternate' (DIN Alternate Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Corbel' (Corbel Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Times' (Times.ttc) normal normal roman normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Symbols' (Apple Symbols.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeOneSym' (STIXSizOneSymReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Braille' (Apple Braille.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Palatino Linotype' (Palatino Linotype Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'InaiMathi' (InaiMathi-MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Franklin Gothic Medium' (Franklin Gothic Medium Italic.ttf) italic normal medium normal>) = 11.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Microsoft Yi Baiti' (msyi.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Oriya Sangam MN' (Oriya Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gujarati MT' (GujaratiMT.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Mono' (SFNSMonoItalic.ttf) italic normal light normal>) = 11.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUni.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Kannada' (NotoSansKannada.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bodoni 72' (Bodoni 72.ttc) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Iowan Old Style' (Iowan Old Style.ttc) normal normal roman normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PingFang HK' (PingFang.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Big Caslon' (BigCaslon.ttf) normal normal medium normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralItalic.otf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tahoma' (Tahoma.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Old Persian' (NotoSansOldPersian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Malayalam MN' (Malayalam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Zapf Dingbats' (ZapfDingbats.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Glagolitic' (NotoSansGlagolitic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneral.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'SimSun-ExtB' (SimSun-ExtB.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Copperplate' (Copperplate.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Kayah Li' (NotoSansKayahLi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tw Cen MT' (Tw Cen MT Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kannada Sangam MN' (Kannada Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Trebuchet MS' (Trebuchet MS Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Mishafi' (Mishafi.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Courier New' (Courier New Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kefa' (Kefa.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gurmukhi Sangam MN' (Gurmukhi Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Mongolian' (NotoSansMongolian-Regular.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Wingdings 3' (Wingdings 3.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Candara' (Candara Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Helvetica' (Helvetica.ttc) normal normal 400 normal>) = 7.322727272727273
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Farisi' (Farisi.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tifinagh' (NotoSansTifinagh-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeThreeSym' (STIXSizThreeSymBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Verdana' (Verdana Bold Italic.ttf) italic normal bold normal>) = 4.971363636363637
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS Mincho' (MS Mincho.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Lydian' (NotoSansLydian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gill Sans' (GillSans.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Mshtakan' (Mshtakan.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Braille' (Apple Braille Outline 6 Dot.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Regular.otf) normal normal regular condensed>) = 10.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Franklin Gothic Medium' (Franklin Gothic Medium.ttf) normal normal medium normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Heavy.otf) normal normal heavy condensed>) = 10.629999999999999
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Syloti Nagri' (NotoSansSylotiNagri-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Candara' (Candara Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Seravek' (Seravek.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bodoni 72 Smallcaps' (Bodoni 72 Smallcaps Book.ttf) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Phoenician' (NotoSansPhoenician-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Old Turkic' (NotoSansOldTurkic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Wingdings' (Wingdings.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Gothic' (NotoSansGothic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Light.otf) normal normal light condensed>) = 10.44
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Georgia' (Georgia Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Ultralight.otf) normal normal ultralight condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Brush Script MT' (Brush Script.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Shree Devanagari 714' (Shree714.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Lycian' (NotoSansLycian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bodoni 72 Oldstyle' (Bodoni 72 OS.ttc) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Rounded MT Bold' (Arial Rounded Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Consolas' (Consolas Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Constantia' (Constantia Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Times New Roman' (Times New Roman Bold Italic.ttf) italic normal roman normal>) = 11.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tamil MN' (Tamil MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Khmer Sangam MN' (Khmer Sangam MN.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Ayuthaya' (Ayuthaya.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bangla MN' (Bangla MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Buginese' (NotoSansBuginese-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Sukhumvit Set' (SukhumvitSet.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Times New Roman' (Times New Roman.ttf) normal normal roman normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Diwan Kufi' (Diwan Kufi.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUp' (STIXIntUpReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Medium.otf) normal normal medium condensed>) = 10.344999999999999
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cambria' (Cambria.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Zapfino' (Zapfino.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Candara' (Candara.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Ugaritic' (NotoSansUgaritic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Palatino Linotype' (Palatino Linotype Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gill Sans MT' (Gill Sans MT Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Meetei Mayek' (NotoSansMeeteiMayek-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Linear B' (NotoSansLinearB-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cambria' (Cambria Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Microsoft Himalaya' (himalaya.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bookshelf Symbol 7' (Bookshelf Symbol 7.ttf) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Webdings' (Webdings.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Charter' (Charter.ttc) normal normal roman normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W2.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Verdana' (Verdana Bold.ttf) normal normal bold normal>) = 3.9713636363636367
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS PGothic' (MS PGothic.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Calibri' (Calibri Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Courier New' (Courier New Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial' (Arial Bold.ttf) normal normal bold normal>) = 6.698636363636363
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Rejang' (NotoSansRejang-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Skia' (Skia.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'New Peninim MT' (NewPeninimMT.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsSm' (STIXIntSmBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Medium.otf) normal normal medium condensed>) = 10.344999999999999
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Kaithi' (NotoSansKaithi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Mishafi Gold' (Mishafi Gold.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Telugu MN' (Telugu MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Semibold.otf) normal normal semibold condensed>) = 10.44
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Sinhala Sangam MN' (Sinhala Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Optima' (Optima.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Consolas' (Consolas.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Nadeem' (Nadeem.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUp' (STIXIntUpBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Songti SC' (Songti.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Osmanya' (NotoSansOsmanya-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Inscriptional Parthian' (NotoSansInscriptionalParthian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Bold.otf) normal normal bold condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Serif Myanmar' (NotoSerifMyanmar.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Calibri' (Calibril.ttf) normal normal light normal>) = 10.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Old Italic' (NotoSansOldItalic-Regular.ttf) italic normal regular normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniIta.otf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.Arabic UI Text' (ArabicUIText.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W6.ttc) normal normal 700 normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Palatino Linotype' (Palatino Linotype.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUpSm' (STIXIntUpSmBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial' (Arial Bold Italic.ttf) italic normal bold normal>) = 7.698636363636363
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Times New Roman' (Times New Roman Bold.ttf) normal normal roman normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hoefler Text' (Hoefler Text.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Meiryo' (Meiryo Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Thonburi' (Thonburi.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUpD' (STIXIntUpDBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Imperial Aramaic' (NotoSansImperialAramaic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Sana' (Sana.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cambria' (Cambria Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsD' (STIXIntDBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Kharoshthi' (NotoSansKharoshthi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Batang' (Batang.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Trattatello' (Trattatello.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'ITF Devanagari' (ITFDevanagari.ttc) normal normal book normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Perpetua' (Perpetua Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Waseem' (Waseem.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cochin' (Cochin.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Egyptian Hieroglyphs' (NotoSansEgyptianHieroglyphs-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Syriac' (NotoSansSyriac-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Carian' (NotoSansCarian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Calibri' (Calibri Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Plantagenet Cherokee' (PlantagenetCherokee.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W1.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Black.otf) normal normal black condensed>) = 10.725
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Mukta Mahee' (MuktaMahee.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Oriya' (NotoSansOriya.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Lucida Grande' (LucidaGrande.ttc) normal normal 400 normal>) = 2.777272727272727
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS Reference Specialty' (MS Reference Specialty.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Geeza Pro' (GeezaPro.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Regular.otf) normal normal regular condensed>) = 10.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXVariants' (STIXVar.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Cambria' (Cambria Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kannada MN' (Kannada MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.New York' (NewYork.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kohinoor Telugu' (KohinoorTelugu.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Palatino' (Palatino.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kohinoor Gujarati' (KohinoorGujarati.ttc) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tagbanwa' (NotoSansTagbanwa-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXGeneral' (STIXGeneralBolIta.otf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymBol.otf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Devanagari Sangam MN' (Devanagari Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Meiryo' (Meiryo.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'AppleMyungjo' (AppleMyungjo.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W5.ttc) normal normal 700 normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Didot' (Didot.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.Arabic UI Display' (ArabicUIDisplay.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Silom' (Silom.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans NKo' (NotoSansNKo-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Papyrus' (Papyrus.ttc) normal normal 400 condensed>) = 10.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Mandaic' (NotoSansMandaic-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS PMincho' (MS PMincho.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gujarati Sangam MN' (Gujarati Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF Compact Rounded' (SFCompactRounded.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Gill Sans MT' (Gill Sans MT Italic.ttf) italic normal 400 normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PT Sans' (PTSans.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Futura' (Futura.ttc) normal normal medium normal>) = 10.145
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Lisu' (NotoSansLisu-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MS Reference Sans Serif' (MS Reference Sans Serif.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Narrow' (Arial Narrow.ttf) normal normal 400 condensed>) = 10.25
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Rockwell' (Rockwell.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Euphemia UCAS' (EuphemiaCAS.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Sathu' (Sathu.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Javanese' (NotoSansJavanese-Regular.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Comic Sans MS' (Comic Sans MS.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Franklin Gothic Book' (Franklin Gothic Book Italic.ttf) italic normal book normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Vai' (NotoSansVai-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Narrow' (Arial Narrow Bold Italic.ttf) italic normal bold condensed>) = 11.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Phosphate' (Phosphate.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.Helvetica Neue DeskInterface' (HelveticaNeueDeskInterface.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'AppleGothic' (AppleGothic.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Mongolian Baiti' (monbaiti.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'DIN Condensed' (DIN Condensed Bold.ttf) normal normal bold condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'MingLiU_HKSCS' (mingliu_hkscs.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Arial Narrow' (Arial Narrow Bold.ttf) normal normal bold condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Calibri' (Calibri.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Malayalam Sangam MN' (Malayalam Sangam MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple SD Gothic Neo' (AppleSDGothicNeo.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Yi' (NotoSansYi-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Beirut' (Beirut.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'System Font' (SFNSItalic.ttf) italic normal regular normal>) = 11.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Wingdings 2' (Wingdings 2.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Baghdad' (Baghdad.ttc) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Trebuchet MS' (Trebuchet MS Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tai Viet' (NotoSansTaiViet-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bradley Hand' (Bradley Hand Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noteworthy' (Noteworthy.ttc) normal normal light normal>) = 10.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Lucida Console' (Lucida Console.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Perpetua' (Perpetua.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Lepcha' (NotoSansLepcha-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Thaana' (NotoSansThaana-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W8.ttc) normal normal 700 normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsUpD' (STIXIntUpDReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Old South Arabian' (NotoSansOldSouthArabian-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans' (ヒラギノ角ゴシック W9.ttc) normal normal 700 normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.LastResort' (LastResort.otf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Saurashtra' (NotoSansSaurashtra-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Ogham' (NotoSansOgham-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Shit Happens' (Shit Happens trial__.otf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Hiragino Sans GB' (Hiragino Sans GB.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Bodoni Ornaments' (Bodoni Ornaments.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'SimHei' (SimHei.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Al Bayan' (AlBayan.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Display Condensed' (SFNSDisplayCondensed-Bold.otf) normal normal bold condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Comic Sans MS' (Comic Sans MS Bold.ttf) normal normal bold normal>) = 10.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Chalkboard' (Chalkboard.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Apple Braille' (Apple Braille Pinpoint 8 Dot.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXSizeFourSym' (STIXSizFourSymReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Andale Mono' (Andale Mono.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PMingLiU-ExtB' (PMingLiU-ExtB.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Avestan' (NotoSansAvestan-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Chalkboard SE' (ChalkboardSE.ttc) normal normal light normal>) = 10.24
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Nastaliq Urdu' (NotoNastaliq.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'SignPainter' (SignPainter.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Impact' (Impact.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Rounded' (SFNSRounded.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXIntegralsD' (STIXIntDReg.otf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Khmer MN' (Khmer MN.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Microsoft Sans Serif' (Microsoft Sans Serif.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Kokonor' (Kokonor.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Serif Balinese' (NotoSerifBalinese-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Georgia' (Georgia Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans New Tai Lue' (NotoSansNewTaiLue-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Tw Cen MT' (Tw Cen MT.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Symbol' (Symbol.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Helvetica Neue' (HelveticaNeue.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tai Le' (NotoSansTaiLe-Regular.ttf) normal normal regular normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font '.SF NS Text Condensed' (SFNSTextCondensed-Heavy.otf) normal normal heavy condensed>) = 10.629999999999999
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Microsoft Tai Le' (taile.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Avenir Next Condensed' (Avenir Next Condensed.ttc) normal normal bold condensed>) = 10.535
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'PT Serif' (PTSerif.ttc) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Perpetua' (Perpetua Bold Italic.ttf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'STIXNonUnicode' (STIXNonUniBolIta.otf) italic normal bold normal>) = 11.335
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'SimSun' (SimSun.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Myanmar' (NotoSansMyanmar.ttc) normal normal black normal>) = 10.525
+20-06-02 10:07:11 DEBUG    findfont: score(<Font 'Noto Sans Tai Tham' (NotoSansTaiTham-Regular.ttf) normal normal 400 normal>) = 10.05
+20-06-02 10:07:11 DEBUG    findfont: Matching :family=sans-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('/Users/mattolm/miniconda3/lib/python3.7/site-packages/matplotlib/mpl-data/fonts/ttf/DejaVuSans.ttf') with score of 0.050000.

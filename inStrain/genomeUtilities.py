@@ -56,7 +56,7 @@ class Controller():
             IS.store('genome_level_info', GIdb, 'pandas', 'Table of genome-level information')
 
             # Store the output
-            IS.generate('genome_info')
+            IS.generate('genome_info', **vargs)
             IS.generate('SNVs')
 
         else:
@@ -168,8 +168,8 @@ def genomeLevel_from_IS(IS, **kwargs):
     gdb = _add_stb(db, stb)
 
     # Handle mm level
-    mm_level = kwargs.get('mm_level', False)
-    if not mm_level:
+    skip_mm_level = kwargs.get('skip_mm_profiling', False)
+    if skip_mm_level:
         gdb = gdb.sort_values('mm').drop_duplicates(
                 subset=['scaffold'], keep='last')\
                 .sort_values('scaffold')
@@ -195,7 +195,7 @@ def genomeLevel_from_IS(IS, **kwargs):
     covT = IS.get('covT', scaffolds=relevant_scaffolds)
 
     # Figure out total number of mms
-    if not mm_level:
+    if skip_mm_level:
         mms = [1000]
     else:
         mms = calc_mms(covT)
@@ -229,24 +229,26 @@ def genomeLevel_from_IS(IS, **kwargs):
     # Calculate genome-level linkage metrics
     ldb = IS.get('raw_linkage_table')
     if len(ldb) > 0:
-        if not mm_level:
+        if skip_mm_level:
             ldb = ldb.sort_values('mm').drop_duplicates(
                     subset=['scaffold', 'position_A', 'position_B'], keep='last')\
                     .sort_values(['scaffold', 'position_A', 'position_B'])
             gdb['mm'] = 1000
+
         ldb = _add_stb(ldb, stb)
+        if (ldb is not None) and (len(ldb) > 0):
 
-        inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "start")
+            inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "start")
 
-        ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
+            ldb = _genome_wide_linkage(ldb, stb, mms, **kwargs)
 
-        inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "end")
-
-
-        mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
+            inStrain.logUtils.log_checkpoint("GenomeLevel", "linkage", "end")
 
 
-    if not mm_level:
+            mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
+
+
+    if skip_mm_level:
         del mdb['mm']
 
     inStrain.logUtils.log_checkpoint("GenomeLevel", "genomeLevel_from_IS", "end")
@@ -310,7 +312,9 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
 
             # Calculate iRep
             try:
-                iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
                 logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
             except:
                 logging.warning("FAILURE iRepError {0} {1}".format(genome, mm))
@@ -337,6 +341,9 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
     return adb
 
 def genomeWideFromIS(IS, thing, **kwargs):
+    '''
+    This is used by plotting utilities
+    '''
     stb = IS.get('scaffold2bin')
     b2l = IS.get('bin2length')
     mm_level = kwargs.get('mm_level', False)
@@ -429,9 +436,9 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
     '''
     This version can handle mm level
     '''
-    mm_level = kwargs.get('mm_level', False)
+    skip_mm_level = kwargs.get('skip_mm_level', False)
 
-    if not mm_level:
+    if skip_mm_level:
         gdb = gdb.sort_values('mm').drop_duplicates(
                 subset=['scaffold'], keep='last')\
                 .sort_values('scaffold')
@@ -505,7 +512,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
     if (('nucl_diversity' not in df.columns) & ('mean_clonality' in df.columns)):
         db['nucl_diversity'] = 1 - db['mean_clonality']
 
-    if not mm_level:
+    if skip_mm_level:
         del db['mm']
 
     return db
@@ -748,7 +755,7 @@ def _genome_wide_readComparer(gdb, s2b, b2l, **kwargs):
                     table[col].append(db[col].sum())
 
             # Special ANI column
-            for col in ['ANI', 'popANI_reference', 'conANI_reference']:
+            for col in ['ANI', 'popANI', 'conANI']:
                 if col in list(db.columns):
                     if tcb == 0:
                         table[col].append(np.nan)
