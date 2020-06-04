@@ -2453,33 +2453,33 @@ class test_strains():
         # self.test0()
         # self.tearDown()
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
 
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
 
         self.setUp()
         self.test8()
@@ -2880,7 +2880,7 @@ class test_strains():
 
         # Run program
         base = self.test_dir + 'test'
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide".format(self.script, new_sam, \
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide -d".format(self.script, new_sam, \
             self.extra_single_scaff, base)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
@@ -2890,6 +2890,7 @@ class test_strains():
         assert len([f for f in glob.glob(base + '/output/*') if '.log' not in f]) == 4, glob.glob(base + '/output/*')
 
         # Make sure the missing scaffold is reported
+        print(glob.glob(base + '/log/*'))
         rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
         got = False
         with open(rr, 'r') as o:

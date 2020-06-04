@@ -5,6 +5,7 @@ from ._version import __version__
 import os
 import sys
 import h5py
+import pysam
 import logging
 import argparse
 import pandas as pd
@@ -153,8 +154,10 @@ class ProfileController():
         del vargs['bam']
 
         # Set up .fasta file
+        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
         FAdb, s2s = self.load_fasta(args)
         s2l = {s:len(s2s[s]) for s in list(s2s.keys())}
+        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "end")
 
         # Load dictionary of paired reads
         scaffolds = list(FAdb['scaffold'].unique())
@@ -322,7 +325,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 table['end'].append(split_end)
         Fdb = pd.DataFrame(table)
 
-        _validate_splits(Fdb, s2l)
+        # This just takes too long, sadly
+        # _validate_splits(Fdb, s2l)
 
         if args.scaffolds_to_profile != None:
             Fdb = Fdb[Fdb['scaffold'].isin(args.scaffolds_to_profile)]
@@ -640,6 +644,14 @@ def prepare_bam_fie(args):
     if os.stat(bam).st_size == 0:
         logging.error("Failed to generated a sorted .bam file! Make sure you have "+\
             "samtools version 1.6 or greater.")
+        sys.exit()
+
+    # Do a quick sanity check
+    try:
+         pysam.AlignmentFile(bam).mapped
+    except ValueError:
+        logging.error("It seems like the .bam file could not be indexed!"  +\
+                    "Make sure you have samtools version 1.6 or greater.")
         sys.exit()
 
     return bam

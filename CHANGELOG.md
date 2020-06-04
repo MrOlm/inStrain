@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0k] - 2020-06-04
+- Add a sanity check to "prepare_bam_fie" for proper indexing
+- Dont have get_paired_reads write to the log when multiprocessing
+- Remove \_validate_splits (it takes too long)
+- Add a checkpoint for loading the .fasta file
+- Change filter_reads to the "spawn" rather than "fork" multiprocessing
+- Change the way bam files are initilized in filter_reads
+
 ## [1.3.0j] - 2020-06-02
 - Make a argparse group for mm_level; calc GW on the mm level
 - Plots work again

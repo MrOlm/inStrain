@@ -163,6 +163,7 @@ def load_log(logfile):
 
             # Special Failure
             elif 'FAILURE' in line:
+
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 fail_type = linewords[4]
 
@@ -681,8 +682,11 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
                 report += '{0:20} took {1:15} ({2:4.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
 
         elif len(db) == 1:
-            start = start.strftime('%Y-%m-%d %H:%M:%S')
-            report += '{0:20} started at {1} and never finished\n'.format(name, start)
+            try:
+                start = db[db['status'] == 'start'].iloc[0]['time']
+                report += '{0:20} started at {1} and never finished\n'.format(name, start)
+            except:
+                report += '{0:20} failed\n'.format(name)
 
     return report
 

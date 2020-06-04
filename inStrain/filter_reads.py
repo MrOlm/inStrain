@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import gzip
 import pysam
 import logging
@@ -25,7 +26,7 @@ class Controller():
 
     def main(self, args):
         '''
-        The main method
+        The main method when called explicitly
         '''
         bam = args.bam
         vargs = vars(args)
@@ -70,10 +71,13 @@ class Controller():
             RR_loc = os.path.join(out_folder, 'detailed_mapping_info.csv')
             dRR.to_csv(RR_loc, index=False, sep='\t')
 
-def read_profile_worker(read_cmd_queue, read_result_queue, single_thread=False):
+def read_profile_worker(read_cmd_queue, read_result_queue, bam, single_thread=False):
     '''
     Worker to filter reads
     '''
+    # Initilize the .bam file
+    bam_init = samfile = pysam.AlignmentFile(bam)
+
     while True:
         if not single_thread:
             cmds = read_cmd_queue.get(True)
@@ -83,8 +87,14 @@ def read_profile_worker(read_cmd_queue, read_result_queue, single_thread=False):
             except:
                 return
 
-        dicts, log = scaffold_profile_wrapper(cmds)
+        dicts, log = scaffold_profile_wrapper(cmds, bam_init)
         read_result_queue.put((dicts, log))
+
+        # Clean up memory
+        for d in dicts:
+            del d
+        del log
+        del dicts
 
 def load_paired_reads2(bam, scaffolds, **kwargs):
     '''
@@ -469,11 +479,14 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
     ret_total = kwargs.get('ret_total', False)
 
     # Make commands
-    cmd_groups = [x for x in iterate_command_groups(scaffolds, bam, kwargs)]
+    cmd_groups = [x for x in iterate_command_groups(scaffolds, kwargs)]
+
+    # Lets go with spawn; see if that reduces memory usage
+    ctx = multiprocessing.get_context('spawn')
 
     # Make queues
-    read_cmd_queue = multiprocessing.Queue()
-    read_result_queue = multiprocessing.Queue()
+    read_cmd_queue = ctx.Queue()
+    read_result_queue = ctx.Queue()
 
     for cmd_group in cmd_groups:
         read_cmd_queue.put(cmd_group)
@@ -485,7 +498,7 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
         logging.debug("Establishing processes")
         processes = []
         for i in range(0, p):
-            processes.append(multiprocessing.Process(target=read_profile_worker, args=(read_cmd_queue, read_result_queue)))
+            processes.append(ctx.Process(target=read_profile_worker, args=(read_cmd_queue, read_result_queue, bam)))
         for proc in processes:
             proc.start()
 
@@ -513,7 +526,7 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
         pbar.close()
 
     else:
-        read_profile_worker(read_cmd_queue, read_result_queue, single_thread=True)
+        read_profile_worker(read_cmd_queue, read_result_queue, bam, single_thread=True)
         logging.info("Done profiling genes")
 
         # Get the results
@@ -561,35 +574,35 @@ def iterate_read_commands(scaffolds, bam, profArgs):
     for scaff in scaffolds:
         yield [scaff, bam]
 
-def iterate_command_groups(scaffolds, bam, profArgs):
+def iterate_command_groups(scaffolds, profArgs):
     '''
-    Break these scaffolds into a series of groups
+    Break these scaffolds into a series of scaffolds
 
-    A command group is a touple of [list of scaffolds, bam]
+    A command group is a list of scaffolds
     '''
     cmds = []
     number_groups = int(profArgs.get('ReadGroupSize', 1000))
 
     if number_groups > len(scaffolds):
         for scaff in scaffolds:
-            yield [[scaff], bam]
+            yield [scaff]
 
     else:
         scaffs = random.sample(scaffolds, len(scaffolds))
         for n in range(number_groups):
-            yield [scaffs[n::number_groups], bam]
+            yield scaffs[n::number_groups]
 
-def scaffold_profile_wrapper(cmd_group):
+def scaffold_profile_wrapper(cmd_group, bam_init):
     '''
     Take a command group and get the reads
     '''
     results = []
     log = ''
 
-    scaffolds, bam = cmd_group
+    scaffolds = cmd_group
     for scaff in scaffolds:
         try:
-            pair2info, cur_log = get_paired_reads(bam, scaff)
+            pair2info, cur_log = get_paired_reads(bam_init, scaff)
             results.append([scaff, pair2info])
             log += cur_log
 
@@ -618,7 +631,7 @@ def scaffold_profile_wrapper2(cmd):
         logging.error("whole scaffold exception- {0}".format(str(cmd[0])))
         return cmd[0], False
 
-def get_paired_reads(bam, scaff):
+def get_paired_reads(samfile, scaff):
     '''
     Filter reads from a .bam file
 
@@ -635,13 +648,13 @@ def get_paired_reads(bam, scaff):
 
     # Initialize
     pair2info = {} # Information on pairs
-    samfile = pysam.AlignmentFile(bam)
 
     try:
         iter = samfile.fetch(scaff)
     except ValueError:
-        logging.error("FAILURE FilterReads {0} is not in .bam file".format(scaff))
-        return {}, ''
+        t = time.strftime('%m-%d %H:%M')
+        log_message = "\n{1} DEBUG FAILURE FilterReads {0} is not in .bam file\n".format(scaff, t)
+        return {}, log_message
 
     for read in iter:
         # Dont use unmapped reads
