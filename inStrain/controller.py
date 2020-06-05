@@ -2,6 +2,7 @@
 from ._version import __version__
 
 # Import packages
+import gc
 import os
 import sys
 import h5py
@@ -189,10 +190,10 @@ class ProfileController():
             del Rdic
             Rdic = Rset
 
-        if args.debug:
-            for att in ['Rdic', 'RR', 'FAdb', 's2s']:
-                logging.debug("RAM PROFILE: reads {0} {1:.2f} Mb".format(att,
-                    sys.getsizeof(eval(att))/1e6))
+        # if args.debug:
+        #     for att in ['Rdic', 'RR', 'FAdb', 's2s']:
+        #         logging.debug("RAM PROFILE: reads {0} {1:.2f} Mb".format(att,
+        #             sys.getsizeof(eval(att))/1e6))
 
         # Profile the .bam file
         vargs['s2s'] = s2s

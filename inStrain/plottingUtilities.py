@@ -461,7 +461,9 @@ def iterate_chunks_series(d, chunkSize=100, sLen=False):
     numberChunks = sLen // chunkSize + 1
     for i in range(numberChunks):
         #print(i, int(i*chunkSize), int((i+1)*chunkSize), len(d))
-        yield (d.loc[int(i*chunkSize):int((i+1)*chunkSize)])
+        start = int(i*chunkSize)
+        end = int((i+1)*chunkSize)
+        yield (d.loc[start:end])
 
 def plot_RC_SNPs(hd5_loc, scaffolds, s2l, mm_level=None, samples=None):
     '''

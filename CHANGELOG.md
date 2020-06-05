@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0m] - 2020-06-05
+- Add logging for spawning and terminating workers to check the impact on RAM
+- No more global scaff2sequence; just send over with commands
+- Explicitly call the garbage collector in profile
+
 ## [1.3.0l] - 2020-06-04
 - Add more checkpoints to filter_reads
 - Adjust "ReadGroupSize" to 5000

@@ -88,17 +88,21 @@ def generate_gc_windows(order, scaff2sequence, mask_edges=100):
         order = list of scaffolds in the order they should be in
         scaff2sequence = scaffold2sequence (scaff2sequence = SeqIO.to_dict(SeqIO.parse(fasta_loc, "fasta")))
         mask_edges = remove this many bp from start and end of contigs
+
+    Modified for speed
     '''
     # Load the .fasta
     #scaff2sequence = SeqIO.to_dict(SeqIO.parse(file_loc, "fasta"))
 
     # Make the genome sequence into a list
-    genome_seq = []
+    splits = []
     for scaff in order:
         seq = scaff2sequence[scaff]
         if mask_edges:
             seq = seq[100:len(seq)-100]
-            genome_seq.extend(seq)
+            splits.append(seq)
+            #genome_seq.extend(seq)
+    genome_seq = sum(splits, [])
 
     # Calculate GC content
     gcdb = _iRep_gc_content(genome_seq)

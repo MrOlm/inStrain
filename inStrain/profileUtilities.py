@@ -1,5 +1,6 @@
 # Import packages
 import os
+import gc
 import sys
 import time
 import pysam
@@ -197,7 +198,7 @@ class profile_command():
         pass
 
 def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
-                        scaff2sequence, R2M, null_model, bam,
+                        R2M, null_model, bam,
                         single_thread=False):
     '''
     Worker to profile splits
@@ -207,7 +208,6 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
         Sprofile_dict: A dictionary to store processed splits
         log_list: A queue to put logs
 
-        scaff2sequence: A dictionary of scaffold -> nucleotide sequence
         R2M: A dictionary of read -> number of mismatches in pair
         null_model: Used for SNP profiling
         bam: Location of .bam file
@@ -231,7 +231,7 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
                 return
 
         # Process split
-        Splits = split_profile_wrapper_groups(cmds, scaff2sequence, R2M,
+        Splits = split_profile_wrapper_groups(cmds, R2M,
                                                 null_model, bam_init)
         LOG = ''
         for Split in Splits:
@@ -338,7 +338,7 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
     scaffolds = list(Fdb['scaffold'].unique())
 
     logging.debug('Creating commands')
-    cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, profArgs)
+    cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, scaff2sequence, profArgs)
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     logging.debug('Create queues and shared things')
@@ -364,15 +364,21 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
         sprofile_cmd_queue.put([scaff, splits])
         #logging.debug("put {0}".format(i))
 
+    inStrain.logUtils.log_checkpoint("Profile", "RunningGarbageCollector", "start")
+    gc.collect()
+    inStrain.logUtils.log_checkpoint("Profile", "RunningGarbageCollector", "end")
+
     if p > 1:
         logging.debug('Establishing processes')
+        inStrain.logUtils.log_checkpoint("Profile", "SpawningSplitWorkers", "start")
         processes = []
         for i in range(0, p):
             processes.append(ctx.Process(target=split_profile_worker, args=(
                             split_cmd_queue, Sprofile_dict, log_list,
-                            scaff2sequence, R2M, null_model, bam)))
+                            R2M, null_model, bam)))
         for proc in processes:
             proc.start()
+        inStrain.logUtils.log_checkpoint("Profile", "SpawningSplitWorkers", "end")
 
         # Set up progress bar
         pbar = tqdm(desc='Profiling splits: ', total=len(cmd_groups))
@@ -392,8 +398,10 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
 
         # Close progress bar
         pbar.close()
+        inStrain.logUtils.log_checkpoint("Profile", "TerminatingSplitWorkers", "start")
         for proc in processes:
             proc.terminate()
+        inStrain.logUtils.log_checkpoint("Profile", "TerminatingSplitWorkers", "end")
 
         logging.debug('Establishing processes for merging')
         processes = []
@@ -428,7 +436,7 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
 
     else:
         split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
-                            scaff2sequence, R2M, null_model, bam,
+                            R2M, null_model, bam,
                             single_thread=True)
         logging.info("Done profiling splits")
 
@@ -601,12 +609,12 @@ def scaffold_profile_wrapper2(cmd):
 #         logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
 #         return False
 
-def split_profile_wrapper_groups(cmds, scaff2sequence, R2M, null_model, bam_init):
+def split_profile_wrapper_groups(cmds, R2M, null_model, bam_init):
     results = []
     for cmd in cmds:
         try:
             results.append(_profile_split(bam_init, cmd.scaffold, cmd.start,
-                            cmd.end, cmd.split_number, scaff2sequence, R2M,
+                            cmd.end, cmd.split_number, cmd.sequence, R2M,
                             null_model, bam_name=cmd.samfile, **cmd.arguments))
         except Exception as e:
             print(e)
@@ -619,7 +627,7 @@ def split_profile_wrapper_groups(cmds, scaff2sequence, R2M, null_model, bam_init
     return results
 
 
-def prepare_commands(Fdb, bam, args):
+def prepare_commands(Fdb, bam, scaff2sequence, args):
     '''
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
@@ -644,13 +652,17 @@ def prepare_commands(Fdb, bam, args):
         for i, row in db.iterrows():
 
             # make this command
+            start = int(row['start'])
+            end = int(row['end'])
+
             cmd = profile_command()
             cmd.scaffold = scaff
             cmd.samfile = bam
             cmd.arguments = args
-            cmd.start = row['start']
-            cmd.end = row['end']
+            cmd.start = start
+            cmd.end = end
             cmd.split_number = int(row['split_number'])
+            cmd.sequence = scaff2sequence[scaff][start:end+1]
 
             # Add to the Sdict
             Sdict[scaff + '.' + str(row['split_number'])] = None
@@ -675,7 +687,7 @@ def calc_estimated_runtime(pairs):
     return (pairs * SLOPE_CONSTANT) + 0.2
 
 def _profile_split(samfile, scaffold, start, end, split_number,
-                    scaff2sequence, R2M, null_model, **kwargs):
+                    seq, R2M, null_model, **kwargs):
     '''
     Run the meat of the program to profile a split and return a split object
 
@@ -697,7 +709,7 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     store_everything = kwargs.get('store_everything', False)
 
     # Get sequence from global
-    seq = scaff2sequence[scaffold][start:end+1] # The plus 1 makes is so the end is inclusive
+    #seq = scaff2sequence[scaffold][start:end+1] # The plus 1 makes is so the end is inclusive
 
     # Set up the .bam file
     try:
@@ -1056,6 +1068,22 @@ def mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
         A 1-d array of counts
 
     '''
+    # THIS COMMETED OUT WAY WORKED WITH FILL_ZEROS, BUT NOT WITHOUT
+    # series_list = []
+    #
+    # if fill_zeros:
+    #     series_list.append(pd.Series(index=np.arange(fill_zeros)))
+    #
+    # for mm, count in [(mm, count) for mm, count in MMcounts.items() if mm <= maxMM]:
+    #     series_list.append(count)
+    #
+    # counts = pd.concat(series_list, axis=1).sum(1)
+    #
+    # if fill_zeros:
+    #     counts = counts.fillna(0)
+    #
+    # return counts
+
     if fill_zeros:
         counts = pd.Series(index=np.arange(fill_zeros))
     else:
