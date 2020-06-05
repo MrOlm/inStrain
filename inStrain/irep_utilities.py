@@ -149,19 +149,25 @@ def _iRep_filter_windows(cov, on='coverage', mdif = float(8)):
     Replicates *filter_windows()*
 
     Remove windows with weird coverage
+
+    Edited to improve speed in version 1.3.0l
     '''
     med = np.median(cov[on])
 
-    keeper_index = []
-    for i, row in cov.iterrows():
-        y = row[on]
-        if y <= 0 or med <= 0:
-            continue
-        if abs(float(max([y, med])) / float(min([y, med]))) > mdif:
-            continue
-        keeper_index.append(row['index'])
-
-    return cov[cov['index'].isin(keeper_index)]
+    return cov[[True if \
+            ((y > 0) and (med > 0) and
+            (abs(float(max([y, med])) / float(min([y, med]))) <= mdif))
+            else False for y in cov[on]]]
+    # keeper_index = []
+    # for i, row in cov.iterrows():
+    #     y = row[on]
+    #     if y <= 0 or med <= 0:
+    #         continue
+    #     if abs(float(max([y, med])) / float(min([y, med]))) > mdif:
+    #         continue
+    #     keeper_index.append(row['index'])
+    #
+    # return cov[cov['index'].isin(keeper_index)]
 
 def _iRep_log_transform(array):
     lt = []

@@ -66,13 +66,14 @@ class ScaffoldSplitObject():
 
         try:
             if self.number_splits == 1:
-                Sprofile = self.split_dict[0].merge_single_profile()
+                Sprofile = self.split_dict[0].merge_single_profile(self.null_model)
                 log_message += inStrain.logUtils.get_worker_log('MergeProfile', self.scaffold, 'end')
                 Sprofile.merge_log = log_message
                 return Sprofile
 
             else:
                 Sprofile = scaffold_profile()
+                Sprofile.null_model = self.null_model
                 # Handle value objects
                 for att in ['scaffold', 'bam', 'min_freq']:
                     vals = set([getattr(Split, att) for num, Split in self.split_dict.items()])
@@ -107,8 +108,13 @@ class ScaffoldSplitObject():
 
                 return Sprofile
         except:
-            logging.error("FAILURE MergeError {0}".format(self.scaffold))
             traceback.print_exc()
+
+            t = time.strftime('%m-%d %H:%M')
+            log_message = "\n{1} DEBUG FAILURE MergeError {0}\n"\
+                            .format(self.scaffold, t)
+            print(log_message)
+
             return None
 
     def delete_self(self):
@@ -133,12 +139,13 @@ class SplitObject():
     def __init__(self):
         pass
 
-    def merge_single_profile(self):
+    def merge_single_profile(self, null_model):
         '''
         Convert self into scaffold_profile object
         '''
         Sprofile = scaffold_profile()
         Sprofile.scaffold = self.scaffold
+        Sprofile.null_model = null_model
         Sprofile.bam = self.bam
         Sprofile.length = self.length
         Sprofile.raw_snp_table = self.raw_snp_table
@@ -179,7 +186,7 @@ class scaffold_profile():
 
         self.cumulative_scaffold_table = make_coverage_table(self.covT, self.clonT,
                             self.clonTR, self.length, self.scaffold, self.raw_snp_table,
-                            min_freq=self.min_freq)
+                            self.null_model, min_freq=self.min_freq)
 
 
 class profile_command():
@@ -189,10 +196,30 @@ class profile_command():
     def __init__(self):
         pass
 
-def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread=False):
+def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
+                        scaff2sequence, R2M, null_model, bam,
+                        single_thread=False):
     '''
     Worker to profile splits
+
+    Args:
+        split_cmd_queue: A queue of split commands to grab
+        Sprofile_dict: A dictionary to store processed splits
+        log_list: A queue to put logs
+
+        scaff2sequence: A dictionary of scaffold -> nucleotide sequence
+        R2M: A dictionary of read -> number of mismatches in pair
+        null_model: Used for SNP profiling
+        bam: Location of .bam file
+
+    Keyword Args:
+        singe_thread: Run in single_thread mode
+
+
     '''
+    # Initilize the .bam file
+    bam_init = samfile = pysam.AlignmentFile(bam)
+
     while True:
         # Get command
         if not single_thread:
@@ -204,14 +231,19 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread
                 return
 
         # Process split
-        Splits = split_profile_wrapper_groups(cmds)
+        Splits = split_profile_wrapper_groups(cmds, scaff2sequence, R2M,
+                                                null_model, bam_init)
         LOG = ''
         for Split in Splits:
+            # This is an error
+            if type(Split) == type('string'):
+                LOG += Split
+                continue
             Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
             LOG += Split.log + '\n'
         log_list.put(LOG)
 
-def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_thread=False):
+def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, null_model, single_thread=False):
     '''
     Worker to merge_cplits
     '''
@@ -227,6 +259,7 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_th
 
         scaff, splits = cmd
         Sprofile = ScaffoldSplitObject(splits)
+        Sprofile.null_model = null_model
         Sprofile.scaffold = scaff
         for i in range(splits):
             Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
@@ -277,7 +310,7 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, single_th
 
 
 
-def profile_bam(bam, Fdb, r2m, **kwargs):
+def profile_bam(bam, Fdb, R2M, **kwargs):
     '''
     Profile the .bam file really  well.
     This is by far the meat of the program
@@ -295,15 +328,9 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     p = int(kwargs.get('processes', 6))
     fdr = kwargs.get('fdr', 1e-6)
 
-    global scaff2sequence
+    # Get the stuff that used to be global
     scaff2sequence = profArgs.pop('s2s')
 
-    # make the dictionary global
-    global R2M
-    R2M = r2m
-
-    # make a global null model
-    global null_model
     null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
     null_model = generate_snp_model(null_loc, fdr=fdr)
 
@@ -315,12 +342,17 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     logging.debug('Create queues and shared things')
-    manager = multiprocessing.Manager()
-    split_cmd_queue = multiprocessing.Queue()
+
+    # Lets go with spawn; see if that reduces memory usage
+    ctx = multiprocessing.get_context('spawn')
+
+    manager = ctx.Manager()
     Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
-    log_list = multiprocessing.Queue()
-    sprofile_cmd_queue = multiprocessing.Queue()
-    sprofile_result_queue = multiprocessing.Queue()
+
+    log_list = ctx.Queue()
+    split_cmd_queue = ctx.Queue()
+    sprofile_cmd_queue = ctx.Queue()
+    sprofile_result_queue = ctx.Queue()
     Sprofiles = []
 
     logging.debug("Submitting split tasks to queue")
@@ -336,7 +368,9 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         logging.debug('Establishing processes')
         processes = []
         for i in range(0, p):
-            processes.append(multiprocessing.Process(target=split_profile_worker, args=(split_cmd_queue, Sprofile_dict, log_list)))
+            processes.append(ctx.Process(target=split_profile_worker, args=(
+                            split_cmd_queue, Sprofile_dict, log_list,
+                            scaff2sequence, R2M, null_model, bam)))
         for proc in processes:
             proc.start()
 
@@ -364,7 +398,8 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         logging.debug('Establishing processes for merging')
         processes = []
         for i in range(0, p):
-            processes.append(multiprocessing.Process(target=merge_profile_worker, args=(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue)))
+            processes.append(ctx.Process(target=merge_profile_worker, args=(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue,
+                 null_model)))
         for proc in processes:
             proc.start()
 
@@ -392,7 +427,9 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
         pbar.close()
 
     else:
-        split_profile_worker(split_cmd_queue, Sprofile_dict, log_list, single_thread=True)
+        split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
+                            scaff2sequence, R2M, null_model, bam,
+                            single_thread=True)
         logging.info("Done profiling splits")
 
         # Get the splits
@@ -406,7 +443,8 @@ def profile_bam(bam, Fdb, r2m, **kwargs):
                 logging.warning("Missing splits; {0} {1}".format(cmd_groups, split_cmd_queue))
                 assert False
 
-        merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, sprofile_result_queue, single_thread=True)
+        merge_profile_worker(sprofile_cmd_queue, Sprofile_dict,
+                            sprofile_result_queue, null_model, single_thread=True)
 
         # Get results
         received_profiles = 0
@@ -504,22 +542,26 @@ def iterate_Fdbs(df, chunkSize=100):
 def generate_snp_model(model_file, fdr=1e-6):
     '''
     The model_file contains the columns "coverage", "probability of X coverage base by random chance"
+
+    The model that it returns has the properties:
+        model[position_coverage] = the minimum number of alternate bases to be legit
+        model[-1] = use this value if coverage is not in dictionary
     '''
     f = open(model_file)
-    model = defaultdict(int)
+    model = {}
     for line in f.readlines():
         if 'coverage' in line:
             continue
         counts = line.split()[1:]
         coverage = line.split()[0]
-        i = 0
+        i = 0 # note 6.4.20 - this should be 1, not zero
         for count in counts:
             if float(count) < fdr:
                 model[int(coverage)] = i
                 break
             i += 1
 
-    model.default_factory = lambda:max(model.values())
+    model[-1] = max(model.values())
 
     return model
 
@@ -550,24 +592,30 @@ def scaffold_profile_wrapper2(cmd):
         logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
         return pd.DataFrame({'Failed':[True]})
 
-def split_profile_wrapper(cmd):
-    try:
-        return _profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments)
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
-        return False
+# def split_profile_wrapper(cmd):
+#     try:
+#         return _profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments)
+#     except Exception as e:
+#         print(e)
+#         traceback.print_exc()
+#         logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
+#         return False
 
-def split_profile_wrapper_groups(cmds):
+def split_profile_wrapper_groups(cmds, scaff2sequence, R2M, null_model, bam_init):
     results = []
     for cmd in cmds:
         try:
-            results.append(_profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments))
+            results.append(_profile_split(bam_init, cmd.scaffold, cmd.start,
+                            cmd.end, cmd.split_number, scaff2sequence, R2M,
+                            null_model, bam_name=cmd.samfile, **cmd.arguments))
         except Exception as e:
             print(e)
             traceback.print_exc()
-            logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
+
+            t = time.strftime('%m-%d %H:%M')
+            log_message = "\n{1} DEBUG FAILURE SplitException {0} {2}\n"\
+                            .format(cmd.scaffold, t, cmd.split_number)
+            results.append(log_message)
     return results
 
 
@@ -626,7 +674,8 @@ def calc_estimated_runtime(pairs):
     SLOPE_CONSTANT = 0.0061401594694834305
     return (pairs * SLOPE_CONSTANT) + 0.2
 
-def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
+def _profile_split(samfile, scaffold, start, end, split_number,
+                    scaff2sequence, R2M, null_model, **kwargs):
     '''
     Run the meat of the program to profile a split and return a split object
 
@@ -651,7 +700,6 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     seq = scaff2sequence[scaffold][start:end+1] # The plus 1 makes is so the end is inclusive
 
     # Set up the .bam file
-    samfile = pysam.AlignmentFile(bam)
     try:
         iter = samfile.pileup(scaffold, truncate=True, max_depth=100000,
                                 stepper='nofilter', compute_baq=True,
@@ -676,7 +724,7 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
         pileup_counts = None
 
     # Do per-site processing
-    _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, start=start, **kwargs)
+    _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, null_model, R2M, start=start, **kwargs)
 
     # Shrink these dictionaries into index pandas Series
     covT = shrink_basewise(covT, 'coverage', start=start, len=mLen)
@@ -702,7 +750,7 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
     Sprofile = SplitObject()
     Sprofile.scaffold = scaffold
     Sprofile.split_number = split_number
-    Sprofile.bam = bam
+    Sprofile.bam = kwargs.get('bam_name')
     Sprofile.length = mLen
     #Sprofile.cumulative_scaffold_table = CoverageTable
     Sprofile.raw_snp_table = SNPTable
@@ -726,7 +774,7 @@ def _profile_split(bam, scaffold, start, end, split_number, **kwargs):
 
     return Sprofile
 
-def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, start=0, **kwargs):
+def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_snvs, snv2mm2counts, Stable, pileup_counts, mLen, null_model, R2M, start=0, **kwargs):
     # Get kwargs
     min_cov = int(kwargs.get('min_cov', 5))
     min_covR = int(kwargs.get('rarefied_coverage', 5))
@@ -741,13 +789,14 @@ def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_sn
         RelPosition = pileupcolumn.pos - start
 
         # Get basic base counts
-        MMcounts = _get_base_counts_mm(pileupcolumn)
+        MMcounts = _get_base_counts_mm(pileupcolumn, R2M)
         _update_covT(covT, MMcounts, RelPosition, mLen)
 
         # Call SNPs
         snp, bases, total_counts = _update_snp_table_T(Stable, clonT, clonTR,\
                     MMcounts, p2c,\
-                    RelPosition, scaffold, mLen, seq[RelPosition], min_cov=min_cov, min_covR=min_covR, min_freq=min_freq)
+                    RelPosition, scaffold, mLen, seq[RelPosition], null_model,
+                    min_cov=min_cov, min_covR=min_covR, min_freq=min_freq)
 
         # add the counts for this position to the numpy array alexcc
         if store_everything:
@@ -755,7 +804,7 @@ def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_sn
 
         # get linked reads
         if snp:
-            _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, RelPosition, bases, scaffold=scaffold)
+            _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, RelPosition, bases, R2M, scaffold=scaffold)
             snv2mm2counts[RelPosition] = MMcounts
 
 # def _get_log_message(kind, scaffold, split_number=None):
@@ -785,7 +834,7 @@ def _dlist():
     return defaultdict(list)
 
 P2C = {'A':0, 'C':1, 'T':2, 'G':3}
-def _get_base_counts_mm(pileupcolumn):
+def _get_base_counts_mm(pileupcolumn, R2M):
     '''
     From a pileupcolumn object, return a dictionary of readMismatches ->
         list with the counts of [A, C, T, G]
@@ -872,7 +921,7 @@ def _update_covT(covT, MMcounts, position, mLen):
         covT[mm][position] = sum(count)
 
 def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
-        pos, scaff, mLen, ref_base, min_cov=5, min_covR=50, min_freq=.05):
+        pos, scaff, mLen, ref_base, null_model, min_cov=5, min_covR=50, min_freq=.05):
     '''
     Add information to SNP table. Update basesCounted and snpsCounted
 
@@ -920,7 +969,7 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
     ret_counts = np.zeros(4, dtype=int)
     for mm in sorted(list(MMcounts.keys())):
         counts = _mm_counts_to_counts(MMcounts, mm)
-        snp, morphia = call_snv_site(counts, ref_base, min_cov=min_cov, min_freq=min_freq) # Call SNP
+        snp, morphia = call_snv_site(counts, ref_base, null_model, min_cov=min_cov, min_freq=min_freq) # Call SNP
 
         # Update clonality
         if mm not in clonT:
@@ -1023,7 +1072,7 @@ def mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
 
 P2C = {'A':0, 'C':1, 'T':2, 'G':3}
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
-def call_snv_site(counts, ref_base, min_cov=5, min_freq=0.05, model=None):
+def call_snv_site(counts, ref_base, model_to_use, min_cov=5, min_freq=0.05):
     '''
     Determines whether a site has a variant based on its nucleotide count frequencies.
 
@@ -1042,11 +1091,11 @@ def call_snv_site(counts, ref_base, min_cov=5, min_freq=0.05, model=None):
     *  Morphia == 1, and the base present is not the genome reference base
     *  Morphia == 0 (this is a special case meaning no bases are really present)
     '''
-    # Get the null model
-    if model: #alexcc - so you can call this function from outside of the file
-        model_to_use = model
-    else:
-        model_to_use = null_model
+    # # Get the null model
+    # if model: #alexcc - so you can call this function from outside of the file
+    #     model_to_use = model
+    # else:
+    #     model_to_use = null_model
 
     # Make sure you have the coverage
     total = sum(counts)
@@ -1056,7 +1105,12 @@ def call_snv_site(counts, ref_base, min_cov=5, min_freq=0.05, model=None):
     # Count how many bases are there
     i = 0
     for c in counts:
-        if c >= model_to_use[total] and float(c) / total >= min_freq:
+        if total in model_to_use:
+            min_bases = model_to_use[total]
+        else:
+            min_bases = model_to_use[-1]
+
+        if c >= min_bases and float(c) / total >= min_freq:
             i += 1
 
     # If there are 2, say that
@@ -1120,7 +1174,7 @@ def _get_basewise_clons2(clonT, MM, fill_zeros=False):
 
     return counts
 
-def _calc_snps(Odb, mm, min_freq=0.05):
+def _calc_snps(Odb, mm, null_model, min_freq=0.05):
     '''
     Calculate the number of reference SNPs, bi-allelic SNPs, multi-allelic SNPs (>2), total SNPs, consensus_SNPs, and poplation_SNPs
 
@@ -1166,7 +1220,8 @@ def _calc_snps(Odb, mm, min_freq=0.05):
 
     return [SNS_count, SNV_count, len(db), con_snps, pop_snps]
 
-def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.05, debug=False):
+def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, null_model,
+                        min_freq=0.05, debug=False):
     '''
     Add information to the table
     Args:
@@ -1195,7 +1250,7 @@ def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, min_freq=0.
         rarefied_bases = len(Rclons)
         #ref_snps, bi_snps, multi_snps, counted_snps, con_snps, pop_snps = _calc_snps(SNPTable, mm, min_freq=min_freq)
         SNS_count, SNV_count, div_site_count, con_snps, pop_snps = \
-                    _calc_snps(SNPTable, mm, min_freq=min_freq)
+                    _calc_snps(SNPTable, mm, null_model, min_freq=min_freq)
 
         #counted_snps = _calc_counted_bases(snpsCounted, mm)
 
@@ -1289,7 +1344,7 @@ def _clonT_to_table(clonT):
     else:
         return pd.DataFrame()
 
-def _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, position, bases,
+def _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, position, bases, R2M,
                         min_freq=0.05, scaffold=False):
     '''
     Find and update linked reads

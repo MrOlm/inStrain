@@ -1,6 +1,6 @@
 ..:: Overall ::..
-InStrain version 1.3.0k started at 2020-06-04 12:37:10 and ended at 2020-06-04 12:38:11.
-Runtime = 1 minute
+InStrain version 1.3.0k started at 2020-06-04 17:30:57 and ended at 2020-06-04 17:32:07.
+Runtime = 1 minute, 10 seconds
 Command = /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
 
 ..:: Checkpoints ::..

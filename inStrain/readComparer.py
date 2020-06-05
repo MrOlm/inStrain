@@ -958,7 +958,13 @@ def _is_snp(db1, db2, position, p2c1, p2c2, min_freq, model_to_use, debug=False,
     #counts2 = dd2.iloc[-1][C2P[con1]]
     counts2 = dd2.iloc[-1][con1]
     total = dd2.iloc[-1]['position_coverage']
-    if (counts2 >= model_to_use[total]) and ((float(counts2) / total) >= min_freq):
+
+    if total in model_to_use:
+        min_bases = model_to_use[total]
+    else:
+        min_bases = model_to_use[-1]
+
+    if (counts2 >= min_bases) and ((float(counts2) / total) >= min_freq):
         pass
     else:
         return True
@@ -967,7 +973,13 @@ def _is_snp(db1, db2, position, p2c1, p2c2, min_freq, model_to_use, debug=False,
     #counts1 = dd1.iloc[-1][C2P[con2]]
     counts1 = dd1.iloc[-1][con2]
     total = dd1.iloc[-1]['position_coverage']
-    if (counts1 >= model_to_use[total]) and ((float(counts1) / total) >= min_freq):
+
+    if total in model_to_use:
+        min_bases = model_to_use[total]
+    else:
+        min_bases = model_to_use[-1]
+
+    if (counts1 >= min_bases) and ((float(counts1) / total) >= min_freq):
         pass
     else:
         return True

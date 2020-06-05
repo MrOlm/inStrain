@@ -120,12 +120,19 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
 
     # Make read report
     logging.info('Making read report')
-    RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info, priority_reads_set=priority_reads, **kwargs)
+    inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
+
+    RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
+                                priority_reads_set=priority_reads, **kwargs)
+
+    inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
 
     # Filter the dictionary
     logging.info('Filtering reads')
+    inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
     pair2infoF = filter_paired_reads_dict2(pair2info,
         **kwargs)
+    inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
 
     if detailed_report:
         dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
@@ -581,7 +588,7 @@ def iterate_command_groups(scaffolds, profArgs):
     A command group is a list of scaffolds
     '''
     cmds = []
-    number_groups = int(profArgs.get('ReadGroupSize', 1000))
+    number_groups = int(profArgs.get('ReadGroupSize', 5000))
 
     if number_groups > len(scaffolds):
         for scaff in scaffolds:

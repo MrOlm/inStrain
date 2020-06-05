@@ -287,14 +287,29 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
     THIS IS ALL CALCULATED WITH MASKED EDGES OF SCAFFOLDS
     '''
 
-    table = defaultdict(list)
+    dbs = []
+
     for genome, scaffolds in bin2scaffolds.items():
         if genome not in relevant_genomes:
             continue
 
+        table = defaultdict(list)
+
         # Sort the scaffolds
         scaffolds = scaffolds.intersection(set(s2l.keys())) # THIS SHOULDN'T HAVE TO BE HERE!
         scaffolds = sorted(scaffolds, key=s2l.get, reverse=True)
+
+        # Try and get the GC_correction
+        gc_windows = None
+        if scaff2sequence is not None:
+            try:
+                gc_windows = inStrain.irep_utilities.generate_gc_windows(scaffolds, scaff2sequence, mask_edges=100)
+            except:
+                pass
+
+        # Set up default iRep
+        iRep = np.nan
+        iRep_accessory = {'iRep_GC_corrected':np.nan}
 
         # Iterate for this genome
         for mm in mms:
@@ -302,24 +317,17 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
             # Make a coverage array for this genome in it's entirety
             covs, scaff2genome_index = generate_genome_coverage_array(covT, s2l, order=scaffolds, maxMM=mm, mask_edges=100)
 
-            # Try and get the GC_correction
-            gc_windows = None
-            if scaff2sequence is not None:
+            # Calculate iRep only on mm == 1, or if not on mm level
+            if ((mm == 1) or (mms is [1000])):
                 try:
-                    gc_windows = inStrain.irep_utilities.generate_gc_windows(scaffolds, scaff2sequence, mask_edges=100)
+                    with warnings.catch_warnings():
+                        warnings.simplefilter("ignore")
+                        iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
+                    logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
                 except:
-                    pass
-
-            # Calculate iRep
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    iRep, iRep_accessory = inStrain.irep_utilities.calculate_iRep_from_coverage_array(covs, len(scaffolds), gc_windows)
-                logging.debug("iRep {0} {1} {2}".format(genome, mm, iRep_accessory))
-            except:
-                logging.warning("FAILURE iRepError {0} {1}".format(genome, mm))
-                iRep = np.nan
-                iRep_accessory = {'iRep_GC_corrected':np.nan}
+                    logging.warning("FAILURE iRepError {0} {1}".format(genome, mm))
+                    iRep = np.nan
+                    iRep_accessory = {'iRep_GC_corrected':np.nan}
 
             # Calculate medians and other variants
             if len(covs) == 0:
@@ -327,8 +335,6 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
 
             table['mm'].append(mm)
             table['genome'].append(genome)
-            table['iRep'].append(iRep)
-            table['iRep_GC_corrected'].append(iRep_accessory['iRep_GC_corrected'])
 
             # Dont print annoying runtime warnings here
             with warnings.catch_warnings():
@@ -337,7 +343,12 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
                 table['coverage_SEM'].append(scipy.stats.sem(covs))
                 table['coverage_std'].append(np.std(covs))
 
-    adb = pd.DataFrame(table)
+        gdb = pd.DataFrame(table)
+        gdb['iRep'] = iRep
+        gdb['iRep_GC_corrected'] = iRep_accessory['iRep_GC_corrected']
+        dbs.append(gdb)
+
+    adb = pd.concat(dbs).reset_index(drop=True)
     return adb
 
 def genomeWideFromIS(IS, thing, **kwargs):

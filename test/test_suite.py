@@ -2453,33 +2453,33 @@ class test_strains():
         # self.test0()
         # self.tearDown()
 
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
+        self.setUp()
+        self.test1()
+        self.tearDown()
 
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
 
         self.setUp()
         self.test8()
@@ -3515,7 +3515,7 @@ class test_strains():
                 line = line.strip()
                 if 'FailureScaffoldHeaderTesting' in line:
                     got += 1
-        assert got == 4, got
+        assert got == 3, got
         os.remove(rr)
 
         # Make it not crash on that scaffold

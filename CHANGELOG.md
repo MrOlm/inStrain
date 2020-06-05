@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0l] - 2020-06-04
+- Add more checkpoints to filter_reads
+- Adjust "ReadGroupSize" to 5000
+- iRep is only run on mm = 1
+- re-write \_iRep_filter_windows
+- change the null_model to a regular dictionary; if a coverage isn't in there, use null_model[-1] for the biggest coverage
+- change profile to no longer use globals; spawn new processes instead of forking
+
 ## [1.3.0k] - 2020-06-04
 - Add a sanity check to "prepare_bam_fie" for proper indexing
 - Dont have get_paired_reads write to the log when multiprocessing
