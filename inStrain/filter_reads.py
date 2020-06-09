@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import copy
 import gzip
 import pysam
 import logging
@@ -291,7 +292,8 @@ def filter_paired_reads_dict2(pair2info, **kwargs):
     max_insert = np.median([value[1] for key, value in pair2info.items() if value[i2o['reads']] == 2]) * max_insert_relative
 
     # Return dictionary of pairs
-    return {key:value[0] for key, value in pair2info.items() if _evaluate_pair2(value,
+    return {copy.deepcopy(key):copy.deepcopy(value[0])
+            for key, value in pair2info.items() if _evaluate_pair2(value,
             filter_cutoff=filter_cutoff,
             max_insert=max_insert,
             min_insert=min_insert,
