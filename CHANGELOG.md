@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0o] - 2020-06-10
+- Modify how split profiling is done and modify Rdic. Now only the reads for each scaffold are passed to worker threads, through the queue. This should lead to increased run-times (though hopefully not too bad; it should only impact efficiency) and significantly decreased memory usage
+- Remove "--scaffold_level_mapping_info" and have it always on
+- Change how read filtering is done after mutli-processing to improve speed
+
 ## [1.3.0n] - 2020-06-08
 - Deep copy when making the final Rdic object in filter_reads
 

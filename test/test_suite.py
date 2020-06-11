@@ -1210,7 +1210,7 @@ class test_filter_reads():
         # Run program
         base = self.test_dir + 'test'
 
-        cmd = "inStrain filter_reads {0} {1} -o {2} --scaffold_level_mapping_info".format(self.sorted_bam, \
+        cmd = "inStrain filter_reads {0} {1} -o {2}".format(self.sorted_bam, \
             self.fasta, base)
         print(cmd)
         call(cmd, shell=True)
@@ -1234,7 +1234,7 @@ class test_filter_reads():
         Rdb = pd.read_csv([f for f in files if 'detailed' not in f][0], sep='\t', header=1)
         assert len(Rdb) == 179, len(Rdb)
         RRdb = pd.read_csv([f for f in files if 'detailed' in f][0], sep='\t', header=1)
-        assert len(RRdb) == 41257
+        assert len(RRdb) == 41257, len(RRdb)
 
 
     def test1(self):
@@ -1270,7 +1270,7 @@ class test_filter_reads():
         # Filter version two with only pairs
         kwargs = {}
         pair2info2 = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
-        filtered_2 = set(p for p, i in pair2info2.items())
+        filtered_2 = set(p for s, p2i in pair2info2.items() for p, i in p2i.items())
 
         # Get the reads in a weird way and make sure it works
         filtered_1A = set()
@@ -1286,12 +1286,14 @@ class test_filter_reads():
         # Make sure that not removing pairs changes this
         kwargs = {'pairing_filter':'non_discordant'}
         pair2info2N = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
-        filtered_2N = set(p for p, i in pair2info2N.items())
+        #filtered_2N = set(p for p, i in pair2info2N.items())
+        filtered_2N = set([p for s, p2i in pair2info2N.items() for p, i in p2i.items()])
         assert filtered_1 != filtered_2N, [len(filtered_1), len(filtered_2N)]
 
         kwargs = {'pairing_filter':'all_reads'}
         pair2info2N = inStrain.filter_reads.paired_read_filter(s2pair2info2, **kwargs)
-        filtered_2A = set(p for p, i in pair2info2N.items())
+        #filtered_2A = set(p for p, i in pair2info2N.items())
+        filtered_2A = set([p for s, p2i in pair2info2N.items() for p, i in p2i.items()])
         assert filtered_2N != filtered_2A, [len(filtered_2N), len(filtered_2A)]
         assert filtered_1 != filtered_2A, [len(filtered_1), len(filtered_2A)]
 
@@ -1312,8 +1314,13 @@ class test_filter_reads():
         RRo = inStrain.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
 
         # Test out the read filtering report
-        RR = inStrain.filter_reads.makeFilterReport2(s2pair2info2, pairTOinfo=pair2info2, scaffold_level_mapping_info=True, **kwargs)
+        tallys = {}
+        s2pair2info2_filtered = inStrain.filter_reads.paired_read_filter(s2pair2info2,
+                                                                    tallys=tallys)
+        j, RR = inStrain.filter_reads.filter_scaff2pair2info(s2pair2info2_filtered,
+            tallys=tallys, **kwargs)
 
+        # This now relies on the tally; that's ok, there's other tests for this
         for col in ['singletons']:
             assert RR['unfiltered_' + col].tolist()[0] > 0
             assert RR['filtered_' + col].tolist()[0] == 0
@@ -1324,7 +1331,7 @@ class test_filter_reads():
         assert RRo['unfiltered_pairs'].tolist()[0] == RR['unfiltered_pairs'].tolist()[0] == len(filtered_2) == len(filtered_1),\
         [RRo['unfiltered_pairs'].tolist()[0], RR['unfiltered_pairs'].tolist()[0], len(filtered_2), len(filtered_1)]
 
-        for item in ['unfiltered_pairs', 'pass_filter_cutoff', 'pass_min_mapq',
+        for item in ['pass_filter_cutoff', 'pass_min_mapq',
             'pass_max_insert', 'pass_min_insert', 'filtered_pairs']:
             o = RRo[item].tolist()[0]
             t = RR[item].tolist()[0]
@@ -1368,8 +1375,9 @@ class test_filter_reads():
         scaffolds = list(scaff2sequence.keys())
 
         # Try new method
-        pair2infoF, RR = inStrain.filter_reads.load_paired_reads2(self.sorted_bam, scaffolds)
-        assert len(pair2infoF.keys()) == int(RR['filtered_pairs'].tolist()[0])
+        pair2infoF, RR = inStrain.filter_reads.load_paired_reads(self.sorted_bam, scaffolds)
+        assert len(set([p for s, p2i in pair2infoF.items() for p, i in p2i.items()]))\
+                == int(RR['filtered_pairs'].tolist()[0])
 
         # Try old method
 
@@ -1389,18 +1397,23 @@ class test_filter_reads():
         assert len(pair2infoFo.keys()) == int(RRo['filtered_pairs'].tolist()[0])
 
         # Compare
-        assert set(pair2infoFo.keys()) == set(pair2infoF.keys())
-        for pair, info in pair2infoF.items():
-            assert info == pair2infoFo[pair], pair
+        assert set(pair2infoFo.keys()) == \
+                set([p for s, p2i in pair2infoF.items() for p, i in p2i.items()])
+        for s, p2i in pair2infoF.items():
+            for pair, info in p2i.items():
+                assert info == pair2infoFo[pair], pair
 
         # Try new method with priority_reads
         kwargs = {"priority_reads":self.readloc2}
-        pair2infoF, RR = inStrain.filter_reads.load_paired_reads2(self.sorted_bam, scaffolds, **kwargs)
+        pair2infoF, RR = inStrain.filter_reads.load_paired_reads(self.sorted_bam, scaffolds, **kwargs)
+
+        pair2infoF_pairs = set([p for s, p2i in pair2infoF.items() for p, i in p2i.items()])
 
         PReads = inStrain.filter_reads.load_priority_reads(self.readloc2)
-        assert set(pair2infoFo.keys()) != set(pair2infoF.keys())
-        assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys())) > 0
-        assert len(set(pair2infoF.keys()) - set(pair2infoFo.keys()) - set(PReads)) == 0
+        assert set(pair2infoFo.keys()) != pair2infoF_pairs
+        assert len(pair2infoF_pairs - set(pair2infoFo.keys())) > 0
+        assert len(pair2infoF_pairs - set(pair2infoFo.keys()) - set(PReads)) == 0,\
+            len(set(pair2infoF.keys()) - set(pair2infoFo.keys()) - set(PReads))
 
     def test3(self):
         '''
@@ -2682,22 +2695,28 @@ class test_strains():
         subset_readsF = list(pair2infoF.keys())
 
         # Run Matts filter_reads in a different way still
-        scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
-        pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
-        pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
-                        filter_cutoff=filter_cutoff, max_insert_relative=3,
-                        min_insert=50, min_mapq=2)
+        scaff2pair2infoM, Rdb = inStrain.filter_reads.load_paired_reads(
+                            self.sorted_bam, scaffolds, filter_cutoff=filter_cutoff,
+                            max_insert_relative=3, min_insert=50, min_mapq=2)
+        # pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
+        # pair2infoMF = inStrain.filter_reads.filter_scaff2pair2info(pair2infoMF,
+        #                 filter_cutoff=filter_cutoff, max_insert_relative=3,
+        #                 min_insert=50, min_mapq=2)
 
-        subset_readsMF = list(pair2infoMF.keys())
+        subset_readsMF = set()
+        for scaff, pair2infoC in scaff2pair2infoM.items():
+            subset_readsMF = subset_readsMF.union(pair2infoC.keys())
+        # subset_readsMF = list(pair2infoMF.keys())
 
         assert (set(subset_reads2) == set(subset_reads) == set(subset_readsF) == set(subset_readsMF)),\
                 [len(subset_reads2), len(subset_reads), len(subset_readsF), len(subset_readsMF)]
 
         # Make sure the filter report is accurate
-        Rdb = inStrain.filter_reads.makeFilterReport2(scaff2pair2infoM, pairTOinfo=pair2infoMF, filter_cutoff=filter_cutoff, max_insert_relative=3,
-                                            min_insert=50, min_mapq=2)
-        assert int(Rdb[Rdb['scaffold'] == 'all_scaffolds']['unfiltered_pairs'].tolist()[0]) \
-                == len(list(pair2info.keys()))
+        # Rdb = inStrain.filter_reads.makeFilterReport2(scaff2pair2infoM, pairTOinfo=pair2infoMF, filter_cutoff=filter_cutoff, max_insert_relative=3,
+        #                                     min_insert=50, min_mapq=2)
+        assert int(Rdb[Rdb['scaffold'] == 'all_scaffolds']\
+                    ['unfiltered_pairs'].tolist()[0]) \
+                    == len(list(pair2info.keys()))
         assert int(Rdb[Rdb['scaffold'] == 'all_scaffolds']['filtered_pairs'].tolist()[0]) \
                 == len(subset_reads)
 
@@ -2713,14 +2732,21 @@ class test_strains():
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
-        Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
-        pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
-        pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
-                        filter_cutoff=filter_cutoff, max_insert_relative=3,
-                        min_insert=50, min_mapq=2)
+
+        scaff2pair2infoM, Rdb = inStrain.filter_reads.load_paired_reads(
+                            self.sorted_bam, scaffolds, filter_cutoff=filter_cutoff,
+                            max_insert_relative=3, min_insert=50, min_mapq=2)
+        pair2infoMF_keys = set()
+        for scaff, pair2infoC in scaff2pair2infoM.items():
+            pair2infoMF_keys = pair2infoMF_keys.union(pair2infoC.keys())
+        # Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
+        # pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
+        # pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
+        #                 filter_cutoff=filter_cutoff, max_insert_relative=3,
+        #                 min_insert=50, min_mapq=2)
 
 
-        subset_reads2 = set(pair2infoMF.keys())
+        subset_reads2 = pair2infoMF_keys
 
         assert(set(subset_reads2) == set(subset_reads))
 
@@ -2839,10 +2865,12 @@ class test_strains():
 
         rdb = pd.read_csv(rloc, sep='\t', header=1)
         total_pairs = rdb[rdb['scaffold'] == 'all_scaffolds']['filtered_pairs'].tolist()[0]
-        reads = len(Sprofile.get('Rdic').keys())
-        assert total_pairs == reads
+        reads = set()
+        for s, rdic in Sprofile.get('Rdic').items():
+            reads = reads.union(rdic.keys())
+        assert total_pairs == len(reads)
 
-        ORI_READS = reads
+        ORI_READS = len(reads)
 
         for thing, val in zip(['min_mapq', 'max_insert_relative', 'min_insert'], [10, 1, 100]):
             print("!!!!!")
@@ -3183,7 +3211,6 @@ class test_strains():
         Ldb = exp_IS.get_parsed_log()
         rdb = inStrain.logUtils._load_profile_logtable(Ldb)
 
-        print(rdb.head(20))
         LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'MergeProfile']['unit'].tolist())
         TRUE_SCAFFOLDS = \
             set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
@@ -3292,6 +3319,16 @@ class test_strains():
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
 
+                    e = e[e['scaffold'] == 'all_scaffolds']
+                    s = s[s['scaffold'] == 'all_scaffolds']
+
+                    for c in list(s.columns):
+                        s[c] = s[c].astype(e[c].dtype)
+
+                    for c in ['median_insert']:
+                        del e[c]
+                        del s[c]
+
                 elif name in ['genomeWide_scaffold_info.tsv']:
                     e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
 
@@ -3307,6 +3344,11 @@ class test_strains():
                                 'nucl_diversity', 'filtered_read_pair_count'}
                     for c in new_thirteen.union(NEW_HERE):
                         if c in e.columns:
+                            del e[c]
+
+                    # Remove the ones that are gained by the new read filtering
+                    for c in e.columns:
+                        if c.startswith('reads_'):
                             del e[c]
 
                     e = e.sort_values(['genome']).reset_index(drop=True)
@@ -3423,6 +3465,17 @@ class test_strains():
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
                     e = e.rename(columns={'filtered_pairs':'filtered_read_pair_count'})
+
+                if i in ['mapping_info']:
+                    e = e[e['scaffold'] == 'all_scaffolds']
+                    s = s[s['scaffold'] == 'all_scaffolds']
+
+                    for c in list(s.columns):
+                        s[c] = s[c].astype(e[c].dtype)
+
+                    for c in ['median_insert']:
+                        del e[c]
+                        del s[c]
 
                 if i in ['raw_linkage_table']:
                     continue

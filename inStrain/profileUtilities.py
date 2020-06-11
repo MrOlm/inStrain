@@ -198,7 +198,7 @@ class profile_command():
         pass
 
 def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
-                        R2M, null_model, bam,
+                        null_model, bam,
                         single_thread=False):
     '''
     Worker to profile splits
@@ -208,7 +208,6 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
         Sprofile_dict: A dictionary to store processed splits
         log_list: A queue to put logs
 
-        R2M: A dictionary of read -> number of mismatches in pair
         null_model: Used for SNP profiling
         bam: Location of .bam file
 
@@ -231,7 +230,7 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
                 return
 
         # Process split
-        Splits = split_profile_wrapper_groups(cmds, R2M,
+        Splits = split_profile_wrapper_groups(cmds,
                                                 null_model, bam_init)
         LOG = ''
         for Split in Splits:
@@ -310,7 +309,7 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, null_mode
 
 
 
-def profile_bam(bam, Fdb, R2M, **kwargs):
+def profile_bam(bam, Fdb, sR2M, **kwargs):
     '''
     Profile the .bam file really  well.
     This is by far the meat of the program
@@ -318,7 +317,7 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
     arguments:
         bam = location of .bam file
         Fdb = dictionary listing fasta locations to profile
-        R2M = dictionary of read pair -> number of mm
+        sR2M = dictionary of scaffold -> read pair -> number of mm
     '''
     logging.debug('setting up bam profile')
     # get arguments for profiling the scaffolds
@@ -338,7 +337,8 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
     scaffolds = list(Fdb['scaffold'].unique())
 
     logging.debug('Creating commands')
-    cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, scaff2sequence, profArgs)
+    cmd_groups, Sprofile_dict, s2splits = prepare_commands(Fdb, bam, scaff2sequence,
+                                                            profArgs, sR2M)
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     logging.debug('Create queues and shared things')
@@ -375,7 +375,7 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
         for i in range(0, p):
             processes.append(ctx.Process(target=split_profile_worker, args=(
                             split_cmd_queue, Sprofile_dict, log_list,
-                            R2M, null_model, bam)))
+                            null_model, bam)))
         for proc in processes:
             proc.start()
         inStrain.logUtils.log_checkpoint("Profile", "SpawningSplitWorkers", "end")
@@ -436,7 +436,7 @@ def profile_bam(bam, Fdb, R2M, **kwargs):
 
     else:
         split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
-                            R2M, null_model, bam,
+                            null_model, bam,
                             single_thread=True)
         logging.info("Done profiling splits")
 
@@ -609,12 +609,12 @@ def scaffold_profile_wrapper2(cmd):
 #         logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
 #         return False
 
-def split_profile_wrapper_groups(cmds, R2M, null_model, bam_init):
+def split_profile_wrapper_groups(cmds, null_model, bam_init):
     results = []
     for cmd in cmds:
         try:
             results.append(_profile_split(bam_init, cmd.scaffold, cmd.start,
-                            cmd.end, cmd.split_number, cmd.sequence, R2M,
+                            cmd.end, cmd.split_number, cmd.sequence, cmd.R2M,
                             null_model, bam_name=cmd.samfile, **cmd.arguments))
         except Exception as e:
             print(e)
@@ -627,7 +627,7 @@ def split_profile_wrapper_groups(cmds, R2M, null_model, bam_init):
     return results
 
 
-def prepare_commands(Fdb, bam, scaff2sequence, args):
+def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
     '''
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
@@ -657,6 +657,7 @@ def prepare_commands(Fdb, bam, scaff2sequence, args):
 
             cmd = profile_command()
             cmd.scaffold = scaff
+            cmd.R2M = sR2M[scaff]
             cmd.samfile = bam
             cmd.arguments = args
             cmd.start = start

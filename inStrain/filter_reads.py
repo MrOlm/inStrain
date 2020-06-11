@@ -47,9 +47,9 @@ class Controller():
         # Get the paired reads
         scaffolds = list(FAdb['scaffold'].unique())
         if detailed_report:
-            Rdic, RR, dRR = load_paired_reads2(bam, scaffolds, **vargs)
+            Rdic, RR, dRR = load_paired_reads(bam, scaffolds, **vargs)
         else:
-            Rdic, RR = load_paired_reads2(bam, scaffolds, **vargs)
+            Rdic, RR = load_paired_reads(bam, scaffolds, **vargs)
             dRR = None
 
         # Make a .sam
@@ -97,7 +97,7 @@ def read_profile_worker(read_cmd_queue, read_result_queue, bam, single_thread=Fa
         del log
         del dicts
 
-def load_paired_reads2(bam, scaffolds, **kwargs):
+def load_paired_reads(bam, scaffolds, **kwargs):
     '''
     Load paired reads to be profiled
 
@@ -110,37 +110,270 @@ def load_paired_reads2(bam, scaffolds, **kwargs):
     '''
     # Parse the kwargs
     detailed_report = kwargs.get('detailed_mapping_info', False)
+    priority_reads_loc = kwargs.get('priority_reads', None)
+
+    # Establish tallys to keep track of numbers
+    tallys = {}
 
     # Get the pairs
+    inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "start")
     scaff2pair2info = get_paired_reads_multi(bam, scaffolds, **kwargs)
-
-    # Handle paired-read filtering
-    priority_reads_loc = kwargs.get('priority_reads', None)
-    priority_reads = load_priority_reads(priority_reads_loc)
-    pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, **kwargs)
-
-    # Make read report
-    logging.info('Making read report')
-    inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
-
-    RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
-                                priority_reads_set=priority_reads, **kwargs)
-
-    inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
-
-    # Filter the dictionary
-    logging.info('Filtering reads')
-    inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
-    pair2infoF = filter_paired_reads_dict2(pair2info,
-        **kwargs)
-    inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
+    inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "end")
 
     if detailed_report:
-        dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
-        return pair2infoF, RR, dRR
+        dRR = make_detailed_mapping_info(scaff2pair2info)
 
+    # Handle paired-read filtering
+    inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
+    priority_reads = load_priority_reads(priority_reads_loc)
+    scaff2pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, tallys=tallys, **kwargs)
+    inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "end")
+
+    # Filter and make the report
+    scaff2pair2infoF, RR = filter_scaff2pair2info(scaff2pair2info, tallys,
+                                                priority_reads_set=priority_reads,
+                                                **kwargs)
+
+    if detailed_report:
+        return scaff2pair2infoF, RR, dRR
     else:
-        return pair2infoF, RR
+        return scaff2pair2infoF, RR
+
+def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(), **kwargs):
+    '''
+    Filter scaff2pair2info and generate a read report
+    '''
+    # Set up priority reads
+    assert type(kwargs.get('priority_reads', 'none')) != type(set())
+    priority_reads = priority_reads_set
+    assert type(priority_reads) == type(set()), type(priority_reads)
+
+    #item2order, to make it easier to read
+    i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+
+    # Calculate max insert
+    max_insert_relative = kwargs.get('max_insert_relative', 3)
+    median_insert = np.median([value[i2o['insert_distance']] for scaff, pair2info \
+                    in scaff2pair2info.items() for pair, value in pair2info.items()\
+                    if value[i2o['reads']] == 2])
+    max_insert = median_insert * max_insert_relative
+
+    # Get filter values
+    values = {}
+    values['min_mapq'] = kwargs.get('min_mapq', 2)
+    values['max_insert'] = max_insert
+    values['min_insert'] = kwargs.get('min_insert', 50)
+    values['filter_cutoff'] = kwargs.get('filter_cutoff', 0.97)
+    values['pairing_filter'] = kwargs.get('pairing_filter', 'paired_only')
+
+    # Set up the filtered dictionary
+    scaff2pair2mm = {}
+
+    # Make tallys for individual scaffolds
+    table = defaultdict(list)
+
+    for scaff, pair2info in scaff2pair2info.items():
+        # Do the tallys
+        if scaff not in tallys:
+            tallys[scaff] = defaultdict(int)
+
+        # Initialize some columns
+        for c in ["pass_pairing_filter", "pass_filter_cutoff", "pass_max_insert",
+                    "pass_min_insert", "pass_min_mapq", "filtered_pairs",
+                    "filtered_singletons", "filtered_priority_reads"]:
+            tallys[scaff][c] = 0
+
+        scaff2pair2mm[scaff] = {}
+        for pair, info in pair2info.items():
+            update_tallys(tallys, pair, info, values, scaff, scaff2pair2mm, priority_reads)
+
+        # Make into a table
+        table['scaffold'].append(scaff)
+        for key, value in tallys[scaff].items():
+            table[key].append(value)
+
+        # Do the means
+        for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
+            table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
+        table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))) for pair, info in pair2info.items()]))
+
+        # Do a the medians
+        table['median_insert'].append(np.median([info[i2o['insert_distance']] for pair, info in pair2info.items()]))
+
+    try:
+        Adb = pd.DataFrame(table)
+    except:
+        for k, v in table.items():
+            print(k, len(v))
+        assert False
+
+    # Make tallys for all scaffolds
+    table = defaultdict(list)
+    table['scaffold'].append('all_scaffolds')
+
+    total_reads = Adb['pass_pairing_filter'].sum()
+    for c in list(Adb.columns):
+        if c == 'scaffold':
+            pass
+        elif c.startswith('mean_'):
+            table[c].append(sum([v * m for v, m in zip(Adb[c],\
+                            Adb['pass_pairing_filter'])])/total_reads)
+        elif c.startswith('median_'):
+            table[c].append(sum([v * m for v, m in zip(Adb[c],\
+                            Adb['pass_pairing_filter'])])/total_reads)
+        else:
+            table[c].append(int(Adb[c].sum()))
+    adb = pd.DataFrame(table)
+
+    # Concat
+    Rdb = pd.concat([adb, Adb]).reset_index(drop=True)
+
+    return  scaff2pair2mm, Rdb
+
+
+def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_reads):
+    '''
+    The meat of filter_scaff2pair2info
+    '''
+    # Evaluate this pair
+    tallys[scaffold]['pass_pairing_filter'] += 1
+    f_results = evaluate_pair(info, values)
+
+    # Tally the results for what filteres passed
+    for name, index in v2o.items():
+         tallys[scaffold]['pass_' + name] += f_results[index]
+
+    # Tally the results for if the whole pair passed
+    if f_results.sum() == 4:
+        tallys[scaffold]['filtered_pairs'] += 1
+        scaff2pair2mm[scaffold][pair] = info[0]
+
+        if info[i2o['reads']] == 1:
+            tallys[scaffold]['filtered_singletons'] += 1
+
+        if pair in priority_reads:
+            tallys[scaffold]['filtered_priority_reads'] += 1
+
+
+i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+v2o = {'filter_cutoff':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
+def evaluate_pair(info, values):
+    '''
+    Return a list of the filters that this pair passes and fails
+
+    Argumnets:
+        info: np array listing info about this pair in the i2o order
+        values: dictionary listing the filters to use when evaluting this pair
+
+    Returns:
+        f_resilts: np array listing which filters pass (1) and fail (0) in v2o order
+    '''
+    # Initialize results for this pair
+    f_results = np.zeros(4)
+
+    # Handle PID
+    PID = 1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))
+    if PID > values['filter_cutoff']:
+        f_results[v2o['filter_cutoff']] = 1
+
+    # Handle mapQ
+    if info[i2o['mapq']] > values['min_mapq']:
+        f_results[v2o['min_mapq']] = 1
+
+    # If this is a pair check insert distance:
+    if ((info[i2o['reads']] == 2) & (info[i2o['insert_distance']] != -1)):
+        if info[i2o['insert_distance']] > values['min_insert']:
+            f_results[v2o['min_insert']] = 1
+        if info[i2o['insert_distance']] < values['max_insert']:
+            f_results[v2o['max_insert']] = 1
+
+    # Otherwise give those a pass
+    else:
+        f_results[v2o['min_insert']] = 1
+        f_results[v2o['max_insert']] = 1
+
+    return f_results
+    # 3) Insert into scaff2pair2infoF
+
+    #
+    # # Handle paired-read filtering
+    # inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
+    # priority_reads_loc = kwargs.get('priority_reads', None)
+    # priority_reads = load_priority_reads(priority_reads_loc)
+    # pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, **kwargs)
+    # inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
+    #
+    # # Make read report
+    # logging.info('Making read report')
+    # inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
+    #
+    # RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
+    #                             priority_reads_set=priority_reads, **kwargs)
+    #
+    # inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
+    #
+    # # Filter the dictionary
+    # logging.info('Filtering reads')
+    # inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
+    # pair2infoF = filter_paired_reads_dict2(pair2info,
+    #     **kwargs)
+    # inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
+    #
+    # if detailed_report:
+    #     dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
+    #     return pair2infoF, RR, dRR
+    #
+    # else:
+    #     return pair2infoF, RR
+
+# def load_paired_reads2(bam, scaffolds, **kwargs):
+#     '''
+#     Load paired reads to be profiled
+#
+#     You have this method do a lot of things because all of these things take lots of RAM, and you want them all to be cleared as soon as possible
+#
+#     Return a dictionary of results. Some things that could be in it are:
+#         pair2infoF: A filtered dictionary of read name to number of mismatches
+#         RR: A summary read reaport
+#         RR_detailed: A detailed read report
+#     '''
+#     # Parse the kwargs
+#     detailed_report = kwargs.get('detailed_mapping_info', False)
+#
+#     # Get the pairs
+#     inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "start")
+#     scaff2pair2info = get_paired_reads_multi(bam, scaffolds, **kwargs)
+#     inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "end")
+#
+#     # Handle paired-read filtering
+#     inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
+#     priority_reads_loc = kwargs.get('priority_reads', None)
+#     priority_reads = load_priority_reads(priority_reads_loc)
+#     pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, **kwargs)
+#     inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
+#
+#     # Make read report
+#     logging.info('Making read report')
+#     inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
+#
+#     RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
+#                                 priority_reads_set=priority_reads, **kwargs)
+#
+#     inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
+#
+#     # Filter the dictionary
+#     logging.info('Filtering reads')
+#     inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
+#     pair2infoF = filter_paired_reads_dict2(pair2info,
+#         **kwargs)
+#     inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
+#
+#     if detailed_report:
+#         dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
+#         return pair2infoF, RR, dRR
+#
+#     else:
+#         return pair2infoF, RR
 
 def load_priority_reads(file_loc):
     '''
@@ -185,46 +418,109 @@ def load_priority_reads(file_loc):
 
     return reads
 
-def paired_read_filter(scaff2pair2info, priority_reads_set=set(), **kwargs):
+def paired_read_filter(scaff2pair2info, priority_reads_set=set(), tallys=None, **kwargs):
     '''
     Filter scaff2pair2info to keep / remove paired / unpaired reads
     '''
     assert type(kwargs.get('priority_reads', 'none')) != type(set())
     priority_reads = priority_reads_set
     pairing_filter = kwargs.get('pairing_filter', 'paired_only')
-    pair2info = {}
+    scaff2pair2infoF = {}
+    pair2scaffold = {}
     assert type(priority_reads) == type(set()), type(priority_reads)
 
-    if pairing_filter == 'paired_only':
-        for scaff, p2i in scaff2pair2info.items():
-            for p, i in p2i.items():
-                if ((i[4] == 2) | (p in priority_reads)):
-                    pair2info[p] = i
+    for scaff, p2i in scaff2pair2info.items():
+        # Initilize this scaffold
+        scaff2pair2infoF[scaff] = {}
+        if tallys is not None:
+            tallys[scaff] = defaultdict(int)
+            for v in ['unfiltered_reads', 'unfiltered_pairs', 'unfiltered_singletons',
+                      'unfiltered_priority_reads']:
+                tallys[scaff][v] = 0
 
-    elif pairing_filter == 'non_discordant':
-        for scaff, p2i in scaff2pair2info.items():
-            for p, i in p2i.items():
+        for p, i in p2i.items():
+            # Update tallys; info[4] = number of reads
+            if tallys is not None:
+                tallys[scaff]['unfiltered_reads'] += i[4]
+                if i[4] == 2:
+                    tallys[scaff]['unfiltered_pairs'] += 1
+                if i[4] == 1:
+                    tallys[scaff]['unfiltered_singletons'] += 1
+                if p in priority_reads:
+                    tallys[scaff]['unfiltered_priority_reads'] += 1
+
+            # Determine if it's going to make it into the final set
+            if pairing_filter == 'paired_only':
+                if ((i[4] == 2) | (p in priority_reads)):
+                    scaff2pair2infoF[scaff][p] = i
+
+            elif pairing_filter == 'non_discordant':
                 # Add it if it's not already in there
-                if ((p not in pair2info) | (p in priority_reads)):
-                    pair2info[p] = i
+                if ((p not in pair2scaffold) | (p in priority_reads)):
+                    scaff2pair2infoF[scaff][p] = i
+                    pair2scaffold[p] = scaff
 
                 # If it is already in there, that means its concordant, so delete it
                 else:
-                    del pair2info[p]
+                    del scaff2pair2infoF[pair2scaffold[p]][p]
 
-    elif pairing_filter == 'all_reads':
-        for scaff, p2i in scaff2pair2info.items():
-            for p, i in p2i.items():
-                if p in pair2info:
-                    pair2info[p] = _merge_info(i, pair2info[p])
+            elif pairing_filter == 'all_reads':
+                if p in pair2scaffold:
+                    # Average the pairs
+                    mi = _merge_info(i, scaff2pair2infoF[pair2scaffold[p]][p])
+                    scaff2pair2infoF[scaff][p] = mi
+                    scaff2pair2infoF[pair2scaffold[p]][p] = mi
+
                 else:
-                    pair2info[p] = i
+                    pair2scaffold[p] = scaff
+                    scaff2pair2infoF[scaff][p] = i
 
-    else:
-        logging.error("Do not know paired read filter \"{0}\"; crashing now".format(pairing_filter))
-        raise Exception
+            else:
+                logging.error("Do not know paired read filter \"{0}\"; crashing now".format(pairing_filter))
+                raise Exception
 
-    return pair2info
+    return scaff2pair2infoF
+
+# def paired_read_filter(scaff2pair2info, priority_reads_set=set(), **kwargs):
+#     '''
+#     Filter scaff2pair2info to keep / remove paired / unpaired reads
+#     '''
+#     assert type(kwargs.get('priority_reads', 'none')) != type(set())
+#     priority_reads = priority_reads_set
+#     pairing_filter = kwargs.get('pairing_filter', 'paired_only')
+#     pair2info = {}
+#     assert type(priority_reads) == type(set()), type(priority_reads)
+#
+#     if pairing_filter == 'paired_only':
+#         for scaff, p2i in scaff2pair2info.items():
+#             for p, i in p2i.items():
+#                 if ((i[4] == 2) | (p in priority_reads)):
+#                     pair2info[p] = i
+#
+#     elif pairing_filter == 'non_discordant':
+#         for scaff, p2i in scaff2pair2info.items():
+#             for p, i in p2i.items():
+#                 # Add it if it's not already in there
+#                 if ((p not in pair2info) | (p in priority_reads)):
+#                     pair2info[p] = i
+#
+#                 # If it is already in there, that means its concordant, so delete it
+#                 else:
+#                     del pair2info[p]
+#
+#     elif pairing_filter == 'all_reads':
+#         for scaff, p2i in scaff2pair2info.items():
+#             for p, i in p2i.items():
+#                 if p in pair2info:
+#                     pair2info[p] = _merge_info(i, pair2info[p])
+#                 else:
+#                     pair2info[p] = i
+#
+#     else:
+#         logging.error("Do not know paired read filter \"{0}\"; crashing now".format(pairing_filter))
+#         raise Exception
+#
+#     return pair2info
 
 def _merge_info(i1, i2):
     #{'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
@@ -480,10 +776,11 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
     '''
     Returns scaffold 2 read 2 info
 
-    Modified version of get_paired_reads_multi2
+    Modified version of (get_paired_reads_multi2)2
     '''
     # Initialize dictionary
-    dicts = []
+    #dicts = []
+    allPair2info = {}
     p = int(kwargs.get('processes', 6))
     ret_total = kwargs.get('ret_total', False)
 
@@ -523,8 +820,12 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
 
             assert len(result_group) == 2
             results, log = result_group
-            for result in results:
-                dicts.append(result)
+            for s, pair2info in results:
+                if pair2info != False:
+                    allPair2info[s] = {}
+                    for k, v in pair2info.items():
+                        allPair2info[s][k] = v
+                #dicts.append(result)
             logging.debug(log)
 
         # Close multi-processing
@@ -546,8 +847,12 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
 
             assert len(result_group) == 2
             results, log = result_group
-            for result in results:
-                dicts.append(result)
+            for s, pair2info in results:
+                if pair2info != False:
+                    allPair2info[s] = {}
+                    for k, v in pair2info.items():
+                        allPair2info[s][k] = v
+                #dicts.append(result)
             logging.debug(log)
 
     inStrain.logUtils.log_checkpoint("FilterReads", "multiprocessing", "end")
@@ -559,12 +864,12 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
     #     for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
     #         dicts.append(scaffold_profile_wrapper2(cmd))
 
-    allPair2info = {}
-    for s, pair2info in dicts:
-        if pair2info != False:
-            allPair2info[s] = {}
-            for k, v in pair2info.items():
-                allPair2info[s][k] = v
+    # allPair2info = {}
+    # for s, pair2info in dicts:
+    #     if pair2info != False:
+    #         allPair2info[s] = {}
+    #         for k, v in pair2info.items():
+    #             allPair2info[s][k] = v
 
     return allPair2info
 

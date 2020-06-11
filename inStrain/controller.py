@@ -164,11 +164,13 @@ class ProfileController():
         scaffolds = list(FAdb['scaffold'].unique())
 
         detailed_report = vargs.get('detailed_mapping_info', False)
+
         if detailed_report:
-            Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
+            Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads(bam, scaffolds, **vargs)
         else:
-            Rdic, RR = inStrain.filter_reads.load_paired_reads2(bam, scaffolds, **vargs)
+            Rdic, RR = inStrain.filter_reads.load_paired_reads(bam, scaffolds, **vargs)
             dRR = None
+
         logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
 
         if RR['filtered_pairs'].tolist()[0] == 0:
@@ -186,9 +188,11 @@ class ProfileController():
         assert len(FAdb) > 0, "No scaffolds passed initial filtering based on numbers of mapped reads"
 
         if args.skip_mm_profiling:
-            Rset = set(Rdic.keys())
+            newRdic = {}
+            for s, p2i in Rdic.items():
+                newRdic[s] = set(p2i.keys())
             del Rdic
-            Rdic = Rset
+            Rdic = newRdic
 
         # if args.debug:
         #     for att in ['Rdic', 'RR', 'FAdb', 's2s']:
