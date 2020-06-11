@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0p] - 2020-06-11
+- Add a little bit more checkpoints
+- Fix the "min_genome_coverage" thing; there were problems with the read report when a scaffold had 0 reads
+
 ## [1.3.0o] - 2020-06-10
 - Modify how split profiling is done and modify Rdic. Now only the reads for each scaffold are passed to worker threads, through the queue. This should lead to increased run-times (though hopefully not too bad; it should only impact efficiency) and significantly decreased memory usage
 - Remove "--scaffold_level_mapping_info" and have it always on

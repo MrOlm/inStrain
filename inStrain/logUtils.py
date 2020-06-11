@@ -549,6 +549,7 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
     # Set up checkpoint log
     report += _gen_checkpoint_report2(Ldb, log_class='Profile')
+    report += '\n'
 
     # Set up
     #ldb = Ldb[Ldb['log_type'] == 'profile']

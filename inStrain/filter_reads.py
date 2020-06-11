@@ -130,9 +130,11 @@ def load_paired_reads(bam, scaffolds, **kwargs):
     inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "end")
 
     # Filter and make the report
+    inStrain.logUtils.log_checkpoint("FilterReads", "filter_reads", "start")
     scaff2pair2infoF, RR = filter_scaff2pair2info(scaff2pair2info, tallys,
                                                 priority_reads_set=priority_reads,
                                                 **kwargs)
+    inStrain.logUtils.log_checkpoint("FilterReads", "filter_reads", "end")
 
     if detailed_report:
         return scaff2pair2infoF, RR, dRR
@@ -192,13 +194,21 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
         for key, value in tallys[scaff].items():
             table[key].append(value)
 
-        # Do the means
-        for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
-            table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
-        table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))) for pair, info in pair2info.items()]))
 
-        # Do a the medians
-        table['median_insert'].append(np.median([info[i2o['insert_distance']] for pair, info in pair2info.items()]))
+        if len(pair2info.keys()) > 0:
+            # Do the means
+            for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
+                table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
+            table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / \
+            float(info[i2o['length']]))) for pair, info in pair2info.items()]))
+
+            # Do a the medians
+            table['median_insert'].append(np.median([info[i2o['insert_distance']] for pair, info in pair2info.items()]))
+        else:
+            for att in ['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']:
+                table['mean_' + att].append(np.nan)
+            table['mean_PID'].append(np.nan)
+            table['median_insert'].append(np.nan)
 
     try:
         Adb = pd.DataFrame(table)
@@ -211,18 +221,20 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
     table = defaultdict(list)
     table['scaffold'].append('all_scaffolds')
 
-    total_reads = Adb['pass_pairing_filter'].sum()
+    CAdb = Adb[Adb['pass_pairing_filter'] > 0]
+    total_reads = CAdb['pass_pairing_filter'].sum()
+
     for c in list(Adb.columns):
         if c == 'scaffold':
             pass
         elif c.startswith('mean_'):
-            table[c].append(sum([v * m for v, m in zip(Adb[c],\
-                            Adb['pass_pairing_filter'])])/total_reads)
+            table[c].append(sum([v * m for v, m in zip(CAdb[c],\
+                            CAdb['pass_pairing_filter'])])/total_reads)
         elif c.startswith('median_'):
-            table[c].append(sum([v * m for v, m in zip(Adb[c],\
-                            Adb['pass_pairing_filter'])])/total_reads)
+            table[c].append(sum([v * m for v, m in zip(CAdb[c],\
+                            CAdb['pass_pairing_filter'])])/total_reads)
         else:
-            table[c].append(int(Adb[c].sum()))
+            table[c].append(int(CAdb[c].sum()))
     adb = pd.DataFrame(table)
 
     # Concat

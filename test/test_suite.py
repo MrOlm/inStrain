@@ -2420,6 +2420,8 @@ class test_strains():
             'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
         self.single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101.fasta'
+        self.fasta_extra = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000_extra.fa'
         self.small_fasta = load_data_loc() + \
             'SmallScaffold.fa'
         self.small_bam = load_data_loc() + \
@@ -3006,6 +3008,18 @@ class test_strains():
         Rdb = pd.read_csv(glob.glob(base + '/output/*mapping_info.tsv')[0], sep='\t', header=1)
         assert len(Rdb) == 179
         assert len(Sdb) == 42
+
+        # Make sure empty scaffolds don't mess it up
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 5  -s {4} --skip_genome_wide".format(
+            self.script, self.sorted_bam, self.fasta_extra, base, self.stb)
+        exit_code = call(cmd, shell=True)
+        Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+        # Make sure you actually filtered out the scaffolds
+        Sdb = pd.read_csv(glob.glob(base + '/output/*scaffold_info.tsv')[0], sep='\t')
+        Rdb = pd.read_csv(glob.glob(base + '/output/*mapping_info.tsv')[0], sep='\t', header=1)
+        assert len(Rdb) == 180, len(Rdb)
+        assert len(Sdb) == 42, len(Sdb)
 
         # Run it with an .stb and coverage that cannot be hit
         cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 100  -s {4} --skip_genome_wide".format(
