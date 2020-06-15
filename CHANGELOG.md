@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0q] - 2020-06-15
+- Fix a bug in GW having to do with the new mapping_info
+
 ## [1.3.0p] - 2020-06-11
 - Add a little bit more checkpoints
 - Fix the "min_genome_coverage" thing; there were problems with the read report when a scaffold had 0 reads

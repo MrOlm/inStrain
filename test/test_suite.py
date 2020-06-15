@@ -342,6 +342,14 @@ class test_genome_wide():
         self.iRep_test_set = load_data_loc() + \
             'test_iRep.p'
 
+        self.fasta_extra = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000_extra.fa'
+        self.sorted_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+        self.stb2 = load_data_loc() + \
+            'GenomeCoverages.stb'
+
+
         self.tearDown()
 
     def tearDown(self):
@@ -349,28 +357,32 @@ class test_genome_wide():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
 
         self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
+        self.test6()
         self.tearDown()
 
     def test0(self):
@@ -577,6 +589,31 @@ class test_genome_wide():
 
             assert abs(r - raw_iRep) < 0.0001, "raw is diff! {0} {1}".format(r, raw_iRep)
             assert abs(i - iRep) < 0.0001, print("iRep is diff! {0} {1}".format(i, iRep))
+
+    def test6(self):
+        '''
+        Test running on database mode (there is a genome with no reads)
+        '''
+        location = os.path.join(self.test_dir, os.path.basename(self.IS))
+
+        # Make sure empty scaffolds don't mess it up
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 -s {4} --skip_plot_generation".format(
+            'junk', self.sorted_bam, self.fasta_extra, location, self.stb2)
+        print(cmd)
+        exit_code = call(cmd, shell=True)
+        assert exit_code == 0; exit_code
+
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        files = glob.glob(IS.get_location('output') + '*')
+        files = [f for f in files if 'genome_info' in f]
+        assert len(files) == 1, files
+        for f in files:
+            db = pd.read_csv(f, sep='\t')
+            print(len(db))
 
 class test_quickProfile():
     def setUp(self):
@@ -2507,7 +2544,7 @@ class test_strains():
         self.setUp()
         self.test10()
         self.tearDown()
-
+        
         self.setUp()
         self.test11()
         self.tearDown()
@@ -2655,14 +2692,14 @@ class test_strains():
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --skip_genome_wide".format(self.script, self.sorted_bam, \
-            self.fasta, base)
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.98".format(self.script, self.sorted_bam, \
+            self.fasta_extra, base)
         print(cmd)
         call(cmd, shell=True)
 
         # Make sure it produced output
         assert os.path.isdir(base)
-        assert len(glob.glob(base + '/output/*')) == 4
+        assert len(glob.glob(base + '/output/*')) == 5, glob.glob(base + '/output/*')
 
         # Make sure the output makes sense
         S1 = inStrain.SNVprofile.SNVprofile(base)
@@ -3014,6 +3051,7 @@ class test_strains():
             self.script, self.sorted_bam, self.fasta_extra, base, self.stb)
         exit_code = call(cmd, shell=True)
         Sprofile = inStrain.SNVprofile.SNVprofile(base)
+        assert exit_code == 0; exit_code
 
         # Make sure you actually filtered out the scaffolds
         Sdb = pd.read_csv(glob.glob(base + '/output/*scaffold_info.tsv')[0], sep='\t')

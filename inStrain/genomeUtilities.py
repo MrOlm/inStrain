@@ -611,8 +611,8 @@ def _genome_wide_rr(gdb, s2b, **kwrags):
         #table['scaffolds'].append(len(df))
         for col in [c for c in list(df.columns) if c not in ['scaffold', 'genome']]:
             if len(df[col].dropna()) == 0:
-                continue
-            if col.startswith('pass') or col.startswith('unfiltered_') or col.startswith('filtered'):
+                table['reads_' + col].append(np.nan)
+            elif col.startswith('pass') or col.startswith('unfiltered_') or col.startswith('filtered'):
                 table['reads_' + col].append(df[col].sum())
             else:
                 table['reads_' + col].append(df[col].mean())
