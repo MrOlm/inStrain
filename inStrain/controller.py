@@ -312,9 +312,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Return a table listing scaffold name, start, end
         '''
         if args.use_full_fasta_header:
-            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"), key_function=_get_description)
+            #scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"), key_function=_get_description)
+            scaff2sequence = {r.description:r.seq.upper() for r in SeqIO.parse(args.fasta, "fasta")}
         else:
-            scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
+            #scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
+            scaff2sequence = {r.id:r.seq.upper() for r in SeqIO.parse(args.fasta, "fasta")}
 
         # Get scaffold2length
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
@@ -396,6 +398,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         # Fix the fdr
         if args.fdr == 0:
             args.fdr = 1e-6
+
+        # Handle database mode
+        if args.database_mode:
+            args.min_read_ani = 0.92
+            args.skip_mm_profiling = True
+            args.min_genome_coverage = 1
 
         # Make sure you have a .stb if needed
         if args.min_genome_coverage != 0:
@@ -734,7 +742,7 @@ def _sort_index_bam(bam, rm_ori=False):
 #         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
 #
 #     # Read filtering cutoffs
-#     parser.add_argument("-l", "--filter_cutoff", action="store", default=0.95, type=float, \
+#     parser.add_argument("-l", "--min_read_ani", action="store", default=0.95, type=float, \
 #         help='Minimum percent identity of read pairs to consensus to use the reads. Must be >, not >=')
 #     parser.add_argument("--min_mapq", action="store", default=-1, type=int,\
 #         help='Minimum mapq score of EITHER read in a pair to use that pair. Must be >, not >=')

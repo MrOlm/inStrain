@@ -165,7 +165,7 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
     values['min_mapq'] = kwargs.get('min_mapq', 2)
     values['max_insert'] = max_insert
     values['min_insert'] = kwargs.get('min_insert', 50)
-    values['filter_cutoff'] = kwargs.get('filter_cutoff', 0.97)
+    values['min_read_ani'] = kwargs.get('min_read_ani', 0.97)
     values['pairing_filter'] = kwargs.get('pairing_filter', 'paired_only')
 
     # Set up the filtered dictionary
@@ -180,7 +180,7 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
             tallys[scaff] = defaultdict(int)
 
         # Initialize some columns
-        for c in ["pass_pairing_filter", "pass_filter_cutoff", "pass_max_insert",
+        for c in ["pass_pairing_filter", "pass_min_read_ani", "pass_max_insert",
                     "pass_min_insert", "pass_min_mapq", "filtered_pairs",
                     "filtered_singletons", "filtered_priority_reads"]:
             tallys[scaff][c] = 0
@@ -268,7 +268,7 @@ def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_
 
 
 i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
-v2o = {'filter_cutoff':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
+v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
 def evaluate_pair(info, values):
     '''
     Return a list of the filters that this pair passes and fails
@@ -285,8 +285,8 @@ def evaluate_pair(info, values):
 
     # Handle PID
     PID = 1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))
-    if PID > values['filter_cutoff']:
-        f_results[v2o['filter_cutoff']] = 1
+    if PID > values['min_read_ani']:
+        f_results[v2o['min_read_ani']] = 1
 
     # Handle mapQ
     if info[i2o['mapq']] > values['min_mapq']:
@@ -591,7 +591,7 @@ def filter_paired_reads_dict2(pair2info, **kwargs):
     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
 
     # Get kwargs
-    filter_cutoff = kwargs.get('filter_cutoff', 0.97)
+    min_read_ani = kwargs.get('min_read_ani', 0.97)
     max_insert_relative = kwargs.get('max_insert_relative', 3)
     min_insert = kwargs.get('min_insert', 50)
     min_mapq = kwargs.get('min_mapq', 2)
@@ -602,7 +602,7 @@ def filter_paired_reads_dict2(pair2info, **kwargs):
     # Return dictionary of pairs
     return {copy.deepcopy(key):copy.deepcopy(value[0])
             for key, value in pair2info.items() if _evaluate_pair2(value,
-            filter_cutoff=filter_cutoff,
+            min_read_ani=min_read_ani,
             max_insert=max_insert,
             min_insert=min_insert,
             min_mapq=min_mapq)}
@@ -627,7 +627,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
 
     # Get values
     values = {}
-    values['filter_cutoff'] = kwargs.get('filter_cutoff', 0.97)
+    values['min_read_ani'] = kwargs.get('min_read_ani', 0.97)
     values['max_insert'] = max_insert
     values['min_insert'] = kwargs.get('min_insert', 50)
     values['min_mapq'] = kwargs.get('min_mapq', 2)
@@ -698,7 +698,7 @@ def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(
 def write_mapping_info(RR, location, **kwargs):
     # Get header materials
     values = {}
-    values['filter_cutoff'] = kwargs.get('filter_cutoff', 0.97)
+    values['min_read_ani'] = kwargs.get('min_read_ani', 0.97)
     values['max_insert_relative'] = kwargs.get('max_insert_relative', 3)
     values['min_insert'] = kwargs.get('min_insert', 50)
     values['min_mapq'] = kwargs.get('min_mapq', 2)
@@ -719,7 +719,7 @@ def write_mapping_info(RR, location, **kwargs):
     f.close()
 
 i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
-def _evaluate_pair2(value, max_insert=1000000, filter_cutoff=-1, min_insert=-1,
+def _evaluate_pair2(value, max_insert=1000000, min_read_ani=-1, min_insert=-1,
                         min_mapq=-1):
     # calculate PID for this pair
     PID = 1 - (float(value[i2o['nm']]) / float(value[i2o['length']]))
@@ -727,7 +727,7 @@ def _evaluate_pair2(value, max_insert=1000000, filter_cutoff=-1, min_insert=-1,
     # If this is a pair:
     if ((value[i2o['reads']] == 2) & (value[i2o['insert_distance']] != -1)):
         # See if it passes filtering
-        if ((PID > filter_cutoff) & (value[i2o['insert_distance']] > min_insert) & (value[i2o['insert_distance']] < max_insert)\
+        if ((PID > min_read_ani) & (value[i2o['insert_distance']] > min_insert) & (value[i2o['insert_distance']] < max_insert)\
             & (value[i2o['mapq']] > min_mapq)):
             return True
         else:
@@ -735,7 +735,7 @@ def _evaluate_pair2(value, max_insert=1000000, filter_cutoff=-1, min_insert=-1,
 
     # If this is not a pair
     else:
-        if ((PID > filter_cutoff) & (value[i2o['mapq']] > min_mapq)):
+        if ((PID > min_read_ani) & (value[i2o['mapq']] > min_mapq)):
             return True
         else:
             return False

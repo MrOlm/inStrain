@@ -66,7 +66,7 @@ twelve2thirteen = {
 'consensus_SNPs':'consensus_divergent_sites',
 'filtered_pairs':'filtered_read_pair_count',
 'SNPs':'divergent_site_count',
-'SNS_S_count':''
+'SNS_S_count':'',
 }
 
 # Removed from version 1.3
@@ -357,29 +357,29 @@ class test_genome_wide():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
 
         self.setUp()
         self.test6()
@@ -436,6 +436,21 @@ class test_genome_wide():
         for f in files:
             db = pd.read_csv(f, sep='\t')
             assert len(db['genome'].unique()) == 2, [f, db]
+            assert len(db[~db['iRep_GC_corrected'].isna()]) > 0, db
+
+        # Run with a skip mm .stb
+        cmd = "inStrain genome_wide -i {0} -s {1} --skip_mm_profiling".format(location, self.stb)
+        print(cmd)
+        call(cmd, shell=True)
+
+        IS = inStrain.SNVprofile.SNVprofile(location)
+        files = glob.glob(IS.get_location('output') + '*')
+        files = [f for f in files if 'genome_info' in f]
+        assert len(files) == 1, [len(files), files]
+        for f in files:
+            db = pd.read_csv(f, sep='\t')
+            assert len(db['genome'].unique()) == 2, [f, db]
+            assert len(db[~db['iRep_GC_corrected'].isna()]) > 0, db
 
         # Run with a no .stb
         cmd = "inStrain genome_wide -i {0}".format(location, self.stb)
@@ -1368,19 +1383,29 @@ class test_filter_reads():
         assert RRo['unfiltered_pairs'].tolist()[0] == RR['unfiltered_pairs'].tolist()[0] == len(filtered_2) == len(filtered_1),\
         [RRo['unfiltered_pairs'].tolist()[0], RR['unfiltered_pairs'].tolist()[0], len(filtered_2), len(filtered_1)]
 
-        for item in ['pass_filter_cutoff', 'pass_min_mapq',
+        o2n = {'pass_min_read_ani':'pass_filter_cutoff'}
+        for item in ['pass_min_read_ani', 'pass_min_mapq',
             'pass_max_insert', 'pass_min_insert', 'filtered_pairs']:
-            o = RRo[item].tolist()[0]
             t = RR[item].tolist()[0]
+
+            if item in o2n:
+                item = o2n[item]
+
+            o = RRo[item].tolist()[0]
+
             assert o == t, [item, o, t]
 
         # Make sure they're the same for a number of random scaffolds
         scaffolds = RR['scaffold'].tolist()[4:8]
         for scaff in scaffolds:
-            for item in ['unfiltered_pairs', 'pass_filter_cutoff', 'pass_min_mapq',
+            for item in ['unfiltered_pairs', 'pass_min_read_ani', 'pass_min_mapq',
                 'pass_max_insert', 'pass_min_insert', 'filtered_pairs']:
-                o = RRo[RRo['scaffold'] == scaff][item].tolist()[0]
                 t = RR[RR['scaffold'] == scaff][item].tolist()[0]
+
+                if item in o2n:
+                    item = o2n[item]
+                o = RRo[RRo['scaffold'] == scaff][item].tolist()[0]
+                
                 assert o == t, [item, o, t]
 
         # Make sure no singletons when they're filtered out
@@ -2544,7 +2569,7 @@ class test_strains():
         self.setUp()
         self.test10()
         self.tearDown()
-        
+
         self.setUp()
         self.test11()
         self.tearDown()
@@ -2706,40 +2731,44 @@ class test_strains():
         db = S1.get('cumulative_scaffold_table')
         _internal_verify_Sdb(db)
 
+        # Make sure it doesn't mess up at the lower-case bases (I put a lower-case in scaffold N5_271_010G1_scaffold_0 at a c; make sure it's not there)
+        db = S1.get('raw_snp_table')
+        assert len(db[db['ref_base'] == 'c']) == 0
+
     def test2(self):
         '''
         Test filter reads; make sure CCs and Matt's agree
         '''
         # Set up
         positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
-        filter_cutoff = 0.98
+        min_read_ani = 0.98
 
         # Run initial filter_reads
         subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
-                            filter_cutoff=filter_cutoff, max_insert_relative=3, min_insert=50, min_mapq=2)
+                            filter_cutoff=min_read_ani, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
         subset_reads2 = inStrain.deprecated_filter_reads.filter_paired_reads(self.sorted_bam,
-                        scaffolds, filter_cutoff=filter_cutoff, max_insert_relative=3,
+                        scaffolds, filter_cutoff=min_read_ani, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads in a different way
         pair2info = inStrain.deprecated_filter_reads.get_paired_reads(self.sorted_bam, scaffolds)
         pair2infoF = inStrain.deprecated_filter_reads.filter_paired_reads_dict(pair2info,
-                        filter_cutoff=filter_cutoff, max_insert_relative=3,
+                        filter_cutoff=min_read_ani, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
         subset_readsF = list(pair2infoF.keys())
 
         # Run Matts filter_reads in a different way still
         scaff2pair2infoM, Rdb = inStrain.filter_reads.load_paired_reads(
-                            self.sorted_bam, scaffolds, filter_cutoff=filter_cutoff,
+                            self.sorted_bam, scaffolds, min_read_ani=min_read_ani,
                             max_insert_relative=3, min_insert=50, min_mapq=2)
         # pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
         # pair2infoMF = inStrain.filter_reads.filter_scaff2pair2info(pair2infoMF,
-        #                 filter_cutoff=filter_cutoff, max_insert_relative=3,
+        #                 min_read_ani=min_read_ani, max_insert_relative=3,
         #                 min_insert=50, min_mapq=2)
 
         subset_readsMF = set()
@@ -2751,7 +2780,7 @@ class test_strains():
                 [len(subset_reads2), len(subset_reads), len(subset_readsF), len(subset_readsMF)]
 
         # Make sure the filter report is accurate
-        # Rdb = inStrain.filter_reads.makeFilterReport2(scaff2pair2infoM, pairTOinfo=pair2infoMF, filter_cutoff=filter_cutoff, max_insert_relative=3,
+        # Rdb = inStrain.filter_reads.makeFilterReport2(scaff2pair2infoM, pairTOinfo=pair2infoMF, min_read_ani=min_read_ani, max_insert_relative=3,
         #                                     min_insert=50, min_mapq=2)
         assert int(Rdb[Rdb['scaffold'] == 'all_scaffolds']\
                     ['unfiltered_pairs'].tolist()[0]) \
@@ -2761,11 +2790,11 @@ class test_strains():
 
         # Try another cutuff
         positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
-        filter_cutoff = 0.90
+        min_read_ani = 0.90
 
         # Run initial filter_reads
         subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
-                            filter_cutoff=filter_cutoff, max_insert_relative=3, min_insert=50, min_mapq=2)
+                            filter_cutoff=min_read_ani, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
@@ -2773,7 +2802,7 @@ class test_strains():
         scaffolds = list(s2l.keys())
 
         scaff2pair2infoM, Rdb = inStrain.filter_reads.load_paired_reads(
-                            self.sorted_bam, scaffolds, filter_cutoff=filter_cutoff,
+                            self.sorted_bam, scaffolds, min_read_ani=min_read_ani,
                             max_insert_relative=3, min_insert=50, min_mapq=2)
         pair2infoMF_keys = set()
         for scaff, pair2infoC in scaff2pair2infoM.items():
@@ -2781,7 +2810,7 @@ class test_strains():
         # Scaff2pair2infoM = inStrain.filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds)
         # pair2infoMF = inStrain.filter_reads.paired_read_filter(scaff2pair2infoM)
         # pair2infoMF = inStrain.filter_reads.filter_paired_reads_dict2(pair2infoMF,
-        #                 filter_cutoff=filter_cutoff, max_insert_relative=3,
+        #                 min_read_ani=min_read_ani, max_insert_relative=3,
         #                 min_insert=50, min_mapq=2)
 
 
@@ -2824,14 +2853,14 @@ class test_strains():
 
     def test4(self):
         '''
-        Test store_everything
+        Test store_everything and database mode
         '''
         # Set up
         base = self.test_dir + 'test'
 
         # Run program
-        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_genome_wide".format(self.script, self.sorted_bam, \
-            self.fasta, base)
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --store_everything --skip_plot_generation -s {4}".format(self.script, self.sorted_bam, \
+            self.fasta, base, self.stb)
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
         Sprofile = inStrain.SNVprofile.SNVprofile(base)
@@ -2839,8 +2868,35 @@ class test_strains():
         # Make sure you stored a heavy object
         assert Sprofile.get('testeroni') is  None
         assert Sprofile.get('covT') is not None
-        # assert Sprofile.get('clonT') is not None
         assert Sprofile.get('mm_to_position_graph') is not None
+
+        # Run database mode
+        base2 = self.test_dir + 'test2'
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --database_mode --skip_plot_generation -s {4}".format(self.script, self.sorted_bam, \
+            self.fasta, base2, self.stb)
+        print(cmd)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        Sprofile2 = inStrain.SNVprofile.SNVprofile(base2)
+
+        # Make sure you didn't story a heavy object
+        assert Sprofile2.get('mm_to_position_graph') is None
+
+        # Make sure you have more reads mapping
+        mdb1 = Sprofile.get('mapping_info').sort_values('scaffold').reset_index(
+                drop=True)
+        mdb2 = Sprofile2.get('mapping_info').sort_values('scaffold').reset_index(
+                drop=True)
+        assert set(mdb1['scaffold']) == set(mdb2['scaffold'])
+        assert not compare_dfs2(mdb1, mdb2, verbose=True)
+
+        # Make sure you have more skip mm level
+        mdb1 = Sprofile.get('genome_level_info')
+        mdb2 = Sprofile2.get('genome_level_info')
+        assert 'mm' in mdb1
+        assert 'mm' not in mdb2
+
+        # Make sure you skip junk genomes
+        # assert len(set(mdb1['genome']) - set(mdb2['genome'])) > 0
 
     def test5(self):
         '''
@@ -2900,7 +2956,7 @@ class test_strains():
         rloc = glob.glob(Sprofile.get_location('output') + '*mapping_info.tsv')[0]
         with open(rloc) as f:
             first_line = f.readline()
-        assert "filter_cutoff:0.8" in first_line
+        assert "min_read_ani:0.8" in first_line
 
         rdb = pd.read_csv(rloc, sep='\t', header=1)
         total_pairs = rdb[rdb['scaffold'] == 'all_scaffolds']['filtered_pairs'].tolist()[0]
@@ -3366,7 +3422,7 @@ class test_strains():
                     e_file = [e for e in e_out_files if 'mapping_info.tsv' in os.path.basename(e)]
 
                     e = pd.read_csv(e_file[0], sep='\t', header=1)
-                    s = pd.read_csv(s_file, sep='\t', header=1)
+                    s = pd.read_csv(s_file, sep='\t', header=1).rename(columns={'pass_filter_cutoff':'pass_min_read_ani'})
 
                     e = e.sort_values(['scaffold']).reset_index(drop=True)
                     s = s.sort_values(['scaffold']).reset_index(drop=True)
@@ -3377,7 +3433,7 @@ class test_strains():
                     for c in list(s.columns):
                         s[c] = s[c].astype(e[c].dtype)
 
-                    for c in ['median_insert']:
+                    for c in ['median_insert']: # calculated in a different way
                         del e[c]
                         del s[c]
 
@@ -3424,7 +3480,8 @@ class test_strains():
                     e_file = [e for e in e_out_files if 'genome_info.tsv' in os.path.basename(e)]
 
                     e = pd.read_csv(e_file[0], sep='\t')
-                    s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)
+                    s = pd.read_csv(s_file, sep='\t').rename(columns=twelve2thirteen)\
+                            .rename(columns={'pass_filter_cutoff':'pass_min_read_ani'})
 
                     # TRANSLATE THE OLD VERSION
                     s = s.rename(columns=twelve2thirteen)
@@ -3439,7 +3496,7 @@ class test_strains():
                     for c in new_cols:
                         del e[c]
 
-                    removed_cols = ['unfiltered_reads', 'pass_pairing_filter', 'pass_min_mapq', 'unfiltered_singletons', 'filtered_priority_reads', 'mean_insert_distance', 'mean_pair_length', 'pass_min_insert', 'pass_max_insert', 'pass_filter_cutoff', 'mean_PID', 'mean_mistmaches', 'median_insert', 'mean_mapq_score', 'unfiltered_pairs', 'filtered_singletons', 'unfiltered_priority_reads', 'filtered_pairs', 'scaffolds']
+                    removed_cols = ['unfiltered_reads', 'pass_pairing_filter', 'pass_min_mapq', 'unfiltered_singletons', 'filtered_priority_reads', 'mean_insert_distance', 'mean_pair_length', 'pass_min_insert', 'pass_max_insert', 'pass_min_read_ani', 'mean_PID', 'mean_mistmaches', 'median_insert', 'mean_mapq_score', 'unfiltered_pairs', 'filtered_singletons', 'unfiltered_priority_reads', 'filtered_pairs', 'scaffolds']
                     for r in removed_cols:
                         if r in s.columns:
                             del s[r]
@@ -3505,7 +3562,8 @@ class test_strains():
                         'genes_clonality', 'genes_SNP_count', 'SNP_mutation_types']:
 
                 # TRANSLATE THE OLD VERSION
-                s = s.rename(columns=twelve2thirteen)
+                s = s.rename(columns=twelve2thirteen).rename(
+                            columns={'pass_filter_cutoff':'pass_min_read_ani'})
                 for r in del_thirteen:
                     if r in s.columns:
                         del s[r]
@@ -3871,21 +3929,21 @@ class test_special():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
 
         self.setUp()
         self.test3()
         self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
 
     def test1(self):
         '''
@@ -3962,7 +4020,7 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_strains().run()
+    # test_strains().run()
     test_filter_reads().run()
     test_SNVprofile().run()
     test_gene_statistics().run()

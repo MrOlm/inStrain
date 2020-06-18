@@ -318,7 +318,7 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
             covs, scaff2genome_index = generate_genome_coverage_array(covT, s2l, order=scaffolds, maxMM=mm, mask_edges=100)
 
             # Calculate iRep only on mm == 1, or if not on mm level
-            if ((mm == 1) or (mms is [1000])):
+            if ((mm == 1) or (mm == 1000)):
                 try:
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")

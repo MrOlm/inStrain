@@ -141,7 +141,7 @@ To see the command-line options, check the help::
 
   $ inStrain profile -h
   usage: inStrain profile [-o OUTPUT] [-p PROCESSES] [-d] [-h]
-                          [-l FILTER_CUTOFF] [--min_mapq MIN_MAPQ]
+                          [-l min_read_ani] [--min_mapq MIN_MAPQ]
                           [--max_insert_relative MAX_INSERT_RELATIVE]
                           [--min_insert MIN_INSERT] [-c MIN_COV] [-f MIN_FREQ]
                           [-fdr FDR] [-s MIN_SNP]
@@ -165,7 +165,7 @@ To see the command-line options, check the help::
     -h, --help            show this help message and exit
 
   READ FILTERING OPTIONS:
-    -l FILTER_CUTOFF, --filter_cutoff FILTER_CUTOFF
+    -l min_read_ani, --min_read_ani min_read_ani
                           Minimum percent identity of read pairs to consensus to
                           use the reads. Must be >, not >= (default: 0.95)
     --min_mapq MIN_MAPQ   Minimum mapq score of EITHER read in a pair to use

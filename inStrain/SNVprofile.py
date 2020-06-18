@@ -247,10 +247,23 @@ class SNVprofile:
                             'conANI_reference', 'popANI_reference',
                             'iRep', 'iRep_GC_corrected',
                             'linked_SNV_count', 'SNV_distance_mean', 'r2_mean','d_prime_mean',
-                            'filtered_read_pair_count']
+                            'consensus_divergent_sites',
+                            'population_divergent_sites',
+                            'SNS_count', 'SNV_count',
+                            'filtered_read_pair_count',
+                            'reads_unfiltered_pairs',
+                            'reads_mean_PID']
 
             db = self.get('genome_level_info')
             db = reorder_columns(db, column_order)
+
+            # Get rid of some of those dumb columns
+            read_columns = [r for r in db.columns if r.startswith('reads_')]
+            keep_columns = [r for r in read_columns if r in ['reads_unfiltered_reads',
+                            'reads_unfiltered_pairs', 'reads_mean_PID']]
+            for col in set(read_columns) - set(keep_columns):
+                if col in db:
+                    del db[col]
 
             if not report_mm_level:
                 if 'mm' in db.columns:

@@ -69,7 +69,7 @@ def parse_args(args):
     # Make a parent parser for read filtering
     readfilter_parent = argparse.ArgumentParser(add_help=False)
     fiflags = readfilter_parent.add_argument_group('READ FILTERING OPTIONS')
-    fiflags.add_argument("-l", "--filter_cutoff", action="store", default=0.95, type=float, \
+    fiflags.add_argument("-l", "--min_read_ani", action="store", default=0.95, type=float, \
         help='Minimum percent identity of read pairs to consensus to use the reads. Must be >, not >=')
     fiflags.add_argument("--min_mapq", action="store", default=-1, type=int,\
         help='Minimum mapq score of EITHER read in a pair to use that pair. Must be >, not >=')
@@ -147,6 +147,9 @@ def parse_args(args):
 
     # Other Parameters
     Oflags = profile_parser.add_argument_group('PROFILE OPTIONS')
+    Oflags.add_argument('--database_mode', action='store_true', default=False,\
+        help="Set a number of parameters to values appropriate for mapping to a " \
+        + "large fasta file. Will set: --min_read_ani 0.92 --skip_mm_profiling --min_genome_coverage 1")
     Oflags.add_argument("--min_scaffold_reads", action="store", default=1, type=int,\
         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
     Oflags.add_argument("--min_genome_coverage", action="store", default=0, type=float,\

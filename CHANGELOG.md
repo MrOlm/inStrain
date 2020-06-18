@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0r] - 2020-06-17
+- Fix a bug that broke iRep when skipping mm
+- Translate .fasta files into all uppercase on loading them
+- Removed some of the uninteresting columns from the genome_info output
+- Change name of argument "filter_cutoff" to "min_read_ani"
+- Add database_mode
+
 ## [1.3.0q] - 2020-06-15
 - Fix a bug in GW having to do with the new mapping_info
 

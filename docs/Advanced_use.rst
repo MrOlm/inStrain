@@ -17,7 +17,7 @@ Below are a series of plots made by introducing a known number of mutations into
   :width: 400px
   :align: center
 
-In the above plot, inStrain was run with a minimum read ANI of 0.99 (inStrain profile parameter `-l` or `--filter_cutoff`). The reported genome breadth is reported on the y-axis. At 20x coverage, you should see 100% genome breadth (meaning that every base of the reference genome is covered by at least one read). However, when the reference genome is sufficiently different from the reads, the breadth is much lower. This is because when the read pair differs from the reference base by more than 99% ANI, it gets filtered out, and no longer maps to the genome. This can be exemplified a bit better by showing a variety of read filtering thresholds simultaneously:
+In the above plot, inStrain was run with a minimum read ANI of 0.99 (inStrain profile parameter `-l` or `--min_read_ani`). The reported genome breadth is reported on the y-axis. At 20x coverage, you should see 100% genome breadth (meaning that every base of the reference genome is covered by at least one read). However, when the reference genome is sufficiently different from the reads, the breadth is much lower. This is because when the read pair differs from the reference base by more than 99% ANI, it gets filtered out, and no longer maps to the genome. This can be exemplified a bit better by showing a variety of read filtering thresholds simultaneously:
 
 .. figure:: images/Fig2.png
   :width: 400px
@@ -63,7 +63,7 @@ Mapping to multiple reference genomes
 Mapping to multiple genomes simultaneously to avoid mis-mapping
 `````````````
 
-There are a number of ways to avoid mis-mapped reads (reads from a different population mapping to your reference genome). One method is to filter out distantly related reads, including by using the minimum read-pair ANI threshold (`-l`, `--filter_cutoff`) or by using the mapQ score cutoff (more on that later). Another method is to include multiple reference genomes in the `.fasta` file that you map to, which gives the mapping software a chance to better place your reads.
+There are a number of ways to avoid mis-mapped reads (reads from a different population mapping to your reference genome). One method is to filter out distantly related reads, including by using the minimum read-pair ANI threshold (`-l`, `--min_read_ani`) or by using the mapQ score cutoff (more on that later). Another method is to include multiple reference genomes in the `.fasta` file that you map to, which gives the mapping software a chance to better place your reads.
 
 When bowtie2 maps reads, by default, it only maps reads to a single location. That means that if a read maps at 98% ANI to one scaffold, and 99% ANI to another scaffold, it will place the read at the position with 99% ANI. If the read only maps to one scaffold at 98% ANI, however, bowtie2 will place the read there. Thus, by including more reference genome sequences when performing the mapping, reads will end up mapping more accurately overall.
 
