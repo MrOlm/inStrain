@@ -138,7 +138,7 @@ class test_plot():
         self.IS = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.ForPlotting.IS'
         self.RC_Loc = load_data_loc() + \
-            'readComparer_v1.RC'
+            'readComparer_vCurrent.RC'
         self.stb = load_data_loc() + \
             'N5_271_010G1.maxbin2.stb'
         self.genes = load_data_loc() + \
@@ -338,7 +338,7 @@ class test_genome_wide():
         self.extra_single_scaff = load_data_loc() + \
             'N5_271_010G1_scaffold_101_extra.fasta'
         self.RC_Loc = load_data_loc() + \
-            'ReadComparer_v0.8'
+            'readComparer_vCurrent.RC'
         self.iRep_test_set = load_data_loc() + \
             'test_iRep.p'
 
@@ -1405,7 +1405,7 @@ class test_filter_reads():
                 if item in o2n:
                     item = o2n[item]
                 o = RRo[RRo['scaffold'] == scaff][item].tolist()[0]
-                
+
                 assert o == t, [item, o, t]
 
         # Make sure no singletons when they're filtered out
@@ -1608,13 +1608,19 @@ class test_readcomparer():
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
         self.bam2 = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam'
+
+        # These get updated by UPDATE_COMPARE_TEST_DATA
         self.IS1 = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS'
         self.IS2 = load_data_loc() + \
             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS'
-        self.RC_Loc = load_data_loc() + \
-            'readComparer_v1.RC'
 
+        # This gets updated by test0; for use by other tests
+        self.RC_Loc = load_data_loc() + \
+            'readComparer_vCurrent.RC'
+
+        self.v12_solution = load_data_loc() + \
+            'readComparer_v1.3.0r.RC'
         self.SIS = load_data_loc() + \
             'Ecoli_ani.100.0.subset.sorted.bam.IS'
         self.SIS2 = load_data_loc() + \
@@ -1637,65 +1643,69 @@ class test_readcomparer():
 
     def run(self):
         # self.setUp()
+        # self.testS()
+        # self.tearDown()
+
+        # self.setUp()
         # self.UPDATE_COMPARE_TEST_DATA()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
+        # # # self.setUp()
+        # # # self.test9()
+        # # # self.tearDown()
+        # #
+        # # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
+        # # # ### self.setUp()
+        # # # ### self.test10()
+        # # # ### self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
         # self.tearDown()
 
         self.setUp()
-        self.testS()
-        self.tearDown()
-
-        self.setUp()
-        self.test0()
-        self.tearDown()
-
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
-        # # self.setUp()
-        # # self.test9()
-        # # self.tearDown()
-        #
-        # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
-        # # ### self.setUp()
-        # # ### self.test10()
-        # # ### self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
+        self.test13()
         self.tearDown()
 
     def UPDATE_COMPARE_TEST_DATA(self):
@@ -1848,10 +1858,6 @@ class test_readcomparer():
         rawfiles = glob.glob(base + '/raw_data/*')
         assert len(rawfiles) == 5
 
-        # THIS UPDATES THE RC_LOC!
-        if os.path.isdir(self.RC_Loc):
-            shutil.rmtree(self.RC_Loc)
-        shutil.copytree(base, self.RC_Loc)
 
         # Read the scaffold table
         Rdb = pd.read_csv(glob.glob(base + '/raw_data/*' + 'comparisonsTable.csv.gz')[0])
@@ -1936,6 +1942,11 @@ class test_readcomparer():
 
                 assert snps == int(row['population_SNPs']), [snps, row]
                 assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani, msdb]
+
+        # THIS UPDATES THE RC_LOC!
+        if os.path.isdir(self.RC_Loc):
+            shutil.rmtree(self.RC_Loc)
+        shutil.copytree(base, self.RC_Loc)
 
     def test1(self):
         '''
@@ -2465,6 +2476,104 @@ class test_readcomparer():
         mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
                                 mm2overlap)
         assert len(mdb) == 0
+
+    def test13(self):
+        '''
+        Re-run and ensure that the results are the same as a previous run
+        '''
+        # Run program
+        base = self.test_dir + 'RC_test'
+
+        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
+            base, self.scafflistF)
+        print(cmd)
+        call(cmd, shell=True)
+
+        exp_RC = inStrain.SNVprofile.SNVprofile(base)
+        sol_RC = inStrain.SNVprofile.SNVprofile(self.v12_solution)
+
+        # Print what the output of the solutions directory looks like
+        if True:
+            s_out_files = glob.glob(exp_RC.get_location('output') + os.path.basename(
+                                    exp_RC.get('location')) + '_*')
+            print("The output has {0} tables".format(len(s_out_files)))
+            for f in s_out_files:
+                name = os.path.basename(f)
+                print("{1}\n{0}\n{1}".format(name, '-'*len(name)))
+
+                if 'mapping_info.tsv' in name:
+                    s = pd.read_csv(f, sep='\t', header=1)
+                else:
+                    s = pd.read_csv(f, sep='\t')
+                print(s.head())
+                print()
+
+        # Make sure log is working
+        assert len(glob.glob(base + '/log/*')) == 2, glob.glob(base + '/log/*')
+        Ldb = exp_RC.get_parsed_log()
+        print(Ldb)
+
+        # Check output files
+        e_out_files = glob.glob(exp_RC.get_location('output') + os.path.basename(
+                                exp_RC.get('location')) + '_*')
+        s_out_files = glob.glob(sol_RC.get_location('output') + '*_*')
+        assert len(s_out_files) == 1, sol_RC.get_location('output') + '*_*'
+
+        for s_file in s_out_files:
+            name = os.path.basename(s_file).split('RC_test_')[1]
+            e_file = [e for e in e_out_files if name in os.path.basename(e)]
+
+            print("checking {0}".format(name))
+
+            if len(e_file) == 1:
+                #print("Both have {0}!".format(name))
+
+                e = pd.read_csv(e_file[0], sep='\t')
+                s = pd.read_csv(s_file, sep='\t')
+
+                if name == 'comparisonsTable.tsv':
+                    e = e.sort_values(['scaffold', 'name1', 'name2']
+                                        ).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'name1', 'name2']
+                                        ).reset_index(drop=True)
+
+                assert set(s.columns) == set(e.columns), \
+                        [set(s.columns) - set(e.columns),
+                         set(e.columns) - set(s.columns),]
+                s = s[list(e.columns)]
+                assert compare_dfs2(e, s, verbose=True), name
+
+            else:
+                assert False, name
+
+        # Check attributes
+        sAdb = sol_RC._get_attributes_file()
+        eAdb = exp_RC._get_attributes_file()
+
+        for i, row in sAdb.iterrows():
+            print("checking {0}".format(i))
+
+            if i in ['location', 'version']:
+                continue
+
+            s = sol_RC.get(i)
+            e = exp_RC.get(i)
+
+            if i in ['comparisonsTable', 'pairwise_SNP_locations']:
+                s = s.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
+                e = e.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
+
+                # Re-arange column order
+                assert set(e.columns) == set(s.columns),\
+                    [i,
+                     set(e.columns) - set(s.columns),\
+                     set(s.columns) - set(e.columns)]
+                s = s[list(e.columns)]
+                assert compare_dfs2(e, s, verbose=True), i
+
+            elif i in ['scaffold2length']:
+                assert compare_dicts(e, s, verbose=True), i
+
 
 class test_strains():
     def setUp(self, destroy=True):
@@ -4021,13 +4130,13 @@ class test_special():
 
 if __name__ == '__main__':
     # test_strains().run()
-    test_filter_reads().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
+    # test_filter_reads().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_special().run()
     test_readcomparer().run()
-    test_special().run()
 
     print('everything is working swimmingly!')

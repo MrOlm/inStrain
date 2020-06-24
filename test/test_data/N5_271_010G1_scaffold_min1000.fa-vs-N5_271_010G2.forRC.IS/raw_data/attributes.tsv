@@ -1,6 +1,6 @@
 name	value	type	description
 location	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS	value	Location of SNVprofile object
-version	1.3.0i	value	Version of inStrain
+version	1.3.0r	value	Version of inStrain
 object_type	profile	value	Type of SNVprofile (profile or compare)
 bam_loc	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	value	Location of .bam file
 scaffold_list	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/scaffold_list.txt	list	1d list of scaffolds that were profiled
