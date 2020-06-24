@@ -11,6 +11,11 @@ Preprint publication is available on [bioRxiv](https://www.biorxiv.org/content/1
 $ pip install instrain
 ```
 
+*Note: If you'd like to try the development version, which is orders of magnitude faster but a bit less stable, you can install it with the following command:*
+```
+$ pip install instrain --pre
+```
+
 ## Quick start
 
 ### Show program help and modules:
