@@ -1642,49 +1642,49 @@ class test_readcomparer():
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        # self.setUp()
-        # self.testS()
-        # self.tearDown()
+        self.setUp()
+        self.testS()
+        self.tearDown()
 
         # self.setUp()
         # self.UPDATE_COMPARE_TEST_DATA()
         # self.tearDown()
-        #
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
 
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test5()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test6()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test7()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test8()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
+
+        self.setUp()
+        self.test4()
+        self.tearDown()
+
+        self.setUp()
+        self.test5()
+        self.tearDown()
+
+        self.setUp()
+        self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
+        self.tearDown()
+
+        self.setUp()
+        self.test8()
+        self.tearDown()
         #
         # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
         # # # self.setUp()
@@ -1695,14 +1695,14 @@ class test_readcomparer():
         # # # ### self.setUp()
         # # # ### self.test10()
         # # # ### self.tearDown()
-        #
-        # self.setUp()
-        # self.test11()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test12()
-        # self.tearDown()
+        
+        self.setUp()
+        self.test11()
+        self.tearDown()
+
+        self.setUp()
+        self.test12()
+        self.tearDown()
 
         self.setUp()
         self.test13()
@@ -4129,14 +4129,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    # test_strains().run()
-    # test_filter_reads().run()
-    # test_SNVprofile().run()
-    # test_gene_statistics().run()
-    # test_quickProfile().run()
-    # test_genome_wide().run()
-    # test_plot().run()
-    # test_special().run()
+    test_strains().run()
+    test_filter_reads().run()
+    test_SNVprofile().run()
+    test_gene_statistics().run()
+    test_quickProfile().run()
+    test_genome_wide().run()
+    test_plot().run()
+    test_special().run()
     test_readcomparer().run()
 
     print('everything is working swimmingly!')
