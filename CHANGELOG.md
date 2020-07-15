@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0r / v1.3.0.dev1] - 2020-06-17
+## [1.3.0s] - 2020-07-14
+- Add "FailureScaffoldHeaderTesting" to readComparer to make sure it can catch exceptions
+- Add "high_cov" testing to test over 10,000x coverage
+- Fix bug in readComparer when coverage was over 10,000x
+
+## [1.3.0r / v1.3.0.dev1 / v1.3.0.dev2] - 2020-06-17
 - UPLOADED AS v1.3.0.dev1 TO PYPI
 - Fix a bug that broke iRep when skipping mm
 - Translate .fasta files into all uppercase on loading them

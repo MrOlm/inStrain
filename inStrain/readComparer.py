@@ -403,7 +403,8 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
             ScaffProfiles.append(scaffold_profile_wrapper(cmd))
 
     # identity skipped scaffolds
-    skipped = set([s[3][5:] for s in ScaffProfiles if s[3][:4] == 'skip'])
+    skipped = set(s.split()[4] for s in ScaffProfiles if type(s) == type('string'))
+    #skipped = set([s[3][5:] for s in ScaffProfiles if s[3][:4] == 'skip'])
 
     # Retry the ones that failed but were not skipped
     failed_scaffs = set(scaffolds_to_compare) - set([s[3] for s in ScaffProfiles]) - skipped
@@ -458,7 +459,10 @@ def scaffold_profile_wrapper(cmd):
         print(e)
         traceback.print_exc()
         logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
-        return pd.DataFrame({'Failed':[True]})
+        t = time.strftime('%m-%d %H:%M')
+        log_message = "\n{1} DEBUG FAILURE CompareScaffold {0} {2}\n"\
+                        .format(cmd.scaffold, t, str(cmd.names))
+        return log_message
 
 def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
     '''
@@ -543,6 +547,10 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
     store_coverage = kwargs.get('store_coverage_overlap', False)
     store_mm_locations = kwargs.get('store_mismatch_locations', False)
     include_self_comparisons = kwargs.get('include_self_comparisons', False)
+
+    # For testing purposes
+    if ((scaffold == 'FailureScaffoldHeaderTesting') & (debug)):
+        assert False
 
     # Load covT and SNPtables
     covTs = []
@@ -861,7 +869,12 @@ def is_present(counts, total, model, min_freq):
     '''
     Return true if the base counts represented by "counts" are detected above background
     '''
-    return (counts >= model[total]) and ((float(counts) / total) >= min_freq)
+    if total in model:
+        min_bases = model[total]
+    else:
+        min_bases = model[-1]
+
+    return (counts >= min_bases) and ((float(counts) / total) >= min_freq)
 
 def call_pop_snps(row, model, min_freq):
     '''

@@ -1633,6 +1633,20 @@ class test_readcomparer():
         self.scafflistF = load_data_loc() + \
             'scaffList.fasta'
 
+        # For failure testing
+        self.failure_bam = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
+        self.failure_fasta = load_data_loc() + \
+            'N5_271_010G1_scaffold_failureScaffold.fa'
+
+        # For high coverage testing
+        self.highcov_bam = load_data_loc() + \
+            'NIHL.delta.fasta-vs-L2_019_000G1.L3_108_000G1_scaffold_35331.sorted.bam'
+        self.highcov_fasta = load_data_loc() + \
+            'L3_108_000G1_scaffold_35331.fasta'
+        self.highcov_IS = load_data_loc() + \
+            'L3_108_000G1_scaffold_35331.IS'
+
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
         os.mkdir(self.test_dir)
@@ -1645,11 +1659,11 @@ class test_readcomparer():
         self.setUp()
         self.testS()
         self.tearDown()
-
-        # self.setUp()
-        # self.UPDATE_COMPARE_TEST_DATA()
-        # self.tearDown()
-
+        #
+        # # self.setUp()
+        # # self.UPDATE_COMPARE_TEST_DATA()
+        # # self.tearDown()
+        #
         self.setUp()
         self.test0()
         self.tearDown()
@@ -1685,17 +1699,17 @@ class test_readcomparer():
         self.setUp()
         self.test8()
         self.tearDown()
-        #
-        # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
-        # # # self.setUp()
-        # # # self.test9()
-        # # # self.tearDown()
         # #
-        # # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
-        # # # ### self.setUp()
-        # # # ### self.test10()
-        # # # ### self.tearDown()
-        
+        # # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
+        # # # # self.setUp()
+        # # # # self.test9()
+        # # # # self.tearDown()
+        # # #
+        # # # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
+        # # # # ### self.setUp()
+        # # # # ### self.test10()
+        # # # # ### self.tearDown()
+        #
         self.setUp()
         self.test11()
         self.tearDown()
@@ -1706,6 +1720,14 @@ class test_readcomparer():
 
         self.setUp()
         self.test13()
+        self.tearDown()
+
+        self.setUp()
+        self.test14()
+        self.tearDown()
+
+        self.setUp()
+        self.test15()
         self.tearDown()
 
     def UPDATE_COMPARE_TEST_DATA(self):
@@ -2574,6 +2596,60 @@ class test_readcomparer():
             elif i in ['scaffold2length']:
                 assert compare_dicts(e, s, verbose=True), i
 
+    def test14(self):
+        '''
+        Handle scaffold failures
+        '''
+        # Set up
+        base = self.test_dir + 'test'
+
+        # Run profile and make the split crash
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=3000".format(None, self.failure_bam, \
+            self.failure_fasta, base)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+        # Run compare without tripping the test failure
+        out = self.test_dir + 'test.RC'
+        cmd = "inStrain compare -i {0} {0} -o {1}".format(base, out)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it didn't trip
+        RC = inStrain.SNVprofile.SNVprofile(out)
+        Cdb = RC.get('comparisonsTable')
+        assert 'FailureScaffoldHeaderTesting' in Cdb['scaffold'].tolist()
+
+        # Run compare with tripping the test failure
+        out = self.test_dir + 'test.RC.2'
+        cmd = "inStrain compare -i {0} {0} -o {1} -d".format(base, out)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it didn't completely crash
+        RC = inStrain.SNVprofile.SNVprofile(out)
+        Cdb = RC.get('comparisonsTable')
+        assert 'FailureScaffoldHeaderTesting' not in Cdb['scaffold'].tolist()
+        assert 'N5_271_010G1_scaffold_0' in Cdb['scaffold'].tolist()
+
+    def test15(self):
+        '''
+        Handle coverages over 10,000x
+        '''
+        # Run compare without tripping the test failure
+        out = self.test_dir + 'test.RC'
+        cmd = "inStrain compare -i {0} {0} -o {1}".format(self.highcov_IS, out)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Make sure it didn't trip
+        RC = inStrain.SNVprofile.SNVprofile(out)
+        Cdb = RC.get('comparisonsTable')
+        assert 'L3_108_000G1_scaffold_35331' in Cdb['scaffold'].tolist()
+
+        # Try manually
+        null_loc = os.path.dirname(inStrain.readComparer.__file__) + '/helper_files/NullModel.txt'
+        model = inStrain.profileUtilities.generate_snp_model(null_loc, fdr=1e-6)
+        assert not inStrain.readComparer.is_present(5, 1000000, model, 0.05)
 
 class test_strains():
     def setUp(self, destroy=True):

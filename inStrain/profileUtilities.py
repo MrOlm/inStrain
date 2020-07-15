@@ -699,7 +699,7 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     log_message = inStrain.logUtils.get_worker_log('SplitProfile', unit, 'start')
 
     # For testing purposes
-    if ((scaffold == 'FailureScaffoldHeaderTesting') & (split_number == 1)):
+    if ((scaffold == 'FailureScaffoldHeaderTesting') & (split_number == 1) & (kwargs.get('debug', False))):
         assert False
 
     # Get kwargs
