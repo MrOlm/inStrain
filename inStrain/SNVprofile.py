@@ -295,6 +295,31 @@ class SNVprofile:
             else:
                 return
 
+        elif name == 'comparisonsTable':
+            db = self.get_nonredundant_RC_table()
+
+        elif name == 'pairwise_SNP_locations':
+            column_order = ['mm', 'scaffold', 'position',
+            'name1', 'name2',
+            'consensus_SNP', 'population_SNP',
+            'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
+            'A_1', 'C_1', 'T_1', 'G_1',
+            'con_base_2', 'ref_base_2', 'var_base_2', 'position_coverage_2',
+            'A_2', 'C_2', 'T_2', 'G_2']
+
+            db = self.get('pairwise_SNP_locations')
+            db = reorder_columns(db, column_order)
+
+            if ((not report_mm_level) & (len(db) > 0)):
+                db = db.sort_values('mm')\
+                        .drop_duplicates(subset=['scaffold', 'position',
+                                        'name1', 'name2'], keep='last')\
+                        .sort_index().drop(columns=['mm'])
+
+        else:
+            logging.error("Do not know how to store {0}! Crashing now".format(name))
+            assert False
+
         if store:
             out_base = self.get_output_base()
             db.to_csv(out_base + name + '.tsv', index=False, sep='\t')

@@ -44,21 +44,32 @@ def main(args):
     # Compare scaffolds
     Cdb, Mdb, scaff2pair2mm2cov = compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **vargs)
 
-    # Store results
-    outbase = RCprof.get_location('output') + os.path.basename(RCprof.get('location')) + '_'
-
+    # Store the results in the RC
     RCprof.store('comparisonsTable', Cdb, 'pandas', 'Comparisons between the requested IS objects')
     RCprof.store('scaffold2length', s2l, 'dictionary', 'Scaffold to length')
-    Cdb = RCprof.get_nonredundant_RC_table()
-    Cdb.to_csv(outbase + 'comparisonsTable.tsv', index=False, sep='\t')
+
+    # Make the output files
+    RCprof.generate('comparisonsTable')
 
     # Store scaff2pair2mm2SNPs
     if args.store_mismatch_locations:
         RCprof.store('pairwise_SNP_locations', Mdb, 'pandas', 'A dataframe of scaffold, IS pair, mm level, SNP locations')
+        RCprof.generate('pairwise_SNP_locations')
 
     # Store scaff2pair2mm2cov
     if args.store_coverage_overlap:
         RCprof.store('scaff2pair2mm2cov', scaff2pair2mm2cov, 'special', 'A dictionary of scaffold -> IS pair -> mm level -> positions with coverage overlap')
+
+
+
+    # # Store results
+    # outbase = RCprof.get_location('output') + os.path.basename(RCprof.get('location')) + '_'
+    #
+    #
+    # Cdb = RCprof.get_nonredundant_RC_table()
+    # Cdb.to_csv(outbase + 'comparisonsTable.tsv', index=False, sep='\t')
+
+
 
 def greedy_main(RCprof, names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     '''
@@ -442,6 +453,18 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     else:
         Mdb = pd.DataFrame()
 
+    # Do some typing of this DataFrame
+    if len(Mdb) > 0:
+        # These should never be NA
+        int_cols = ['position', 'mm']
+        for c in int_cols:
+            Mdb[c] = Mdb[c].astype(int)
+
+        # Handle bools
+        bool_cols = ['consensus_SNP', 'population_SNP']
+        for c in bool_cols:
+            Mdb[c] = Mdb[c].astype(bool)
+
     return [pd.concat(dbs, sort=False), Mdb, scaff2pair2mm2cov]
 
     # return [pd.concat([x[0] for x in ScaffProfiles]), # Table
@@ -804,15 +827,22 @@ def _calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
 #
 #     return mm2ANI, mm2SNPlocs
 
-def _gen_blank_Mdb():
-    COLUMNS = ['position', 'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
-       'A_1', 'C_1', 'T_1', 'G_1', 'con_base_2', 'ref_base_2', 'var_base_2',
-       'position_coverage_2', 'A_2', 'C_2', 'T_2', 'G_2', 'consensus_SNP', 'population_SNP', 'mm']
+def _gen_blank_Mdb(COLUMNS):
+    '''
+    COLUMNS = ['position', 'consensus_SNP', 'population_SNP', 'mm'
+    'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
+    'A_1', 'C_1', 'T_1', 'G_1',
+    'con_base_2', 'ref_base_2', 'var_base_2', 'position_coverage_2',
+    'A_2', 'C_2', 'T_2', 'G_2']
+    '''
+
     return pd.DataFrame({c:[] for c in COLUMNS})
 
-def _gen_blank_SNPdb():
+def _gen_blank_SNPdb(COLUMNS):
+    '''
     COLUMNS = ['position', 'con_base', 'ref_base', 'var_base', 'position_coverage',
        'A', 'C', 'T', 'G']
+     '''
     return pd.DataFrame({c:[] for c in COLUMNS})
 
 def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fdr=1e-6, debug=False):
@@ -825,6 +855,17 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
     null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
     model_to_use = inStrain.profileUtilities.generate_snp_model(null_loc, fdr=fdr)
 
+    # Constant for the SNP dataframe
+    SNP_COLUMNS = ['position', 'con_base', 'ref_base', 'var_base',
+    'position_coverage', 'A', 'C', 'T', 'G']
+
+    # Constant for the output dataframe
+    OUT_COLUMNS = ['position', 'consensus_SNP', 'population_SNP', 'mm',
+    'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
+    'A_1', 'C_1', 'T_1', 'G_1',
+    'con_base_2', 'ref_base_2', 'var_base_2', 'position_coverage_2',
+    'A_2', 'C_2', 'T_2', 'G_2']
+
     # Iterate mm levels
     for mm, cov_arr in mm2overlap.items():
 
@@ -836,23 +877,28 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
             s1_all = SNPtable1[[(p in covs) for p in SNPtable1['position'].values]].drop_duplicates(
                         subset=['position'], keep='last').drop(columns='mm')
         else:
-            s1_all = _gen_blank_SNPdb()
+            s1_all = _gen_blank_SNPdb(SNP_COLUMNS)
 
         if len(SNPtable2) > 0:
             s2_all = SNPtable2[[(p in covs) for p in SNPtable2['position'].values]].drop_duplicates(
                         subset=['position'], keep='last').drop(columns='mm')
         else:
-            s2_all = _gen_blank_SNPdb()
+            s2_all = _gen_blank_SNPdb(SNP_COLUMNS)
 
         # Merge
         if (len(s1_all) == 0) & (len(s2_all) == 0):
-            Mdb = _gen_blank_Mdb()
+            Mdb = _gen_blank_Mdb(OUT_COLUMNS)
 
         else:
             Mdb = pd.merge(s1_all, s2_all, on='position', suffixes=('_1', '_2'), how='outer', copy=False)
             Mdb['consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
             Mdb['population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
+
             Mdb['mm'] = mm
+            Mdb = Mdb[OUT_COLUMNS]
+
+            # Only keep SNPs
+            Mdb = Mdb[Mdb['consensus_SNP'] | Mdb['population_SNP'] ]
 
         dbs.append(Mdb)
 
@@ -863,6 +909,15 @@ def call_con_snps(row):
     '''
     Call a SNP if the consensus sequnces aren't the same
     '''
+    # This was only a SNP in the first sapmle
+    if row['con_base_1'] != row['con_base_1']:
+        return row['con_base_2'] != row['ref_base_2']
+
+    # This was only a SNP in the second sapmle
+    if row['con_base_2'] != row['con_base_2']:
+        return row['con_base_1'] != row['ref_base_1']
+
+    # This is a SNP in both samples
     return row['con_base_1'] != row['con_base_2']
 
 def is_present(counts, total, model, min_freq):

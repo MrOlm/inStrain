@@ -1598,7 +1598,7 @@ class test_filter_reads():
 
 
 class test_readcomparer():
-    def setUp(self):
+    def setUp(self, destroy=True):
         self.script = get_script_loc('readcomparer')
         self.test_dir = load_random_test_dir()
 
@@ -1647,78 +1647,80 @@ class test_readcomparer():
         self.highcov_IS = load_data_loc() + \
             'L3_108_000G1_scaffold_35331.IS'
 
-        if os.path.isdir(self.test_dir):
-            shutil.rmtree(self.test_dir)
-        os.mkdir(self.test_dir)
+        if destroy:
+            if os.path.isdir(self.test_dir):
+                shutil.rmtree(self.test_dir)
+            os.mkdir(self.test_dir)
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
     def run(self):
-        self.setUp()
-        self.testS()
-        self.tearDown()
-        #
-        # # self.setUp()
-        # # self.UPDATE_COMPARE_TEST_DATA()
-        # # self.tearDown()
-        #
-        self.setUp()
-        self.test0()
-        self.tearDown()
-
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
+        # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
+        # # # self.setUp()
+        # # # self.test9()
+        # # # self.tearDown()
         # #
-        # # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
-        # # # # self.setUp()
-        # # # # self.test9()
-        # # # # self.tearDown()
-        # # #
-        # # # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
-        # # # # ### self.setUp()
-        # # # # ### self.test10()
-        # # # # ### self.tearDown()
+        # # # ### THIS IS GREEDY CLUSTERING! NOT WORKING NOW!
+        # # # ### self.setUp()
+        # # # ### self.test10()
+        # # # ### self.tearDown()
+
+
+        # self.setUp()
+        # self.UPDATE_COMPARE_TEST_DATA()
+        # self.tearDown()
+
+        # self.setUp()
+        # self.testS()
+        # self.tearDown()
         #
-        self.setUp()
-        self.test11()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test4()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test5()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test6()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test7()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test8()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test11()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test12()
+        # self.tearDown()
 
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
+        self.setUp(destroy=True)
         self.test13()
         self.tearDown()
 
@@ -1774,7 +1776,7 @@ class test_readcomparer():
 
         # Make sure it produced output
         outfiles = glob.glob(base + '/output/*')
-        assert len(outfiles) == 1
+        assert len(outfiles) == 2
 
         rawfiles = glob.glob(base + '/raw_data/*')
         assert len(rawfiles) == 5
@@ -1875,7 +1877,7 @@ class test_readcomparer():
 
         # Make sure it produced output
         outfiles = glob.glob(base + '/output/*')
-        assert len(outfiles) == 1
+        assert len(outfiles) == 2
 
         rawfiles = glob.glob(base + '/raw_data/*')
         assert len(rawfiles) == 5
@@ -2412,15 +2414,30 @@ class test_readcomparer():
         table['allele_count'].append(2)
         table['mm'].append(0)
 
+        # Make a non-fixed consensus SNP in table1
+        table['position'].append(3)
+        table['con_base'].append('C')
+        table['ref_base'].append('C')
+        table['var_base'].append('A')
+        table['position_coverage'].append(100)
+        table['A'].append(40)
+        table['C'].append(60)
+        table['G'].append(0)
+        table['T'].append(0)
+        table['allele_count'].append(2)
+        table['mm'].append(0)
+
         SNPtable1 = pd.DataFrame(table)
         SNPtable2 = pd.DataFrame()
 
-        mm2overlap = {0:[1,2]}
+        mm2overlap = {0:[1,2,3]}
 
         mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
                                 mm2overlap)
-        assert len(mdb[mdb['consensus_SNP'] == True]) == 2
         assert len(mdb[mdb['population_SNP'] == True]) == 1
+        assert len(mdb[mdb['consensus_SNP'] == True]) == 2, \
+            len(mdb[mdb['consensus_SNP'] == True])
+
 
         # Change up table2
         table = defaultdict(list)
@@ -2523,10 +2540,7 @@ class test_readcomparer():
                 name = os.path.basename(f)
                 print("{1}\n{0}\n{1}".format(name, '-'*len(name)))
 
-                if 'mapping_info.tsv' in name:
-                    s = pd.read_csv(f, sep='\t', header=1)
-                else:
-                    s = pd.read_csv(f, sep='\t')
+                s = pd.read_csv(f, sep='\t')
                 print(s.head())
                 print()
 
@@ -2559,6 +2573,11 @@ class test_readcomparer():
                     s = s.sort_values(['scaffold', 'name1', 'name2']
                                         ).reset_index(drop=True)
 
+                    changed_cols = ['consensus_SNPs', 'conANI']
+                    for c in changed_cols:
+                        del e[c]
+                        del s[c]
+
                 assert set(s.columns) == set(e.columns), \
                         [set(s.columns) - set(e.columns),
                          set(e.columns) - set(s.columns),]
@@ -2581,11 +2600,48 @@ class test_readcomparer():
             s = sol_RC.get(i)
             e = exp_RC.get(i)
 
-            if i in ['comparisonsTable', 'pairwise_SNP_locations']:
+            if i in ['comparisonsTable']:
                 s = s.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
                 e = e.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
 
+                changed_cols = ['consensus_SNPs', 'conANI']
+                for c in changed_cols:
+                    del e[c]
+                    del s[c]
+
                 # Re-arange column order
+                assert set(e.columns) == set(s.columns),\
+                    [i,
+                     set(e.columns) - set(s.columns),\
+                     set(s.columns) - set(e.columns)]
+                s = s[list(e.columns)]
+                assert compare_dfs2(e, s, verbose=True), i
+
+            if i in ['pairwise_SNP_locations']:
+                # Fix the solutions directory to remove the old errors (fixed in v1.3.0t)
+                s = s[\
+                    ((s['consensus_SNP'] == True) \
+                    & \
+                    (((s['ref_base_1'] != s['con_base_1']) & \
+                    (s['con_base_1'] == s['con_base_1'])) \
+                    | \
+                    ((s['ref_base_2'] != s['con_base_2']) & \
+                    (s['con_base_2'] == s['con_base_2'])))) \
+                    | (s['consensus_SNP'] == False)]
+
+                # Make the solutions directory only have SNPs
+                for c in ['consensus_SNP', 'population_SNP']:
+                    s[c] = s[c].astype(bool)
+                s = s[s['consensus_SNP'] | s['population_SNP']]
+
+                # Get rid of the junk colums
+                s = s[e.columns]
+                for c in ['position', 'mm']:
+                    s[c] = s[c].astype(int)
+
+                s = s.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
+                e = e.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
+
                 assert set(e.columns) == set(s.columns),\
                     [i,
                      set(e.columns) - set(s.columns),\
@@ -4205,14 +4261,14 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_strains().run()
-    test_filter_reads().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_special().run()
+    # test_strains().run()
+    # test_filter_reads().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_special().run()
     test_readcomparer().run()
 
     print('everything is working swimmingly!')

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0t] - 2020-07-29
+- Fix "call_con_snps" to account for cases where there's only a SNP in one sample,
+  but it's not a consensus SNP
+- Make the output of compare generated through SNVprofile (like profile does it)
+- Make the SNP table produced by compare actually legable and made in the output
+
 ## [1.3.0s] - 2020-07-14
 - Add "FailureScaffoldHeaderTesting" to readComparer to make sure it can catch exceptions
 - Add "high_cov" testing to test over 10,000x coverage
