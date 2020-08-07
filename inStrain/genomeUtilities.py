@@ -841,7 +841,7 @@ def load_scaff2bin(input_stb, IS=None):
 
     # Check if there is nothing there
     if IS is not None:
-        if input_stb == []:
+        if (input_stb == []) | (input_stb is None):
             s2l = IS.get('scaffold2length')
             stb = {}
             for scaffold in list(s2l.keys()):

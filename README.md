@@ -6,10 +6,20 @@ Manual, installation instructions, and expected output are at available at [Read
 
 Preprint publication is available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1)
 
-## Installation with pip
+## Installation options
+
+### pip
 ```
 $ pip install instrain
 ```
+
+### bioconda
+```
+$ conda config --add channels bioconda; conda install instrain
+```
+
+### Docker
+Docker image is available on Docker Hub at [mattolm/instrain](https://hub.docker.com/repository/docker/mattolm/instrain). See [docker/](docker/) for use instructions.
 
 ## Quick start
 
@@ -23,7 +33,7 @@ $ inStrain -h
 $ inStrain profile mapping.bam genome_file.fasta -o inStrain_profile1
 ```
 
-### Details strain-level comparison:
+### Detailed strain-level comparison:
 ```
 $ inStrain compare inStrain_profile1 inStrain_profile2
 ```

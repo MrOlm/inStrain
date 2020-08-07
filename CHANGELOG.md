@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0t] - 2020-07-29
+## [1.3.0u] - 2020-08-06
+- Add Docker and conda installation instructions to the README
+- Edit parse_stb to handle None the same as []
+- Add the Docker image and associated files
+
+## [1.3.0t / 1.3.0.dev3] - 2020-07-29
 - Fix "call_con_snps" to account for cases where there's only a SNP in one sample,
   but it's not a consensus SNP
 - Make the output of compare generated through SNVprofile (like profile does it)

@@ -1,0 +1,88 @@
+..:: Overall ::..
+InStrain version 1.3.0.dev3 started at 2020-07-29 09:51:23 and ended at 2020-07-29 09:52:30.
+Runtime = 1 minute, 7 seconds
+Command = /Users/mattolm/miniconda3/bin/inStrain profile /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS --skip_plot_generation
+
+..:: Checkpoints ::..
+filter_reads         took 4.0 seconds     ( 6.0% of overall)	RAM went from 144.82 MB to 173.82 MB (increased by 29.00 MB)
+profile_scaffolds    took 49.0 seconds    (73.1% of overall)	RAM went from 173.82 MB to 251.81 MB (increased by 77.99 MB)
+genome_wide          took 14.0 seconds    (20.9% of overall)	RAM went from 251.81 MB to 271.82 MB (increased by 20.02 MB)
+
+..:: Filter reads report ::..
+load_fasta           took <1 second       ( 0.0% of overall)	RAM went from 145.13 MB to 145.73 MB (increased by 620.00 KB)
+get_paired_reads_multi took 3.0 seconds     (75.0% of overall)	RAM went from 146.16 MB to 175.63 MB (increased by 29.47 MB)
+multiprocessing      took 3.0 seconds     (75.0% of overall)	RAM went from 150.18 MB to 175.64 MB (increased by 25.46 MB)
+paired_reads         took <1 second       (25.0% of overall)	RAM went from 175.63 MB to 173.82 MB (decreased by 1.80 MB)
+filter_reads         took <1 second       ( 0.0% of overall)	RAM went from 173.82 MB to 174.17 MB (increased by 356.00 KB)
+
+Wall time                     	<1 second
+Total processes used          	6
+Average number processes used 	3.1
+Paralellization efficiency    	51.9%
+Units profiled                	178
+
+Average time per unit         	<1 second
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	<1 second
+Longest running unit          	N5_271_010G1_scaffold_963
+Per-process efficiency        	['42.3', '42.6', '45.2', '51.3', '54.2', '98.5']
+
+unit per-process strating RAM      	['140.38 MB', '139.36 MB', '140.34 MB', '139.37 MB', '140.40 MB', '141.18 MB']
+unit per-process final RAM         	['140.38 MB', '140.39 MB', '140.54 MB', '140.32 MB', '140.40 MB', '141.15 MB']
+unit per-process minimum RAM       	['139.45 MB', '139.36 MB', '139.43 MB', '139.37 MB', '139.31 MB', '139.41 MB']
+unit per-process maximum RAM       	['141.92 MB', '142.42 MB', '142.82 MB', '140.45 MB', '141.32 MB', '141.18 MB']
+
+..:: Profile RAM useage and paralellization efficiency ::..
+RunningGarbageCollector took <1 second       ( 0.0% of overall)	RAM went from 313.39 MB to 313.39 MB (decreased by 0.0 Byte)
+SpawningSplitWorkers took <1 second       ( 3.6% of overall)	RAM went from 313.39 MB to 342.61 MB (increased by 29.22 MB)
+TerminatingSplitWorkers took <1 second       ( 0.0% of overall)	RAM went from 1.26 GB to 344.97 MB (decreased by 944.52 MB)
+
+Wall time for Profile         	35 seconds
+Total processes used (splits + merges)	12
+Average number processes used 	3.4
+Paralellization efficiency    	57.4%
+Scaffolds profiled            	178
+
+User time profiling splits    	1.0 minute, 24.0 seconds
+Profile paralell efficiency   	56.9%
+Average profile time per split	<1 second
+Average time per split        	<1 second
+Median time per split         	<1 second
+Maximum split time            	11.0 seconds
+Longest running split         	N5_271_010G1_scaffold_963.0
+Per-process efficiency        	['42.6', '44.7', '44.8', '47.6', '62.7', '99.1']
+
+User time merging splits      	38.0 seconds
+Merge paralell efficiency     	89.8%
+Average time per merge        	<1 second
+Median time per merge         	<1 second
+Maximum merge time            	1.0 second
+Longest running merge         	N5_271_010G1_scaffold_1
+Per-process efficiency        	['88.9', '89.5', '89.8', '90.4', '91.6', '92.9']
+
+Split profiling per-process strating RAM	['140.97 MB', '140.76 MB', '140.64 MB', '140.75 MB', '140.71 MB', '140.93 MB']
+Split profiling per-process final RAM	['150.94 MB', '153.02 MB', '152.07 MB', '165.05 MB', '153.86 MB', '149.18 MB']
+Split profiling per-process minimum RAM	['140.97 MB', '140.76 MB', '140.64 MB', '140.75 MB', '140.71 MB', '140.93 MB']
+Split profiling per-process maximum RAM	['150.94 MB', '153.02 MB', '152.07 MB', '165.52 MB', '153.86 MB', '149.19 MB']
+Split merging per-process strating RAM	['145.91 MB', '140.72 MB', '140.27 MB', '142.28 MB', '142.15 MB', '140.54 MB']
+Split merging per-process final RAM	['150.69 MB', '150.70 MB', '148.87 MB', '149.25 MB', '149.03 MB', '148.71 MB']
+Split merging per-process minimum RAM	['145.91 MB', '140.72 MB', '140.27 MB', '142.28 MB', '142.15 MB', '140.54 MB']
+Split merging per-process maximum RAM	['151.19 MB', '150.70 MB', '149.24 MB', '149.40 MB', '149.64 MB', '150.07 MB']
+
+0 scaffolds needed to be run a second time
+
+..:: Genes paralellization efficiency ::..
+
+
+..:: Geneome level report ::..
+genomeLevel_from_IS  took 11.0 seconds    (100.0% of overall)	RAM went from 251.68 MB to 278.86 MB (increased by 27.18 MB)
+scaffold_info        took <1 second       ( 0.0% of overall)	RAM went from 256.48 MB to 247.31 MB (decreased by 9.17 MB)
+coverage_info        took 9.0 seconds     (81.8% of overall)	RAM went from 260.52 MB to 282.43 MB (increased by 21.91 MB)
+mapping_info         took <1 second       ( 0.0% of overall)	RAM went from 281.02 MB to 281.02 MB (decreased by 0.0 Byte)
+linkage              took <1 second       ( 0.0% of overall)	RAM went from 280.86 MB to 278.86 MB (decreased by 2.01 MB)
+
+..:: Plotting ::..
+
+..:: Failures ::..
+No failures
