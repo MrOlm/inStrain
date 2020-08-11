@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0w] - UNCOMITTED
+- Refactor controller.py a bit
+
 ## [1.3.0v] - 2020-08-10
 - Change internal structure of test suite
 - Delete N_sites and S_sites from gene_info table

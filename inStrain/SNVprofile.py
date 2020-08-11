@@ -238,7 +238,7 @@ class SNVprofile:
             for c in ['N_sites', 'S_sites']:
                 if c in db.columns:
                     del db[c]
-                    
+
             db = reorder_columns(db, column_order)
 
         elif name == 'genome_info':
@@ -500,13 +500,13 @@ class SNVprofile:
         Aloc = str(os.path.join(self.location, 'raw_data/attributes.tsv')).strip()
         # This crazy mumbo-jumbo is to prevent a failure when trying to read while its being written
         for i in range(0,100):
-            while True:
-                try:
-                    Adb = pd.read_csv(Aloc, sep='\t', index_col='name')
-                except:
-                    logging.error("Cannot load {0}; try {1}".format(Aloc, i))
-                    time.sleep(1)
+            # while True:
+            try:
+                Adb = pd.read_csv(Aloc, sep='\t', index_col='name')
                 break
+            except:
+                logging.error("Cannot load {0}; try {1}".format(Aloc, i))
+                time.sleep(1)
 
         return Adb
 

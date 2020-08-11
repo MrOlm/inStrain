@@ -66,14 +66,6 @@ class Controller():
         # Store the output
         IS.generate('gene_info')
         IS.generate("SNVs")
-        # out_base = IS.get_location('output') + os.path.basename(IS.get('location')) + '_'
-        # Gdb = get_gene_info(IS)
-        # Gdb.to_csv(out_base + 'gene_info.tsv', index=False, sep='\t')
-        #
-        # try:
-        #     name2result['SNP_mutation_types'].to_csv(out_base + 'SNP_mutation_types.tsv', index=False, sep='\t')
-        # except:
-        #     pass
 
     def validate_input(self, args):
         '''
@@ -88,31 +80,6 @@ class Controller():
         inStrain.controller.setup_logger(log_loc)
 
         return args
-
-    # def parse_arguments(self, args):
-    #     '''
-    #     Argument parsing
-    #     '''
-    #     parser = argparse.ArgumentParser(description= """
-    #         A script that runs gene-based analyses on inStrain SNV profiles\n
-    #
-    #         Required input: a prodigal .fna gene calls file (created with prodigal -d). Going to be opinionated about this and not support alternatives.
-    #         This file is easy to recreate from other / custom data - please look under examples to see how it should be formatted.
-    #         """, formatter_class=argparse.RawTextHelpFormatter)
-    #
-    #     # Required positional arguments
-    #     parser.add_argument("-i", '--IS', help="an inStrain object", required=True)
-    #     parser.add_argument("-g", "--gene_file", action="store", required=True, \
-    #         help='Path to prodigal .fna genes file.')
-    #     parser.add_argument("-p", "--processes", action="store", default=6, type=int, \
-    #                         help='Threads to use for multiprocessing')
-    #
-    #     # Parse
-    #     if (len(args) == 0 or args[0] == '-h' or args[0] == '--help'):
-    #         parser.print_help()
-    #         sys.exit(0)
-    #     else:
-    #         return parser.parse_args(args)
 
 def gene_profile_worker(gene_cmd_queue, gene_result_queue, single_thread=False):
     '''

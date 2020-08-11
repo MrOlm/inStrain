@@ -6,6 +6,7 @@ import gc
 import os
 import sys
 import h5py
+import copy
 import pysam
 import logging
 import argparse
@@ -60,7 +61,7 @@ class Controller():
         self.shutdown(args)
 
     def profile_operation(self, args):
-        ProfileController().main(args)
+        ProfileController(args).main()
 
     def compare_operation(self, args):
         inStrain.readComparer.main(args)
@@ -93,52 +94,96 @@ class Controller():
         except:
             return
         logging.debug("inStrain complete; shutting down logger and printing run stats (log location = {0})".format(logloc))
-        # reset_logging()
         logging.shutdown()
-        # handlers = logging.getLogger('').handlers
-        # for handler in handlers:
-        #     handler.close()
-        #     logging.getLogger('').removeHandler(handler)
         inStrain.logUtils.report_run_stats(logloc, most_recent=True, printToo=args.debug, debug=args.debug)
 
-# def reset_logging():
-#     '''
-#     https://stackoverflow.com/questions/12034393/import-side-effects-on-logging-how-to-reset-the-logging-module
-#     '''
-#     manager = logging.root.manager
-#     manager.disabled = logging.NOTSET
-#     for logger in manager.loggerDict.values():
-#         if isinstance(logger, logging.Logger):
-#             logger.setLevel(logging.NOTSET)
-#             logger.propagate = True
-#             logger.disabled = False
-#             logger.filters.clear()
-#             handlers = logger.handlers.copy()
-#             for handler in handlers:
-#                 # Copied from `logging.shutdown`.
-#                 try:
-#                     handler.acquire()
-#                     handler.flush()
-#                     handler.close()
-#                 except (OSError, ValueError):
-#                     pass
-#                 finally:
-#                     handler.release()
-#                 logger.removeHandler(handler)
-
-class ProfileController():
+class ProfileController(object):
     '''
     Main controller of the profile command
     '''
+    def __init__(self, args):
+        '''
+        Set all of the command line arguments in the "args" attribute
 
-    def main(self, args):
+        Doing it this way lets your pass the arguments to other controllers
+        '''
+        self.args = args
+        self.ori_args = copy.deepcopy(args)
+
+    def main(self):
         '''
         The main method when run on the command line
         '''
         # Parse arguments
+        self.validate_arguments()
+
+        # Filter reads
+        self.profile_filter_reads()
+
+        # Profile
+        self.run_profile()
+
+        # Profile genes
+        self.profile_profile_genes()
+
+        # Make things genome_wide
+        self.profile_genome_wide()
+
+        # Make plots
+        self.profile_plots()
+
+        # Final message
+        self.write_final_message()
+
+        return self.IS
+
+    def validate_arguments(self):
+        '''
+        Do some parsing, start up a logger
+        '''
+        # Get out the "args" to manipulate it
+        args = self.args
+
+        # default prefix is now fasta prefix -alexcc 5/8/2019
         if args.output == 'inStrain':
-            args.output = args.fasta.split(".")[0].split("/")[-1] #default prefix is now fasta prefix -alexcc 5/8/2019
-        args = self.validate_arguments(args)
+            args.output = args.fasta.split(".")[0].split("/")[-1]
+
+        # Set up "base"
+        out_base = args.output
+
+        # Set up Logger
+        outbase = out_base
+        RCprof = inStrain.SNVprofile.SNVprofile(outbase)
+        log_loc = RCprof.get_location('log') + 'log.log'
+        setup_logger(log_loc)
+
+        # Make the bam file if you need to; remove it from args
+        self.bam = prepare_bam_fie(args)
+        del self.args.bam
+
+        # Load the list of scaffolds
+        args.scaffolds_to_profile = load_scaff_list(args.scaffolds_to_profile)
+
+        # Fix the fdr
+        if args.fdr == 0:
+            args.fdr = 1e-6
+
+        # Handle database mode
+        if args.database_mode:
+            args.min_read_ani = 0.92
+            args.skip_mm_profiling = True
+            args.min_genome_coverage = 1
+
+        # Make sure you have a .stb if needed
+        if args.min_genome_coverage != 0:
+            assert args.stb != [], 'If you adjust the minimum genome coverage, you need to provide an .stb!'
+
+            self.args = args
+
+    def profile_filter_reads(self):
+        '''
+        Call the filter reads module as run with "profile"
+        '''
         message = """\
 ***************************************************
     ..:: inStrain profile Step 1. Filter reads ::..
@@ -147,63 +192,61 @@ class ProfileController():
         logging.info(message)
         inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "start")
 
-        # global s2l # make ths global so we can access it later.
+        # Parse the args and make a special one to pass down to the module
+        bam = self.bam
+        vargs = vars(self.args)
 
-        # Parse the args
-        bam = args.bam
-        vargs = vars(args)
-        del vargs['bam']
-
-        # Set up .fasta file
+        # Set up and parse .fasta file
         inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
-        FAdb, s2s = self.load_fasta(args)
+        FAdb, s2s = self.load_fasta()
+        scaffolds = list(FAdb['scaffold'].unique())
         s2l = {s:len(s2s[s]) for s in list(s2s.keys())}
         inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "end")
 
-        # Load dictionary of paired reads
-        scaffolds = list(FAdb['scaffold'].unique())
-
+        # Call the appropriate module
         detailed_report = vargs.get('detailed_mapping_info', False)
-
         if detailed_report:
             Rdic, RR, dRR = inStrain.filter_reads.load_paired_reads(bam, scaffolds, **vargs)
         else:
             Rdic, RR = inStrain.filter_reads.load_paired_reads(bam, scaffolds, **vargs)
             dRR = None
 
+        # Handle exceptions
         logging.info("{0:,} read pairs remain after filtering".format(RR['filtered_pairs'].tolist()[0]))
-
         if RR['filtered_pairs'].tolist()[0] == 0:
             logging.error("Because no read pairs remain I'm going to crash now. Maybe this is failing because you dont have paired reads (in which case you should adjust --pairing_filter option), or maybe its failing because the mapper you used uses full fasta headers (in which case you should use the flag --use_full_fasta_header)")
             raise Exception('No paired reads detected; see above message and log')
 
-        # Get scaffold to paired reads (useful for multiprocessing)
+        # Parse results
         s2p = RR.set_index('scaffold')['filtered_pairs'].to_dict()
-
-        # Get the read length
         rl = float(RR.loc[0, 'mean_pair_length'])
 
-        # Filter the .fasta file
+        # Filter the .fasta file with these results
         FAdb = self.filter_fasta(FAdb, s2p, s2l, rl, **vargs)
         assert len(FAdb) > 0, "No scaffolds passed initial filtering based on numbers of mapped reads"
 
-        if args.skip_mm_profiling:
+        if self.args.skip_mm_profiling:
             newRdic = {}
             for s, p2i in Rdic.items():
                 newRdic[s] = set(p2i.keys())
             del Rdic
             Rdic = newRdic
 
-        # if args.debug:
-        #     for att in ['Rdic', 'RR', 'FAdb', 's2s']:
-        #         logging.debug("RAM PROFILE: reads {0} {1:.2f} Mb".format(att,
-        #             sys.getsizeof(eval(att))/1e6))
-
-        # Profile the .bam file
-        vargs['s2s'] = s2s
-        vargs['s2p'] = s2p
+        # Save the needed attributes
+        self.FAdb = FAdb
+        self.s2s = s2s
+        self.s2l = s2l
+        self.s2p = s2p
+        self.Rdic = Rdic
+        self.dRR = dRR
+        self.RR = RR
 
         inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "end")
+
+    def run_profile(self):
+        '''
+        Call the actual profile module
+        '''
         message = """\
 ***************************************************
 .:: inStrain profile Step 2. Profile scaffolds ::..
@@ -212,63 +255,88 @@ class ProfileController():
         logging.info(message)
         inStrain.logUtils.log_checkpoint("main_profile", "profile_scaffolds", "start")
 
+        # Do some argument handling
+        args = self.args
+        bam = self.bam
+        vargs = vars(self.args)
+
+        vargs['s2s'] = self.s2s
+        vargs['s2p'] = self.s2p
+        Rdic = self.Rdic
+        FAdb = self.FAdb
+
+        # Call the module
         Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
 
-        # Add the read report
-        Sprofile.store('mapping_info', RR, 'pandas', "Report on reads")
-        if dRR != None:
-            Sprofile.store('detailed_mapping_info', dRR, 'pandas', "Details report on reads")
-            del dRR
+        # Store some extra stuff in the resulting profile
+        Sprofile.store('mapping_info', self.RR, 'pandas', "Report on reads")
+        if self.dRR != None:
+            Sprofile.store('detailed_mapping_info', self.dRR, 'pandas', "Details report on reads")
+            del self.dRR
 
         logging.debug("Storing Rdic")
-        if args.skip_mm_profiling:
+        if self.args.skip_mm_profiling:
             Sprofile.store('Rdic', Rdic, 'pickle', 'list of filtered read pairs')
         else:
             Sprofile.store('Rdic', Rdic, 'dictionary', 'Read pair -> mismatches')
         logging.debug("Done storing Rdic")
 
         # Store the .fasta location
-        Sprofile.store('fasta_loc', os.path.abspath(args.fasta), 'value', 'Location of .fasta file used during profile')
-        Sprofile.store('scaffold2length', s2l, 'dictionary', 'Dictionary of scaffold 2 length')
+        Sprofile.store('fasta_loc', os.path.abspath(self.args.fasta), 'value', 'Location of .fasta file used during profile')
+        Sprofile.store('scaffold2length', self.s2l, 'dictionary', 'Dictionary of scaffold 2 length')
 
         # Save
         logging.info('Storing output')
         self.write_output(Sprofile, args)
 
         # Run the rest of things
-        args.IS = Sprofile.location
+        self.args.IS = Sprofile.location
+        self.IS = Sprofile
 
         inStrain.logUtils.log_checkpoint("main_profile", "profile_scaffolds", "end")
-        # See if you can profile genes as well
+
+    def profile_profile_genes(self):
+        '''
+        Call profile genes from the "profile" module
+        '''
         message = """\
 ***************************************************
   .:: inStrain profile Step 3. Profile genes ::..
 ***************************************************
         """
         logging.info(message)
+        args = self.args
+
         if args.gene_file != None:
             inStrain.logUtils.log_checkpoint("main_profile", "profile_genes", "start")
-            args.IS = Sprofile.location
-            Controller().profile_genes_operation(args)
+            Controller().profile_genes_operation(copy.deepcopy(args))
             inStrain.logUtils.log_checkpoint("main_profile", "profile_genes", "end")
         else:
             logging.info('Nevermind! You didnt include a genes file')
 
-        # Make things genome_wide
+    def profile_genome_wide(self):
+        '''
+        Call genome_wide from "profile" module
+        '''
         message = """\
 ***************************************************
 .:: inStrain profile Step 4. Make genome-wide ::..
 ***************************************************
         """
         logging.info(message)
+        args = self.args
+
         if not args.skip_genome_wide:
             inStrain.logUtils.log_checkpoint("main_profile", "genome_wide", "start")
-            args.IS = Sprofile.location
-            Controller().genome_wide_operation(args)
+            Controller().genome_wide_operation(copy.deepcopy(args))
             inStrain.logUtils.log_checkpoint("main_profile", "genome_wide", "end")
         else:
             logging.info('Nevermind! You chose to skip genome_wide')
 
+    def profile_plots(self):
+        '''
+        Call plotting function from "profile" module
+        '''
         # Generate plots
         message = """\
 ***************************************************
@@ -276,20 +344,22 @@ class ProfileController():
 ***************************************************
         """
         logging.info(message)
+        args = self.args
+
         if not args.skip_plot_generation:
             inStrain.logUtils.log_checkpoint("main_profile", "making_plots", "start")
-            args.IS = Sprofile.location
             args.plots = 'a'
             Controller().plot_operation(args)
             inStrain.logUtils.log_checkpoint("main_profile", "making_plots", "end")
         else:
             logging.info('Nevermind! You chose to skip making plots')
 
-        # Final message
+    def write_final_message(self):
+        Sprofile = self.IS
         message = """\
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-    ..:: inStrain profile finished ::..
+..:: inStrain profile finished ::..
 
 Output tables........ {0}
 Figures.............. {1}
@@ -303,14 +373,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             Sprofile.get_location('log'))
         logging.info(message)
 
-        return Sprofile
-
-    def load_fasta(self, args):
+    def load_fasta(self):
         '''
         Load the sequences to be profiled
 
         Return a table listing scaffold name, start, end
         '''
+        args = self.args
+
         if args.use_full_fasta_header:
             #scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"), key_function=_get_description)
             scaff2sequence = {r.description:r.seq.upper() for r in SeqIO.parse(args.fasta, "fasta")}
@@ -346,71 +416,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         return Fdb, scaff2sequence # also return s2l - alexcc 5/9/2019: Nah, make it scaff2sequence (s2s) (M.O. 6/10/19)
 
-    # def load_paired_reads(self, args, FAdb):
-    #     '''
-    #     Load paired reads to be profiled
-    #
-    #     Return a dictionary of read pair -> info
-    #     '''
-    #     # Load paired reads
-    #     scaffolds = list(FAdb['scaffold'].unique())
-    #     scaff2pair2info, scaff2total = inStrain.filter_reads.get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
-    #
-    #     # Merge into single
-    #     pair2info = {}
-    #     for scaff, p2i in scaff2pair2info.items():
-    #         for p, i in p2i.items():
-    #             pair2info[p] = i
-    #
-    #     # Make read report
-    #     logging.info('Making read report')
-    #     RR = inStrain.filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info, **vars(args))
-    #
-    #     # Filter the dictionary
-    #     logging.info('Filtering reads')
-    #     pair2infoF = inStrain.filter_reads.filter_paired_reads_dict(pair2info,
-    #         **vars(args))
-    #
-    #     # Make a report on these pair reads
-    #     #make_mapping_info(pair2info, pair2infoF, args)
-    #
-    #     return pair2infoF, RR
-
-    def validate_arguments(self, args):
-        '''
-        Do some parsing, start up a logger
-        '''
-        # Set up "base"
-        out_base = args.output
-
-        # Set up Logger
-        outbase = out_base
-        RCprof = inStrain.SNVprofile.SNVprofile(outbase)
-        log_loc = RCprof.get_location('log') + 'log.log'
-        setup_logger(log_loc)
-
-        # Make the bam file if you need to
-        args.bam = prepare_bam_fie(args)
-
-        # Load the list of scaffolds
-        args.scaffolds_to_profile = load_scaff_list(args.scaffolds_to_profile)
-
-        # Fix the fdr
-        if args.fdr == 0:
-            args.fdr = 1e-6
-
-        # Handle database mode
-        if args.database_mode:
-            args.min_read_ani = 0.92
-            args.skip_mm_profiling = True
-            args.min_genome_coverage = 1
-
-        # Make sure you have a .stb if needed
-        if args.min_genome_coverage != 0:
-            assert args.stb != [], 'If you adjust the minimum genome coverage, you need to provide an .stb!'
-
-        return args
-
     def write_output(self, Sprofile, args):
         '''
         Write output files
@@ -420,24 +425,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage']:
             Sprofile.generate(t)
         Sprofile.generate('mapping_info', **vars(args))
-
-        # out_base = Sprofile.get_location('output') + os.path.basename(Sprofile.get('location')) + '_'
-        #
-        # # Write the scaffold profile
-        # db = Sprofile.get_nonredundant_scaffold_table()
-        # db.to_csv(out_base + 'scaffold_info.tsv', index=False, sep='\t')
-        #
-        # # Write the SNP frequencies
-        # db = Sprofile.get_nonredundant_snv_table()
-        # db.to_csv(out_base + 'SNVs.tsv', index=False, sep='\t')
-        #
-        # # Write the linkage
-        # db = Sprofile.get_nonredundant_linkage_table()
-        # db.to_csv(out_base + 'linkage.tsv', index=False, sep='\t')
-        #
-        # # Write the read report
-        # RR = Sprofile.get('mapping_info')
-        # inStrain.filter_reads.write_mapping_info(RR, out_base + 'mapping_info.tsv', **vars(args))
 
     def filter_fasta(self, FAdb, s2p, s2l, rl, **kwargs):
         '''
@@ -579,9 +566,6 @@ def setup_logger(loc):
     logging.debug("inStrain version {0} was run \n".format(__version__))
     logging.debug("!"*80 + '\n')
 
-def _get_description(rec):
-    return rec.description
-
 def report_run_stats(logloc, most_recent=True, printToo=True):
     if logloc == None:
         return
@@ -714,56 +698,3 @@ def _sort_index_bam(bam, rm_ori=False):
         os.remove(bam)
 
     return sorted_bam
-    #return convert_table(Ldb)
-# def parse_arguments(args):
-#     parser = argparse.ArgumentParser(description="inStrain version {0}".format(__version__),
-#              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-#
-#     # Required positional arguments
-#     parser.add_argument("bam", help="Sorted .bam file")
-#     parser.add_argument("fasta", help="Fasta file the bam is mapped to")
-#
-#     # Optional arguments
-#     parser.add_argument("-o", "--output", action="store", default='inStrain', \
-#         help='Output prefix')
-#     parser.add_argument("-p", "--processes", action="store", default=6, type=int, \
-#         help='Threads to use for multiprocessing')
-#     parser.add_argument("-c", "--min_cov", action="store", default=5, \
-#         help='Minimum SNV coverage')
-#     parser.add_argument("-s", "--min_snp", action="store", default=20, \
-#         help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
-#     parser.add_argument("-f", "--min_freq", action="store", default=0.05, \
-#         help='Minimum SNP frequency to confirm a SNV (both this AND the 0.  001 percent FDR snp count cutoff must be true).')
-#     parser.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
-#         help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
-#     parser.add_argument("--min_scaffold_reads", action="store", default=0, type=int,\
-#         help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
-#     parser.add_argument("--scaffolds_to_profile", action="store",\
-#         help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
-#
-#     # Read filtering cutoffs
-#     parser.add_argument("-l", "--min_read_ani", action="store", default=0.95, type=float, \
-#         help='Minimum percent identity of read pairs to consensus to use the reads. Must be >, not >=')
-#     parser.add_argument("--min_mapq", action="store", default=-1, type=int,\
-#         help='Minimum mapq score of EITHER read in a pair to use that pair. Must be >, not >=')
-#     parser.add_argument("--max_insert_relative", action="store", default=3, type=float, \
-#         help='Multiplier to determine maximum insert size between two reads - default is to use 3x median insert size. Must be >, not >=')
-#     parser.add_argument("--min_insert", action="store", default=50, type=int,\
-#         help='Minimum insert size between two reads - default is 50 bp. If two reads are 50bp each and overlap completely, their insert will be 50. Must be >, not >=')
-#
-#     parser.add_argument('--store_everything', action='store_true', default=False,\
-#         help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
-#     parser.add_argument('--skip_mm_profiling', action='store_true', default=False,\
-#         help="Dont perform analysis on an mm level; saves RAM and time")
-#
-#     # parser.add_argument("-g", "--genes", action="store", default=None, \
-#     #     help='Optional genes file')
-#     parser.add_argument('--debug', action='store_true', default=False, \
-#         help ="Produce some extra output helpful for debugging")
-#
-#     # Parse
-#     if (len(args) == 0 or args[0] == '-h' or args[0] == '--help'):
-#         parser.print_help()
-#         sys.exit(0)
-#     else:
-#         return parser.parse_args(args)

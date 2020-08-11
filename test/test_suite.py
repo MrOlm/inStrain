@@ -4167,8 +4167,8 @@ class test_special():
 
 if __name__ == '__main__':
     # The following just evaluates the output made
-    # test_strains().run(tests=[16])
-    # test_readcomparer().run(tests=[13])
+    test_strains().run(tests=[16])
+    test_readcomparer().run(tests=[13])
 
     # test_strains().run()
     # test_filter_reads().run()
@@ -4178,6 +4178,6 @@ if __name__ == '__main__':
     # test_genome_wide().run()
     # test_plot().run()
     # test_special().run()
-    test_readcomparer().run()
+    # test_readcomparer().run()
 
     print('everything is working swimmingly!')
