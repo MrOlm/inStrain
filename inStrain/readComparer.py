@@ -13,6 +13,7 @@ import traceback
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+import multiprocessing
 import concurrent.futures
 from concurrent import futures
 from collections import defaultdict
@@ -24,6 +25,7 @@ if __name__ != '__main__':
 import inStrain.profileUtilities
 import inStrain.SNVprofile
 import inStrain.controller
+import inStrain.logUtils
 
 def main(args):
     '''
@@ -42,9 +44,14 @@ def main(args):
         return
 
     # Compare scaffolds
-    Cdb, Mdb, scaff2pair2mm2cov = compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **vargs)
+    inStrain.logUtils.log_checkpoint("Compare", "CompareScaffolds", "start")
+    Cdb, Mdb, scaff2pair2mm2cov = compare_scaffolds(names, Sprofiles,
+        scaffolds_to_compare, s2l, **vargs)
+    inStrain.logUtils.log_checkpoint("Compare", "CompareScaffolds", "end")
 
     # Store the results in the RC
+    inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "start")
+
     RCprof.store('comparisonsTable', Cdb, 'pandas', 'Comparisons between the requested IS objects')
     RCprof.store('scaffold2length', s2l, 'dictionary', 'Scaffold to length')
 
@@ -60,19 +67,12 @@ def main(args):
     if args.store_coverage_overlap:
         RCprof.store('scaff2pair2mm2cov', scaff2pair2mm2cov, 'special', 'A dictionary of scaffold -> IS pair -> mm level -> positions with coverage overlap')
 
-
-
-    # # Store results
-    # outbase = RCprof.get_location('output') + os.path.basename(RCprof.get('location')) + '_'
-    #
-    #
-    # Cdb = RCprof.get_nonredundant_RC_table()
-    # Cdb.to_csv(outbase + 'comparisonsTable.tsv', index=False, sep='\t')
-
-
+    inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "end")
 
 def greedy_main(RCprof, names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     '''
+    DEPRECATED
+
     Perform greedy clustering instead of all-vs-all comparisons
     '''
     g_ani = kwargs.get('g_ani', 0.99)
@@ -149,7 +149,8 @@ def greedy_main(RCprof, names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     Cdb.to_csv(outbase + 'greedyClusters.tsv', index=False, sep='\t')
     Ddb.to_csv(outbase + 'parsed_comparisonsTable_greedy.tsv', index=False, sep='\t')
 
-def compare_Sprofiles_wrapper(IS1, IS_list, name1, names, scaffolds_to_compare, s2l, BIN_LENGTH, **kwargs):
+def compare_Sprofiles_wrapper(IS1, IS_list, name1, names, scaffolds_to_compare,
+                                s2l, BIN_LENGTH, **kwargs):
     '''
     Compare IS1 to every IS in the IS_list
     '''
@@ -255,6 +256,7 @@ def parse_validate(args):
     log_loc = RCprof.get_location('log') + 'log.log'
     inStrain.controller.setup_logger(log_loc)
 
+    inStrain.logUtils.log_checkpoint("Compare", "ParseArguments", "start")
     # Get the stuff to return
     names = []
     Sprofiles = []
@@ -300,81 +302,28 @@ def parse_validate(args):
 
     assert len(scaffolds_to_compare) > 0, "No scaffolds are shared amoung the IS"
 
+    inStrain.logUtils.log_checkpoint("Compare", "ParseArguments", "end")
     return RCprof, names, Sprofiles, scaffolds_to_compare, outbase, scaffold2length
 
-# def parse_validate(args):
-#     '''
-#     Make sure there are some shared scaffolds between these
-#
-#     TO DO: make sure they're all the same lengths
-#     '''
-#     inputs = list(args.input)
-#     assert len(inputs) > 1, "You need to have more than one input .IS file"
-#
-#     outbase = args.output
-#     inStrain.controller.setup_logger(outbase + '.log')
-#
-#     # Get the stuff to return
-#     names = []
-#     Spprofiles = []
-#     SNPtables = []
-#
-#     # Make a series of value counts
-#     scaffolds = []
-#
-#     # Figure out scaffolds that are in the list
-#     if args.scaffolds != None:
-#         scaffold_list = inStrain.controller.load_scaff_list(args.scaffolds)
-#     else:
-#         scaffold_list = []
-#
-#     # Fill this stuff in
-#     P2C = {'A':0, 'C':1, 'T':2, 'G':3, 'X':4}
-#     for inp in inputs:
-#         if not os.path.exists(inp):
-#             logging.error("IS {0} does not exist! Skipping".format(inp))
-#             continue
-#
-#         S = inStrain.SNVprofile.SNVprofile(inp)
-#         scaffolds += S._get_covt_keys()
-#         names.append(os.path.basename(S.get('bam_loc')))
-#
-#         covT = S.get('covT', scaffolds=scaffold_list)
-#         scaffolds += list(covT.keys())
-#         names.append(os.path.basename(S.get('bam_loc')))
-#         covTs.append(covT)
-#
-#         db = S.get('cumulative_snv_table')
-#         if len(db) > 0:
-#             db['con_base'] = [x if x in P2C else 'X' for x in db['con_base']]
-#             db['ref_base'] = [x if x in P2C else 'X' for x in db['con_base']]
-#
-#             db['con_base'] = db['con_base'].map(P2C).astype('int8')
-#             db['ref_base'] = db['ref_base'].map(P2C).astype('int8')
-#         SNPtables.append(db)
-#         #
-#         # print(inp)
-#         # x = len(covTs[-1]['N5_271_010G1_scaffold_100'])
-#         # print(x)
-#         # print(x/1148)
-#
-#         #SNPtables.append(S.get('cumulative_snv_table'))
-#
-#     # Figure out which scaffolds to compare
-#     scaffolds_to_compare = [x for x, c in pd.Series(scaffolds).value_counts().to_dict().items() if c >= 2]
-#     logging.info("{0} of {1} scaffolds are in at least 2 samples".format(
-#                     len(scaffolds_to_compare), len(set(scaffolds))))
-#
-#     # # Figure out scaffolds that are in the list
-#     # if args.scaffolds != None:
-#     #     scaffolds = inStrain.controller.load_scaff_list(args.scaffolds)
-#     #     scaffolds_to_compare = list(set(scaffolds).intersection(set(scaffolds_to_compare)))
-#     #     logging.info("{0} of these scaffolds are in the provided list of {1}".format(
-#     #                     len(scaffolds_to_compare), len(set(scaffolds))))
-#
-#     assert len(scaffolds_to_compare) > 0, "No scaffolds are shared amoung the IS"
-#
-#     return names, covTs, SNPtables, scaffolds_to_compare, outbase
+def compare_scaffold_worker(cmd_queue, result_queue, single_thread=False):
+    '''
+    Worker to compare scaffolds
+    '''
+    while True:
+        if not single_thread:
+            cmd = cmd_queue.get(True)
+        else:
+            try:
+                cmd = cmd_queue.get(timeout=5)
+            except:
+                return
+
+        results, log = scaffold_profile_wrapper(cmd)
+        result_queue.put((results, log))
+
+        # Clean up memory
+        for r in results:
+            del r
 
 def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     '''
@@ -389,64 +338,96 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     * Set up the multiprocessing
     * Return the results
     '''
-    # get arguments for the wrapper
+    # Get arguments for the wrapper
     p = int(kwargs.get('processes', 6))
 
-    ScaffProfiles = []
-    if p > 1:
-        ex = concurrent.futures.ProcessPoolExecutor(max_workers=p)
+    # Make commands
+    cmds = [x for x in iterate_commands(names, Sprofiles, s2l,
+                                        scaffolds_to_compare, kwargs)]
 
-        total_cmds = len([x for x in iterate_commands(names, Sprofiles, s2l, scaffolds_to_compare, kwargs)])
+    # Use spawn to reduce memory usage
+    ctx = multiprocessing.get_context('spawn')
 
-        wait_for = [ex.submit(scaffold_profile_wrapper, cmd) for cmd in iterate_commands(names, Sprofiles, s2l, scaffolds_to_compare, kwargs)]
+    # Make queues
+    cmd_queue = ctx.Queue()
+    result_queue = ctx.Queue()
+    for cmd_group in cmds:
+        cmd_queue.put(cmd_group)
 
-        for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Profiling scaffolds'):
-            try:
-                results = f.result()
-                ScaffProfiles.append(results)
-            except:
-                logging.error("We had a failure! Not sure where!")
+    inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "start")
 
-    else:
-        for cmd in tqdm(iterate_commands(names, Sprofiles, s2l, scaffolds_to_compare, kwargs),
-                        desc='Profiling scaffolds:',
-                        total = len(scaffolds_to_compare)):
-            ScaffProfiles.append(scaffold_profile_wrapper(cmd))
-
-    # identity skipped scaffolds
-    skipped = set(s.split()[4] for s in ScaffProfiles if type(s) == type('string'))
-    #skipped = set([s[3][5:] for s in ScaffProfiles if s[3][:4] == 'skip'])
-
-    # Retry the ones that failed but were not skipped
-    failed_scaffs = set(scaffolds_to_compare) - set([s[3] for s in ScaffProfiles]) - skipped
-
-    if len(failed_scaffs) > 0:
-        logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
-
-        ex = concurrent.futures.ThreadPoolExecutor(max_workers=p)
-        total_cmds = len([x for x in iterate_commands(names, Sprofiles, s2l, failed_scaffs, kwargs)])
-        wait_for = [ex.submit(scaffold_profile_wrapper, cmd) for cmd in iterate_commands(names, Sprofiles, s2l, failed_scaffs, kwargs)]
-        for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Profiling failed scaffolds'):
-            results = f.result()
-            ScaffProfiles.append(results)
-
-    # Do some processing to figure out which ones failed
+    # Do the multiprocessing
     dbs = []
     mdbs = []
     scaff2pair2mm2cov = {}
+    if p > 1:
+        logging.debug("Establishing processes")
+        processes = []
+        for i in range(0, p):
+            processes.append(ctx.Process(target=compare_scaffold_worker, args=(cmd_queue, result_queue)))
+        for proc in processes:
+            proc.start()
 
-    for s in ScaffProfiles:
-        if len(s) != 4:
-            logging.debug("Scaff profile is not len 4! Its {0}".format(s))
-        elif s[3][:4] == 'skip':
-            pass
-        else:
-            if isinstance(s[0], pd.DataFrame):
-                dbs.append(s[0])
-                mdbs.append(s[1])
-                scaff2pair2mm2cov[s[3]] = s[2]
-            else:
-                logging.debug("THIS PROFILE IS NOT A DATAFRAME! {1} {0}".format(s, s[3]))
+        # Set up progress bar
+        pbar = tqdm(desc='Comparing scaffolds: ', total=len(cmds))
+
+        # Get the results
+        recieved_groups = 0
+        while recieved_groups < len(cmds):
+            result_group = result_queue.get()
+            recieved_groups += 1
+            pbar.update(1)
+
+            assert len(result_group) == 2
+            results_all, log = result_group
+            logging.debug(log)
+
+            for results in results_all:
+                if results[3][:4] == 'skip':
+                    pass
+
+                else:
+                    if isinstance(results[0], pd.DataFrame):
+                        dbs.append(results[0])
+                        mdbs.append(results[1])
+                        scaff2pair2mm2cov[results[3]] = results[2]
+                    else:
+                        logging.debug("THIS PROFILE IS NOT A DATAFRAME! {1} {0}".format(s, s[3]))
+
+        # Close multi-processing
+        for proc in processes:
+            proc.terminate()
+
+        # Close progress bar
+        pbar.close()
+
+    else:
+        compare_scaffold_worker(cmd_queue, result_queue, single_thread=True)
+
+        # Get the results
+        recieved_groups = 0
+        while recieved_groups < len(cmds):
+            result_group = result_queue.get()
+            recieved_groups += 1
+            pbar.update(1)
+
+            assert len(result_group) == 2
+            results_all, log = result_group
+            logging.debug(log)
+
+            for results in results_all:
+                if results[3][:4] == 'skip':
+                    pass
+
+                else:
+                    if isinstance(results[0], pd.DataFrame):
+                        dbs.append(results[0])
+                        mdbs.append(results[1])
+                        scaff2pair2mm2cov[results[3]] = results[2]
+                    else:
+                        logging.debug("THIS PROFILE IS NOT A DATAFRAME! {1} {0}".format(s, s[3]))
+
+    inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "end")
 
     if len(mdbs) > 0:
         Mdb = pd.concat(mdbs, sort=False)
@@ -467,25 +448,33 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
 
     return [pd.concat(dbs, sort=False), Mdb, scaff2pair2mm2cov]
 
-    # return [pd.concat([x[0] for x in ScaffProfiles]), # Table
-    #         {s:i for i, s in zip([x[1] for x in ScaffProfiles], [x[3] for x in ScaffProfiles]) if s != 'skip'}, # scaff2pair2mm2SNPs
-    #         {s:i for i, s in zip([x[2] for x in ScaffProfiles], [x[3] for x in ScaffProfiles]) if s != 'skip'}] # scaff2pair2mm2cov
 
-def scaffold_profile_wrapper(cmd):
+def scaffold_profile_wrapper(cmds):
     '''
     Take a command and profile the scaffold
     '''
-    logging.debug('running {0}'.format(cmd.scaffold))
-    try:
-        return compare_scaffold(cmd.scaffold, cmd.names, cmd.sProfiles, cmd.mLen, **cmd.arguments)
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
-        t = time.strftime('%m-%d %H:%M')
-        log_message = "\n{1} DEBUG FAILURE CompareScaffold {0} {2}\n"\
-                        .format(cmd.scaffold, t, str(cmd.names))
-        return log_message
+    results = []
+    log = ''
+
+    for cmd in [cmds]:
+        try:
+            cur_results, cur_log = compare_scaffold(cmd.scaffold, cmd.names,
+                                    cmd.sProfiles, cmd.mLen, **cmd.arguments)
+            results.append(cur_results)
+            log += cur_log
+
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+            logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
+            t = time.strftime('%m-%d %H:%M')
+            log_message = "\n{1} DEBUG FAILURE CompareScaffold {0} {2}\n"\
+                            .format(cmd.scaffold, t, str(cmd.names))
+            log += log_message
+
+    return results, log
+
+        #return log_message
 
 def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
     '''
@@ -560,7 +549,7 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
         [DataFrame of "scaffold, sample1, sample2, mm, coverage_overlap, ANI",
         DataFrame of SNP locs,
         pair2mm2covOverlap,
-        name of scaffold]
+        name of scaffold], log
     '''
     # Load arguments
     min_cov = kwargs.get('min_cov', 5)
@@ -591,7 +580,9 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
         cur_names.append(name)
 
     if len(cur_names) < 2:
-        return [pd.DataFrame(), pd.DataFrame(), {}, 'skip_{0}'.format(scaffold)]
+        results = [pd.DataFrame(), pd.DataFrame(), {}, 'skip_{0}'.format(scaffold)]
+        log = ''
+        return (results, log)
 
     # Iterate through pairs
     i = 0
@@ -645,7 +636,9 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
     else:
         Mdb = pd.DataFrame()
 
-    return [pd.DataFrame(table), Mdb, pair2mm2covOverlap, scaffold]
+    results = [pd.DataFrame(table), Mdb, pair2mm2covOverlap, scaffold]
+    log = ''
+    return (results, log)
 
 def _calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
     '''

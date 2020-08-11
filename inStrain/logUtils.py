@@ -22,11 +22,23 @@ from matplotlib.backends.backend_pdf import PdfPages
 import seaborn as sns
 
 def process_logs(IS_loc):
+    '''
+    Generate the run report for an IS location
+    '''
     logging.shutdown()
     logloc = os.path.join(IS_loc, 'log/log.log')
     report_run_stats(logloc, most_recent=False, printToo=True, debug=True, save=True)
 
-def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=False, plot=True):
+def report_run_stats(logloc, save=True, most_recent=True, printToo=True,
+                    debug=False, plot=True):
+    '''
+    Overall wrapper of this module.
+
+    1) The text log is parsed into a dataframe with "load_log"
+    2) A number of reports are generated with "generate_reports"
+    3) These reports are saved / displayed here
+
+    '''
     if logloc == None:
         return
 
@@ -38,7 +50,7 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
         if most_recent:
             Ldb = filter_most_recent(Ldb)
             assert len(Ldb['run_ID'].unique()) == 1
-            # assert len(Ldb[Ldb['log_type'].isin(['program_start', 'program_end'])]) == 2, len(Ldb[Ldb['log_type'].isin(['program_start', 'program_end'])])
+
     except BaseException as e:
         if debug:
             print('Failed to load log file - {1}'.format('None', str(e)))
@@ -77,6 +89,26 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True, debug=F
                 traceback.print_exc()
 
 def load_log(logfile):
+    '''
+    A bunch of messy logic to turn the text file into a dataframe
+
+    The resulting dataframe has 4 columns:
+    * log_type = a description of the information that the log contains
+    * time = time (in seconds since epoch) that the log was made
+    * parseable_string = a string with arbitrary information
+    * run_ID = an identifier of a particular instrain run (time when started)
+
+    There are the following types of logs:
+    * program_start
+    * program_end
+    * checkpoint
+        - Made using "log_checkpoint". Used for logging regular checkpoints
+    * Special_genes
+    * Plotting
+    * WorkerLog
+    * Failure
+
+    '''
     table = defaultdict(list)
     with open(logfile) as o:
         prev_line_2 = None
@@ -116,11 +148,6 @@ def load_log(logfile):
                 table['run_ID'].append(run_ID)
                 table['parsable_string'].append("class={0};name={1};status={2};RAM={3}".format(
                         linewords[4], linewords[5], linewords[6], linewords[7]))
-                #
-                # if len(linewords) == 9:
-                #     table['parsable_string'].append("status={0};name={1};RAM={2}".format(linewords[5], linewords[4], linewords[8]))
-                # else:
-                #     table['parsable_string'].append("status={0};name={1}".format(linewords[5], linewords[4]))
 
             # Special gene multiprocessing reporting
             elif 'SpecialPoint_genes' in line:
@@ -152,18 +179,8 @@ def load_log(logfile):
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
-            # elif (line.startswith('profile') | line.startswith('merge')):
-            #     pstring = "scaffold={0};PID={1};status={2};process_RAM={3};system_RAM={4};total_RAM={5}".format(
-            #                 linewords[1], linewords[3], linewords[4], linewords[8], linewords[12], linewords[14])
-            #
-            #     table['log_type'].append(linewords[0].split('_')[0])
-            #     table['time'].append(float(linewords[6]))
-            #     table['parsable_string'].append(pstring)
-            #     table['run_ID'].append(run_ID)
-
             # Special Failure
             elif 'FAILURE' in line:
-
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
                 fail_type = linewords[4]
 
@@ -208,34 +225,19 @@ def load_log(logfile):
             prev_line = line
 
     Ldb = pd.DataFrame(table)
-    #Ldb = add_run_IDs(Ldb)
 
     return Ldb
 
-def profile_plot(Ldb, saveloc=None):
-    #ldb = Ldb[Ldb['log_type'] == 'profile']
-    rdb = _load_profile_logtable(Ldb)
-    if len(rdb) == 0:
-        return
-
-    if 'command' not in list(rdb.columns):
-        print(rdb)
-        return
-
-    db = rdb[rdb['command'] == 'profile']
-    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='red', label='split profiling')
-
-    db = rdb[rdb['command'] == 'merge']
-    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='blue', label='split merging')
-
-    plt.xlabel('Runtime (seconds)')
-    plt.ylabel('RAM usage)')
-    plt.legend()
-
-    if saveloc != None:
-        plt.gcf().savefig(saveloc, bbox_inches='tight')
-
 def generate_reports(Ldb, debug=False):
+    '''
+    Using the parsed log dataframe, make "name2report".
+
+    The following reports are made:
+    * Overall
+    * Checkpoints
+    (lots more; a lot of this is redundent)
+
+    '''
     name2report = {}
     assert len(Ldb['run_ID'].unique()) == 1
 
@@ -293,7 +295,8 @@ def generate_reports(Ldb, debug=False):
     # Make the genes report
     name = 'Geneome level report'
     try:
-        report = _gen_geneomelevel_report(Ldb)
+        report = ''
+        report += _gen_checkpoint_report2(Ldb, log_class='GenomeLevel')
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -303,6 +306,16 @@ def generate_reports(Ldb, debug=False):
     name = 'Plotting'
     try:
         report = _gen_plotting_report(Ldb)
+        name2report[name] = report
+    except BaseException as e:
+        if debug:
+            print('Failed to make log for {0} - {1}'.format(name, str(e)))
+            traceback.print_exc()
+
+    name = 'Compare'
+    try:
+        report = ''
+        report += _gen_checkpoint_report2(Ldb, log_class='Compare')
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -322,6 +335,9 @@ def generate_reports(Ldb, debug=False):
     return name2report
 
 def _gen_overall_report(Ldb):
+    '''
+    Report on the overall runtime of the program
+    '''
     report = ''
     if 'program_end' in Ldb['log_type'].tolist():
         start = datetime.fromtimestamp(Ldb[Ldb['log_type'] == 'program_start']['time'].tolist()[0])
@@ -352,8 +368,10 @@ def _gen_overall_report(Ldb):
     return report, OVERALL_RUNTIME
 
 def _gen_checkpoint_report(Ldb, overall_runtime):
+    '''
+    Make a report on all of the major checkpoints
+    '''
     report = ''
-
     # Set up
     ldb = Ldb[Ldb['log_type'] == 'checkpoint']
     for i in ['name', 'status']:
@@ -396,7 +414,10 @@ def _gen_multiprocessing_report(Ldb, commands):
     ldb = _load_multiprocessing_log(Ldb, commands=commands)
 
     # Make report
-    return _gen_multiprocessing_text(ldb)
+    if len(ldb) > 0:
+        return _gen_multiprocessing_text(ldb)
+    else:
+        return ''
 
 def _load_multiprocessing_log(Ldb, commands):
     # Parse the initial datatable
@@ -629,6 +650,8 @@ def _gen_profileRAM_report(Ldb, detailed=False):
 
 def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
     '''
+    The prefered way of handling checkpoints
+
     ldb should have the columns:
         name = name of checkpoint
         status = start or end
@@ -694,14 +717,6 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
 
     return report
 
-def _gen_geneomelevel_report(Ldb, detailed=False):
-    report = ''
-
-    # Set up checkpoint log
-    report += _gen_checkpoint_report2(Ldb, log_class='GenomeLevel')
-
-    return report
-
 def _gen_filter_reads_report(Ldb, detailed=False):
     report = ''
 
@@ -719,7 +734,8 @@ def _gen_genes_report(Ldb, detailed=False):
 
     # Set up checkpoint log
     report += _gen_checkpoint_report2(Ldb, log_class='GeneProfile')
-    report += '\n'
+    if report != '':
+        report += '\n'
 
     # Set up paralellization log
     ldb = Ldb[Ldb['log_type'] == 'Special_genes']
@@ -1022,3 +1038,26 @@ def get_worker_log(worker_type, unit, status, inc_children=False):
     assert status in ['start', 'end'], [log_class, name, status]
 
     return "\nWorkerLog {0} {1} {2} {3} {4} {5}".format(worker_type, unit, status, mem, time.time(), pid)
+
+def profile_plot(Ldb, saveloc=None):
+    #ldb = Ldb[Ldb['log_type'] == 'profile']
+    rdb = _load_profile_logtable(Ldb)
+    if len(rdb) == 0:
+        return
+
+    if 'command' not in list(rdb.columns):
+        print(rdb)
+        return
+
+    db = rdb[rdb['command'] == 'profile']
+    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='red', label='split profiling')
+
+    db = rdb[rdb['command'] == 'merge']
+    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='blue', label='split merging')
+
+    plt.xlabel('Runtime (seconds)')
+    plt.ylabel('RAM usage)')
+    plt.legend()
+
+    if saveloc != None:
+        plt.gcf().savefig(saveloc, bbox_inches='tight')

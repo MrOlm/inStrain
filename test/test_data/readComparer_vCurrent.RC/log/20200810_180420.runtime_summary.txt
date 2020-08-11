@@ -1,0 +1,26 @@
+..:: Overall ::..
+InStrain version 1.3.0v started at 2020-08-10 18:04:20 and ended at 2020-08-10 18:05:36.
+Runtime = 1 minute, 16 seconds
+Command = /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
+
+..:: Checkpoints ::..
+
+..:: Filter reads report ::..
+
+
+..:: Profile RAM useage and paralellization efficiency ::..
+
+..:: Genes paralellization efficiency ::..
+
+..:: Geneome level report ::..
+
+..:: Plotting ::..
+
+..:: Compare ::..
+ParseArguments       took 3.0 seconds     ( 3.9% of overall)	RAM went from 144.64 MB to 148.91 MB (increased by 4.27 MB)
+CompareScaffolds     took 1.0 minute, 12.0 seconds (94.7% of overall)	RAM went from 149.17 MB to 162.84 MB (increased by 13.67 MB)
+multiprocessing      took 1.0 minute, 11.0 seconds (93.4% of overall)	RAM went from 153.12 MB to 159.71 MB (increased by 6.59 MB)
+SaveResults          took <1 second       ( 1.3% of overall)	RAM went from 163.17 MB to 168.84 MB (increased by 5.67 MB)
+
+..:: Failures ::..
+No failures

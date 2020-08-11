@@ -1,902 +1,199 @@
-20-07-29 09:53:58 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-20-07-29 09:53:58 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
-20-07-29 09:53:58 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
+20-08-10 18:04:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20-08-10 18:04:20 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
+20-08-10 18:04:20 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
 
-20-07-29 09:53:58 DEBUG    inStrain version 1.3.0.dev3 was run 
+20-08-10 18:04:20 DEBUG    inStrain version 1.3.0v was run 
 
-20-07-29 09:53:58 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20-08-10 18:04:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-20-07-29 09:53:58 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
-20-07-29 09:53:59 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
-20-07-29 09:54:00 INFO     178 of 178 scaffolds are in at least 2 samples
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_22
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_197
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_361
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_90
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_80
-20-07-29 09:54:00 DEBUG    running N5_271_010G1_scaffold_61
-20-07-29 09:54:00 DEBUG    N5_271_010G1_scaffold_90 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:00 DEBUG    N5_271_010G1_scaffold_61 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:00 DEBUG    N5_271_010G1_scaffold_197 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_22 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_361 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_80 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_90 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_197 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_90 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_61 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_80 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_197 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_361 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    Returning N5_271_010G1_scaffold_90 2 2
-20-07-29 09:54:01 DEBUG    running N5_271_010G1_scaffold_95
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_22 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_80 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:01 DEBUG    Returning N5_271_010G1_scaffold_197 2 2
-20-07-29 09:54:01 DEBUG    running N5_271_010G1_scaffold_362
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_61 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:01 DEBUG    Returning N5_271_010G1_scaffold_80 2 2
-20-07-29 09:54:01 DEBUG    running N5_271_010G1_scaffold_108
-20-07-29 09:54:01 DEBUG    N5_271_010G1_scaffold_361 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_22 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_95 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:02 DEBUG    Returning N5_271_010G1_scaffold_61 2 2
-20-07-29 09:54:02 DEBUG    running N5_271_010G1_scaffold_341
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_362 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_362 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:02 DEBUG    Returning N5_271_010G1_scaffold_22 2 2
-20-07-29 09:54:02 DEBUG    Returning N5_271_010G1_scaffold_361 2 2
-20-07-29 09:54:02 DEBUG    running N5_271_010G1_scaffold_103
-20-07-29 09:54:02 DEBUG    running N5_271_010G1_scaffold_104
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_95 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_108 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_362 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_108 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:02 DEBUG    Returning N5_271_010G1_scaffold_362 2 2
-20-07-29 09:54:02 DEBUG    running N5_271_010G1_scaffold_101
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_341 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_108 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:02 DEBUG    N5_271_010G1_scaffold_95 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_104 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_103 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_103 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:03 DEBUG    Returning N5_271_010G1_scaffold_108 2 2
-20-07-29 09:54:03 DEBUG    running N5_271_010G1_scaffold_81
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_341 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_101 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_103 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:03 DEBUG    Returning N5_271_010G1_scaffold_95 2 2
-20-07-29 09:54:03 DEBUG    running N5_271_010G1_scaffold_16
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_101 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_104 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_101 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:03 DEBUG    Returning N5_271_010G1_scaffold_103 2 2
-20-07-29 09:54:03 DEBUG    running N5_271_010G1_scaffold_49
-20-07-29 09:54:03 DEBUG    Returning N5_271_010G1_scaffold_101 2 2
-20-07-29 09:54:03 DEBUG    running N5_271_010G1_scaffold_8
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_104 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_341 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_81 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:03 DEBUG    Returning N5_271_010G1_scaffold_104 2 2
-20-07-29 09:54:03 DEBUG    running N5_271_010G1_scaffold_24
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_81 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:03 DEBUG    N5_271_010G1_scaffold_16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_81 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:04 DEBUG    Returning N5_271_010G1_scaffold_341 2 2
-20-07-29 09:54:04 DEBUG    running N5_271_010G1_scaffold_116
-20-07-29 09:54:04 DEBUG    Returning N5_271_010G1_scaffold_81 2 2
-20-07-29 09:54:04 DEBUG    running N5_271_010G1_scaffold_73
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_49 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_8 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_49 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_49 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_24 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    Returning N5_271_010G1_scaffold_49 2 2
-20-07-29 09:54:04 DEBUG    running N5_271_010G1_scaffold_53
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_116 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_16 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_73 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_8 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_116 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_73 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_24 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_116 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:04 DEBUG    N5_271_010G1_scaffold_73 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_73 2 2
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_16 2 2
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_96
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_141
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_116 2 2
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_146
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_53 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_8 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_53 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_24 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_53 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_141 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_96 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_146 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_24 2 2
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_32
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_8 2 2
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_82
-20-07-29 09:54:05 DEBUG    N5_271_010G1_scaffold_141 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:05 DEBUG    Returning N5_271_010G1_scaffold_53 2 2
-20-07-29 09:54:05 DEBUG    running N5_271_010G1_scaffold_100
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_96 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_146 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_96 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_141 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:06 DEBUG    Returning N5_271_010G1_scaffold_96 2 2
-20-07-29 09:54:06 DEBUG    running N5_271_010G1_scaffold_350
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_146 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_32 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_82 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:06 DEBUG    Returning N5_271_010G1_scaffold_141 2 2
-20-07-29 09:54:06 DEBUG    running N5_271_010G1_scaffold_148
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_100 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_100 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_82 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:06 DEBUG    Returning N5_271_010G1_scaffold_146 2 2
-20-07-29 09:54:06 DEBUG    running N5_271_010G1_scaffold_29
-20-07-29 09:54:06 DEBUG    N5_271_010G1_scaffold_100 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:07 DEBUG    Returning N5_271_010G1_scaffold_100 2 2
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_350 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:07 DEBUG    running N5_271_010G1_scaffold_47
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_82 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_32 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_350 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_148 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:07 DEBUG    Returning N5_271_010G1_scaffold_82 2 2
-20-07-29 09:54:07 DEBUG    running N5_271_010G1_scaffold_7
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_350 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_148 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_29 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:07 DEBUG    Returning N5_271_010G1_scaffold_350 2 2
-20-07-29 09:54:07 DEBUG    running N5_271_010G1_scaffold_142
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_47 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_148 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_32 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:07 DEBUG    N5_271_010G1_scaffold_29 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_7 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_47 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:08 DEBUG    Returning N5_271_010G1_scaffold_148 2 2
-20-07-29 09:54:08 DEBUG    running N5_271_010G1_scaffold_112
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_142 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_47 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_142 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_29 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:08 DEBUG    Returning N5_271_010G1_scaffold_32 2 2
-20-07-29 09:54:08 DEBUG    running N5_271_010G1_scaffold_21
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_142 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:08 DEBUG    Returning N5_271_010G1_scaffold_142 2 2
-20-07-29 09:54:08 DEBUG    running N5_271_010G1_scaffold_48
-20-07-29 09:54:08 DEBUG    N5_271_010G1_scaffold_7 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:08 DEBUG    Returning N5_271_010G1_scaffold_47 2 2
-20-07-29 09:54:08 DEBUG    running N5_271_010G1_scaffold_60
-20-07-29 09:54:09 DEBUG    Returning N5_271_010G1_scaffold_29 2 2
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_112 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:09 DEBUG    running N5_271_010G1_scaffold_84
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_21 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_7 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_48 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_60 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_112 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_21 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_60 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_84 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_48 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_60 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:09 DEBUG    N5_271_010G1_scaffold_84 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_7 2 2
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_68
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_60 2 2
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_84 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_2
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_48 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_21 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_84 2 2
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_150
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_112 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_48 2 2
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_156
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_21 2 2
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_88
-20-07-29 09:54:10 DEBUG    Returning N5_271_010G1_scaffold_112 2 2
-20-07-29 09:54:10 DEBUG    running N5_271_010G1_scaffold_158
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_68 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_2 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_68 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_150 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:10 DEBUG    N5_271_010G1_scaffold_156 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_150 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_68 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_156 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_88 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_150 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_156 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:11 DEBUG    Returning N5_271_010G1_scaffold_68 2 2
-20-07-29 09:54:11 DEBUG    running N5_271_010G1_scaffold_162
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_158 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:11 DEBUG    Returning N5_271_010G1_scaffold_150 2 2
-20-07-29 09:54:11 DEBUG    running N5_271_010G1_scaffold_74
-20-07-29 09:54:11 DEBUG    Returning N5_271_010G1_scaffold_156 2 2
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_158 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:11 DEBUG    running N5_271_010G1_scaffold_132
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_88 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_2 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_158 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:11 DEBUG    Returning N5_271_010G1_scaffold_158 2 2
-20-07-29 09:54:11 DEBUG    running N5_271_010G1_scaffold_136
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_88 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:11 DEBUG    N5_271_010G1_scaffold_162 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_74 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_132 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_162 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_74 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_132 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_162 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:12 DEBUG    Returning N5_271_010G1_scaffold_88 2 2
-20-07-29 09:54:12 DEBUG    running N5_271_010G1_scaffold_18
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_132 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_74 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_2 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:12 DEBUG    Returning N5_271_010G1_scaffold_162 2 2
-20-07-29 09:54:12 DEBUG    running N5_271_010G1_scaffold_71
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_136 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:12 DEBUG    Returning N5_271_010G1_scaffold_132 2 2
-20-07-29 09:54:12 DEBUG    running N5_271_010G1_scaffold_35
-20-07-29 09:54:12 DEBUG    Returning N5_271_010G1_scaffold_74 2 2
-20-07-29 09:54:12 DEBUG    N5_271_010G1_scaffold_136 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:12 DEBUG    running N5_271_010G1_scaffold_70
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_18 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_136 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_71 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:13 DEBUG    Returning N5_271_010G1_scaffold_136 2 2
-20-07-29 09:54:13 DEBUG    running N5_271_010G1_scaffold_376
-20-07-29 09:54:13 DEBUG    Returning N5_271_010G1_scaffold_2 2 2
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_35 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:13 DEBUG    running N5_271_010G1_scaffold_56
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_71 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_35 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_70 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_71 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_18 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:13 DEBUG    N5_271_010G1_scaffold_35 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:14 DEBUG    Returning N5_271_010G1_scaffold_35 2 2
-20-07-29 09:54:14 DEBUG    running N5_271_010G1_scaffold_52
-20-07-29 09:54:14 DEBUG    Returning N5_271_010G1_scaffold_71 2 2
-20-07-29 09:54:14 DEBUG    running N5_271_010G1_scaffold_59
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_70 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_376 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_56 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_70 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_376 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_18 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:14 DEBUG    Returning N5_271_010G1_scaffold_70 2 2
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_376 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:14 DEBUG    running N5_271_010G1_scaffold_27
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_56 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:14 DEBUG    Returning N5_271_010G1_scaffold_376 2 2
-20-07-29 09:54:14 DEBUG    running N5_271_010G1_scaffold_33
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_59 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_52 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_59 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:14 DEBUG    Returning N5_271_010G1_scaffold_18 2 2
-20-07-29 09:54:14 DEBUG    running N5_271_010G1_scaffold_79
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_59 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:14 DEBUG    N5_271_010G1_scaffold_56 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_27 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_52 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:15 DEBUG    Returning N5_271_010G1_scaffold_59 2 2
-20-07-29 09:54:15 DEBUG    running N5_271_010G1_scaffold_135
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_33 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:15 DEBUG    Returning N5_271_010G1_scaffold_56 2 2
-20-07-29 09:54:15 DEBUG    running N5_271_010G1_scaffold_117
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_27 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_33 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_79 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_52 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_135 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_79 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_27 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:15 DEBUG    Returning N5_271_010G1_scaffold_52 2 2
-20-07-29 09:54:15 DEBUG    running N5_271_010G1_scaffold_1
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_117 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_33 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_135 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:15 DEBUG    N5_271_010G1_scaffold_79 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:16 DEBUG    Returning N5_271_010G1_scaffold_33 2 2
-20-07-29 09:54:16 DEBUG    running N5_271_010G1_scaffold_3
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_135 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:16 DEBUG    Returning N5_271_010G1_scaffold_27 2 2
-20-07-29 09:54:16 DEBUG    running N5_271_010G1_scaffold_85
-20-07-29 09:54:16 DEBUG    Returning N5_271_010G1_scaffold_135 2 2
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_117 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:16 DEBUG    running N5_271_010G1_scaffold_19
-20-07-29 09:54:16 DEBUG    Returning N5_271_010G1_scaffold_79 2 2
-20-07-29 09:54:16 DEBUG    running N5_271_010G1_scaffold_110
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_1 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_117 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_3 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_85 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:16 DEBUG    Returning N5_271_010G1_scaffold_117 2 2
-20-07-29 09:54:16 DEBUG    running N5_271_010G1_scaffold_484
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_110 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_19 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:16 DEBUG    N5_271_010G1_scaffold_85 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_85 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_3 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    Returning N5_271_010G1_scaffold_85 2 2
-20-07-29 09:54:17 DEBUG    running N5_271_010G1_scaffold_55
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_19 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_1 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_484 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_110 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_484 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_484 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_55 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_19 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:17 DEBUG    Returning N5_271_010G1_scaffold_484 2 2
-20-07-29 09:54:17 DEBUG    running N5_271_010G1_scaffold_0
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_3 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_55 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_110 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:17 DEBUG    N5_271_010G1_scaffold_55 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:18 DEBUG    Returning N5_271_010G1_scaffold_19 2 2
-20-07-29 09:54:18 DEBUG    Returning N5_271_010G1_scaffold_55 2 2
-20-07-29 09:54:18 DEBUG    running N5_271_010G1_scaffold_57
-20-07-29 09:54:18 DEBUG    running N5_271_010G1_scaffold_145
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_1 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_0 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:18 DEBUG    Returning N5_271_010G1_scaffold_3 2 2
-20-07-29 09:54:18 DEBUG    running N5_271_010G1_scaffold_10
-20-07-29 09:54:18 DEBUG    Returning N5_271_010G1_scaffold_110 2 2
-20-07-29 09:54:18 DEBUG    running N5_271_010G1_scaffold_99
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_57 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_145 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_57 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_0 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_10 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:18 DEBUG    N5_271_010G1_scaffold_57 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_145 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_99 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:19 DEBUG    Returning N5_271_010G1_scaffold_1 2 2
-20-07-29 09:54:19 DEBUG    running N5_271_010G1_scaffold_46
-20-07-29 09:54:19 DEBUG    Returning N5_271_010G1_scaffold_57 2 2
-20-07-29 09:54:19 DEBUG    running N5_271_010G1_scaffold_443
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_99 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_145 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_99 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:19 DEBUG    Returning N5_271_010G1_scaffold_145 2 2
-20-07-29 09:54:19 DEBUG    running N5_271_010G1_scaffold_123
-20-07-29 09:54:19 DEBUG    Returning N5_271_010G1_scaffold_99 2 2
-20-07-29 09:54:19 DEBUG    running N5_271_010G1_scaffold_122
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_10 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_46 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_443 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_46 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_0 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_123 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:19 DEBUG    N5_271_010G1_scaffold_122 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_122 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_443 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_123 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_10 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_122 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_46 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_123 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_123 2 2
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_122 2 2
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_130
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_26
-20-07-29 09:54:20 DEBUG    N5_271_010G1_scaffold_443 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_46 2 2
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_37
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_10 2 2
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_121
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_0 2 2
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_92
-20-07-29 09:54:20 DEBUG    Returning N5_271_010G1_scaffold_443 2 2
-20-07-29 09:54:20 DEBUG    running N5_271_010G1_scaffold_67
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_130 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_26 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_37 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_26 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_130 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_121 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_92 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_26 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_130 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_121 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_92 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_67 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_37 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_121 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:21 DEBUG    Returning N5_271_010G1_scaffold_130 2 2
-20-07-29 09:54:21 DEBUG    running N5_271_010G1_scaffold_51
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_92 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:21 DEBUG    Returning N5_271_010G1_scaffold_121 2 2
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_67 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:21 DEBUG    running N5_271_010G1_scaffold_91
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_37 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:21 DEBUG    N5_271_010G1_scaffold_67 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_37 2 2
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_92 2 2
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_134
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_15
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_67 2 2
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_94
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_26 2 2
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_43
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_51 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_91 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_91 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_51 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_134 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_91 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_15 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_94 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_43 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_51 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_134 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_43 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_15 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_134 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_51 2 2
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_91 2 2
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_25
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_618
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_43 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:22 DEBUG    Returning N5_271_010G1_scaffold_134 2 2
-20-07-29 09:54:22 DEBUG    running N5_271_010G1_scaffold_128
-20-07-29 09:54:22 DEBUG    N5_271_010G1_scaffold_94 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:23 DEBUG    Returning N5_271_010G1_scaffold_43 2 2
-20-07-29 09:54:23 DEBUG    running N5_271_010G1_scaffold_62
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_15 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_94 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_618 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_25 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_128 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:23 DEBUG    Returning N5_271_010G1_scaffold_94 2 2
-20-07-29 09:54:23 DEBUG    running N5_271_010G1_scaffold_93
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_618 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_25 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_128 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_62 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_618 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:23 DEBUG    Returning N5_271_010G1_scaffold_15 2 2
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_25 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:23 DEBUG    running N5_271_010G1_scaffold_137
-20-07-29 09:54:23 DEBUG    N5_271_010G1_scaffold_128 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:24 DEBUG    Returning N5_271_010G1_scaffold_618 2 2
-20-07-29 09:54:24 DEBUG    running N5_271_010G1_scaffold_119
-20-07-29 09:54:24 DEBUG    Returning N5_271_010G1_scaffold_128 2 2
-20-07-29 09:54:24 DEBUG    running N5_271_010G1_scaffold_151
-20-07-29 09:54:24 DEBUG    Returning N5_271_010G1_scaffold_25 2 2
-20-07-29 09:54:24 DEBUG    running N5_271_010G1_scaffold_11
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_93 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_137 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_62 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_137 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_119 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_151 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_137 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_119 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_11 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_151 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:24 DEBUG    Returning N5_271_010G1_scaffold_137 2 2
-20-07-29 09:54:24 DEBUG    running N5_271_010G1_scaffold_5
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_119 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_93 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:24 DEBUG    Returning N5_271_010G1_scaffold_119 2 2
-20-07-29 09:54:24 DEBUG    running N5_271_010G1_scaffold_163
-20-07-29 09:54:24 DEBUG    N5_271_010G1_scaffold_151 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_11 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_62 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:25 DEBUG    Returning N5_271_010G1_scaffold_151 2 2
-20-07-29 09:54:25 DEBUG    running N5_271_010G1_scaffold_115
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_11 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_5 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_93 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_163 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_163 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:25 DEBUG    Returning N5_271_010G1_scaffold_11 2 2
-20-07-29 09:54:25 DEBUG    running N5_271_010G1_scaffold_185
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_163 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_5 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:25 DEBUG    Returning N5_271_010G1_scaffold_163 2 2
-20-07-29 09:54:25 DEBUG    running N5_271_010G1_scaffold_17
-20-07-29 09:54:25 DEBUG    Returning N5_271_010G1_scaffold_62 2 2
-20-07-29 09:54:25 DEBUG    running N5_271_010G1_scaffold_419
-20-07-29 09:54:25 DEBUG    N5_271_010G1_scaffold_115 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:25 DEBUG    Returning N5_271_010G1_scaffold_93 2 2
-20-07-29 09:54:25 DEBUG    running N5_271_010G1_scaffold_133
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_185 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_5 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_185 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_419 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_185 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_133 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_115 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_133 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:26 DEBUG    Returning N5_271_010G1_scaffold_185 2 2
-20-07-29 09:54:26 DEBUG    running N5_271_010G1_scaffold_144
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_133 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:26 DEBUG    Returning N5_271_010G1_scaffold_5 2 2
-20-07-29 09:54:26 DEBUG    running N5_271_010G1_scaffold_4
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_419 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:26 DEBUG    N5_271_010G1_scaffold_17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:26 DEBUG    Returning N5_271_010G1_scaffold_133 2 2
-20-07-29 09:54:26 DEBUG    running N5_271_010G1_scaffold_111
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_17 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_419 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_144 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_115 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_144 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_4 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:27 DEBUG    Returning N5_271_010G1_scaffold_419 2 2
-20-07-29 09:54:27 DEBUG    running N5_271_010G1_scaffold_126
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_144 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_111 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:27 DEBUG    Returning N5_271_010G1_scaffold_17 2 2
-20-07-29 09:54:27 DEBUG    running N5_271_010G1_scaffold_118
-20-07-29 09:54:27 DEBUG    Returning N5_271_010G1_scaffold_144 2 2
-20-07-29 09:54:27 DEBUG    running N5_271_010G1_scaffold_50
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_111 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:27 DEBUG    N5_271_010G1_scaffold_111 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:27 DEBUG    Returning N5_271_010G1_scaffold_115 2 2
-20-07-29 09:54:27 DEBUG    running N5_271_010G1_scaffold_64
-20-07-29 09:54:27 DEBUG    Returning N5_271_010G1_scaffold_111 2 2
-20-07-29 09:54:27 DEBUG    running N5_271_010G1_scaffold_45
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_126 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_118 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_4 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_126 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_50 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_118 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_50 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_118 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_126 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    Returning N5_271_010G1_scaffold_118 2 2
-20-07-29 09:54:28 DEBUG    running N5_271_010G1_scaffold_159
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_50 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_64 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_45 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:28 DEBUG    Returning N5_271_010G1_scaffold_50 2 2
-20-07-29 09:54:28 DEBUG    running N5_271_010G1_scaffold_54
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_64 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    Returning N5_271_010G1_scaffold_126 2 2
-20-07-29 09:54:28 DEBUG    running N5_271_010G1_scaffold_140
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_45 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_4 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_64 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_45 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:28 DEBUG    N5_271_010G1_scaffold_159 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:29 DEBUG    Returning N5_271_010G1_scaffold_64 2 2
-20-07-29 09:54:29 DEBUG    running N5_271_010G1_scaffold_105
-20-07-29 09:54:29 DEBUG    Returning N5_271_010G1_scaffold_45 2 2
-20-07-29 09:54:29 DEBUG    running N5_271_010G1_scaffold_38
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_159 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_54 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_159 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_140 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:29 DEBUG    Returning N5_271_010G1_scaffold_159 2 2
-20-07-29 09:54:29 DEBUG    running N5_271_010G1_scaffold_153
-20-07-29 09:54:29 DEBUG    Returning N5_271_010G1_scaffold_4 2 2
-20-07-29 09:54:29 DEBUG    running N5_271_010G1_scaffold_97
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_54 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_105 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_140 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_38 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:29 DEBUG    N5_271_010G1_scaffold_54 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_105 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_97 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_153 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:30 DEBUG    Returning N5_271_010G1_scaffold_54 2 2
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_153 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_97 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:30 DEBUG    running N5_271_010G1_scaffold_9
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_105 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_38 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_153 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_97 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_140 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    Returning N5_271_010G1_scaffold_153 2 2
-20-07-29 09:54:30 DEBUG    Returning N5_271_010G1_scaffold_97 2 2
-20-07-29 09:54:30 DEBUG    running N5_271_010G1_scaffold_65
-20-07-29 09:54:30 DEBUG    running N5_271_010G1_scaffold_86
-20-07-29 09:54:30 DEBUG    Returning N5_271_010G1_scaffold_105 2 2
-20-07-29 09:54:30 DEBUG    running N5_271_010G1_scaffold_66
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_9 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_38 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:30 DEBUG    Returning N5_271_010G1_scaffold_140 2 2
-20-07-29 09:54:30 DEBUG    running N5_271_010G1_scaffold_147
-20-07-29 09:54:30 DEBUG    N5_271_010G1_scaffold_65 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_86 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_66 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_65 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_86 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_66 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_9 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_65 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_86 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:31 DEBUG    Returning N5_271_010G1_scaffold_38 2 2
-20-07-29 09:54:31 DEBUG    running N5_271_010G1_scaffold_113
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_66 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_147 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:31 DEBUG    Returning N5_271_010G1_scaffold_86 2 2
-20-07-29 09:54:31 DEBUG    running N5_271_010G1_scaffold_124
-20-07-29 09:54:31 DEBUG    Returning N5_271_010G1_scaffold_65 2 2
-20-07-29 09:54:31 DEBUG    running N5_271_010G1_scaffold_63
-20-07-29 09:54:31 DEBUG    Returning N5_271_010G1_scaffold_66 2 2
-20-07-29 09:54:31 DEBUG    running N5_271_010G1_scaffold_152
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_9 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_147 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:31 DEBUG    N5_271_010G1_scaffold_113 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_113 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_147 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_124 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_63 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_113 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_152 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    Returning N5_271_010G1_scaffold_147 2 2
-20-07-29 09:54:32 DEBUG    running N5_271_010G1_scaffold_44
-20-07-29 09:54:32 DEBUG    Returning N5_271_010G1_scaffold_9 2 2
-20-07-29 09:54:32 DEBUG    running N5_271_010G1_scaffold_98
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_152 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:32 DEBUG    Returning N5_271_010G1_scaffold_113 2 2
-20-07-29 09:54:32 DEBUG    running N5_271_010G1_scaffold_69
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_63 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_152 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:32 DEBUG    Returning N5_271_010G1_scaffold_152 2 2
-20-07-29 09:54:32 DEBUG    running N5_271_010G1_scaffold_75
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_124 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_63 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_44 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_98 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_69 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_98 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:32 DEBUG    N5_271_010G1_scaffold_69 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:33 DEBUG    Returning N5_271_010G1_scaffold_63 2 2
-20-07-29 09:54:33 DEBUG    running N5_271_010G1_scaffold_58
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_98 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_75 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_69 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    Returning N5_271_010G1_scaffold_98 2 2
-20-07-29 09:54:33 DEBUG    running N5_271_010G1_scaffold_131
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_124 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_75 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:33 DEBUG    Returning N5_271_010G1_scaffold_69 2 2
-20-07-29 09:54:33 DEBUG    running N5_271_010G1_scaffold_649
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_75 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_44 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:33 DEBUG    Returning N5_271_010G1_scaffold_75 2 2
-20-07-29 09:54:33 DEBUG    running N5_271_010G1_scaffold_39
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_58 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:33 DEBUG    Returning N5_271_010G1_scaffold_124 2 2
-20-07-29 09:54:33 DEBUG    running N5_271_010G1_scaffold_28
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_58 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_131 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_649 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_131 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_44 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_58 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:33 DEBUG    N5_271_010G1_scaffold_131 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_39 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:34 DEBUG    Returning N5_271_010G1_scaffold_131 2 2
-20-07-29 09:54:34 DEBUG    running N5_271_010G1_scaffold_963
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_39 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:34 DEBUG    Returning N5_271_010G1_scaffold_58 2 2
-20-07-29 09:54:34 DEBUG    running N5_271_010G1_scaffold_138
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_28 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_39 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:34 DEBUG    Returning N5_271_010G1_scaffold_44 2 2
-20-07-29 09:54:34 DEBUG    Returning N5_271_010G1_scaffold_39 2 2
-20-07-29 09:54:34 DEBUG    running N5_271_010G1_scaffold_154
-20-07-29 09:54:34 DEBUG    running N5_271_010G1_scaffold_143
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_28 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_649 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_138 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_963 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_138 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_28 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:34 DEBUG    N5_271_010G1_scaffold_138 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_154 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_143 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_143 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:35 DEBUG    Returning N5_271_010G1_scaffold_138 2 2
-20-07-29 09:54:35 DEBUG    running N5_271_010G1_scaffold_6
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_143 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_649 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_154 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:35 DEBUG    Returning N5_271_010G1_scaffold_28 2 2
-20-07-29 09:54:35 DEBUG    running N5_271_010G1_scaffold_40
-20-07-29 09:54:35 DEBUG    Returning N5_271_010G1_scaffold_143 2 2
-20-07-29 09:54:35 DEBUG    running N5_271_010G1_scaffold_107
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_963 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_6 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:35 DEBUG    Returning N5_271_010G1_scaffold_649 2 2
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_154 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:35 DEBUG    running N5_271_010G1_scaffold_23
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_40 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:35 DEBUG    N5_271_010G1_scaffold_107 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_40 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_40 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_963 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:36 DEBUG    Returning N5_271_010G1_scaffold_154 2 2
-20-07-29 09:54:36 DEBUG    running N5_271_010G1_scaffold_30
-20-07-29 09:54:36 DEBUG    Returning N5_271_010G1_scaffold_40 2 2
-20-07-29 09:54:36 DEBUG    running N5_271_010G1_scaffold_109
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_6 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_107 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_23 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_107 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_23 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:36 DEBUG    Returning N5_271_010G1_scaffold_107 2 2
-20-07-29 09:54:36 DEBUG    running N5_271_010G1_scaffold_72
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_23 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_30 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_109 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:36 DEBUG    Returning N5_271_010G1_scaffold_963 2 2
-20-07-29 09:54:36 DEBUG    running N5_271_010G1_scaffold_114
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_109 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:36 DEBUG    Returning N5_271_010G1_scaffold_23 2 2
-20-07-29 09:54:36 DEBUG    N5_271_010G1_scaffold_6 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:36 DEBUG    running N5_271_010G1_scaffold_161
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_109 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_30 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:37 DEBUG    Returning N5_271_010G1_scaffold_109 2 2
-20-07-29 09:54:37 DEBUG    running N5_271_010G1_scaffold_13
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_72 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_30 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_114 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_161 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:37 DEBUG    Returning N5_271_010G1_scaffold_6 2 2
-20-07-29 09:54:37 DEBUG    running N5_271_010G1_scaffold_31
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_161 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_13 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_72 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:37 DEBUG    N5_271_010G1_scaffold_161 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:37 DEBUG    Returning N5_271_010G1_scaffold_161 2 2
-20-07-29 09:54:37 DEBUG    running N5_271_010G1_scaffold_12
-20-07-29 09:54:37 DEBUG    Returning N5_271_010G1_scaffold_30 2 2
-20-07-29 09:54:37 DEBUG    running N5_271_010G1_scaffold_160
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_31 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_13 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_114 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_31 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_31 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_72 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_12 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:38 DEBUG    Returning N5_271_010G1_scaffold_31 2 2
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_160 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:38 DEBUG    running N5_271_010G1_scaffold_76
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_12 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_160 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_12 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_160 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_13 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:38 DEBUG    Returning N5_271_010G1_scaffold_160 2 2
-20-07-29 09:54:38 DEBUG    running N5_271_010G1_scaffold_149
-20-07-29 09:54:38 DEBUG    Returning N5_271_010G1_scaffold_12 2 2
-20-07-29 09:54:38 DEBUG    running N5_271_010G1_scaffold_155
-20-07-29 09:54:38 DEBUG    Returning N5_271_010G1_scaffold_72 2 2
-20-07-29 09:54:38 DEBUG    N5_271_010G1_scaffold_76 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:39 DEBUG    running N5_271_010G1_scaffold_87
-20-07-29 09:54:39 DEBUG    Returning N5_271_010G1_scaffold_13 2 2
-20-07-29 09:54:39 DEBUG    running N5_271_010G1_scaffold_120
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_114 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_149 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_76 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_155 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_149 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_87 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_155 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_149 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_120 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_155 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:39 DEBUG    Returning N5_271_010G1_scaffold_149 2 2
-20-07-29 09:54:39 DEBUG    running N5_271_010G1_scaffold_20
-20-07-29 09:54:39 DEBUG    Returning N5_271_010G1_scaffold_114 2 2
-20-07-29 09:54:39 DEBUG    running N5_271_010G1_scaffold_125
-20-07-29 09:54:39 DEBUG    Returning N5_271_010G1_scaffold_155 2 2
-20-07-29 09:54:39 DEBUG    running N5_271_010G1_scaffold_127
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_76 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:39 DEBUG    N5_271_010G1_scaffold_87 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_120 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:40 DEBUG    Returning N5_271_010G1_scaffold_76 2 2
-20-07-29 09:54:40 DEBUG    running N5_271_010G1_scaffold_83
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_20 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_87 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_125 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_127 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_120 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_125 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_125 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:40 DEBUG    Returning N5_271_010G1_scaffold_87 2 2
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_20 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:40 DEBUG    running N5_271_010G1_scaffold_129
-20-07-29 09:54:40 DEBUG    N5_271_010G1_scaffold_127 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:41 DEBUG    Returning N5_271_010G1_scaffold_120 2 2
-20-07-29 09:54:41 DEBUG    running N5_271_010G1_scaffold_78
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_83 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:41 DEBUG    Returning N5_271_010G1_scaffold_125 2 2
-20-07-29 09:54:41 DEBUG    running N5_271_010G1_scaffold_106
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_20 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_127 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_83 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_129 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:41 DEBUG    Returning N5_271_010G1_scaffold_20 2 2
-20-07-29 09:54:41 DEBUG    running N5_271_010G1_scaffold_157
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_129 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_78 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_106 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_78 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_129 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_83 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:41 DEBUG    Returning N5_271_010G1_scaffold_127 2 2
-20-07-29 09:54:41 DEBUG    running N5_271_010G1_scaffold_41
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_106 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:41 DEBUG    N5_271_010G1_scaffold_78 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:41 DEBUG    Returning N5_271_010G1_scaffold_129 2 2
-20-07-29 09:54:41 DEBUG    running N5_271_010G1_scaffold_34
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_106 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_78 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_77
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_106 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_14
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_157 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_83 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_836
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_157 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_41 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_157 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_34 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_34 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_77 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_14 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_34 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_836 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_77 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_157 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_102
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_34 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_36
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_836 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_77 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_41 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:42 DEBUG    N5_271_010G1_scaffold_836 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:42 DEBUG    Returning N5_271_010G1_scaffold_77 2 2
-20-07-29 09:54:42 DEBUG    running N5_271_010G1_scaffold_89
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_14 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:43 DEBUG    Returning N5_271_010G1_scaffold_836 2 2
-20-07-29 09:54:43 DEBUG    running N5_271_010G1_scaffold_42
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_102 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_41 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_14 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_36 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_102 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_36 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_102 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_89 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:43 DEBUG    Returning N5_271_010G1_scaffold_41 2 2
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_42 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:43 DEBUG    running N5_271_010G1_scaffold_139
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_36 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:43 DEBUG    Returning N5_271_010G1_scaffold_14 2 2
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_42 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:43 DEBUG    Returning N5_271_010G1_scaffold_36 2 2
-20-07-29 09:54:43 DEBUG    Returning N5_271_010G1_scaffold_102 2 2
-20-07-29 09:54:43 DEBUG    N5_271_010G1_scaffold_42 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:44 DEBUG    N5_271_010G1_scaffold_89 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:44 DEBUG    Returning N5_271_010G1_scaffold_42 2 2
-20-07-29 09:54:44 DEBUG    N5_271_010G1_scaffold_139 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam (1 1)
-20-07-29 09:54:44 DEBUG    N5_271_010G1_scaffold_139 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (1 2)
-20-07-29 09:54:44 DEBUG    N5_271_010G1_scaffold_89 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:44 DEBUG    N5_271_010G1_scaffold_139 N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam vs N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam (2 2)
-20-07-29 09:54:44 DEBUG    Returning N5_271_010G1_scaffold_139 2 2
-20-07-29 09:54:44 DEBUG    Returning N5_271_010G1_scaffold_89 2 2
-20-07-29 09:54:47 DEBUG    inStrain complete; shutting down logger and printing run stats (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)
+20-08-10 18:04:20 DEBUG    Checkpoint Compare ParseArguments start 151662592
+20-08-10 18:04:20 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
+20-08-10 18:04:22 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
+20-08-10 18:04:23 INFO     178 of 178 scaffolds are in at least 2 samples
+20-08-10 18:04:23 DEBUG    Checkpoint Compare ParseArguments end 156139520
+20-08-10 18:04:23 DEBUG    Checkpoint Compare CompareScaffolds start 156418048
+20-08-10 18:04:23 DEBUG    Checkpoint Compare multiprocessing start 160559104
+20-08-10 18:04:23 DEBUG    Establishing processes
+20-08-10 18:04:28 DEBUG    
+20-08-10 18:04:28 DEBUG    
+20-08-10 18:04:28 DEBUG    
+20-08-10 18:04:29 DEBUG    
+20-08-10 18:04:29 DEBUG    
+20-08-10 18:04:29 DEBUG    
+20-08-10 18:04:30 DEBUG    
+20-08-10 18:04:30 DEBUG    
+20-08-10 18:04:30 DEBUG    
+20-08-10 18:04:31 DEBUG    
+20-08-10 18:04:31 DEBUG    
+20-08-10 18:04:32 DEBUG    
+20-08-10 18:04:32 DEBUG    
+20-08-10 18:04:32 DEBUG    
+20-08-10 18:04:32 DEBUG    
+20-08-10 18:04:33 DEBUG    
+20-08-10 18:04:33 DEBUG    
+20-08-10 18:04:34 DEBUG    
+20-08-10 18:04:34 DEBUG    
+20-08-10 18:04:34 DEBUG    
+20-08-10 18:04:34 DEBUG    
+20-08-10 18:04:35 DEBUG    
+20-08-10 18:04:36 DEBUG    
+20-08-10 18:04:36 DEBUG    
+20-08-10 18:04:36 DEBUG    
+20-08-10 18:04:36 DEBUG    
+20-08-10 18:04:37 DEBUG    
+20-08-10 18:04:37 DEBUG    
+20-08-10 18:04:38 DEBUG    
+20-08-10 18:04:38 DEBUG    
+20-08-10 18:04:38 DEBUG    
+20-08-10 18:04:38 DEBUG    
+20-08-10 18:04:39 DEBUG    
+20-08-10 18:04:39 DEBUG    
+20-08-10 18:04:39 DEBUG    
+20-08-10 18:04:40 DEBUG    
+20-08-10 18:04:40 DEBUG    
+20-08-10 18:04:40 DEBUG    
+20-08-10 18:04:41 DEBUG    
+20-08-10 18:04:41 DEBUG    
+20-08-10 18:04:42 DEBUG    
+20-08-10 18:04:42 DEBUG    
+20-08-10 18:04:43 DEBUG    
+20-08-10 18:04:43 DEBUG    
+20-08-10 18:04:43 DEBUG    
+20-08-10 18:04:43 DEBUG    
+20-08-10 18:04:43 DEBUG    
+20-08-10 18:04:44 DEBUG    
+20-08-10 18:04:45 DEBUG    
+20-08-10 18:04:45 DEBUG    
+20-08-10 18:04:45 DEBUG    
+20-08-10 18:04:46 DEBUG    
+20-08-10 18:04:46 DEBUG    
+20-08-10 18:04:46 DEBUG    
+20-08-10 18:04:47 DEBUG    
+20-08-10 18:04:47 DEBUG    
+20-08-10 18:04:47 DEBUG    
+20-08-10 18:04:48 DEBUG    
+20-08-10 18:04:48 DEBUG    
+20-08-10 18:04:48 DEBUG    
+20-08-10 18:04:49 DEBUG    
+20-08-10 18:04:49 DEBUG    
+20-08-10 18:04:50 DEBUG    
+20-08-10 18:04:50 DEBUG    
+20-08-10 18:04:50 DEBUG    
+20-08-10 18:04:51 DEBUG    
+20-08-10 18:04:52 DEBUG    
+20-08-10 18:04:52 DEBUG    
+20-08-10 18:04:52 DEBUG    
+20-08-10 18:04:52 DEBUG    
+20-08-10 18:04:53 DEBUG    
+20-08-10 18:04:53 DEBUG    
+20-08-10 18:04:53 DEBUG    
+20-08-10 18:04:54 DEBUG    
+20-08-10 18:04:55 DEBUG    
+20-08-10 18:04:55 DEBUG    
+20-08-10 18:04:55 DEBUG    
+20-08-10 18:04:55 DEBUG    
+20-08-10 18:04:56 DEBUG    
+20-08-10 18:04:56 DEBUG    
+20-08-10 18:04:56 DEBUG    
+20-08-10 18:04:57 DEBUG    
+20-08-10 18:04:57 DEBUG    
+20-08-10 18:04:58 DEBUG    
+20-08-10 18:04:58 DEBUG    
+20-08-10 18:04:58 DEBUG    
+20-08-10 18:04:58 DEBUG    
+20-08-10 18:04:59 DEBUG    
+20-08-10 18:04:59 DEBUG    
+20-08-10 18:05:00 DEBUG    
+20-08-10 18:05:00 DEBUG    
+20-08-10 18:05:00 DEBUG    
+20-08-10 18:05:00 DEBUG    
+20-08-10 18:05:01 DEBUG    
+20-08-10 18:05:01 DEBUG    
+20-08-10 18:05:02 DEBUG    
+20-08-10 18:05:02 DEBUG    
+20-08-10 18:05:02 DEBUG    
+20-08-10 18:05:02 DEBUG    
+20-08-10 18:05:02 DEBUG    
+20-08-10 18:05:04 DEBUG    
+20-08-10 18:05:04 DEBUG    
+20-08-10 18:05:05 DEBUG    
+20-08-10 18:05:05 DEBUG    
+20-08-10 18:05:05 DEBUG    
+20-08-10 18:05:05 DEBUG    
+20-08-10 18:05:06 DEBUG    
+20-08-10 18:05:07 DEBUG    
+20-08-10 18:05:07 DEBUG    
+20-08-10 18:05:07 DEBUG    
+20-08-10 18:05:07 DEBUG    
+20-08-10 18:05:08 DEBUG    
+20-08-10 18:05:08 DEBUG    
+20-08-10 18:05:10 DEBUG    
+20-08-10 18:05:10 DEBUG    
+20-08-10 18:05:10 DEBUG    
+20-08-10 18:05:10 DEBUG    
+20-08-10 18:05:11 DEBUG    
+20-08-10 18:05:12 DEBUG    
+20-08-10 18:05:12 DEBUG    
+20-08-10 18:05:13 DEBUG    
+20-08-10 18:05:13 DEBUG    
+20-08-10 18:05:13 DEBUG    
+20-08-10 18:05:14 DEBUG    
+20-08-10 18:05:14 DEBUG    
+20-08-10 18:05:14 DEBUG    
+20-08-10 18:05:15 DEBUG    
+20-08-10 18:05:15 DEBUG    
+20-08-10 18:05:15 DEBUG    
+20-08-10 18:05:16 DEBUG    
+20-08-10 18:05:16 DEBUG    
+20-08-10 18:05:17 DEBUG    
+20-08-10 18:05:17 DEBUG    
+20-08-10 18:05:17 DEBUG    
+20-08-10 18:05:17 DEBUG    
+20-08-10 18:05:17 DEBUG    
+20-08-10 18:05:18 DEBUG    
+20-08-10 18:05:19 DEBUG    
+20-08-10 18:05:19 DEBUG    
+20-08-10 18:05:19 DEBUG    
+20-08-10 18:05:20 DEBUG    
+20-08-10 18:05:20 DEBUG    
+20-08-10 18:05:20 DEBUG    
+20-08-10 18:05:20 DEBUG    
+20-08-10 18:05:21 DEBUG    
+20-08-10 18:05:21 DEBUG    
+20-08-10 18:05:21 DEBUG    
+20-08-10 18:05:22 DEBUG    
+20-08-10 18:05:23 DEBUG    
+20-08-10 18:05:23 DEBUG    
+20-08-10 18:05:24 DEBUG    
+20-08-10 18:05:24 DEBUG    
+20-08-10 18:05:24 DEBUG    
+20-08-10 18:05:24 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:26 DEBUG    
+20-08-10 18:05:28 DEBUG    
+20-08-10 18:05:28 DEBUG    
+20-08-10 18:05:28 DEBUG    
+20-08-10 18:05:28 DEBUG    
+20-08-10 18:05:28 DEBUG    
+20-08-10 18:05:29 DEBUG    
+20-08-10 18:05:30 DEBUG    
+20-08-10 18:05:31 DEBUG    
+20-08-10 18:05:31 DEBUG    
+20-08-10 18:05:31 DEBUG    
+20-08-10 18:05:31 DEBUG    
+20-08-10 18:05:31 DEBUG    
+20-08-10 18:05:32 DEBUG    
+20-08-10 18:05:32 DEBUG    
+20-08-10 18:05:32 DEBUG    
+20-08-10 18:05:33 DEBUG    
+20-08-10 18:05:33 DEBUG    
+20-08-10 18:05:34 DEBUG    
+20-08-10 18:05:34 DEBUG    Checkpoint Compare multiprocessing end 167473152
+20-08-10 18:05:35 DEBUG    Checkpoint Compare CompareScaffolds end 170749952
+20-08-10 18:05:35 DEBUG    Checkpoint Compare SaveResults start 171098112
+20-08-10 18:05:36 DEBUG    Checkpoint Compare SaveResults end 177041408
+20-08-10 18:05:36 DEBUG    inStrain complete; shutting down logger and printing run stats (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)

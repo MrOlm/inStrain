@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0v] - 2020-08-10
+- Change internal structure of test suite
+- Delete N_sites and S_sites from gene_info table
+- Add "class" to SNVs.tsv
+- Add some basic checkpoint logging to Compare
+- Add a little bit of documentation to log_utils
+- Make "compare" multi-thread in the new way (with spawn)
+- Tiny docs change
+
 ## [1.3.0u] - 2020-08-06
 - Add Docker and conda installation instructions to the README
 - Edit parse_stb to handle None the same as []

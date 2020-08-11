@@ -4,24 +4,36 @@ Installation and Quickstart
 Installation
 -----------
 
-Using pip
+InStrain is written in python. There are a number of ways that is can be installed.
+
+pip
 +++++++++++++++++
 
-inStrain is written in python. To install inStrain using the PyPi python repository, simply run ::
+To install inStrain using the PyPi python repository, simply run ::
 
 $ pip install instrain
 
-Or to install from GitHub run ::
+That's it!
+
+Pip is a great package with many options to change the installation parameters in various ways. For details, see `pip documentation <https://packaging.python.org/installing/>`_
+
+bioconda
++++++++++++++++++
+
+To inStrain inStrain from `bioconda <https://anaconda.org/bioconda/instrain>`_, run ::
+
+$ conda config --add channels bioconda; conda install instrain
+
+from source
++++++++++++++++++
+
+To install inStrain from the source code, run ::
 
   $ git clone https://github.com/MrOlm/instrain.git
 
   $ cd instrain
 
   $ pip install .
-
-That's it!
-
-Pip is a great package with many options to change the installation parameters in various ways. For details, see `pip documentation <https://packaging.python.org/installing/>`_
 
 Dependencies
 +++++++++++++++++
@@ -38,6 +50,11 @@ package dependencies, but those should install automatically when inStrain is in
 * `coverM <https://github.com/wwood/CoverM>`_ This is needed for the quick_profile operation
 
 * `Prodigal <https://github.com/hyattpd/Prodigal>`_ This is needed to profile on a gene by gene level
+
+Docker image
+-----------
+
+A Docker image with inStrain and dependencies already installed is available on Docker Hub at `mattolm/instrain <https://hub.docker.com/repository/docker/mattolm/instrain>`_. This image also has a wrapper script in it to make it easier to use inStrain with AWS. See the `docker folder of the GitHub page <https://github.com/MrOlm/inStrain/tree/v1.3.0/docker>`_ for use instructions.
 
 Quick Start
 -----------

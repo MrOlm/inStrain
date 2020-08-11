@@ -97,7 +97,8 @@ new_thirteen = {'linked_SNV_count',
                 'dNdS_substitutions',
                 'SNV_S_count',
                 'pNpS_variants',
-                'gene_length'
+                'gene_length',
+                'class'
                 }
 
 def load_data_loc():
@@ -1656,7 +1657,7 @@ class test_readcomparer():
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
+    def run(self, tests='all'):
         # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
         # # # self.setUp()
         # # # self.test9()
@@ -1667,70 +1668,28 @@ class test_readcomparer():
         # # # ### self.test10()
         # # # ### self.tearDown()
 
+        if tests == 'all':
+            tests = np.arange(0, 15)
+            skip = [9, 10]
+            tests = [x for x in tests if x not in skip]
 
-        self.setUp()
-        self.UPDATE_COMPARE_TEST_DATA()
-        self.tearDown()
+        # self.setUp()
+        # self.UPDATE_COMPARE_TEST_DATA()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.testS()
+        # self.tearDown()
 
-        self.setUp()
-        self.testS()
-        self.tearDown()
+        for test_num in tests:
+            if test_num < 9:
+                continue
 
-        self.setUp()
-        self.test0()
-        self.tearDown()
+            self.setUp()
+            print("\n*** Running test {0} ***\n".format(test_num))
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp(destroy=True)
-        self.test13()
-        self.tearDown()
-
-        self.setUp()
-        self.test14()
-        self.tearDown()
-
-        self.setUp()
-        self.test15()
-        self.tearDown()
 
     def UPDATE_COMPARE_TEST_DATA(self):
         '''
@@ -2000,7 +1959,12 @@ class test_readcomparer():
         for scaff in scaffs:
             # if scaff != 'N5_271_010G1_scaffold_6':
             #     continue
-            db, pair2mm2SNPlocs, pair2mm2cov, scaffold = inStrain.readComparer.compare_scaffold(scaff, ['t1', 't2'], [S1, S2], s2l[scaff], include_self_comparisons=True)
+            results, log = \
+                inStrain.readComparer.compare_scaffold(scaff, ['t1', 't2'],
+                    [S1, S2], s2l[scaff], include_self_comparisons=True)
+            print(log)
+
+            db, pair2mm2SNPlocs, pair2mm2cov, scaffold  = results
 
             # MAKE SURE THE COVERAGES ARE RIGHT
             S1db = SRdb1[SRdb1['scaffold'] == scaff]
@@ -2523,7 +2487,7 @@ class test_readcomparer():
         # Run program
         base = self.test_dir + 'RC_test'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations".format(self.script, self.IS1, self.IS2, \
+        cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations -d".format(self.script, self.IS1, self.IS2, \
             base, self.scafflistF)
         print(cmd)
         call(cmd, shell=True)
@@ -2765,83 +2729,23 @@ class test_strains():
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
+    def run(self, tests='all'):
         # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
         # self.setUp()
         # self.test0()
         # self.tearDown()
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
+        if tests == 'all':
+            tests = np.arange(1, 18)
 
-        self.setUp()
-        self.test2()
-        self.tearDown()
+        for test_num in tests:
+            self.setUp()
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
-
-        self.setUp()
-        self.test7()
-        self.tearDown()
-
-        self.setUp()
-        self.test8()
-        self.tearDown()
-
-        self.setUp()
-        self.test9()
-        self.tearDown()
-
-        self.setUp()
-        self.test10()
-        self.tearDown()
-
-        self.setUp()
-        self.test11()
-        self.tearDown()
-
-        self.setUp()
-        self.test12()
-        self.tearDown()
-
-        self.setUp()
-        self.test13()
-        self.tearDown()
-
-        self.setUp()
-        self.test14()
-        self.tearDown()
-
-        self.setUp()
-        self.test15()
-        self.tearDown()
-
-        self.setUp(destroy=True)
-        self.test16()
-        self.tearDown()
-
-        self.setUp()
-        self.test17()
-        self.tearDown()
-
-        self.setUp()
-        self.test18()
-        self.tearDown()
+        # self.setUp(destroy=True)
+        # self.test16()
+        # self.tearDown()
 
     def test0(self):
         '''
@@ -3597,7 +3501,7 @@ class test_strains():
                     e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
 
-                    for col in ['mutation_type', 'mutation', 'gene']:
+                    for col in ['mutation_type', 'mutation', 'gene', 'class']:
                         del e[col]
 
                 if name in ['scaffold_info.tsv']:
@@ -3754,6 +3658,7 @@ class test_strains():
 
                     e = e[~e['mutation_type'].isna()]
                     del e['cryptic']
+                    del e['class']
 
                     e = e.sort_values(['scaffold', 'position']).reset_index(drop=True)
                     s = s.sort_values(['scaffold', 'position']).reset_index(drop=True)
@@ -4261,14 +4166,18 @@ class test_special():
 
 
 if __name__ == '__main__':
-    test_strains().run()
-    test_filter_reads().run()
-    test_SNVprofile().run()
-    test_gene_statistics().run()
-    test_quickProfile().run()
-    test_genome_wide().run()
-    test_plot().run()
-    test_special().run()
+    # The following just evaluates the output made
+    # test_strains().run(tests=[16])
+    # test_readcomparer().run(tests=[13])
+
+    # test_strains().run()
+    # test_filter_reads().run()
+    # test_SNVprofile().run()
+    # test_gene_statistics().run()
+    # test_quickProfile().run()
+    # test_genome_wide().run()
+    # test_plot().run()
+    # test_special().run()
     test_readcomparer().run()
 
     print('everything is working swimmingly!')

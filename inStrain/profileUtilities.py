@@ -123,14 +123,6 @@ class ScaffoldSplitObject():
         Delete everything to free up RAM
         '''
         pass
-        #     # We mark these for deletion the next time garbage is collected
-        #     for split in contig.splits:
-        #         del split.coverage
-        #         del split.auxiliary
-        #         del split
-        #     del contig.splits[:]
-        #     del contig.coverage
-        #     del contig
 
 
 class SplitObject():
@@ -264,50 +256,6 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles, null_mode
             Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
         Sprofile = Sprofile.merge()
         Sprofiles.put(Sprofile)
-
-# def profile_contig_worker(available_index_queue, sprofile_cmd_queue, Sprofile_dict, log_list, Sprofiles):
-#     '''
-#     Based on https://github.com/merenlab/anvio/blob/18b3c7024e74e0ac7cb9021c99ad75d96e1a10fc/anvio/profiler.py
-#     '''
-#
-#     while True:
-#         # If theres a merge to do, do it to free up the RAM
-#         if not sprofile_cmd_queue.empty():
-#             SSO = sprofile_cmd_queue.get(True)
-#             try:
-#                 Sprofile = SSO.merge()
-#                 log_list.put(Sprofile.merge_log)
-#                 Sprofiles.append(Sprofile)
-#
-#                 # Clean up
-#                 SSO.delete_self()
-#                 del SSO
-#
-#             except:
-#                 log_list.put('FAIL')
-#                 Sprofiles.append(None)
-#
-#             # Do another loop
-#             continue
-#
-#         # Process another split
-#         if not available_index_queue.empty():
-#             cmds = available_index_queue.get(True)
-#             try:
-#                 Splits = split_profile_wrapper_groups(cmds)
-#                 LOG = ''
-#                 for Split in Splits:
-#                     Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
-#                     LOG += Split.log + '\n'
-#                 log_list.put(LOG)
-#             except Exception as e:
-#                 print(e)
-#                 for cmd in cmds:
-#                     Sprofile_dict[cmd.scaffold + '.' + str(cmd.split_number)] = False
-#                 log_list.put('FAILURE FOR {0}'.format(' '.join(["{0}.{1}".format(cmd.scaffold, cmd.split_number) for cmds in cmds])))
-
-
-
 
 def profile_bam(bam, Fdb, sR2M, **kwargs):
     '''
@@ -484,69 +432,6 @@ def profile_bam(bam, Fdb, sR2M, **kwargs):
     # return results
     return SNVprof
 
-def run_listener_loop(scaffolds, Sprofiles, cmd_groups, log_list, s2splits,
-                Sprofile_dict, sprofile_cmd_queue, pbar):
-
-    LastLoop = time.time()
-    while int(Sprofiles.qsize()) < len(scaffolds):
-
-        # Get the logs
-        _log_subloop(log_list, maxTime=30)
-
-        # See if there are any splits that are ready to be merged
-        if (time.time() - LastLoop) > 30:
-            _split_subloop(s2splits, Sprofile_dict, sprofile_cmd_queue, pbar)
-            LastLoop = time.time()
-    return
-
-def _log_subloop(log_list, maxTime=30):
-    '''
-    Retrieve logs for a max of 30 seconds
-    '''
-    start = time.time()
-    while not log_list.empty():
-        log_message = log_list.get(timeout=1)
-        logging.debug(log_message)
-        if time.time() - start > maxTime:
-            break
-    return
-
-def _split_subloop(s2splits, Sprofile_dict, sprofile_cmd_queue, pbar):
-    '''
-    Set up splits for max of 30 seconds
-    '''
-
-    got = []
-    t = time.time()
-    for scaff, splits in s2splits.items():
-        num_ready = sum([Sprofile_dict[scaff + '.' + str(i)] is not None for i in range(splits)])
-        if num_ready == splits:
-            Sprofile = ScaffoldSplitObject(splits)
-            Sprofile.scaffold = scaff
-
-            for i in range(splits):
-                Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(scaff + '.' + str(i)))
-
-            sprofile_cmd_queue.put(Sprofile)
-            got.append(scaff)
-
-    # Handle scaffolds that made it into the Sprofile queue
-    for g in got:
-        pbar.update(1)
-        s2splits.pop(g)
-
-    # Log
-    logging.debug("Special_Split_Subloop - {0} seconds".format(time.time() - t))
-
-
-def iterate_Fdbs(df, chunkSize=100):
-    '''
-    Break up Ndbs into chunks
-    '''
-    numberChunks = len(df) // chunkSize + 1
-    for i in range(numberChunks):
-        yield (df[i*chunkSize:(i+1)*chunkSize])
-
 def generate_snp_model(model_file, fdr=1e-6):
     '''
     The model_file contains the columns "coverage", "probability of X coverage base by random chance"
@@ -573,43 +458,10 @@ def generate_snp_model(model_file, fdr=1e-6):
 
     return model
 
-def scaffold_profile_wrapper(cmds):
-    '''
-    Take a command and profile the scaffold
-    '''
-    try:
-        results = []
-        for cmd in cmds:
-            results.append(_profile_scaffold(cmd.samfile, cmd.scaffold, cmd.locations, **cmd.arguments))
-        return results
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("whole scaffold exception- {0}".format(str(" ".join([cmd.scaffold for cmd in cmds]))))
-        return pd.DataFrame({'Failed':[True]})
-
-def scaffold_profile_wrapper2(cmd):
-    '''
-    Take a command and profile the scaffold
-    '''
-    try:
-        return _profile_scaffold(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, **cmd.arguments)
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
-        return pd.DataFrame({'Failed':[True]})
-
-# def split_profile_wrapper(cmd):
-#     try:
-#         return _profile_split(cmd.samfile, cmd.scaffold, cmd.start, cmd.end, cmd.split_number, **cmd.arguments)
-#     except Exception as e:
-#         print(e)
-#         traceback.print_exc()
-#         logging.error("FAILURE SplitException {0} {1}".format(str(cmd.scaffold), str(cmd.split_number)))
-#         return False
-
 def split_profile_wrapper_groups(cmds, null_model, bam_init):
+    '''
+    Run a group of splits
+    '''
     results = []
     for cmd in cmds:
         try:
@@ -709,9 +561,6 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     min_snp = int(kwargs.get('min_snp', 10))
     store_everything = kwargs.get('store_everything', False)
 
-    # Get sequence from global
-    #seq = scaff2sequence[scaffold][start:end+1] # The plus 1 makes is so the end is inclusive
-
     # Set up the .bam file
     try:
         iter = samfile.pileup(scaffold, truncate=True, max_depth=100000,
@@ -749,9 +598,6 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     if len(SNPTable) > 0:
         SNPTable['position'] = SNPTable['position'] + start
 
-    # Do per-scaffold aggregating
-    #CoverageTable = make_coverage_table(covT, clonT, clonTR, mLen, scaffold, SNPTable, min_freq=min_freq)
-
     # Make linkage network and calculate linkage
     mm_to_position_graph = inStrain.linkage.calc_mm_SNV_linkage_network(read_to_snvs, scaff=scaffold)
     LDdb = inStrain.linkage.calculate_ld(mm_to_position_graph, min_snp, snv2mm2counts=snv2mm2counts, scaffold=scaffold)
@@ -765,7 +611,6 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     Sprofile.split_number = split_number
     Sprofile.bam = kwargs.get('bam_name')
     Sprofile.length = mLen
-    #Sprofile.cumulative_scaffold_table = CoverageTable
     Sprofile.raw_snp_table = SNPTable
     Sprofile.raw_linkage_table = LDdb
     Sprofile.covT = covT
@@ -777,9 +622,6 @@ def _profile_split(samfile, scaffold, start, end, split_number,
     if store_everything:
         for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
             setattr(Sprofile, att, eval(att))
-
-    # Make cummulative tables
-    #Sprofile.make_cumulative_tables()
 
     # Return
     log_message += inStrain.logUtils.get_worker_log('SplitProfile', unit, 'end')
@@ -819,29 +661,6 @@ def _process_bam_sites(scaffold, seq, iter, covT, clonT, clonTR, p2c, read_to_sn
         if snp:
             _update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, RelPosition, bases, R2M, scaffold=scaffold)
             snv2mm2counts[RelPosition] = MMcounts
-
-# def _get_log_message(kind, scaffold, split_number=None):
-#     if split_number is not None:
-#         scaffold = "{0}.{1}".format(scaffold, split_number)
-#
-#     if kind in ['profile_start', 'merge_start']:
-#         pid = os.getpid()
-#         process  = psutil.Process(os.getpid())
-#         bytes_used = process.memory_info().rss
-#         total_available_bytes = psutil.virtual_memory()
-#         log_message = "\n{6} {4} PID {0} start at {5} with {1} RAM. System has {2} of {3} available".format(
-#                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-#                 scaffold, time.time(), kind)
-#         return log_message
-#
-#     elif kind in ['profile_end', 'merge_end']:
-#         pid = os.getpid()
-#         process  = psutil.Process(os.getpid())
-#         bytes_used = process.memory_info().rss
-#         total_available_bytes = psutil.virtual_memory()
-#         return "\n{6} {4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
-#                 pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
-#                 scaffold, time.time(), kind)
 
 def _dlist():
     return defaultdict(list)
@@ -1006,6 +825,8 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
            counts_temp[P2C[snp]] = 0
            var_base = C2P[list(counts_temp).index(sorted(counts_temp)[-1])] # this fixes the var_base = ref_base error when there's a tie - alexcc 5/8/2019
 
+           SNP_class = calc_snp_class(snp, ref_base, var_base, counts, morphia, null_model, min_cov=min_cov, min_freq=min_freq)
+
            Stable['scaffold'].append(scaff)
            Stable['position'].append(pos)
            Stable['ref_base'].append(ref_base)
@@ -1015,6 +836,7 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
            Stable['var_base'].append(var_base)
            Stable['mm'].append(mm)
            Stable['allele_count'].append(morphia)
+           Stable['class'].append(SNP_class)
 
            if morphia >= 2:
                anySNP = True
@@ -1025,17 +847,9 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
            elif (morphia == 1) & (anySNP == True):
                p2c[pos] = True
 
-           # if mm not in snpsCounted:
-           #     snpsCounted[mm] = np.zeros(mLen, dtype=bool)
-           # snpsCounted[mm][pos] = True
-
         # if it's now not a SNP, but it was in the past, mark it cryptic
         elif (snp == -1) & (anySNP == True):
             p2c[pos] = True
-
-        # if mm not in basesCounted:
-        #     basesCounted[mm] = np.zeros(mLen, dtype=bool)
-        # basesCounted[mm][pos] = True # count everything that's not skipped
 
     return anySNP, bases, ret_counts
 
@@ -1223,31 +1037,37 @@ def _calc_snps(Odb, mm, null_model, min_freq=0.05):
     SNS_count = len(db[(db['allele_count'] == 1)])
     SNV_count = len(db[db['allele_count'] > 1])
 
-    # bi_snps = len(db[(db['allele_count'] == 2)])
-    # multi_snps = len(db[(db['allele_count'] > 2)])
-
-    con_snps = len(db[(db['con_base'] != db['ref_base']) & (db['allele_count'] > 0)])
-
-    # One pool of population SNPs are those of morphia 1 where con != ref
-    p1 = len(db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 1)])
-
-    # Another pool is when its biallelic but neither are the reference
-    p2 = len(db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 2) & (db['ref_base'] != db['var_base'])])
-
-    # Finally, and the hardest to detect, are morphia of three where
-    p3 = 0
-    pdb = db[(db['ref_base'] != db['con_base']) & (db['allele_count'] == 3) & (db['ref_base'] != db['var_base'])]
-    for i, row in pdb.iterrows():
-        # Below is trying to get the count of Ns; but there is no count of Ns
-        if row['ref_base'] not in ['A', 'C', 'T', 'G']:
-            continue
-
-        if not inStrain.readComparer.is_present(int(row[row['ref_base']]), int(row['position_coverage']), null_model, float(min_freq)):
-            p3 += 1
-
-    pop_snps = p1 + p2 + p3
+    con_snps = len(db[db['class'].isin(['SNS', 'con_SNV', 'pop_SNV'])])
+    pop_snps = len(db[db['class'].isin(['SNS', 'pop_SNV'])])
 
     return [SNS_count, SNV_count, len(db), con_snps, pop_snps]
+
+def calc_snp_class(con_base, ref_base, var_base, counts, allele_count, null_model, min_cov=5, min_freq=0.05):
+    '''
+    Return the class of SNP this is
+    '''
+    if ref_base not in ['A', 'C', 'T', 'G']:
+        return 'AmbiguousReference'
+
+    if allele_count == 0:
+        return 'DivergentSite'
+
+    elif allele_count == 1:
+        assert con_base != ref_base
+        return 'SNS'
+
+    else:
+        if ref_base == con_base:
+            return 'SNV'
+
+        else:
+            if ref_base == var_base:
+                return 'con_SNV'
+
+            if inStrain.readComparer.is_present(counts[P2C[ref_base]], sum(counts), null_model, float(min_freq)):
+                return 'con_SNV'
+
+            return 'pop_SNV'
 
 def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, null_model,
                         min_freq=0.05, debug=False):

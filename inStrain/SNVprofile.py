@@ -218,7 +218,6 @@ class SNVprofile:
                              'dNdS_substitutions', 'pNpS_variants',
                              'SNV_count', 'SNV_S_count', 'SNV_N_count',
                              'SNS_count', 'SNS_S_count', 'SNS_N_count',
-                             'N_sites', 'S_sites',
                              'divergent_site_count']
 
             Gdb = self.get('genes_table')
@@ -236,6 +235,10 @@ class SNVprofile:
                 Gdb = pd.merge(Gdb, db, on='gene', how='left')
 
             db = Gdb
+            for c in ['N_sites', 'S_sites']:
+                if c in db.columns:
+                    del db[c]
+                    
             db = reorder_columns(db, column_order)
 
         elif name == 'genome_info':

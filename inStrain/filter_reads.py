@@ -740,50 +740,6 @@ def _evaluate_pair2(value, max_insert=1000000, min_read_ani=-1, min_insert=-1,
         else:
             return False
 
-# def get_paired_reads_multi2(bam, scaffolds, **kwargs):
-#     '''
-#     Returns scaffold 2 read 2 info
-#     '''
-#     # Initialize dictionary
-#     dicts = []
-#     p = int(kwargs.get('processes', 6))
-#     ret_total = kwargs.get('ret_total', False)
-#
-#     # Do the multiprocessing
-#     if p > 1:
-#         executor = concurrent.futures.ProcessPoolExecutor(max_workers=p)
-#
-#         total_cmds = len([x for x in iterate_read_commands(scaffolds, bam, kwargs)])
-#
-#         wait_for = [executor.submit(scaffold_profile_wrapper2, cmd) for cmd in iterate_read_commands(scaffolds, bam, kwargs)]
-#
-#         for f in tqdm(futures.as_completed(wait_for), total=total_cmds, desc='Getting read pairs: '):
-#             try:
-#                 results = f.result()
-#                 dicts.append(results)
-#             except:
-#                 logging.error("We had a failure! Not sure where!")
-#
-#     else:
-#         for cmd in tqdm(iterate_read_commands(scaffolds, bam, kwargs), desc='Getting read pairs: ', total=len(scaffolds)):
-#             dicts.append(scaffold_profile_wrapper2(cmd))
-#
-#     # Try and save any ones that failed
-#     failed_scaffs = set(scaffolds) - set([dict[0] for dict in dicts])
-#     if len(failed_scaffs) > 0:
-#         logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
-#         for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
-#             dicts.append(scaffold_profile_wrapper2(cmd))
-#
-#     allPair2info = {}
-#     for s, pair2info in dicts:
-#         if pair2info != False:
-#             allPair2info[s] = {}
-#             for k, v in pair2info.items():
-#                 allPair2info[s][k] = v
-#
-#     return allPair2info
-
 def get_paired_reads_multi(bam, scaffolds, **kwargs):
     '''
     Returns scaffold 2 read 2 info
@@ -868,20 +824,6 @@ def get_paired_reads_multi(bam, scaffolds, **kwargs):
             logging.debug(log)
 
     inStrain.logUtils.log_checkpoint("FilterReads", "multiprocessing", "end")
-
-    # # Try and save any ones that failed
-    # failed_scaffs = set(scaffolds) - set([dict[0] for dict in dicts])
-    # if len(failed_scaffs) > 0:
-    #     logging.error("The following scaffolds failed- I'll try again {0}".format('\n'.join(failed_scaffs)))
-    #     for cmd in tqdm(iterate_read_commands(failed_scaffs, bam, kwargs), desc='Getting read pairs for previously failed scaffolds: ', total=len(failed_scaffs)):
-    #         dicts.append(scaffold_profile_wrapper2(cmd))
-
-    # allPair2info = {}
-    # for s, pair2info in dicts:
-    #     if pair2info != False:
-    #         allPair2info[s] = {}
-    #         for k, v in pair2info.items():
-    #             allPair2info[s][k] = v
 
     return allPair2info
 
