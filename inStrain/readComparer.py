@@ -409,7 +409,6 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
         while recieved_groups < len(cmds):
             result_group = result_queue.get()
             recieved_groups += 1
-            pbar.update(1)
 
             assert len(result_group) == 2
             results_all, log = result_group

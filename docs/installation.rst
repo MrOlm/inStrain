@@ -6,7 +6,7 @@ Installation
 
 InStrain is written in python. There are a number of ways that is can be installed.
 
-pip
+Pip
 +++++++++++++++++
 
 To install inStrain using the PyPi python repository, simply run ::
@@ -17,14 +17,14 @@ That's it!
 
 Pip is a great package with many options to change the installation parameters in various ways. For details, see `pip documentation <https://packaging.python.org/installing/>`_
 
-bioconda
+Bioconda
 +++++++++++++++++
 
 To inStrain inStrain from `bioconda <https://anaconda.org/bioconda/instrain>`_, run ::
 
 $ conda config --add channels bioconda; conda install instrain
 
-from source
+From Source
 +++++++++++++++++
 
 To install inStrain from the source code, run ::
