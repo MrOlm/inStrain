@@ -33,6 +33,8 @@ import inStrain.logUtils
 import inStrain.irep_utilities
 import inStrain.genomeUtilities
 
+import inStrain.profile.fasta
+
 pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', -1)
 
@@ -120,7 +122,7 @@ def get_script_loc(script):
             '../inStrain/filter_reads.py')
     if script == 'deprecated_gene_statistics':
         return os.path.join(str(os.getcwd()), \
-            '../inStrain/deprecated_gene_statistics.py')
+            '../inStrain/deprecated/deprecated_gene_statistics.py')
     if script == 'SNVprofile':
         return os.path.join(str(os.getcwd()), \
             '../inStrain/SNVprofile.py')
@@ -682,7 +684,7 @@ class test_quickProfile():
                 tscaffs.append(line.split()[0].strip())
 
         # Load reported scaffolds
-        scaffs = inStrain.controller.load_scaff_list(base + '/scaffolds.txt')
+        scaffs = inStrain.profile.fasta.load_scaff_list(base + '/scaffolds.txt')
 
         # Compare
         assert set(scaffs) == set(tscaffs)
@@ -779,6 +781,7 @@ class test_SNVprofile():
         Adb = nIS._get_attributes_file()
         assert len(Adb) > 2
         assert len(Adb) == 16, len(Adb)
+
         for name, row in Adb.iterrows():
 
             # Translate names
@@ -1658,7 +1661,7 @@ class test_readcomparer():
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, tests='all'):
+    def run(self, min=0, max=15, skip=[9, 10], tests='all'):
         # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
         # # # self.setUp()
         # # # self.test9()
@@ -1670,8 +1673,7 @@ class test_readcomparer():
         # # # ### self.tearDown()
 
         if tests == 'all':
-            tests = np.arange(0, 15)
-            skip = [9, 10]
+            tests = np.arange(min, max)
             tests = [x for x in tests if x not in skip]
 
         # self.setUp()
@@ -1683,9 +1685,6 @@ class test_readcomparer():
         # self.tearDown()
 
         for test_num in tests:
-            if test_num < 9:
-                continue
-
             self.setUp()
             print("\n*** Running test {0} ***\n".format(test_num))
             eval('self.test{0}()'.format(test_num))
@@ -2074,7 +2073,7 @@ class test_readcomparer():
 
         Rdb = inStrain.SNVprofile.SNVprofile(base).get('comparisonsTable')
         #Rdb = pd.read_csv(base + '.comparisonsTable.csv.gz')
-        scaffs = set(inStrain.controller.load_scaff_list(self.scafflist))
+        scaffs = set(inStrain.profile.fasta.load_scaff_list(self.scafflist))
         assert set(scaffs) == set(Rdb['scaffold'].tolist())
 
     def test5(self):
@@ -2730,14 +2729,14 @@ class test_strains():
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, tests='all'):
+    def run(self, min=0, max=18, tests='all'):
         # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
         # self.setUp()
         # self.test0()
         # self.tearDown()
 
         if tests == 'all':
-            tests = np.arange(1, 18)
+            tests = np.arange(min, max)
 
         for test_num in tests:
             self.setUp()
@@ -3327,7 +3326,7 @@ class test_strains():
 
         # Make sure you get the same results
         scaffdb = IS.get_nonredundant_scaffold_table().reset_index(drop=True)
-        assert set(scaffdb['scaffold'].unique()) == set(inStrain.controller.load_scaff_list(self.scafflist))
+        assert set(scaffdb['scaffold'].unique()) == set(inStrain.profile.fasta.load_scaff_list(self.scafflist))
 
     def test13(self):
         '''
@@ -4169,9 +4168,8 @@ class test_special():
 
 if __name__ == '__main__':
     # The following just evaluates the output made
-    test_strains().run(tests=[16])
-    #test_strains().run()
-    #test_readcomparer().run(tests=[13])
+    # test_strains().run(tests=[16])
+    # test_readcomparer().run(tests=[13])
 
     # test_strains().run()
     # test_filter_reads().run()
@@ -4181,6 +4179,6 @@ if __name__ == '__main__':
     # test_genome_wide().run()
     # test_plot().run()
     # test_special().run()
-    # test_readcomparer().run()
+    test_readcomparer().run(min=4)
 
     print('everything is working swimmingly!')

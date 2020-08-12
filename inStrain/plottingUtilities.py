@@ -13,7 +13,8 @@ from collections import defaultdict
 
 import inStrain.SNVprofile
 import inStrain.readComparer
-#import inStrain.profileUtilities
+
+import inStrain.profile.profile_utilities
 
 import matplotlib
 matplotlib.use('Agg')
@@ -234,7 +235,7 @@ def load_windowed_coverage_or_clonality(thing, covTs, scaffolds, window_len, mms
 
         for mm, ani in zip(mms, ANI_levels):
             if item == 'covT':
-                cov = inStrain.profileUtilities.mm_counts_to_counts_shrunk(covT, mm)
+                cov = inStrain.profile.profile_utilities.mm_counts_to_counts_shrunk(covT, mm)
                 if len(cov) == 0:
                     continue
                 db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold])

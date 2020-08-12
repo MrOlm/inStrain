@@ -131,7 +131,7 @@ def _iterator_ld_sites(mm2combo2counts, min_snp, snv2mm2counts, p1, p2):
             yield mm, arg_dic
 
 def major_minor_allele(counts):
-    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3] }
+    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3]}
     l = sorted(d, key=d.get, reverse=True)
     return l[0], l[1]
 

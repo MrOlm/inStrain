@@ -1,199 +1,199 @@
-20-08-10 18:04:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-20-08-10 18:04:20 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
-20-08-10 18:04:20 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
+20-08-12 16:19:00 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20-08-12 16:19:00 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
+20-08-12 16:19:00 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
 
-20-08-10 18:04:20 DEBUG    inStrain version 1.3.0v was run 
+20-08-12 16:19:00 DEBUG    inStrain version 1.3.0v was run 
 
-20-08-10 18:04:20 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+20-08-12 16:19:00 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-20-08-10 18:04:20 DEBUG    Checkpoint Compare ParseArguments start 151662592
-20-08-10 18:04:20 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
-20-08-10 18:04:22 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
-20-08-10 18:04:23 INFO     178 of 178 scaffolds are in at least 2 samples
-20-08-10 18:04:23 DEBUG    Checkpoint Compare ParseArguments end 156139520
-20-08-10 18:04:23 DEBUG    Checkpoint Compare CompareScaffolds start 156418048
-20-08-10 18:04:23 DEBUG    Checkpoint Compare multiprocessing start 160559104
-20-08-10 18:04:23 DEBUG    Establishing processes
-20-08-10 18:04:28 DEBUG    
-20-08-10 18:04:28 DEBUG    
-20-08-10 18:04:28 DEBUG    
-20-08-10 18:04:29 DEBUG    
-20-08-10 18:04:29 DEBUG    
-20-08-10 18:04:29 DEBUG    
-20-08-10 18:04:30 DEBUG    
-20-08-10 18:04:30 DEBUG    
-20-08-10 18:04:30 DEBUG    
-20-08-10 18:04:31 DEBUG    
-20-08-10 18:04:31 DEBUG    
-20-08-10 18:04:32 DEBUG    
-20-08-10 18:04:32 DEBUG    
-20-08-10 18:04:32 DEBUG    
-20-08-10 18:04:32 DEBUG    
-20-08-10 18:04:33 DEBUG    
-20-08-10 18:04:33 DEBUG    
-20-08-10 18:04:34 DEBUG    
-20-08-10 18:04:34 DEBUG    
-20-08-10 18:04:34 DEBUG    
-20-08-10 18:04:34 DEBUG    
-20-08-10 18:04:35 DEBUG    
-20-08-10 18:04:36 DEBUG    
-20-08-10 18:04:36 DEBUG    
-20-08-10 18:04:36 DEBUG    
-20-08-10 18:04:36 DEBUG    
-20-08-10 18:04:37 DEBUG    
-20-08-10 18:04:37 DEBUG    
-20-08-10 18:04:38 DEBUG    
-20-08-10 18:04:38 DEBUG    
-20-08-10 18:04:38 DEBUG    
-20-08-10 18:04:38 DEBUG    
-20-08-10 18:04:39 DEBUG    
-20-08-10 18:04:39 DEBUG    
-20-08-10 18:04:39 DEBUG    
-20-08-10 18:04:40 DEBUG    
-20-08-10 18:04:40 DEBUG    
-20-08-10 18:04:40 DEBUG    
-20-08-10 18:04:41 DEBUG    
-20-08-10 18:04:41 DEBUG    
-20-08-10 18:04:42 DEBUG    
-20-08-10 18:04:42 DEBUG    
-20-08-10 18:04:43 DEBUG    
-20-08-10 18:04:43 DEBUG    
-20-08-10 18:04:43 DEBUG    
-20-08-10 18:04:43 DEBUG    
-20-08-10 18:04:43 DEBUG    
-20-08-10 18:04:44 DEBUG    
-20-08-10 18:04:45 DEBUG    
-20-08-10 18:04:45 DEBUG    
-20-08-10 18:04:45 DEBUG    
-20-08-10 18:04:46 DEBUG    
-20-08-10 18:04:46 DEBUG    
-20-08-10 18:04:46 DEBUG    
-20-08-10 18:04:47 DEBUG    
-20-08-10 18:04:47 DEBUG    
-20-08-10 18:04:47 DEBUG    
-20-08-10 18:04:48 DEBUG    
-20-08-10 18:04:48 DEBUG    
-20-08-10 18:04:48 DEBUG    
-20-08-10 18:04:49 DEBUG    
-20-08-10 18:04:49 DEBUG    
-20-08-10 18:04:50 DEBUG    
-20-08-10 18:04:50 DEBUG    
-20-08-10 18:04:50 DEBUG    
-20-08-10 18:04:51 DEBUG    
-20-08-10 18:04:52 DEBUG    
-20-08-10 18:04:52 DEBUG    
-20-08-10 18:04:52 DEBUG    
-20-08-10 18:04:52 DEBUG    
-20-08-10 18:04:53 DEBUG    
-20-08-10 18:04:53 DEBUG    
-20-08-10 18:04:53 DEBUG    
-20-08-10 18:04:54 DEBUG    
-20-08-10 18:04:55 DEBUG    
-20-08-10 18:04:55 DEBUG    
-20-08-10 18:04:55 DEBUG    
-20-08-10 18:04:55 DEBUG    
-20-08-10 18:04:56 DEBUG    
-20-08-10 18:04:56 DEBUG    
-20-08-10 18:04:56 DEBUG    
-20-08-10 18:04:57 DEBUG    
-20-08-10 18:04:57 DEBUG    
-20-08-10 18:04:58 DEBUG    
-20-08-10 18:04:58 DEBUG    
-20-08-10 18:04:58 DEBUG    
-20-08-10 18:04:58 DEBUG    
-20-08-10 18:04:59 DEBUG    
-20-08-10 18:04:59 DEBUG    
-20-08-10 18:05:00 DEBUG    
-20-08-10 18:05:00 DEBUG    
-20-08-10 18:05:00 DEBUG    
-20-08-10 18:05:00 DEBUG    
-20-08-10 18:05:01 DEBUG    
-20-08-10 18:05:01 DEBUG    
-20-08-10 18:05:02 DEBUG    
-20-08-10 18:05:02 DEBUG    
-20-08-10 18:05:02 DEBUG    
-20-08-10 18:05:02 DEBUG    
-20-08-10 18:05:02 DEBUG    
-20-08-10 18:05:04 DEBUG    
-20-08-10 18:05:04 DEBUG    
-20-08-10 18:05:05 DEBUG    
-20-08-10 18:05:05 DEBUG    
-20-08-10 18:05:05 DEBUG    
-20-08-10 18:05:05 DEBUG    
-20-08-10 18:05:06 DEBUG    
-20-08-10 18:05:07 DEBUG    
-20-08-10 18:05:07 DEBUG    
-20-08-10 18:05:07 DEBUG    
-20-08-10 18:05:07 DEBUG    
-20-08-10 18:05:08 DEBUG    
-20-08-10 18:05:08 DEBUG    
-20-08-10 18:05:10 DEBUG    
-20-08-10 18:05:10 DEBUG    
-20-08-10 18:05:10 DEBUG    
-20-08-10 18:05:10 DEBUG    
-20-08-10 18:05:11 DEBUG    
-20-08-10 18:05:12 DEBUG    
-20-08-10 18:05:12 DEBUG    
-20-08-10 18:05:13 DEBUG    
-20-08-10 18:05:13 DEBUG    
-20-08-10 18:05:13 DEBUG    
-20-08-10 18:05:14 DEBUG    
-20-08-10 18:05:14 DEBUG    
-20-08-10 18:05:14 DEBUG    
-20-08-10 18:05:15 DEBUG    
-20-08-10 18:05:15 DEBUG    
-20-08-10 18:05:15 DEBUG    
-20-08-10 18:05:16 DEBUG    
-20-08-10 18:05:16 DEBUG    
-20-08-10 18:05:17 DEBUG    
-20-08-10 18:05:17 DEBUG    
-20-08-10 18:05:17 DEBUG    
-20-08-10 18:05:17 DEBUG    
-20-08-10 18:05:17 DEBUG    
-20-08-10 18:05:18 DEBUG    
-20-08-10 18:05:19 DEBUG    
-20-08-10 18:05:19 DEBUG    
-20-08-10 18:05:19 DEBUG    
-20-08-10 18:05:20 DEBUG    
-20-08-10 18:05:20 DEBUG    
-20-08-10 18:05:20 DEBUG    
-20-08-10 18:05:20 DEBUG    
-20-08-10 18:05:21 DEBUG    
-20-08-10 18:05:21 DEBUG    
-20-08-10 18:05:21 DEBUG    
-20-08-10 18:05:22 DEBUG    
-20-08-10 18:05:23 DEBUG    
-20-08-10 18:05:23 DEBUG    
-20-08-10 18:05:24 DEBUG    
-20-08-10 18:05:24 DEBUG    
-20-08-10 18:05:24 DEBUG    
-20-08-10 18:05:24 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:26 DEBUG    
-20-08-10 18:05:28 DEBUG    
-20-08-10 18:05:28 DEBUG    
-20-08-10 18:05:28 DEBUG    
-20-08-10 18:05:28 DEBUG    
-20-08-10 18:05:28 DEBUG    
-20-08-10 18:05:29 DEBUG    
-20-08-10 18:05:30 DEBUG    
-20-08-10 18:05:31 DEBUG    
-20-08-10 18:05:31 DEBUG    
-20-08-10 18:05:31 DEBUG    
-20-08-10 18:05:31 DEBUG    
-20-08-10 18:05:31 DEBUG    
-20-08-10 18:05:32 DEBUG    
-20-08-10 18:05:32 DEBUG    
-20-08-10 18:05:32 DEBUG    
-20-08-10 18:05:33 DEBUG    
-20-08-10 18:05:33 DEBUG    
-20-08-10 18:05:34 DEBUG    
-20-08-10 18:05:34 DEBUG    Checkpoint Compare multiprocessing end 167473152
-20-08-10 18:05:35 DEBUG    Checkpoint Compare CompareScaffolds end 170749952
-20-08-10 18:05:35 DEBUG    Checkpoint Compare SaveResults start 171098112
-20-08-10 18:05:36 DEBUG    Checkpoint Compare SaveResults end 177041408
-20-08-10 18:05:36 DEBUG    inStrain complete; shutting down logger and printing run stats (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)
+20-08-12 16:19:00 DEBUG    Checkpoint Compare ParseArguments start 152440832
+20-08-12 16:19:00 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
+20-08-12 16:19:00 INFO     Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
+20-08-12 16:19:00 INFO     178 of 178 scaffolds are in at least 2 samples
+20-08-12 16:19:00 DEBUG    Checkpoint Compare ParseArguments end 156585984
+20-08-12 16:19:00 DEBUG    Checkpoint Compare CompareScaffolds start 156921856
+20-08-12 16:19:00 DEBUG    Checkpoint Compare multiprocessing start 161275904
+20-08-12 16:19:00 DEBUG    Establishing processes
+20-08-12 16:19:03 DEBUG    
+20-08-12 16:19:03 DEBUG    
+20-08-12 16:19:04 DEBUG    
+20-08-12 16:19:04 DEBUG    
+20-08-12 16:19:04 DEBUG    
+20-08-12 16:19:04 DEBUG    
+20-08-12 16:19:05 DEBUG    
+20-08-12 16:19:05 DEBUG    
+20-08-12 16:19:05 DEBUG    
+20-08-12 16:19:05 DEBUG    
+20-08-12 16:19:05 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:06 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:07 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:08 DEBUG    
+20-08-12 16:19:09 DEBUG    
+20-08-12 16:19:09 DEBUG    
+20-08-12 16:19:09 DEBUG    
+20-08-12 16:19:09 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:10 DEBUG    
+20-08-12 16:19:11 DEBUG    
+20-08-12 16:19:11 DEBUG    
+20-08-12 16:19:11 DEBUG    
+20-08-12 16:19:11 DEBUG    
+20-08-12 16:19:11 DEBUG    
+20-08-12 16:19:12 DEBUG    
+20-08-12 16:19:12 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:13 DEBUG    
+20-08-12 16:19:14 DEBUG    
+20-08-12 16:19:14 DEBUG    
+20-08-12 16:19:14 DEBUG    
+20-08-12 16:19:14 DEBUG    
+20-08-12 16:19:14 DEBUG    
+20-08-12 16:19:15 DEBUG    
+20-08-12 16:19:15 DEBUG    
+20-08-12 16:19:15 DEBUG    
+20-08-12 16:19:15 DEBUG    
+20-08-12 16:19:15 DEBUG    
+20-08-12 16:19:16 DEBUG    
+20-08-12 16:19:16 DEBUG    
+20-08-12 16:19:16 DEBUG    
+20-08-12 16:19:17 DEBUG    
+20-08-12 16:19:17 DEBUG    
+20-08-12 16:19:17 DEBUG    
+20-08-12 16:19:17 DEBUG    
+20-08-12 16:19:17 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:18 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:19 DEBUG    
+20-08-12 16:19:20 DEBUG    
+20-08-12 16:19:20 DEBUG    
+20-08-12 16:19:20 DEBUG    
+20-08-12 16:19:20 DEBUG    
+20-08-12 16:19:20 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:21 DEBUG    
+20-08-12 16:19:22 DEBUG    
+20-08-12 16:19:22 DEBUG    
+20-08-12 16:19:22 DEBUG    
+20-08-12 16:19:22 DEBUG    
+20-08-12 16:19:22 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:23 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:24 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:25 DEBUG    
+20-08-12 16:19:26 DEBUG    
+20-08-12 16:19:26 DEBUG    
+20-08-12 16:19:26 DEBUG    
+20-08-12 16:19:26 DEBUG    
+20-08-12 16:19:27 DEBUG    
+20-08-12 16:19:27 DEBUG    
+20-08-12 16:19:27 DEBUG    
+20-08-12 16:19:27 DEBUG    
+20-08-12 16:19:27 DEBUG    
+20-08-12 16:19:28 DEBUG    
+20-08-12 16:19:28 DEBUG    
+20-08-12 16:19:28 DEBUG    
+20-08-12 16:19:29 DEBUG    
+20-08-12 16:19:29 DEBUG    
+20-08-12 16:19:29 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:30 DEBUG    
+20-08-12 16:19:31 DEBUG    
+20-08-12 16:19:31 DEBUG    
+20-08-12 16:19:31 DEBUG    
+20-08-12 16:19:31 DEBUG    
+20-08-12 16:19:31 DEBUG    
+20-08-12 16:19:32 DEBUG    
+20-08-12 16:19:32 DEBUG    
+20-08-12 16:19:32 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:33 DEBUG    
+20-08-12 16:19:34 DEBUG    
+20-08-12 16:19:34 DEBUG    
+20-08-12 16:19:34 DEBUG    
+20-08-12 16:19:34 DEBUG    
+20-08-12 16:19:34 DEBUG    
+20-08-12 16:19:35 DEBUG    
+20-08-12 16:19:35 DEBUG    
+20-08-12 16:19:35 DEBUG    
+20-08-12 16:19:35 DEBUG    
+20-08-12 16:19:35 DEBUG    
+20-08-12 16:19:36 DEBUG    
+20-08-12 16:19:36 DEBUG    
+20-08-12 16:19:37 DEBUG    
+20-08-12 16:19:37 DEBUG    Checkpoint Compare multiprocessing end 168292352
+20-08-12 16:19:37 DEBUG    Checkpoint Compare CompareScaffolds end 171560960
+20-08-12 16:19:37 DEBUG    Checkpoint Compare SaveResults start 171954176
+20-08-12 16:19:38 DEBUG    Checkpoint Compare SaveResults end 180944896
+20-08-12 16:19:38 DEBUG    inStrain complete; shutting down logger and printing run stats (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)

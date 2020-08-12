@@ -20,7 +20,7 @@ class BamProfileController(object):
     '''
     Handle the logic of profiling
     '''
-    def __init__(self, bam, Fdb, sR2M, **kwargs):
+    def __init__(self, bam, Fdb, sR2M, ISP_loc, **kwargs):
         '''
         The requirements are bam, Fdb, and sR2M
 
@@ -28,10 +28,12 @@ class BamProfileController(object):
             bam = location of .bam file
             Fdb = dictionary listing fasta locations to profile
             sR2M = dictionary of scaffold -> read pair -> number of mm
+            ISP_loc = location of ISP profile to store results
         '''
         self.bam_loc = bam
         self.sR2M = sR2M
         self.Fdb = Fdb
+        self.ISP_loc = ISP_loc
         self.kwargs = kwargs
 
     def main(self):
@@ -48,7 +50,7 @@ class BamProfileController(object):
         self.run_profile_processing()
 
         # Return the results as an SNVprofile
-        return self.SNVprofile
+        return self.ISP
 
     def gen_prof_args(self):
         '''
@@ -101,11 +103,12 @@ class BamProfileController(object):
         self.recieve_merge_results()
 
         # Collate and return results
-        SNVprof = inStrain.profile.profile_utilities.gen_snv_profile(
+        ISP = inStrain.profile.profile_utilities.gen_snv_profile(
                         [s for s in self.Sprofiles if s is not None],
+                        ISP_loc = self.ISP_loc,
                         **self.kwargs)
 
-        self.SNVprofile = SNVprof
+        self.ISP = ISP
 
     def make_profile_queues(self):
         '''
@@ -166,11 +169,11 @@ class BamProfileController(object):
             inStrain.logUtils.log_checkpoint("Profile", "SpawningSplitWorkers", "end")
 
         else:
-            split_profile_worker(self.split_cmd_queue,
+            inStrain.profile.profile_utilities.split_profile_worker(self.split_cmd_queue,
                                  self.Sprofile_dict,
                                  self.log_list,
                                  self.null_model,
-                                 self.bam,
+                                 self.bam_loc,
                                 single_thread=True)
             logging.info("Done profiling splits")
 
@@ -210,7 +213,7 @@ class BamProfileController(object):
             received_splits = 0
             while received_splits < total_cmd_count:
                 try:
-                    log = log_list.get(timeout=5)
+                    log = self.log_list.get(timeout=5)
                     logging.debug(log)
                     received_splits += 1
                 except:
@@ -223,8 +226,8 @@ class BamProfileController(object):
         '''
         p = int(self.kwargs.get('processes', 6))
 
+        logging.debug('Establishing processes for merging')
         if p > 1:
-            logging.debug('Establishing processes for merging')
             self.processes = []
             for i in range(0, p):
                 self.processes.append(self.ctx.Process(
@@ -241,7 +244,8 @@ class BamProfileController(object):
                                  self.sprofile_cmd_queue,
                                  self.Sprofile_dict,
                                  self.sprofile_result_queue,
-                                 self.null_model)
+                                 self.null_model,
+                                 single_thread=True)
 
     def recieve_merge_results(self):
         '''

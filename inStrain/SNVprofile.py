@@ -17,6 +17,7 @@ if __name__ != '__main__':
     #import inStrain.profileUtilities
 
 #import inStrain.profileUtilities
+import inStrain.profile.profile_utilities
 import inStrain.logUtils
 import inStrain.filter_reads
 
@@ -417,7 +418,7 @@ class SNVprofile:
             dbs = []
             scaff2clonT = clonT
             for scaff, clonT in scaff2clonT.items():
-                db = inStrain.profileUtilities._clonT_to_table(clonT)
+                db = inStrain.profile.profile_utilities._clonT_to_table(clonT)
                 db['scaffold'] = scaff
                 dbs.append(db)
 
@@ -893,7 +894,7 @@ class SNVprofile_old:
             dbs = []
             scaff2clonT = self.clonT
             for scaff, clonT in scaff2clonT.items():
-                db = inStrain.profileUtilities._clonT_to_table(clonT)
+                db = inStrain.profile.profile_utilities._clonT_to_table(clonT)
                 db['scaffold'] = scaff
                 dbs.append(db)
 
@@ -1003,30 +1004,24 @@ def convert_SNVprofile(pickle_loc):
         #
 
         elif attr == 'covT':
-            new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'coverage') for s, cov in getattr(oIS, attr).items()}
+            new = {s:inStrain.profile.profile_utilities.shrink_basewise(cov, 'coverage') for s, cov in getattr(oIS, attr).items()}
             nIS.store('covT', new,
                     'special', "Scaffold -> mm -> position based coverage")
-            # nIS.store('covT', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'coverage'),
-            #         'special', "Scaffold -> mm -> position based coverage")
 
         elif attr == 'snpsCounted':
-            new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'snpCounted') for s, cov in getattr(oIS, attr).items()}
+            new = {s:inStrain.profile.profile_utilities.shrink_basewise(cov, 'snpCounted') for s, cov in getattr(oIS, attr).items()}
             nIS.store('snpsCounted', new,
                     'special', "Scaffold -> mm -> position based True/False on if a SNPs is there")
-            # nIS.store('snpsCounted', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'snpsCounted'),
-            #         'special', "Scaffold -> mm -> position based True/False on if a SNPs is there")
 
         elif attr == 'clonT':
-            new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
+            new = {s:inStrain.profile.profile_utilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
             nIS.store('clonT', new,
                     'special', "Scaffold -> mm -> position based clonality")
 
         elif attr == 'clonTR':
-            new = {s:inStrain.profileUtilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
+            new = {s:inStrain.profile.profile_utilities.shrink_basewise(cov, 'clonality') for s, cov in getattr(oIS, attr).items()}
             nIS.store('clonTR', new,
                     'special', "Scaffold -> mm -> position based clonality")
-            # nIS.store('clonT', inStrain.profileUtilities.shrink_basewise(getattr(oIS, attr), 'clonality'),
-            #         'special', "Scaffold -> mm -> position based clonality")
 
         elif attr in ['mapping_info', 'read_report']:
             nIS.store(attr, getattr(oIS, attr), 'pandas', "Report on reads")

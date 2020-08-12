@@ -544,11 +544,15 @@ def _parse_Sdb(sdb):
 
     return sdb
 
-def gen_snv_profile(Sprofiles, **kwargs):
+def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
     '''
     Take a bunch of scaffold profiles and make an SNVprofile
     '''
-    location = kwargs.get('output', False)
+    if ISP_loc == None:
+        location = kwargs.get('output', False)
+    else:
+        location = ISP_loc
+        
     store_everything = kwargs.get('store_everything', False)
 
     # Merge things

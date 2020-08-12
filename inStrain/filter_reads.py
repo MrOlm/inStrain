@@ -22,12 +22,52 @@ import itertools
 from collections import ChainMap
 
 import inStrain.logUtils
+import inStrain.profile.fasta
 
 class Controller():
 
+    def main_from_profile(self, ISP, bam, **kwargs):
+        '''
+        The main method when called from the "profile" module
+
+        Args:
+            ISP = pre-initialized inStrain profile
+            bam = location of .bam file
+            args = the rest of the command line arguments
+
+        Returns:
+            Ridc = dictionary of read -> mismatches
+            RR = pandas dataframe describing filtering
+        '''
+        detailed_report = kwargs.get('detailed_mapping_info', False)
+
+        # Set up and parse .fasta file
+        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
+
+        # Load the .fasta file
+        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
+        fasta_db, scaff2sequence = inStrain.profile.fasta.load_fasta(**kwargs)
+        scaffolds = list(fasta_db['scaffold'].unique())
+        s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
+        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "end")
+
+        # Filter the reads and store read reports
+        if detailed_report:
+            Rdic, RR, dRR = load_paired_reads(bam, scaffolds, **kwargs)
+
+            # Store and delete the detailed report
+            ISP.store('detailed_mapping_info', dRR, 'pandas', "Details report on reads")
+            del self.dRR
+
+        else:
+            Rdic, RR = load_paired_reads(bam, scaffolds, **kwargs)
+
+        # Return the Rdic and ReadReport
+        return Rdic, RR, fasta_db, scaff2sequence, s2l
+
     def main(self, args):
         '''
-        The main method when called explicitly
+        The main method when called explicitly (as its own module)
         '''
         bam = args.bam
         vargs = vars(args)
@@ -305,87 +345,6 @@ def evaluate_pair(info, values):
         f_results[v2o['max_insert']] = 1
 
     return f_results
-    # 3) Insert into scaff2pair2infoF
-
-    #
-    # # Handle paired-read filtering
-    # inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
-    # priority_reads_loc = kwargs.get('priority_reads', None)
-    # priority_reads = load_priority_reads(priority_reads_loc)
-    # pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, **kwargs)
-    # inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
-    #
-    # # Make read report
-    # logging.info('Making read report')
-    # inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
-    #
-    # RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
-    #                             priority_reads_set=priority_reads, **kwargs)
-    #
-    # inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
-    #
-    # # Filter the dictionary
-    # logging.info('Filtering reads')
-    # inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
-    # pair2infoF = filter_paired_reads_dict2(pair2info,
-    #     **kwargs)
-    # inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
-    #
-    # if detailed_report:
-    #     dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
-    #     return pair2infoF, RR, dRR
-    #
-    # else:
-    #     return pair2infoF, RR
-
-# def load_paired_reads2(bam, scaffolds, **kwargs):
-#     '''
-#     Load paired reads to be profiled
-#
-#     You have this method do a lot of things because all of these things take lots of RAM, and you want them all to be cleared as soon as possible
-#
-#     Return a dictionary of results. Some things that could be in it are:
-#         pair2infoF: A filtered dictionary of read name to number of mismatches
-#         RR: A summary read reaport
-#         RR_detailed: A detailed read report
-#     '''
-#     # Parse the kwargs
-#     detailed_report = kwargs.get('detailed_mapping_info', False)
-#
-#     # Get the pairs
-#     inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "start")
-#     scaff2pair2info = get_paired_reads_multi(bam, scaffolds, **kwargs)
-#     inStrain.logUtils.log_checkpoint("FilterReads", "get_paired_reads_multi", "end")
-#
-#     # Handle paired-read filtering
-#     inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
-#     priority_reads_loc = kwargs.get('priority_reads', None)
-#     priority_reads = load_priority_reads(priority_reads_loc)
-#     pair2info = paired_read_filter(scaff2pair2info, priority_reads_set=priority_reads, **kwargs)
-#     inStrain.logUtils.log_checkpoint("FilterReads", "paired_reads", "start")
-#
-#     # Make read report
-#     logging.info('Making read report')
-#     inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "start")
-#
-#     RR = makeFilterReport2(scaff2pair2info, pairTOinfo=pair2info,
-#                                 priority_reads_set=priority_reads, **kwargs)
-#
-#     inStrain.logUtils.log_checkpoint("FilterReads", "MakeReadReport", "end")
-#
-#     # Filter the dictionary
-#     logging.info('Filtering reads')
-#     inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "start")
-#     pair2infoF = filter_paired_reads_dict2(pair2info,
-#         **kwargs)
-#     inStrain.logUtils.log_checkpoint("FilterReads", "ActualReadFiltering", "end")
-#
-#     if detailed_report:
-#         dRR = make_detailed_mapping_info(scaff2pair2info, pairTOinfo=pair2info, version=2)
-#         return pair2infoF, RR, dRR
-#
-#     else:
-#         return pair2infoF, RR
 
 def load_priority_reads(file_loc):
     '''
@@ -492,47 +451,6 @@ def paired_read_filter(scaff2pair2info, priority_reads_set=set(), tallys=None, *
                 raise Exception
 
     return scaff2pair2infoF
-
-# def paired_read_filter(scaff2pair2info, priority_reads_set=set(), **kwargs):
-#     '''
-#     Filter scaff2pair2info to keep / remove paired / unpaired reads
-#     '''
-#     assert type(kwargs.get('priority_reads', 'none')) != type(set())
-#     priority_reads = priority_reads_set
-#     pairing_filter = kwargs.get('pairing_filter', 'paired_only')
-#     pair2info = {}
-#     assert type(priority_reads) == type(set()), type(priority_reads)
-#
-#     if pairing_filter == 'paired_only':
-#         for scaff, p2i in scaff2pair2info.items():
-#             for p, i in p2i.items():
-#                 if ((i[4] == 2) | (p in priority_reads)):
-#                     pair2info[p] = i
-#
-#     elif pairing_filter == 'non_discordant':
-#         for scaff, p2i in scaff2pair2info.items():
-#             for p, i in p2i.items():
-#                 # Add it if it's not already in there
-#                 if ((p not in pair2info) | (p in priority_reads)):
-#                     pair2info[p] = i
-#
-#                 # If it is already in there, that means its concordant, so delete it
-#                 else:
-#                     del pair2info[p]
-#
-#     elif pairing_filter == 'all_reads':
-#         for scaff, p2i in scaff2pair2info.items():
-#             for p, i in p2i.items():
-#                 if p in pair2info:
-#                     pair2info[p] = _merge_info(i, pair2info[p])
-#                 else:
-#                     pair2info[p] = i
-#
-#     else:
-#         logging.error("Do not know paired read filter \"{0}\"; crashing now".format(pairing_filter))
-#         raise Exception
-#
-#     return pair2info
 
 def _merge_info(i1, i2):
     #{'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
@@ -971,75 +889,6 @@ def get_paired_reads(samfile, scaff):
     log_message += inStrain.logUtils.get_worker_log('GetPairedReads', scaff, 'end')
 
     return pair2info, log_message
-
-# def get_paired_reads2(bam, scaff):
-#     '''
-#     Filter reads from a .bam file
-#
-#     As opposed to get_paired_reads, this gets all reads and lets you filter out pairs (or not) later. This just means adding a bit to pair2info
-#
-#     Returns:
-#         pair2info: dictionary of read pair -> (mismatches, insert distance (-1 if number of reads is not 2), mapq score (highest), combined length, number of reads,
-#                                                 reference_position_0, reference_position_1 (only used for small things))
-#     '''
-#     # item2order, to make things more readable
-#     i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
-#
-#     # Initialize
-#     pair2info = {} # Information on pairs
-#     samfile = pysam.AlignmentFile(bam)
-#
-#     try:
-#         iter = samfile.fetch(scaff)
-#     except ValueError:
-#         logging.error("FAILURE FilterReads {0} is not in .bam file".format(scaff))
-#         return {}
-#
-#     for read in iter:
-#         # Dont use unmapped reads
-#         if read.get_reference_positions() == []:
-#             continue
-#
-#         # Add a read the first time you see it
-#         elif read.query_name not in pair2info:
-#             pair2info[read.query_name] = np.array([read.get_tag('NM'),
-#                                             -1,
-#                                             read.mapping_quality,
-#                                             read.infer_query_length(),
-#                                             1,
-#                                             read.get_reference_positions()[0],
-#                                             read.get_reference_positions()[-1]], dtype="int64")
-#
-#         # If we've seen this read's pair before
-#         elif read.query_name in pair2info:
-#             # Adjust the number of mismatches
-#             pair2info[read.query_name][i2o['nm']] = int(pair2info[read.query_name][i2o['nm']]) + int(read.get_tag('NM'))
-#
-#             # Adjust the number of reads
-#             pair2info[read.query_name][i2o['reads']] += 1
-#
-#             # Adjust the combined length
-#             pair2info[read.query_name][i2o['length']] += read.infer_query_length()
-#
-#             # Adjust the mapQ
-#             pair2info[read.query_name][i2o['mapq']] = max(pair2info[read.query_name][i2o['mapq']], read.mapping_quality)
-#
-#             # If the number of reads is 2, calculate insert size
-#             if pair2info[read.query_name][i2o['reads']] == 2:
-#                 if read.get_reference_positions()[-1] > pair2info[read.query_name][i2o['start']]:
-#                     pair2info[read.query_name][i2o['insert_distance']] = read.get_reference_positions()[-1] - pair2info[read.query_name][i2o['start']]
-#                 else:
-#                     pair2info[read.query_name][i2o['insert_distance']] = pair2info[read.query_name][i2o['stop']] - read.get_reference_positions()[0]
-#
-#             # Otherwise get rid of insert distance
-#             else:
-#                 pair2info[read.query_name][i2o['insert_distance']] = -1
-#
-#             # Get rid of start and stop; not needed anymore
-#             pair2info[read.query_name][i2o['start']] = 0
-#             pair2info[read.query_name][i2o['stop']] = 0
-#
-#     return pair2info
 
 def mapping_info_wrapper(args, FAdb):
     # Get paired reads

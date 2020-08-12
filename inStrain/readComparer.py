@@ -22,7 +22,10 @@ from Bio import SeqIO
 
 if __name__ != '__main__':
     from ._version import __version__
-#import inStrain.profileUtilities
+
+import inStrain.profile.snv_utilities
+import inStrain.profile.fasta
+
 import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.logUtils
@@ -95,7 +98,7 @@ def greedy_main(RCprof, names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
 
     # Figure out the total bin length
     if kwargs.get('scaffolds', None) != None:
-        scaffolds = inStrain.controller.load_scaff_list(kwargs.get('scaffolds', None))
+        scaffolds = inStrain.profile.fasta.load_scaff_list(kwargs.get('scaffolds', None))
         BIN_LENGTH = sum([s2l[s] for s in scaffolds])
     else:
         BIN_LENGTH = sum([l for s, l in s2l.items()])
@@ -295,7 +298,7 @@ def parse_validate(args):
 
     # Figure out scaffolds that are in the list
     if args.scaffolds != None:
-        scaffolds = inStrain.controller.load_scaff_list(args.scaffolds)
+        scaffolds = inStrain.profile.fasta.load_scaff_list(args.scaffolds)
         scaffolds_to_compare = list(set(scaffolds).intersection(set(scaffolds_to_compare)))
         logging.info("{0} of these scaffolds are in the provided list of {1}".format(
                         len(scaffolds_to_compare), len(set(scaffolds))))
@@ -845,7 +848,7 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
 
     # Get the null model for SNP calling
     null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
-    model_to_use = inStrain.profileUtilities.generate_snp_model(null_loc, fdr=fdr)
+    model_to_use = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
 
     # Constant for the SNP dataframe
     SNP_COLUMNS = ['position', 'con_base', 'ref_base', 'var_base',
