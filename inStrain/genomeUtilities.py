@@ -21,7 +21,7 @@ from collections import defaultdict
 
 import inStrain.SNVprofile
 import inStrain.controller
-import inStrain.profileUtilities
+import inStrain.profile.profile_utilities
 import inStrain.quickProfile
 import inStrain.irep_utilities
 import inStrain.logUtils
@@ -942,7 +942,7 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
         slen = s2l[scaff]
 
         if scaff in covT:
-            cov = inStrain.profileUtilities.mm_counts_to_counts_shrunk(covT[scaff], maxMM=maxMM, fill_zeros=slen)
+            cov = inStrain.profile.profile_utilities.mm_counts_to_counts_shrunk(covT[scaff], maxMM=maxMM, fill_zeros=slen)
         else:
             cov = pd.Series(index=np.arange(slen))
 

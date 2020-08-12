@@ -22,7 +22,7 @@ from Bio import SeqIO
 
 if __name__ != '__main__':
     from ._version import __version__
-import inStrain.profileUtilities
+#import inStrain.profileUtilities
 import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.logUtils

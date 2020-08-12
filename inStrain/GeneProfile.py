@@ -27,7 +27,7 @@ with warnings.catch_warnings():
 
 import inStrain.SNVprofile
 import inStrain.controller
-import inStrain.profileUtilities
+#import inStrain.profileUtilities
 import inStrain.logUtils
 
 class Controller():

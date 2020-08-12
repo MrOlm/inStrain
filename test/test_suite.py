@@ -22,10 +22,11 @@ from collections import defaultdict
 import inStrain
 import inStrain.SNVprofile
 import inStrain.controller
-import inStrain.deprecated
 import inStrain.filter_reads
-import inStrain.deprecated_filter_reads
-import inStrain.profileUtilities
+
+import inStrain.deprecated
+import inStrain.deprecated.deprecated_filter_reads
+#import inStrain.profileUtilities
 import inStrain.readComparer
 import inStrain.argumentParser
 import inStrain.logUtils
@@ -1303,7 +1304,7 @@ class test_filter_reads():
         db2 = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info2)
 
         # Run version 1 to get scaffold to pairs to info
-        s2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        s2pair2info, scaff2total = inStrain.deprecated.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
         db = inStrain.filter_reads.make_detailed_mapping_info(s2pair2info, version=1)
 
         # Make sure they get the same base reads
@@ -1364,7 +1365,7 @@ class test_filter_reads():
         for scaff, p2i in s2pair2info.items():
             for p, i in p2i.items():
                 pair2info[p] = i
-        RRo = inStrain.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
+        RRo = inStrain.deprecated.deprecated_filter_reads.makeFilterReport(s2pair2info, scaff2total=scaff2total)
 
         # Test out the read filtering report
         tallys = {}
@@ -1445,7 +1446,7 @@ class test_filter_reads():
         # Try old method
 
         # Load paired reads
-        scaff2pair2info, scaff2total = inStrain.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
+        scaff2pair2info, scaff2total = inStrain.deprecated.deprecated_filter_reads.get_paired_reads_multi(self.sorted_bam, scaffolds, ret_total=True)
         # Merge into single
         pair2info = {}
         for scaff, p2i in scaff2pair2info.items():
@@ -1453,10 +1454,10 @@ class test_filter_reads():
                 pair2info[p] = i
         # Make read report
         logging.info('Making read report')
-        RRo = inStrain.deprecated_filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info)
+        RRo = inStrain.deprecated.deprecated_filter_reads.makeFilterReport(scaff2pair2info, scaff2total, pair2info=pair2info)
         # Filter the dictionary
         logging.info('Filtering reads')
-        pair2infoFo = inStrain.deprecated_filter_reads.filter_paired_reads_dict(pair2info)
+        pair2infoFo = inStrain.deprecated.deprecated_filter_reads.filter_paired_reads_dict(pair2info)
         assert len(pair2infoFo.keys()) == int(RRo['filtered_pairs'].tolist()[0])
 
         # Compare
@@ -2740,6 +2741,7 @@ class test_strains():
 
         for test_num in tests:
             self.setUp()
+            print("\n*** Running test {0} ***\n".format(test_num))
             eval('self.test{0}()'.format(test_num))
             self.tearDown()
 
@@ -2885,24 +2887,24 @@ class test_strains():
         Test filter reads; make sure CCs and Matt's agree
         '''
         # Set up
-        positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
+        positions, total_length = inStrain.deprecated.deprecated_filter_reads.get_fasta(self.fasta)
         min_read_ani = 0.98
 
         # Run initial filter_reads
-        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
+        subset_reads, Rdb = inStrain.deprecated.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
                             filter_cutoff=min_read_ani, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
         scaff2sequence = SeqIO.to_dict(SeqIO.parse(self.fasta, "fasta")) # set up .fasta file
         s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())} # Get scaffold2length
         scaffolds = list(s2l.keys())
-        subset_reads2 = inStrain.deprecated_filter_reads.filter_paired_reads(self.sorted_bam,
+        subset_reads2 = inStrain.deprecated.deprecated_filter_reads.filter_paired_reads(self.sorted_bam,
                         scaffolds, filter_cutoff=min_read_ani, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads in a different way
-        pair2info = inStrain.deprecated_filter_reads.get_paired_reads(self.sorted_bam, scaffolds)
-        pair2infoF = inStrain.deprecated_filter_reads.filter_paired_reads_dict(pair2info,
+        pair2info = inStrain.deprecated.deprecated_filter_reads.get_paired_reads(self.sorted_bam, scaffolds)
+        pair2infoF = inStrain.deprecated.deprecated_filter_reads.filter_paired_reads_dict(pair2info,
                         filter_cutoff=min_read_ani, max_insert_relative=3,
                         min_insert=50, min_mapq=2)
         subset_readsF = list(pair2infoF.keys())
@@ -2934,11 +2936,11 @@ class test_strains():
                 == len(subset_reads)
 
         # Try another cutuff
-        positions, total_length = inStrain.deprecated_filter_reads.get_fasta(self.fasta)
+        positions, total_length = inStrain.deprecated.deprecated_filter_reads.get_fasta(self.fasta)
         min_read_ani = 0.90
 
         # Run initial filter_reads
-        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
+        subset_reads, Rdb = inStrain.deprecated.deprecated_filter_reads.filter_reads(self.sorted_bam, positions, total_length,
                             filter_cutoff=min_read_ani, max_insert_relative=3, min_insert=50, min_mapq=2)
 
         # Run Matts filter_reads
@@ -4168,7 +4170,8 @@ class test_special():
 if __name__ == '__main__':
     # The following just evaluates the output made
     test_strains().run(tests=[16])
-    test_readcomparer().run(tests=[13])
+    #test_strains().run()
+    #test_readcomparer().run(tests=[13])
 
     # test_strains().run()
     # test_filter_reads().run()

@@ -17,7 +17,7 @@ from datetime import datetime
 from collections import defaultdict
 
 # Import inStrain stuff
-import inStrain.profileUtilities
+import inStrain.profile
 import inStrain.filter_reads
 import inStrain.readComparer
 import inStrain.GeneProfile
@@ -178,7 +178,13 @@ class ProfileController(object):
         if args.min_genome_coverage != 0:
             assert args.stb != [], 'If you adjust the minimum genome coverage, you need to provide an .stb!'
 
-            self.args = args
+        # See if you have genes
+        if args.gene_file != None:
+            self.genes_file_present = True
+            # self.gene_database, self.gene2sequence = \
+            #                 inStrain.GeneProfile.parse_genes(args.gene_file)
+
+        self.args = args
 
     def profile_filter_reads(self):
         '''
@@ -266,7 +272,7 @@ class ProfileController(object):
         FAdb = self.FAdb
 
         # Call the module
-        Sprofile = inStrain.profileUtilities.profile_bam(bam, FAdb, Rdic, **vargs)
+        Sprofile = inStrain.profile.profile_bam(bam, FAdb, Rdic, **vargs)
 
         # Store some extra stuff in the resulting profile
         Sprofile.store('mapping_info', self.RR, 'pandas', "Report on reads")

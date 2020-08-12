@@ -13,7 +13,7 @@ from collections import defaultdict
 
 import inStrain.SNVprofile
 import inStrain.readComparer
-import inStrain.profileUtilities
+#import inStrain.profileUtilities
 
 import matplotlib
 matplotlib.use('Agg')

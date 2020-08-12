@@ -14,7 +14,7 @@ from tqdm import tqdm
 from collections import defaultdict
 
 import inStrain.controller
-import inStrain.profileUtilities
+#import inStrain.profileUtilities
 
 # THIS IS CC'S VERSION
 def main(args):
@@ -574,7 +574,7 @@ Possible names for this program:
 '''
 
 # Get the version
-from ._version import __version__
+from inStrain._version import __version__
 
 # Import
 import os
@@ -872,3 +872,21 @@ if __name__ == '__main__':
     # Controller().main(sys.argv[1:])
     # args = parse_arguments(sys.argv[1:])
     # main(args)
+
+def _calc_counted_bases(basesCounted, maxMM):
+    '''
+    Return the number of bases counted at a particular mm level
+    Returns the number of bases at this level and all levels below it
+    '''
+    counts = None
+    for mm, count in [(mm, count) for mm, count in basesCounted.items() if mm <= maxMM]:
+        if counts is None:
+            counts = count
+        else:
+            counts = counts.add(count, fill_value=False)
+
+    if counts is None:
+        return 0
+
+    else:
+        return counts.astype('bool').sum()

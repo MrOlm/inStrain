@@ -1,3 +1,7 @@
+'''
+Handles code related to linkage
+'''
+
 import itertools
 import collections
 import numpy as np
@@ -5,7 +9,7 @@ import pandas as pd
 import networkx as nx
 from collections import defaultdict
 
-import inStrain.profileUtilities
+import inStrain.profile.profile_utilities
 
 def calc_mm_SNV_linkage_network(read_to_snvs, scaff=False):
     '''
@@ -27,12 +31,6 @@ def calc_mm_SNV_linkage_network(read_to_snvs, scaff=False):
                 p1 = int(pair[0].split(":")[0])
                 p2 = int(pair[1].split(":")[0])
 
-                # search here for debug
-                # if scaff == 'N5_271_010G1_scaffold_1':
-                #     if p1 == 2130:
-                #         if p2 == 2139:
-                #             print(read)
-
                 c = "{0}:{1}".format(pair[0].split(":")[1], pair[1].split(":")[1])
                 if not G.has_edge(p1, p2):
                     G.add_edge(p1, p2)
@@ -51,7 +49,6 @@ def calculate_ld(mm_to_position_graph, min_snp,
     Calculates Linkage Disequilibrium for all SNVs in a window.
     '''
     r2_table = defaultdict(list)
-    #snv_table = snv_table.sort_values(['position', 'mm']).set_index('position')
 
     # This just gives potisions
     for edge in mm_to_position_graph.edges(list(snv2mm2counts.keys())):
@@ -101,8 +98,8 @@ def _iterator_ld_sites(mm2combo2counts, min_snp, snv2mm2counts, p1, p2):
         # update counts
         if mm not in updateMMs:
             continue
-        counts[0] = inStrain.profileUtilities._mm_counts_to_counts(s1, mm)
-        counts[1] = inStrain.profileUtilities._mm_counts_to_counts(s2, mm)
+        counts[0] = inStrain.profile.profile_utilities.mm_counts_to_counts(s1, mm)
+        counts[1] = inStrain.profile.profile_utilities.mm_counts_to_counts(s2, mm)
 
         if sum(counts[0]) + sum(counts[1]) >= min_snp:
             skip = False
@@ -158,17 +155,6 @@ def _calc_ld_single(min_snp, **kwargs):
     allele_a = kwargs.get('a')
     allele_B = kwargs.get('B')
     allele_b = kwargs.get('b')
-
-    # calculate allele frequencies
-    # sum_A = kwargs.get('A_counts') + kwargs.get('a_counts')
-    # sum_B = kwargs.get('B_counts') + kwargs.get('b_counts')
-    #
-    # freq_A = kwargs.get('A_counts') / sum_A
-    # freq_a = kwargs.get('a_counts') / sum_A
-    #
-    # freq_B = kwargs.get('B_counts') / sum_B
-    # freq_b = kwargs.get('b_counts') / sum_B
-
     countAB = kwargs.get('AB', 0)
     countAb = kwargs.get('Ab', 0)
     countaB = kwargs.get('aB', 0)
@@ -178,21 +164,6 @@ def _calc_ld_single(min_snp, **kwargs):
 
     #Requires at least min_snp
     if total > min_snp:
-
-        # linkage_points_x = []
-        # linkage_points_y = []
-        # for point in range(0,countAB):
-        #     linkage_points_x.append(1)
-        #     linkage_points_y.append(1)
-        # for point in range(0,countAb):
-        #     linkage_points_x.append(1)
-        #     linkage_points_y.append(0)
-        # for point in range(0,countaB):
-        #     linkage_points_x.append(0)
-        #     linkage_points_y.append(1)
-        # for point in range(0,countab):
-        #     linkage_points_x.append(0)
-        #     linkage_points_y.append(0)
 
         freq_AB = float(countAB) / total
         freq_Ab = float(countAb) / total
@@ -279,3 +250,34 @@ def _update_r2(ld_result, r2_table, mm, scaffold, window=False):
     #r2_table['window'].append("{0}:{1}_{2}".format(scaffold, window[0], window[1]))
 
     return r2_table
+
+def update_linked_reads(read_to_snvs, pileupcolumn, MMcounts, position,
+                        bases, R2M, min_freq=0.05, scaffold=False):
+    '''
+    Find and update linked reads
+
+    try:
+        table[R2M[pileupread.alignment.query_name]]\
+        [P2C[pileupread.alignment.query_sequence[pileupread.query_position]]] += 1
+    '''
+
+    position = str(position)
+
+    # Get reads to snvs
+    for pileupread in pileupcolumn.pileups:
+        read_name = pileupread.alignment.query_name
+        if not pileupread.is_del and not pileupread.is_refskip and read_name in R2M:
+            if type(R2M) == type({}):
+                mm = R2M[read_name]
+            else:
+                mm = 0
+
+            try:
+                val = pileupread.alignment.query_sequence[pileupread.query_position]
+
+                # if value is not the consensus value
+                if val in bases:
+                    # this read is of a variant position
+                    read_to_snvs[mm][read_name].append(position + ":" + val)
+            except KeyError: # This would be like an N or something not A/C/T/G
+                pass
