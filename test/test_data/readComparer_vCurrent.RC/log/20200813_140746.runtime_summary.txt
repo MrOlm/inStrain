@@ -1,6 +1,6 @@
 ..:: Overall ::..
-InStrain version 1.3.0v started at 2020-08-12 16:19:00 and ended at 2020-08-12 16:19:38.
-Runtime = 38 seconds
+InStrain version 1.3.0v started at 2020-08-13 14:07:46 and ended at 2020-08-13 14:08:25.
+Runtime = 39 seconds
 Command = /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
 
 ..:: Checkpoints ::..
@@ -17,10 +17,10 @@ Command = /Users/mattolm/miniconda3/bin/inStrain compare -i /Users/mattolm/Progr
 ..:: Plotting ::..
 
 ..:: Compare ::..
-ParseArguments       took <1 second       ( 0.0% of overall)	RAM went from 145.38 MB to 149.33 MB (increased by 3.95 MB)
-CompareScaffolds     took 37.0 seconds    (97.4% of overall)	RAM went from 149.65 MB to 163.61 MB (increased by 13.96 MB)
-multiprocessing      took 37.0 seconds    (97.4% of overall)	RAM went from 153.80 MB to 160.50 MB (increased by 6.69 MB)
-SaveResults          took <1 second       ( 2.6% of overall)	RAM went from 163.99 MB to 172.56 MB (increased by 8.57 MB)
+ParseArguments       took <1 second       ( 0.0% of overall)	RAM went from 145.34 MB to 149.18 MB (increased by 3.84 MB)
+CompareScaffolds     took 39.0 seconds    (100.0% of overall)	RAM went from 149.42 MB to 163.69 MB (increased by 14.27 MB)
+multiprocessing      took 39.0 seconds    (100.0% of overall)	RAM went from 153.02 MB to 160.47 MB (increased by 7.45 MB)
+SaveResults          took <1 second       ( 0.0% of overall)	RAM went from 163.99 MB to 168.41 MB (increased by 4.42 MB)
 
 ..:: Failures ::..
 No failures

@@ -6,6 +6,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 
 ## [1.3.0w] - UNCOMITTED
 - Significant refactoring of controller.py and profile
+- Re-writting the test suite to be in multiple modules
 
 ## [1.3.0v] - 2020-08-10
 - Change internal structure of test suite

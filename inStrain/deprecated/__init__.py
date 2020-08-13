@@ -1,20 +1,18 @@
 '''
 This houses functions that are from an old version of inStrain; useful for testing
 '''
-import os
-import pysam
-import pickle
-import logging
-import itertools
-import numpy as np
-import pandas as pd
-import networkx as nx
-from Bio import SeqIO
-from tqdm import tqdm
-from collections import defaultdict
 
 import inStrain.controller
-#import inStrain.profileUtilities
+
+import inStrain.deprecated.deprecated_filter_reads
+
+import inStrain.profile
+import inStrain.profile.profile_utilities
+import inStrain.profile.snv_utilities
+# import inStrain.profileUtilities
+
+P2C = {'A': 0, 'C': 1, 'T': 2, 'G': 3}  # base -> position
+
 
 # THIS IS CC'S VERSION
 def main(args):
@@ -38,6 +36,7 @@ def main(args):
     else:
         strain_pipeline(args, 0.96)
 
+
 def strain_pipeline(args, filter_cutoff):
     strains = SNVdata()
 
@@ -53,7 +52,8 @@ def strain_pipeline(args, filter_cutoff):
 
     args.genes = None
     strains.get_scaffold_positions(args.genes, args.fasta)
-    strains.run_strain_profiler(args.bam, min_cov = int(args.min_cov), min_freq=float(args.min_freq), filter_cutoff = filter_cutoff)
+    strains.run_strain_profiler(args.bam, min_cov=int(args.min_cov), min_freq=float(args.min_freq),
+                                filter_cutoff=filter_cutoff)
 
     logging.info("\nCalculating linkage network...\n")
     strains.calc_linkage_network()
@@ -61,6 +61,7 @@ def strain_pipeline(args, filter_cutoff):
     logging.info("Calculating LD...\n")
     strains.calc_ld_all_sites(int(args.min_snp))
     strains.save()
+
 
 class SNVdata:
     # The class "constructor" - It's actually an initializer
@@ -75,17 +76,16 @@ class SNVdata:
         self.positions = []
         self.fasta_length = 0
 
-
         # Data structures
-        self.snv_table = None         #
-        self.read_to_snvs = None      #
-        self.windows_to_snvs = None   #
-        self.all_counts = None        # All counts of AGCT for each position
-        self.snv_counts = None        # Counts of AGCT for each SNV position
-        self.clonality_table = None         # Dict of clonality histograms (lists) by window
-        self.snv_graph = None         # Weighted networkx graph that tracks SNVs( 100:A, 100:T are diff nodes) that are linked
-        self.position_graph = None    # Unweighted networkx graph that tracks positions that are linked
-        self.r2linkage_table = None         # Dict of r2 histograms (list of lists) by window
+        self.snv_table = None  #
+        self.read_to_snvs = None  #
+        self.windows_to_snvs = None  #
+        self.all_counts = None  # All counts of AGCT for each position
+        self.snv_counts = None  # Counts of AGCT for each SNV position
+        self.clonality_table = None  # Dict of clonality histograms (lists) by window
+        self.snv_graph = None  # Weighted networkx graph that tracks SNVs( 100:A, 100:T are diff nodes) that are linked
+        self.position_graph = None  # Unweighted networkx graph that tracks positions that are linked
+        self.r2linkage_table = None  # Dict of r2 histograms (list of lists) by window
 
         # General statistics
         self.coverages = None
@@ -104,10 +104,10 @@ class SNVdata:
 
             genome = self.output
             logging.info(genome)
-            self.snv_table.to_csv(genome + ".freq",sep='\t')#, quoting=csv.QUOTE_NONE)
-            self.clonality_table.to_csv(genome + ".clonal",sep='\t')#, quoting=csv.QUOTE_NONE)
-            self.r2linkage_table.to_csv(genome + ".linkage",sep='\t')#, quoting=csv.QUOTE_NONE)
-            self.mapping_info.to_csv(genome + ".readFiltering",sep='\t')#', quoting=csv.QUOTE_NONE)
+            self.snv_table.to_csv(genome + ".freq", sep='\t')  # , quoting=csv.QUOTE_NONE)
+            self.clonality_table.to_csv(genome + ".clonal", sep='\t')  # , quoting=csv.QUOTE_NONE)
+            self.r2linkage_table.to_csv(genome + ".linkage", sep='\t')  # , quoting=csv.QUOTE_NONE)
+            self.mapping_info.to_csv(genome + ".readFiltering", sep='\t')  # ', quoting=csv.QUOTE_NONE)
 
             f = open(genome + ".data", 'wb')
             pickle.dump(self.__dict__, f, 2)
@@ -123,17 +123,16 @@ class SNVdata:
 
         self.__dict__.update(tmp_dict)
 
-
-    def get_scaffold_positions(self, gene_list = None, fasta_file = None):
+    def get_scaffold_positions(self, gene_list=None, fasta_file=None):
         ''' Returns a list of windows to record SNVs in'''
         if not fasta_file and not gene_list:
-#            logging.info("ERROR: REQUIRED TO SUPPLY FASTA or GENE FILE")
+            #            logging.info("ERROR: REQUIRED TO SUPPLY FASTA or GENE FILE")
             sys.exit(1)
 
         if gene_list:
             f = open(gene_list)
             for line in f.readlines():
-                self.positions.append([line.split(",")[1],int(line.split(",")[2]),int(line.split(",")[3])])
+                self.positions.append([line.split(",")[1], int(line.split(",")[2]), int(line.split(",")[3])])
             f.close()
         else:
             for rec in SeqIO.parse(fasta_file, "fasta"):
@@ -142,24 +141,24 @@ class SNVdata:
                 while True:
                     chunk = start + 15000
                     if chunk <= len(rec.seq):
-                        self.positions.append([str(rec.id),start,start+10000])
+                        self.positions.append([str(rec.id), start, start + 10000])
                     else:
-                        self.positions.append([str(rec.id),start,len(rec.seq)])
+                        self.positions.append([str(rec.id), start, len(rec.seq)])
                         break
                     start += 10000
                     start += 1
 
         self.fasta = fasta_file
 
-    def get_snps_per_gene(self, gene_file = None):
+    def get_snps_per_gene(self, gene_file=None):
         pass
 
     def calc_linkage_network(self):
         ''' Calculates the SNV linkage network - saves it as a dictionary of edges in self.snv_net.
         Writes it out to a file, genome.net for reading in through other programs like node2vec
         '''
-        G=nx.Graph() # graph between SNPs  (100:A and 100:C are different nodes)
-        G_pos = nx.Graph() # graph between positions; unweighted
+        G = nx.Graph()  # graph between SNPs  (100:A and 100:C are different nodes)
+        G_pos = nx.Graph()  # graph between positions; unweighted
 
         logging.info("Calculating SNV linkage network...")
         for read in self.read_to_snvs:
@@ -168,38 +167,39 @@ class SNVdata:
                 if G.has_edge(pair[0], pair[1]):
                     G[pair[0]][pair[1]]['weight'] += 1
                 else:
-                    G.add_edge(pair[0], pair[1], weight = 1)
+                    G.add_edge(pair[0], pair[1], weight=1)
                     if not G_pos.has_edge(pair[0].split(":")[0], pair[1].split(":")[0]):
                         G_pos.add_edge(pair[0].split(":")[0], pair[1].split(":")[0])
 
-        logging.info(str("Of " + str(self.total_snv_sites) + " SNP-sites, there were " + str(len(G_pos)) + " SNPs that could be linked to at least one other SNP."))
-        logging.info("The average SNP was linked to " + str(int(np.mean([int(x[1]) for x in list(G_pos.degree())]))) + " other SNPs.")
+        logging.info(str("Of " + str(self.total_snv_sites) + " SNP-sites, there were " + str(
+            len(G_pos)) + " SNPs that could be linked to at least one other SNP."))
+        logging.info("The average SNP was linked to " + str(
+            int(np.mean([int(x[1]) for x in list(G_pos.degree())]))) + " other SNPs.")
         self.snv_graph = G
         self.position_graph = G_pos
-
 
     def calc_ld(self, snp_a, snp_b, min_snp, report=False):
         '''
         A function that calculates the LD between two SNPs
         '''
 
-        #distance between snps
+        # distance between snps
         distance = abs(int(snp_a.split("_")[-1]) - int(snp_b.split("_")[-1]))
 
-        #calculate allele frequencies
-        allele_A = major_allele(snp_a,self.snv_counts[snp_a]) #get major allele
-        allele_a = minor_allele(snp_a,self.snv_counts[snp_a]) # get minor allele
+        # calculate allele frequencies
+        allele_A = major_allele(snp_a, self.snv_counts[snp_a])  # get major allele
+        allele_a = minor_allele(snp_a, self.snv_counts[snp_a])  # get minor allele
         freq_A = float(allele_A[1]) / (allele_A[1] + allele_a[1])
         freq_a = float(allele_a[1]) / (allele_A[1] + allele_a[1])
 
         # get snp B frequencies
-        allele_B = major_allele(snp_b,self.snv_counts[snp_b])
-        allele_b = minor_allele(snp_b,self.snv_counts[snp_b])
+        allele_B = major_allele(snp_b, self.snv_counts[snp_b])
+        allele_b = minor_allele(snp_b, self.snv_counts[snp_b])
         freq_B = float(allele_B[1]) / (allele_B[1] + allele_b[1])
         freq_b = float(allele_b[1]) / (allele_B[1] + allele_b[1])
 
         # Get frequencies of linkages
-        countAB, countAb, countaB, countab  = 0,0,0,0
+        countAB, countAb, countaB, countab = 0, 0, 0, 0
         if self.snv_graph.has_edge(allele_A[0], allele_B[0]):
             countAB = self.snv_graph[allele_A[0]][allele_B[0]]['weight']
         if self.snv_graph.has_edge(allele_A[0], allele_b[0]):
@@ -215,21 +215,21 @@ class SNVdata:
             print("total {0}".format(total))
             print([countAB, countAb, countaB, countab])
 
-        #Requires at least min_snp
+        # Requires at least min_snp
         if total > min_snp:
 
             linkage_points_x = []
             linkage_points_y = []
-            for point in range(0,countAB):
+            for point in range(0, countAB):
                 linkage_points_x.append(1)
                 linkage_points_y.append(1)
-            for point in range(0,countAb):
+            for point in range(0, countAb):
                 linkage_points_x.append(1)
                 linkage_points_y.append(0)
-            for point in range(0,countaB):
+            for point in range(0, countaB):
                 linkage_points_x.append(0)
                 linkage_points_y.append(1)
-            for point in range(0,countab):
+            for point in range(0, countab):
                 linkage_points_x.append(0)
                 linkage_points_y.append(0)
 
@@ -248,30 +248,27 @@ class SNVdata:
             if freq_a == 0 or freq_A == 0 or freq_B == 0 or freq_b == 0:
                 r2_book = np.nan
             else:
-                r2_book = linkD*linkD / (freq_A * freq_a * freq_B * freq_b)
-
+                r2_book = linkD * linkD / (freq_A * freq_a * freq_B * freq_b)
 
             linkd = freq_ab - freq_a * freq_b
             # calc D-prime
             if (linkd < 0):
-                denom = max([(-freq_A*freq_B),(-freq_a*freq_b)])
+                denom = max([(-freq_A * freq_B), (-freq_a * freq_b)])
                 d_prime = linkd / denom
 
             elif (linkD > 0):
-                denom = min([(freq_A*freq_b), (freq_a*freq_B)])
+                denom = min([(freq_A * freq_b), (freq_a * freq_B)])
                 d_prime = linkd / denom
             else:
                 d_prime = 0
-
-
-
 
             # r2 = stats.pearsonr(linkage_points_x, linkage_points_y)[0]
             # r2 = r2 * r2
             # logging.info(r2)
             # logging.info(r2_book)
             r2 = r2_book
-            return([distance, r2, linkD, linkd, r2_book, total, countAB, countAb, countaB, countab, allele_A, allele_a, allele_B, allele_b])
+            return ([distance, r2, linkD, linkd, r2_book, total, countAB, countAb, countaB, countab, allele_A, allele_a,
+                     allele_B, allele_b])
             # else:
             #     logging.info("nan")
             # else:
@@ -325,36 +322,34 @@ class SNVdata:
                 r2linkage_table['total_B'].append(datum[12])
                 r2linkage_table['total_b'].append(datum[13])
 
-
         self.r2linkage_table = pd.DataFrame(r2linkage_table)
 
-
-    def run_strain_profiler(self, bam, min_cov = 5, min_freq = 0.05, filter_cutoff = 0):
+    def run_strain_profiler(self, bam, min_cov=5, min_freq=0.05, filter_cutoff=0):
         '''
         Main class for finding SNVs and generating data profile for a genome.
         '''
         minimum_mapq = 2
-        P2C = {'A':0, 'C':1, 'T':2, 'G':3}
-        C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
+        P2C = {'A': 0, 'C': 1, 'T': 2, 'G': 3}
+        C2P = {0: 'A', 1: 'C', 2: 'T', 3: 'G'}
 
-        #Set up variables
+        # Set up variables
         alpha_snvs = 0
         total_positions = 0
         total_snv_sites = 0
 
-        raw_counts_data = defaultdict(dict) # Set up SNP table
-        read_to_snvs = defaultdict(list) # read name -> position : variant base
+        raw_counts_data = defaultdict(dict)  # Set up SNP table
+        read_to_snvs = defaultdict(list)  # read name -> position : variant base
         snvs_frequencies = defaultdict(int)
-        clonality_by_window = defaultdict(list) # window -> [position, clonality]
-        windows_to_snvs = defaultdict(list) # window -> position
+        clonality_by_window = defaultdict(list)  # window -> [position, clonality]
+        windows_to_snvs = defaultdict(list)  # window -> position
 
-        all_counts = {} # position -> coverage
-        snv_counts = {} # position -> [A, C, T, G]
-        coverages = {} # position -> coverage
+        all_counts = {}  # position -> coverage
+        snv_counts = {}  # position -> [A, C, T, G]
+        coverages = {}  # position -> coverage
 
         # read null model
-        null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
-        null_snp_model = inStrain.profileUtilities.generate_snp_model(null_loc)
+        null_loc = os.path.dirname(__file__) + '/../helper_files/NullModel.txt'
+        null_snp_model = inStrain.profile.snv_utilities.generate_snp_model(null_loc)
 
         ## Start reading BAM
         samfile = pysam.AlignmentFile(bam)
@@ -364,7 +359,8 @@ class SNVdata:
             self.positions = self.positions[0:10]
 
         # Call read filtering function
-        subset_reads, Rdb = inStrain.deprecated_filter_reads.filter_reads(bam, self.positions, self.fasta_length, filter_cutoff, 3, 50, 2)
+        subset_reads, Rdb = inStrain.deprecated.deprecated_filter_reads.filter_reads(bam, self.positions, self.fasta_length,
+                                                                          filter_cutoff, 3, 50, 2)
 
         # Save the read filtering report
         self.mapping_info = Rdb
@@ -375,12 +371,14 @@ class SNVdata:
         for gene in tqdm(self.positions, desc='Finding SNVs ...'):
             scaff = gene[0]
             window = gene[0] + ":" + str(gene[1]) + ":" + str(gene[2])
-            for pileupcolumn in samfile.pileup(scaff, truncate = True, max_depth=100000, stepper = 'nofilter', compute_baq= True, ignore_orphans = True, ignore_overlaps = True,  min_base_quality = 30):
-            #for pileupcolumn in samfile.pileup(scaff, gene[1], gene[2], truncate = True, max_depth=100000, stepper = 'nofilter', compute_baq= True, ignore_orphans = True, ignore_overlaps = True,  min_base_quality = 30):
+            for pileupcolumn in samfile.pileup(scaff, truncate=True, max_depth=100000, stepper='nofilter',
+                                               compute_baq=True, ignore_orphans=True, ignore_overlaps=True,
+                                               min_base_quality=30):
+                # for pileupcolumn in samfile.pileup(scaff, gene[1], gene[2], truncate = True, max_depth=100000, stepper = 'nofilter', compute_baq= True, ignore_orphans = True, ignore_overlaps = True,  min_base_quality = 30):
                 ## Step 1: Are there any reads at this position?
 
                 position = scaff + "_" + str(pileupcolumn.pos)
-                counts = _get_base_counts(pileupcolumn, filtered_reads = subset_reads)
+                counts = _get_base_counts(pileupcolumn, filtered_reads=subset_reads)
 
                 consensus = False
                 # Yes there were reads at this position
@@ -389,9 +387,9 @@ class SNVdata:
 
                     if sum(counts) >= min_cov:
                         total_positions += 1
-                        pos_clonality = inStrain.profileUtilities.calculate_clonality(counts)
+                        pos_clonality = inStrain.profile.snv_utilities.calculate_clonality(counts)
                         clonality_by_window[window].append([position, pos_clonality])
-                        consensus = call_snv_site_old(counts, null_snp_model, min_cov = min_cov, min_freq = min_freq)
+                        consensus = call_snv_site_old(counts, null_snp_model, min_cov=min_cov, min_freq=min_freq)
                         coverages[position] = sum(counts)
 
                 # SEARCH HERE FOR DEBUG
@@ -411,9 +409,9 @@ class SNVdata:
 
                 ## Strep 2: Is there an SNV at this position?
                 if consensus:
-                    #min_snp for this site
+                    # min_snp for this site
                     local_min_snp = null_snp_model[sum(counts)]
-                    #there's an SNV at this site
+                    # there's an SNV at this site
                     total_snv_sites += 1
                     windows_to_snvs[window].append(position)
                     snv_counts[position] = counts
@@ -425,13 +423,14 @@ class SNVdata:
                             if read_name in subset_reads:
                                 try:
                                     val = pileupread.alignment.query_sequence[pileupread.query_position]
-                                    #if value is not the consensus value
-                                    if counts[P2C[val]] >= local_min_snp and float(counts[P2C[val]]) / sum(counts) >= min_freq:
-                                        #this is a variant read!
+                                    # if value is not the consensus value
+                                    if counts[P2C[val]] >= local_min_snp and float(counts[P2C[val]]) / sum(
+                                            counts) >= min_freq:
+                                        # this is a variant read!
                                         read_to_snvs[read_name].append(position + ":" + val)
                                         if val != consensus:
                                             alpha_snvs += 1
-                                except KeyError: # This would be like an N or something not A/C/T/G
+                                except KeyError:  # This would be like an N or something not A/C/T/G
                                     pass
 
                     # Add to frequencies
@@ -466,11 +465,11 @@ class SNVdata:
 
         clonality_table_final = pd.DataFrame(clonality_table)
 
-
         # Final statistics
         logging.debug("Total SNVs-sites: " + str(total_snv_sites))
         logging.debug("Total SNV-bases: " + str(alpha_snvs))
-        logging.debug("Mean clonality: " + str(float(sum(clonality_table['clonality'])) / float(len(clonality_table['clonality'])) ))
+        logging.debug("Mean clonality: " + str(
+            float(sum(clonality_table['clonality'])) / float(len(clonality_table['clonality']))))
         logging.debug("Total sites above min-coverage: " + str(total_positions))
         logging.debug("Mean coverage: " + str(float(sum(coverages.values())) / len(coverages)))
         logging.debug("Total number of bases: " + str(sum(coverages.values())))
@@ -488,15 +487,16 @@ class SNVdata:
 
         self.results = True
 
+
 def _get_base_counts(pileupcolumn, filtered_reads):
     '''
     From a pileupcolumn object, return a list with the counts of [A, C, T, G]
     '''
-    P2C = {'A':0, 'C':1, 'T':2, 'G':3}
-    C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
+    P2C = {'A': 0, 'C': 1, 'T': 2, 'G': 3}
+    C2P = {0: 'A', 1: 'C', 2: 'T', 3: 'G'}
 
-    counts = [0,0,0,0]
-    empty = [0,0,0,0]
+    counts = [0, 0, 0, 0]
+    empty = [0, 0, 0, 0]
 
     for pileupread in pileupcolumn.pileups:
         # logging.info(pileupread.)
@@ -508,20 +508,21 @@ def _get_base_counts(pileupcolumn, filtered_reads):
                 #     logging.info(pileupread.alignment.get_aligned_pairs())
                 try:
                     counts[P2C[pileupread.alignment.query_sequence[pileupread.query_position]]] += 1
-                except KeyError: # This would be like an N or something not A/C/T/G
+                except KeyError:  # This would be like an N or something not A/C/T/G
                     pass
     if counts != empty:
         return counts
     else:
         return False
 
+
 def call_snv_site_old(counts, null_model, min_cov=5, min_freq=0.05):
     '''
     Determines whether a site has a variant based on its nucleotide count frequencies.
     '''
-    P2C = {'A':0, 'C':1, 'T':2, 'G':3}
-    C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
-    total =  sum(counts)
+    P2C = {'A': 0, 'C': 1, 'T': 2, 'G': 3}
+    C2P = {0: 'A', 1: 'C', 2: 'T', 3: 'G'}
+    total = sum(counts)
 
     if total >= min_cov:
         i = 0
@@ -533,22 +534,26 @@ def call_snv_site_old(counts, null_model, min_cov=5, min_freq=0.05):
     else:
         return False
 
+
 def major_allele(snv, counts):
-    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3] }
+    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3]}
     nucl = sorted(d, key=d.get, reverse=True)[0]
     return [snv + ":" + nucl, d[nucl]]
 
+
 def major_allele2(counts):
-    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3] }
+    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3]}
     return sorted(d, key=d.get, reverse=True)[0]
 
+
 def minor_allele(snv, counts):
-    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3] }
+    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3]}
     nucl = sorted(d, key=d.get, reverse=True)[1]
     return [snv + ":" + nucl, d[nucl]]
 
+
 def minor_allele2(counts):
-    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3] }
+    d = {'A': counts[0], 'C': counts[1], 'T': counts[2], 'G': counts[3]}
     return sorted(d, key=d.get, reverse=True)[1]
 
 
@@ -562,7 +567,7 @@ def minor_allele2(counts):
  Below this is super deprecated (used nowhere)
 '''
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 '''
 Possible names for this program:
@@ -578,7 +583,6 @@ from inStrain._version import __version__
 
 # Import
 import os
-import csv
 import sys
 import math
 import pysam
@@ -586,23 +590,16 @@ import pickle
 import logging
 import argparse
 import itertools
-import collections
 import numpy as np
 import pandas as pd
 import networkx as nx
 from tqdm import tqdm
 from Bio import SeqIO
-from scipy import stats
-from subprocess import call
 from collections import defaultdict
-from sklearn.decomposition import PCA
-import traceback
-
-import concurrent.futures
-from itertools import permutations
 
 ## local imports
 import inStrain.filter_reads
+
 
 def entropy2(counts):
     probs = []
@@ -625,13 +622,14 @@ def getopts(argv):
         argv = argv[1:]  # Reduce the argument list by copying it starting from index 1.
     return opts
 
+
 def iterate_windows(Wdb, snv_table, mm):
     '''
     Iterate windows
     '''
-    Sdb = snv_table[snv_table['mm'] >= mm].sort_values('mm')\
-            .drop_duplicates(subset=['scaffold', 'position'], keep='last')\
-            .sort_index().drop(columns=['mm'])
+    Sdb = snv_table[snv_table['mm'] >= mm].sort_values('mm') \
+        .drop_duplicates(subset=['scaffold', 'position'], keep='last') \
+        .sort_index().drop(columns=['mm'])
     Sdb = Sdb.set_index('position', drop=False)
 
     for i, row in Wdb.iterrows():
@@ -640,6 +638,7 @@ def iterate_windows(Wdb, snv_table, mm):
         snvs = list(sdb['position'].tolist())
         if len(snvs) > 0:
             yield snvs, window, sdb
+
 
 def _get_series(s1, mm, lms1):
     # already a series
@@ -654,12 +653,14 @@ def _get_series(s1, mm, lms1):
         except:
             return lms1
 
+
 def _update_counts(counts, ts1, ts2, mm):
     for b in ['A', 'C', 'T', 'G']:
         if len(ts1) > 0:
             counts[0][P2C[b]] += ts1[b]
         if len(ts2) > 0:
             counts[1][P2C[b]] += ts2[b]
+
 
 def calc_SNV_linkage_network(read_to_snvs):
     '''
@@ -674,11 +675,11 @@ def calc_SNV_linkage_network(read_to_snvs):
     mm_to_snv_graph = {}
     mm_to_position_graph = {}
 
-    #logging.info("Calculating SNV linkage networks...")
+    # logging.info("Calculating SNV linkage networks...")
     read2snvs = {}
     for mm, tread2snvs in read_to_snvs.items():
-        G=nx.Graph() # graph between SNPs  (100:A and 100:C are different nodes)
-        G_pos = nx.Graph() # graph between positions; unweighted
+        G = nx.Graph()  # graph between SNPs  (100:A and 100:C are different nodes)
+        G_pos = nx.Graph()  # graph between positions; unweighted
 
         read2snvs = {**read2snvs, **tread2snvs}
         for read in read2snvs:
@@ -687,7 +688,7 @@ def calc_SNV_linkage_network(read_to_snvs):
                 if G.has_edge(pair[0], pair[1]):
                     G[pair[0]][pair[1]]['weight'] += 1
                 else:
-                    G.add_edge(pair[0], pair[1], weight = 1)
+                    G.add_edge(pair[0], pair[1], weight=1)
                     if not G_pos.has_edge(int(pair[0].split(":")[0]), int(pair[1].split(":")[0])):
                         G_pos.add_edge(int(pair[0].split(":")[0]), int(pair[1].split(":")[0]))
 
@@ -695,6 +696,7 @@ def calc_SNV_linkage_network(read_to_snvs):
         mm_to_position_graph[mm] = G_pos
 
     return mm_to_snv_graph, mm_to_position_graph
+
 
 def _merge_tables_special(Cdb, Adb):
     FIX_COLS = ['ANI', 'SNPs', 'breadth_minCov']
@@ -720,6 +722,7 @@ def _merge_tables_special(Cdb, Adb):
     pass
 
     return Fdb
+
 
 def run_up_NaN(odb, cols, on='scaffold'):
     '''
@@ -759,12 +762,14 @@ def run_up_NaN(odb, cols, on='scaffold'):
             # The normal run-up case
             if np.isnan(row['ANI']):
                 for col in cols:
-                    Fdb.at[i, col] = Fdb.at[i-1, col]
+                    Fdb.at[i, col] = Fdb.at[i - 1, col]
 
     return Fdb
 
+
 def _zeros(mLen=1):
     return np.zeros(mLen, dtype=int)
+
 
 def _clonT_to_clons(clonT, maxMM):
     '''
@@ -783,16 +788,17 @@ def _clonT_to_clons(clonT, maxMM):
     else:
         return counts
 
+
 def make_ANI_table(snpsCounted, basesCounted, lengt, scaff, covT,
-            min_cov, Wdb):
+                   min_cov, Wdb):
     '''
     Fill in the SNP table with the SNPs and breadth_minCov for each scaffold and mm
     '''
     table = defaultdict(list)
     # fill in all SNP information
     for mm in sorted(list(covT.keys())):
-        covs = _mm_counts_to_counts(covT, mm)
-        if covs == [0,0,0,0]:
+        covs = inStrain.profile.profile_utilities.mm_counts_to_counts(covT, mm)
+        if covs == [0, 0, 0, 0]:
             counted_basesO = 0
         else:
             zeros = (covs < min_cov).sum()
@@ -804,17 +810,18 @@ def make_ANI_table(snpsCounted, basesCounted, lengt, scaff, covT,
         table['scaffold'].append(scaff)
         table['mm'].append(mm)
         table['SNPs'].append(counted_snps)
-        #table['breadth_minCov'].append(counted_bases / lengt)
+        # table['breadth_minCov'].append(counted_bases / lengt)
         if counted_bases == 0:
             table['ANI'].append(0)
         else:
-            table['ANI'].append((counted_bases - counted_snps)/ counted_bases)
+            table['ANI'].append((counted_bases - counted_snps) / counted_bases)
 
     return pd.DataFrame(table)
 
+
 def parse_arguments(args):
     parser = argparse.ArgumentParser(description="inStrain version {0}".format(__version__),
-             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     # Required positional arguments
     parser.add_argument("bam", help="Sorted .bam file")
@@ -822,41 +829,41 @@ def parse_arguments(args):
 
     # Optional arguments
     parser.add_argument("-o", "--output", action="store", default='inStrain', \
-        help='Output prefix')
+                        help='Output prefix')
     parser.add_argument("-p", "--processes", action="store", default=6, type=int, \
-        help='Threads to use for multiprocessing')
+                        help='Threads to use for multiprocessing')
     parser.add_argument("-c", "--min_cov", action="store", default=5, \
-        help='Minimum SNV coverage')
+                        help='Minimum SNV coverage')
     parser.add_argument("-s", "--min_snp", action="store", default=20, \
-        help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
+                        help='Absolute minimum number of reads connecting two SNPs to calculate LD between them.')
     parser.add_argument("-f", "--min_freq", action="store", default=0.05, \
-        help='Minimum SNP frequency to confirm a SNV (both this AND the 0.  001 percent FDR snp count cutoff must be true).')
-    parser.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
-        help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
-    parser.add_argument("--min_scaffold_reads", action="store", default=0, type=int,\
-        help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
-    parser.add_argument("--scaffolds_to_profile", action="store",\
-        help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
+                        help='Minimum SNP frequency to confirm a SNV (both this AND the 0.  001 percent FDR snp count cutoff must be true).')
+    parser.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float, \
+                        help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
+    parser.add_argument("--min_scaffold_reads", action="store", default=0, type=int, \
+                        help='Minimum number of reads mapping to a scaffold to proceed with profiling it')
+    parser.add_argument("--scaffolds_to_profile", action="store", \
+                        help='Path to a file containing a list of scaffolds to profile- if provided will ONLY profile those scaffolds')
 
     # Read filtering cutoffs
     parser.add_argument("-l", "--filter_cutoff", action="store", default=0.95, type=float, \
-        help='Minimum percent identity of read pairs to consensus to use the reads. Must be >, not >=')
-    parser.add_argument("--min_mapq", action="store", default=-1, type=int,\
-        help='Minimum mapq score of EITHER read in a pair to use that pair. Must be >, not >=')
+                        help='Minimum percent identity of read pairs to consensus to use the reads. Must be >, not >=')
+    parser.add_argument("--min_mapq", action="store", default=-1, type=int, \
+                        help='Minimum mapq score of EITHER read in a pair to use that pair. Must be >, not >=')
     parser.add_argument("--max_insert_relative", action="store", default=3, type=float, \
-        help='Multiplier to determine maximum insert size between two reads - default is to use 3x median insert size. Must be >, not >=')
-    parser.add_argument("--min_insert", action="store", default=50, type=int,\
-        help='Minimum insert size between two reads - default is 50 bp. If two reads are 50bp each and overlap completely, their insert will be 50. Must be >, not >=')
+                        help='Multiplier to determine maximum insert size between two reads - default is to use 3x median insert size. Must be >, not >=')
+    parser.add_argument("--min_insert", action="store", default=50, type=int, \
+                        help='Minimum insert size between two reads - default is 50 bp. If two reads are 50bp each and overlap completely, their insert will be 50. Must be >, not >=')
 
-    parser.add_argument('--store_everything', action='store_true', default=False,\
-        help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
-    parser.add_argument('--skip_mm_profiling', action='store_true', default=False,\
-        help="Dont perform analysis on an mm level; saves RAM and time")
+    parser.add_argument('--store_everything', action='store_true', default=False, \
+                        help="Store intermediate dictionaries in the pickle file; will result in significantly more RAM and disk usage")
+    parser.add_argument('--skip_mm_profiling', action='store_true', default=False, \
+                        help="Dont perform analysis on an mm level; saves RAM and time")
 
     # parser.add_argument("-g", "--genes", action="store", default=None, \
     #     help='Optional genes file')
     parser.add_argument('--debug', action='store_true', default=False, \
-        help ="Produce some extra output helpful for debugging")
+                        help="Produce some extra output helpful for debugging")
 
     # Parse
     if (len(args) == 0 or args[0] == '-h' or args[0] == '--help'):
@@ -865,6 +872,7 @@ def parse_arguments(args):
     else:
         return parser.parse_args(args)
 
+
 if __name__ == '__main__':
     """ This is executed when run from the command line """
 
@@ -872,6 +880,7 @@ if __name__ == '__main__':
     # Controller().main(sys.argv[1:])
     # args = parse_arguments(sys.argv[1:])
     # main(args)
+
 
 def _calc_counted_bases(basesCounted, maxMM):
     '''
