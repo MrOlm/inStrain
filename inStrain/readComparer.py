@@ -308,10 +308,11 @@ def parse_validate(args):
     inStrain.logUtils.log_checkpoint("Compare", "ParseArguments", "end")
     return RCprof, names, Sprofiles, scaffolds_to_compare, outbase, scaffold2length
 
-def compare_scaffold_worker(cmd_queue, result_queue, single_thread=False):
+def compare_scaffold_worker(cmd_queue, result_queue, null_model, single_thread=False):
     '''
     Worker to compare scaffolds
     '''
+
     while True:
         if not single_thread:
             cmd = cmd_queue.get(True)
@@ -321,7 +322,7 @@ def compare_scaffold_worker(cmd_queue, result_queue, single_thread=False):
             except:
                 return
 
-        results, log = scaffold_profile_wrapper(cmd)
+        results, log = scaffold_profile_wrapper(cmd, null_model)
         result_queue.put((results, log))
 
         # Clean up memory
@@ -357,6 +358,11 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     for cmd_group in cmds:
         cmd_queue.put(cmd_group)
 
+    # Make null model
+    fdr = kwargs.get('fdr', 1e-6)
+    null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
+    null_model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
+
     inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "start")
 
     # Do the multiprocessing
@@ -367,7 +373,7 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
         logging.debug("Establishing processes")
         processes = []
         for i in range(0, p):
-            processes.append(ctx.Process(target=compare_scaffold_worker, args=(cmd_queue, result_queue)))
+            processes.append(ctx.Process(target=compare_scaffold_worker, args=(cmd_queue, result_queue, null_model)))
         for proc in processes:
             proc.start()
 
@@ -405,7 +411,7 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
         pbar.close()
 
     else:
-        compare_scaffold_worker(cmd_queue, result_queue, single_thread=True)
+        compare_scaffold_worker(cmd_queue, result_queue, null_model, single_thread=True)
 
         # Get the results
         recieved_groups = 0
@@ -451,7 +457,7 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
     return [pd.concat(dbs, sort=False), Mdb, scaff2pair2mm2cov]
 
 
-def scaffold_profile_wrapper(cmds):
+def scaffold_profile_wrapper(cmds, null_model):
     '''
     Take a command and profile the scaffold
     '''
@@ -460,8 +466,8 @@ def scaffold_profile_wrapper(cmds):
 
     for cmd in [cmds]:
         try:
-            cur_results, cur_log = compare_scaffold(cmd.scaffold, cmd.names,
-                                    cmd.sProfiles, cmd.mLen, **cmd.arguments)
+            cur_results, cur_log = compare_scaffold(cmd.scaffold, cmd.cur_names, cmd.SNPtables, cmd.covTs, cmd.mLen,
+                                                    null_model, **cmd.arguments)
             results.append(cur_results)
             log += cur_log
 
@@ -497,12 +503,45 @@ def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
             names_cur.append(names[i])
             sProfiles_cur.append(sProfiles[i])
 
+        covTs = []
+        SNPtables = []
+        cur_names = []
+        for S, name in zip(sProfiles, names):
+            covT = S.get('covT', scaffolds=[scaff])
+            if len(covT.keys()) == 0:
+                continue
+
+            covTs.append(covT[scaff])
+            db = _get_SNP_table(S, scaff, name)
+
+            SNPtables.append(db)
+            cur_names.append(name)
+
+        cmd.covTs = covTs
+        cmd.SNPtables = SNPtables
+        cmd.cur_names = cur_names
+
         cmd.names = names_cur
         cmd.sProfiles = sProfiles_cur
         cmd.arguments = kwargs
         cmd.mLen = s2l[scaff]
 
         yield cmd
+
+        # # Load covT and SNPtables
+        # covTs = []
+        # SNPtables = []
+        # cur_names = []
+        # for S, name in zip(sProfiles, names):
+        #     covT = S.get('covT', scaffolds=[scaffold])
+        #     if len(covT.keys()) == 0:
+        #         continue
+        #
+        #     covTs.append(covT[scaffold])
+        #     db = _get_SNP_table(S, scaffold, name)
+        #
+        #     SNPtables.append(db)
+        #     cur_names.append(name)
 
 def iterate_scaffold_chunks(scaffolds_to_compare, chunkSize=100):
     '''
@@ -537,7 +576,7 @@ def _get_SNP_table(SNVprofile, scaffold, name):
 
     return db
 
-def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
+def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **kwargs):
     '''
     This is the money method thats going to be multithreaded eventually
 
@@ -565,21 +604,6 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
     # For testing purposes
     if ((scaffold == 'FailureScaffoldHeaderTesting') & (debug)):
         assert False
-
-    # Load covT and SNPtables
-    covTs = []
-    SNPtables = []
-    cur_names = []
-    for S, name in zip(sProfiles, names):
-        covT = S.get('covT', scaffolds=[scaffold])
-        if len(covT.keys()) == 0:
-            continue
-
-        covTs.append(covT[scaffold])
-        db = _get_SNP_table(S, scaffold, name)
-
-        SNPtables.append(db)
-        cur_names.append(name)
 
     if len(cur_names) < 2:
         results = [pd.DataFrame(), pd.DataFrame(), {}, 'skip_{0}'.format(scaffold)]
@@ -617,7 +641,7 @@ def compare_scaffold(scaffold, names, sProfiles, mLen, **kwargs):
                 logging.debug(log_message)
 
             mm2overlap, mm2coverage = _calc_mm2overlap(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
-            Mdb = _calc_SNP_count_alternate(SNPtable1_ori, SNPtable2_ori, mm2overlap, min_freq=min_freq, fdr=fdr, debug=debug)
+            Mdb = _calc_SNP_count_alternate(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
 
             table = _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, name2, mLen)
 
@@ -840,15 +864,14 @@ def _gen_blank_SNPdb(COLUMNS):
      '''
     return pd.DataFrame({c:[] for c in COLUMNS})
 
-def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fdr=1e-6, debug=False):
+def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.05, debug=False):
 
     mm2ANI = {}
     mm2popANI = {}
     dbs = []
 
     # Get the null model for SNP calling
-    null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
-    model_to_use = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
+    model_to_use = null_model
 
     # Constant for the SNP dataframe
     SNP_COLUMNS = ['position', 'con_base', 'ref_base', 'var_base',
@@ -861,6 +884,9 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
     'con_base_2', 'ref_base_2', 'var_base_2', 'position_coverage_2',
     'A_2', 'C_2', 'T_2', 'G_2']
 
+    RENAME_COLUMNS = ['con_base', 'ref_base', 'var_base', 'position_coverage',
+                    'A', 'C', 'T', 'G']
+
     # Iterate mm levels
     for mm, cov_arr in mm2overlap.items():
 
@@ -870,22 +896,43 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
         # These represent relevant counts at these posisions
         if len(SNPtable1) > 0:
             s1_all = SNPtable1[[(p in covs) for p in SNPtable1['position'].values]].drop_duplicates(
-                        subset=['position'], keep='last').drop(columns='mm')
+                        subset=['position'], keep='last')
+            del s1_all['mm']
+            if len(s1_all) == 0:
+                s1_all = None
         else:
-            s1_all = _gen_blank_SNPdb(SNP_COLUMNS)
+            #s1_all = _gen_blank_SNPdb(SNP_COLUMNS)
+            s1_all = None
 
         if len(SNPtable2) > 0:
             s2_all = SNPtable2[[(p in covs) for p in SNPtable2['position'].values]].drop_duplicates(
-                        subset=['position'], keep='last').drop(columns='mm')
+                        subset=['position'], keep='last')
+            del s2_all['mm']
+            if len(s2_all) == 0:
+                s2_all = None
         else:
-            s2_all = _gen_blank_SNPdb(SNP_COLUMNS)
+            #s2_all = _gen_blank_SNPdb(SNP_COLUMNS)
+            s2_all = None
 
         # Merge
-        if (len(s1_all) == 0) & (len(s2_all) == 0):
-            Mdb = _gen_blank_Mdb(OUT_COLUMNS)
+        if (s1_all is None) & (s2_all is None):
+            #Mdb = _gen_blank_Mdb(OUT_COLUMNS)
+            Mdb = None
+
+        elif s1_all is None:
+            Mdb = s2_all.rename(columns={c:c + '_2' for c in RENAME_COLUMNS})
+            for c in RENAME_COLUMNS:
+                Mdb[c + '_1'] = np.nan
+
+        elif s2_all is None:
+            Mdb = s1_all.rename(columns={c:c + '_1' for c in RENAME_COLUMNS})
+            for c in RENAME_COLUMNS:
+                Mdb[c + '_2'] = np.nan
 
         else:
             Mdb = pd.merge(s1_all, s2_all, on='position', suffixes=('_1', '_2'), how='outer', copy=False)
+
+        if Mdb is not None:
             Mdb['consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
             Mdb['population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
 
@@ -895,15 +942,19 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, min_freq=.05, fd
             # Only keep SNPs
             Mdb = Mdb[Mdb['consensus_SNP'] | Mdb['population_SNP'] ]
 
-        dbs.append(Mdb)
+            dbs.append(Mdb)
 
-    Mdb = pd.concat(dbs, sort=False)
+    if len(dbs) > 0:
+        Mdb = pd.concat(dbs, sort=False)
+    else:
+        Mdb = _gen_blank_Mdb(OUT_COLUMNS)
     return Mdb
 
 def call_con_snps(row):
     '''
     Call a SNP if the consensus sequnces aren't the same
     '''
+
     # This was only a SNP in the first sapmle
     if row['con_base_1'] != row['con_base_1']:
         return row['con_base_2'] != row['ref_base_2']
@@ -1062,9 +1113,16 @@ def _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, 
         - So if both scaffolds have 0 coverave, this will be 0
     compared_bases_count = the number of considered bases
     '''
-    for mm, overlap in mm2overlap.items():
+    rel_mms = set(list(mm2overlap.keys()))
+    got_mms = set()
+
+    for mm, mdb in Mdb.groupby('mm'):
+        if mm not in rel_mms:
+            continue
+        got_mms.add(mm)
+
+        overlap = mm2overlap[mm]
         bases = len(overlap)
-        mdb = Mdb[Mdb['mm'] == mm]
 
         table['mm'].append(mm)
         table['scaffold'].append(scaffold)
@@ -1077,6 +1135,33 @@ def _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, 
 
         snps = len(mdb[mdb['consensus_SNP'] == True])
         popsnps = len(mdb[mdb['population_SNP'] == True])
+
+        table['consensus_SNPs'].append(snps)
+        table['population_SNPs'].append(popsnps)
+
+        if bases == 0:
+            table['popANI'].append(np.nan)
+            table['conANI'].append(np.nan)
+        else:
+            table['conANI'].append((bases - snps) / bases)
+            table['popANI'].append((bases - popsnps) / bases)
+
+    # Doing this to allow the group-by
+    for mm in rel_mms - got_mms:
+        overlap = mm2overlap[mm]
+        bases = len(overlap)
+
+        table['mm'].append(mm)
+        table['scaffold'].append(scaffold)
+        table['name1'].append(name1)
+        table['name2'].append(name2)
+        table['coverage_overlap'].append(mm2coverage[mm])
+        table['compared_bases_count'].append(bases)
+        table['percent_genome_compared'].append(bases / mLen)
+        table['length'].append(mLen)
+
+        snps = 0
+        popsnps = 0
 
         table['consensus_SNPs'].append(snps)
         table['population_SNPs'].append(popsnps)

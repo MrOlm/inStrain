@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 from inStrain._version import __version__
 
@@ -30,6 +29,7 @@ setup(name='inStrain',
           'h5py',
           'psutil',
           'drep',
-          'lmfit'
+          'lmfit',
+          'numba'
       ],
       zip_safe=False)

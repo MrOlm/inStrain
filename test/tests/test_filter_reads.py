@@ -8,6 +8,7 @@ import logging
 import os
 import shutil
 from subprocess import call
+import numpy as np
 
 import pandas as pd
 from Bio import SeqIO
@@ -45,26 +46,15 @@ class TestFilterReads:
 
         importlib.reload(logging)
 
-    def run(self):
-        self.set_up()
-        self.test0()
-        self.tear_down()
+    def run(self, min=0, max=4, tests='all'):
+        if tests == 'all':
+            tests = np.arange(min, max)
 
-        self.set_up()
-        self.test1()
-        self.tear_down()
-
-        self.set_up()
-        self.test2()
-        self.tear_down()
-
-        self.set_up()
-        self.test3()
-        self.tear_down()
-
-        self.set_up()
-        self.test4()
-        self.tear_down()
+        for test_num in tests:
+            self.set_up()
+            print("\n*** Running test {0} ***\n".format(test_num))
+            eval('self.test{0}()'.format(test_num))
+            self.tear_down()
 
     def test0(self):
         """

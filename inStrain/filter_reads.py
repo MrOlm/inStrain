@@ -1,28 +1,30 @@
 #!/usr/bin/env python
 
-import os
-import sys
-import time
 import copy
 import gzip
-import pysam
 import logging
+import multiprocessing
+import os
 import random
-import argparse
+import time
+import traceback
+from collections import defaultdict
+
 import numpy as np
 import pandas as pd
-import multiprocessing
-from tqdm import tqdm
+import pysam
 from Bio import SeqIO
-from collections import defaultdict
-import concurrent.futures
-from concurrent import futures
-import traceback
-import itertools
-from collections import ChainMap
+from numba import jit
+from tqdm import tqdm
 
 import inStrain.logUtils
 import inStrain.profile.fasta
+
+global i2o
+global v2o
+
+i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
 
 class Controller():
 
@@ -57,7 +59,7 @@ class Controller():
 
             # Store and delete the detailed report
             ISP.store('detailed_mapping_info', dRR, 'pandas', "Details report on reads")
-            del self.dRR
+            del dRR
 
         else:
             Rdic, RR = load_paired_reads(bam, scaffolds, **kwargs)
@@ -239,8 +241,8 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
             # Do the means
             for i, att in enumerate(['mistmaches', 'insert_distance', 'mapq_score', 'pair_length']):
                 table['mean_' + att].append(np.mean([info[i] for pair, info in pair2info.items()]))
-            table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) / \
-            float(info[i2o['length']]))) for pair, info in pair2info.items()]))
+            table['mean_PID'].append(np.mean([(1 - (float(info[i2o['nm']]) /
+                                                    float(info[i2o['length']]))) for pair, info in pair2info.items()]))
 
             # Do a the medians
             table['median_insert'].append(np.median([info[i2o['insert_distance']] for pair, info in pair2info.items()]))
@@ -268,11 +270,11 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
         if c == 'scaffold':
             pass
         elif c.startswith('mean_'):
-            table[c].append(sum([v * m for v, m in zip(CAdb[c],\
-                            CAdb['pass_pairing_filter'])])/total_reads)
+            table[c].append(sum([v * m for v, m in zip(CAdb[c],
+                                                       CAdb['pass_pairing_filter'])])/total_reads)
         elif c.startswith('median_'):
-            table[c].append(sum([v * m for v, m in zip(CAdb[c],\
-                            CAdb['pass_pairing_filter'])])/total_reads)
+            table[c].append(sum([v * m for v, m in zip(CAdb[c],
+                                                       CAdb['pass_pairing_filter'])])/total_reads)
         else:
             table[c].append(int(CAdb[c].sum()))
     adb = pd.DataFrame(table)
@@ -282,6 +284,66 @@ def filter_scaff2pair2info(scaff2pair2info, tallys={}, priority_reads_set=set(),
 
     return  scaff2pair2mm, Rdb
 
+# def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_reads):
+#     '''
+#     The meat of filter_scaff2pair2info
+#     '''
+#     # Evaluate this pair
+#     tallys[scaffold]['pass_pairing_filter'] += 1
+#     f_results = evaluate_pair(info, values)
+#
+#     # Tally the results for what filteres passed
+#     for name, index in v2o.items():
+#          tallys[scaffold]['pass_' + name] += f_results[index]
+#
+#     # Tally the results for if the whole pair passed
+#     if f_results.sum() == 4:
+#         tallys[scaffold]['filtered_pairs'] += 1
+#         scaff2pair2mm[scaffold][pair] = info[0]
+#
+#         if info[i2o['reads']] == 1:
+#             tallys[scaffold]['filtered_singletons'] += 1
+#
+#         if pair in priority_reads:
+#             tallys[scaffold]['filtered_priority_reads'] += 1
+#
+#
+# i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+# v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
+# def evaluate_pair(info, values):
+#     '''
+#     Return a list of the filters that this pair passes and fails
+#     Argumnets:
+#         info: np array listing info about this pair in the i2o order
+#         values: dictionary listing the filters to use when evaluting this pair
+#     Returns:
+#         f_resilts: np array listing which filters pass (1) and fail (0) in v2o order
+#     '''
+#     # Initialize results for this pair
+#     f_results = np.zeros(4)
+#
+#     # Handle PID
+#     PID = 1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))
+#     if PID > values['min_read_ani']:
+#         f_results[v2o['min_read_ani']] = 1
+#
+#     # Handle mapQ
+#     if info[i2o['mapq']] > values['min_mapq']:
+#         f_results[v2o['min_mapq']] = 1
+#
+#     # If this is a pair check insert distance:
+#     if ((info[i2o['reads']] == 2) & (info[i2o['insert_distance']] != -1)):
+#         if info[i2o['insert_distance']] > values['min_insert']:
+#             f_results[v2o['min_insert']] = 1
+#         if info[i2o['insert_distance']] < values['max_insert']:
+#             f_results[v2o['max_insert']] = 1
+#
+#     # Otherwise give those a pass
+#     else:
+#         f_results[v2o['min_insert']] = 1
+#         f_results[v2o['max_insert']] = 1
+#
+#     return f_results
 
 def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_reads):
     '''
@@ -289,7 +351,8 @@ def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_
     '''
     # Evaluate this pair
     tallys[scaffold]['pass_pairing_filter'] += 1
-    f_results = evaluate_pair(info, values)
+    f_results = evaluate_pair(info, np.zeros(4), values['min_read_ani'], values['min_mapq'], values['min_insert'],
+                              values['max_insert'])
 
     # Tally the results for what filteres passed
     for name, index in v2o.items():
@@ -306,10 +369,8 @@ def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_
         if pair in priority_reads:
             tallys[scaffold]['filtered_priority_reads'] += 1
 
-
-i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
-v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
-def evaluate_pair(info, values):
+@jit(nopython=True)
+def evaluate_pair(info, f_results, min_read_ani, min_mapq, min_insert, max_insert):
     '''
     Return a list of the filters that this pair passes and fails
 
@@ -319,30 +380,33 @@ def evaluate_pair(info, values):
 
     Returns:
         f_resilts: np array listing which filters pass (1) and fail (0) in v2o order
+
+    i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
+    v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
     '''
     # Initialize results for this pair
-    f_results = np.zeros(4)
+    #f_results = np.zeros(4)
 
     # Handle PID
-    PID = 1 - (float(info[i2o['nm']]) / float(info[i2o['length']]))
-    if PID > values['min_read_ani']:
-        f_results[v2o['min_read_ani']] = 1
+    PID = 1 - (float(info[0]) / float(info[3]))
+    if PID > min_read_ani:
+        f_results[0] = 1
 
     # Handle mapQ
-    if info[i2o['mapq']] > values['min_mapq']:
-        f_results[v2o['min_mapq']] = 1
+    if info[2] > min_mapq:
+        f_results[3] = 1
 
     # If this is a pair check insert distance:
-    if ((info[i2o['reads']] == 2) & (info[i2o['insert_distance']] != -1)):
-        if info[i2o['insert_distance']] > values['min_insert']:
-            f_results[v2o['min_insert']] = 1
-        if info[i2o['insert_distance']] < values['max_insert']:
-            f_results[v2o['max_insert']] = 1
+    if ((info[4] == 2) & (info[1] != -1)):
+        if info[1] > min_insert:
+            f_results[2] = 1
+        if info[1] < max_insert:
+            f_results[1] = 1
 
     # Otherwise give those a pass
     else:
-        f_results[v2o['min_insert']] = 1
-        f_results[v2o['max_insert']] = 1
+        f_results[1] = 1
+        f_results[2] = 1
 
     return f_results
 
@@ -462,10 +526,12 @@ def _merge_info(i1, i2):
             -1,
             -1], dtype="int64")
 
-def make_detailed_mapping_info(scaff2pair2info, pairTOinfo=dict(), version=2):
+def make_detailed_mapping_info(scaff2pair2info, pairTOinfo=None, version=2):
     '''
     Make a detailed pandas dataframe from pair2info
     '''
+    if pairTOinfo is None:
+        pairTOinfo = dict()
     if version == 2:
         i2o = {'mm':0, 'insert_dist':1, 'mapq':2, 'length':3, 'reads':4,
                 'start':5, 'stop':6}
@@ -525,12 +591,14 @@ def filter_paired_reads_dict2(pair2info, **kwargs):
             min_insert=min_insert,
             min_mapq=min_mapq)}
 
-def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=set(), **kwargs):
+def makeFilterReport2(scaff2pair2info, pairTOinfo=False, priority_reads_set=None, **kwargs):
     '''
     Make a scaffold-level report on when reads are filtered using get_paired_reads_multi2
 
     If you've already filtered out pairs as you'd like, pass in pairTOinfo
     '''
+    if priority_reads_set is None:
+        priority_reads_set = set()
     assert type(kwargs.get('priority_reads', 'none')) != type(set())
     priority_reads = priority_reads_set
     profile_scaffolds = kwargs.get('scaffold_level_mapping_info', None)
@@ -636,7 +704,6 @@ def write_mapping_info(RR, location, **kwargs):
     # Close
     f.close()
 
-i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
 def _evaluate_pair2(value, max_insert=1000000, min_read_ani=-1, min_insert=-1,
                         min_mapq=-1):
     # calculate PID for this pair
@@ -645,8 +712,8 @@ def _evaluate_pair2(value, max_insert=1000000, min_read_ani=-1, min_insert=-1,
     # If this is a pair:
     if ((value[i2o['reads']] == 2) & (value[i2o['insert_distance']] != -1)):
         # See if it passes filtering
-        if ((PID > min_read_ani) & (value[i2o['insert_distance']] > min_insert) & (value[i2o['insert_distance']] < max_insert)\
-            & (value[i2o['mapq']] > min_mapq)):
+        if ((PID > min_read_ani) & (value[i2o['insert_distance']] > min_insert) & (value[i2o['insert_distance']] < max_insert)
+                & (value[i2o['mapq']] > min_mapq)):
             return True
         else:
             return False
@@ -800,23 +867,6 @@ def scaffold_profile_wrapper(cmd_group, bam_init):
 
     return results, log
 
-def scaffold_profile_wrapper2(cmd):
-    '''
-    Take a scaffold and get the reads
-
-    cmd[0] = scaffold, cmd[1] = bam, cmd[2] = kwargs
-    '''
-    logging.debug('running {0} reads'.format(cmd[0]))
-    try:
-        pair2info =  get_paired_reads2(cmd[1], cmd[0])
-        logging.debug('returning {0} reads'.format(cmd[0]))
-        return cmd[0], pair2info
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
-        logging.error("whole scaffold exception- {0}".format(str(cmd[0])))
-        return cmd[0], False
-
 def get_paired_reads(samfile, scaff):
     '''
     Filter reads from a .bam file
@@ -889,14 +939,3 @@ def get_paired_reads(samfile, scaff):
     log_message += inStrain.logUtils.get_worker_log('GetPairedReads', scaff, 'end')
 
     return pair2info, log_message
-
-def mapping_info_wrapper(args, FAdb):
-    # Get paired reads
-    scaffolds = list(FAdb['scaffold'].tolist())
-    scaff2pair2info, scaff2total = get_paired_reads_multi(args.bam, scaffolds, processes=args.processes, ret_total=True)
-
-    # Make report
-    RR = makeFilterReport(scaff2pair2info, scaff2total, **vars(args))
-
-    # Save report
-    write_mapping_info(RR, args.mapping_info, **vars(args))

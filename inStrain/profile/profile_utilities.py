@@ -18,6 +18,7 @@ import concurrent.futures
 from subprocess import call
 from concurrent import futures
 from collections import defaultdict
+from numba import jit
 
 import inStrain.profile.linkage
 import inStrain.SNVprofile
@@ -279,22 +280,29 @@ def update_covT(covT, MMcounts, position, mLen):
             covT[mm] = np.zeros(mLen, dtype=int)
         covT[mm][position] = sum(count)
 
+
 def mm_counts_to_counts(MMcounts, maxMM=100):
     '''
     Take mm counts and return just counts
     '''
-    counts = None
-    for mm, count in [(mm, count) for mm, count in MMcounts.items() if mm <= maxMM]:
-        if counts is None:
-            counts = count
-        else:
-            counts = np.add(counts, count)
+    counts = np.zeros(4, dtype=int)
 
-    if counts is None:
-        return np.zeros(4, dtype=int)
+    mms = np.array(list(MMcounts.keys()), dtype='int32')
+    covs = np.array(list(MMcounts.values()))
 
-    else:
-        return counts
+    return _mm_counts_to_counts_fast(mms, covs, counts, maxMM)
+
+@jit(nopython=True)
+def _mm_counts_to_counts_fast(mms, covs, counts, maxMM):
+    '''
+    Fast implementation
+    '''
+    i = 0
+    for mm in mms:
+        if mm <= maxMM:
+            counts = np.add(counts, covs[i])
+        i += 1
+    return counts
 
 def shrink_basewise(mm2array, name, start=0, len=0):
     NAME2TYPE = {'coverage':'int32', 'clonality':'float32', 'snpCounted':'bool'}

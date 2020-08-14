@@ -4,9 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.0w] - UNCOMITTED
+## [1.3.0w] - 2020-08-13
 - Significant refactoring of controller.py and profile
 - Re-writting the test suite to be in multiple modules
+- Add numba to filter_reads evaluate_pair method (and a few others; just playing around)
+- Optimize compare a bit (load stuff up front)
 
 ## [1.3.0v] - 2020-08-10
 - Change internal structure of test suite

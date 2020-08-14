@@ -24,7 +24,7 @@ pd.set_option('display.max_colwidth', -1)
 
 
 if __name__ == '__main__':
-    # tests.test_profile.test_strains().run(tests=[16])
+    # tests.test_profile.test_profile().run(tests=[16])
     # tests.test_compare.test_readcomparer().run(tests=[13])
 
     tests.test_profile.test_profile().run()
