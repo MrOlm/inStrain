@@ -493,6 +493,7 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
     ret_counts = np.zeros(4, dtype=int)
     for mm in sorted(list(MMcounts.keys())):
         counts = _mm_counts_to_counts(MMcounts, mm)
+        ret_counts = counts
         snp, morphia = call_snv_site(counts, refBase, min_cov=min_cov, min_freq=min_freq) # Call SNP
 
         # Update clonality
@@ -531,7 +532,6 @@ def _update_snp_table_T(Stable, clonT, clonTR, MMcounts, p2c,\
                anySNP = True
                bases.add(snp)
                bases.add(varbase)
-               ret_counts = counts
 
            elif (morphia == 1) & (anySNP == True):
                p2c[pos] = True
