@@ -10,6 +10,7 @@ import resource
 import traceback
 import numpy as np
 import pandas as pd
+from Bio import bgzf
 from tqdm import tqdm
 import concurrent.futures
 from subprocess import call
@@ -37,7 +38,7 @@ def prepare_bam_fie(args):
     elif bam[-4:] == '.bam':
         if (os.path.exists(bam + '.bai')) | ((os.path.exists(bam[:-4] + '.bai'))):
             pass
-        else:
+        elif not _is_sorted_bam(bam):
             bam = _sort_index_bam(bam, rm_ori=False)
 
     if os.stat(bam).st_size == 0:
@@ -1149,3 +1150,11 @@ def _sort_index_bam(bam, rm_ori=False):
         os.remove(bam)
 
     return sorted_bam
+
+def _is_sorted_bam(bam):
+    """
+    Checks if a BAM file is sorted by coordinate.
+    """
+    with bgzf.BgzfReader(bam, "rb") as fin:
+        bam_header = fin.readline().strip()
+        return b"SO:coordinate" in bam_header
