@@ -28,18 +28,19 @@ def prepare_bam_fie(args):
     Make this a .bam file
     '''
     bam = args.bam
+    processes = args.processes
 
     if bam[-4:] == '.sam':
         logging.info("You gave me a sam- I'm going to make it a .bam now")
 
         bam = _sam_to_bam(bam)
-        bam = _sort_index_bam(bam)
+        bam = _sort_index_bam(bam, processes)
 
     elif bam[-4:] == '.bam':
         if (os.path.exists(bam + '.bai')) | ((os.path.exists(bam[:-4] + '.bai'))):
             pass
         elif not _is_sorted_bam(bam):
-            bam = _sort_index_bam(bam, rm_ori=False)
+            bam = _sort_index_bam(bam, processes, rm_ori=False)
 
     if os.stat(bam).st_size == 0:
         logging.error("Failed to generated a sorted .bam file! Make sure you have "+\
@@ -1125,7 +1126,7 @@ def _sam_to_bam(sam):
 
     return bam
 
-def _sort_index_bam(bam, rm_ori=False):
+def _sort_index_bam(bam, processes, rm_ori=False):
     '''
     From a .bam file, sort and index it. Remove original if rm_ori
     Return path of sorted and indexed bam
@@ -1136,12 +1137,12 @@ def _sort_index_bam(bam, rm_ori=False):
 
     logging.info("sorting {0}".format(bam))
     sorted_bam = bam[:-4] + '.sorted.bam'
-    cmd = ['samtools', 'sort', bam, '-o', sorted_bam]
+    cmd = ['samtools', 'sort', bam, '-o', sorted_bam, '-@', str(processes)]
     print(' '.join(cmd))
     call(cmd)
 
     logging.info("Indexing {0}".format(sorted_bam))
-    cmd = ['samtools', 'index', sorted_bam, sorted_bam + '.bai']
+    cmd = ['samtools', 'index', sorted_bam, sorted_bam + '.bai', '-@', str(processes)]
     print(' '.join(cmd))
     call(cmd)
 
