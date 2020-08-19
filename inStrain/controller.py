@@ -33,6 +33,7 @@ class Controller():
     '''
     Controller of the whole shebang
     '''
+
     def main(self, args):
         ''' Parse user options and call the correct pipeline'''
         # Call the appropriate workflow
@@ -126,7 +127,7 @@ class ProfileController(object):
         self.run_profile()
 
         # Profile genes
-        self.profile_profile_genes()
+        # self.profile_profile_genes()
 
         # Make things genome_wide
         self.profile_genome_wide()
@@ -160,7 +161,7 @@ class ProfileController(object):
         setup_logger(log_loc)
 
         # Make the bam file if you need to; remove it from args
-        self.bam = inStrain.profile.samtools_ops.prepare_bam_fie(args.bam)
+        self.bam = inStrain.profile.samtools_ops.prepare_bam_fie(args.bam, args.processes)
         del self.args.bam
 
         # Load the list of scaffolds
@@ -304,7 +305,7 @@ class ProfileController(object):
         '''
         logging.debug("Writing output files now")
 
-        for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage']:
+        for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage', 'gene_info']:
             self.ISP.generate(t)
         self.ISP.generate('mapping_info', **self.kwargs)
 

@@ -8,6 +8,7 @@ import logging
 import os
 import shutil
 from subprocess import call
+import numpy as np
 
 import inStrain
 import inStrain.SNVprofile
@@ -43,22 +44,15 @@ class test_plot:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
-        self.setUp()
-        self.test1(view=False)
-        self.tearDown()
+    def run(self, min=1, max=4, tests='all'):
+        if tests == 'all':
+            tests = np.arange(min, max + 1)
 
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
+        for test_num in tests:
+            self.setUp()
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
     def test1(self, view=False):
         """

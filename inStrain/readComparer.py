@@ -401,7 +401,7 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
                         mdbs.append(results[1])
                         scaff2pair2mm2cov[results[3]] = results[2]
                     else:
-                        logging.debug("THIS PROFILE IS NOT A DATAFRAME! {1} {0}".format(s, s[3]))
+                        assert False
 
         # Close multi-processing
         for proc in processes:
@@ -433,7 +433,7 @@ def compare_scaffolds(names, Sprofiles, scaffolds_to_compare, s2l, **kwargs):
                         mdbs.append(results[1])
                         scaff2pair2mm2cov[results[3]] = results[2]
                     else:
-                        logging.debug("THIS PROFILE IS NOT A DATAFRAME! {1} {0}".format(s, s[3]))
+                        assert False
 
     inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "end")
 
@@ -477,7 +477,7 @@ def scaffold_profile_wrapper(cmds, null_model):
             logging.error("whole scaffold exception- {0}".format(str(cmd.scaffold)))
             t = time.strftime('%m-%d %H:%M')
             log_message = "\n{1} DEBUG FAILURE CompareScaffold {0} {2}\n"\
-                            .format(cmd.scaffold, t, str(cmd.names))
+                            .format(cmd.scaffold, t, str(cmd.cur_names))
             log += log_message
 
     return results, log
@@ -489,59 +489,97 @@ def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
 
+    cmd.scaffold, cmd.cur_names, cmd.SNPtables, cmd.covTs, cmd.mLen
+
     Here you're filtering such that only profiles that have the scaffold are compared
     '''
+    # Make sure no duplicates in names
+    assert len(names) == len(set(names)), 'Cannot have 2 of the same nammed IS {0}'.format(names)
+
+    # Load data from the profiles
+    name2index = {}
+    full_covTs = []
+    full_SNPtables = []
+
+    i = 0
+    for S, name in zip(sProfiles, names):
+        name2index[name] = i
+        i += 1
+
+        full_covTs.append(S.get('covT', scaffolds=scaffolds_to_compare))
+        full_SNPtables.append(S.get('cumulative_snv_table'))
+
+    # Make commands
     for scaff in scaffolds_to_compare:
         # make this command
         cmd = profile_scaffold_command()
         cmd.scaffold = scaff
 
-        names_cur = []
-        sProfiles_cur = []
-
-        for i, name in enumerate(names):
-            names_cur.append(names[i])
-            sProfiles_cur.append(sProfiles[i])
-
         covTs = []
         SNPtables = []
         cur_names = []
-        for S, name in zip(sProfiles, names):
-            covT = S.get('covT', scaffolds=[scaff])
-            if len(covT.keys()) == 0:
-                continue
 
-            covTs.append(covT[scaff])
-            db = _get_SNP_table(S, scaff, name)
+        for name, index in name2index.items():
+            if scaff in full_covTs[index]:
+                covTs.append(full_covTs[index][scaff])
+                SNPtables.append(_get_SNP_table(full_SNPtables[index], scaff))
+                cur_names.append(name)
 
-            SNPtables.append(db)
-            cur_names.append(name)
+        assert len(cur_names) >= 2
 
-        cmd.covTs = covTs
-        cmd.SNPtables = SNPtables
         cmd.cur_names = cur_names
-
-        cmd.names = names_cur
-        cmd.sProfiles = sProfiles_cur
-        cmd.arguments = kwargs
+        cmd.SNPtables = SNPtables
+        cmd.covTs = covTs
         cmd.mLen = s2l[scaff]
+        cmd.arguments = kwargs
 
         yield cmd
 
-        # # Load covT and SNPtables
-        # covTs = []
-        # SNPtables = []
-        # cur_names = []
-        # for S, name in zip(sProfiles, names):
-        #     covT = S.get('covT', scaffolds=[scaffold])
-        #     if len(covT.keys()) == 0:
-        #         continue
-        #
-        #     covTs.append(covT[scaffold])
-        #     db = _get_SNP_table(S, scaffold, name)
-        #
-        #     SNPtables.append(db)
-        #     cur_names.append(name)
+# def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
+#     '''
+#     Make and iterate profiling commands
+#     Doing it in this way makes it use way less RAM
+#
+#     Here you're filtering such that only profiles that have the scaffold are compared
+#     '''
+#
+#
+#     for scaff in scaffolds_to_compare:
+#         # make this command
+#         cmd = profile_scaffold_command()
+#         cmd.scaffold = scaff
+#
+#         names_cur = []
+#         sProfiles_cur = []
+#
+#         for i, name in enumerate(names):
+#             names_cur.append(names[i])
+#             sProfiles_cur.append(sProfiles[i])
+#
+#         covTs = []
+#         SNPtables = []
+#         cur_names = []
+#         for S, name in zip(sProfiles, names):
+#             covT = S.get('covT', scaffolds=[scaff])
+#             if len(covT.keys()) == 0:
+#                 continue
+#
+#             covTs.append(covT[scaff])
+#             db = _get_SNP_table(S, scaff, name)
+#
+#             SNPtables.append(db)
+#             cur_names.append(name)
+#
+#         cmd.covTs = covTs
+#         cmd.SNPtables = SNPtables
+#         cmd.cur_names = cur_names
+#
+#         cmd.names = names_cur
+#         cmd.sProfiles = sProfiles_cur
+#         cmd.arguments = kwargs
+#         cmd.mLen = s2l[scaff]
+#
+#         yield cmd
 
 def iterate_scaffold_chunks(scaffolds_to_compare, chunkSize=100):
     '''
@@ -558,12 +596,7 @@ class profile_scaffold_command():
     def __init__(self):
         pass
 
-def _get_SNP_table(SNVprofile, scaffold, name):
-    if 'name2SNVprofile' in globals():
-        db = name2SNVprofile[name]
-    else:
-        db = SNVprofile.get('cumulative_snv_table')
-
+def _get_SNP_table(db, scaffold):
     if len(db) > 0:
         db = db[db['scaffold'] == scaffold]
         if len(db) == 0:
@@ -575,6 +608,24 @@ def _get_SNP_table(SNVprofile, scaffold, name):
         db = pd.DataFrame()
 
     return db
+
+# def _get_SNP_table(SNVprofile, scaffold, name):
+#     if 'name2SNVprofile' in globals():
+#         db = name2SNVprofile[name]
+#     else:
+#         db = SNVprofile.get('cumulative_snv_table')
+#
+#     if len(db) > 0:
+#         db = db[db['scaffold'] == scaffold]
+#         if len(db) == 0:
+#             db = pd.DataFrame()
+#         else:
+#             db = db.sort_values('mm')
+#             #db = db[['position', 'mm', 'con_base', 'ref_base', 'var_base', 'position_coverage', 'A', 'C', 'T', 'G', 'allele_count']]
+#     else:
+#         db = pd.DataFrame()
+#
+#     return db
 
 def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **kwargs):
     '''
@@ -592,6 +643,8 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
         pair2mm2covOverlap,
         name of scaffold], log
     '''
+    log_message = inStrain.logUtils.get_worker_log('Compare', scaffold, 'start')
+
     # Load arguments
     min_cov = kwargs.get('min_cov', 5)
     min_freq = kwargs.get('min_freq', 5)
@@ -607,8 +660,8 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
 
     if len(cur_names) < 2:
         results = [pd.DataFrame(), pd.DataFrame(), {}, 'skip_{0}'.format(scaffold)]
-        log = ''
-        return (results, log)
+        log_message += '\n' + inStrain.logUtils.get_worker_log('Compare', scaffold, 'end')
+        return (results, log_message)
 
     # Iterate through pairs
     i = 0
@@ -635,10 +688,10 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
                 process  = psutil.Process(os.getpid())
                 bytes_used = process.memory_info().rss
                 total_available_bytes = psutil.virtual_memory()
-                log_message = "\n{4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
+                nm = "\n{4} PID {0} end at {5} with {1} RAM. System has {2} of {3} available".format(
                         pid, bytes_used, total_available_bytes[1], total_available_bytes[0],
                         scaffold, time.time())
-                logging.debug(log_message)
+                logging.debug(nm)
 
             mm2overlap, mm2coverage = _calc_mm2overlap(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
             Mdb = _calc_SNP_count_alternate(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
@@ -654,17 +707,20 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
             if store_coverage:
                 pair2mm2covOverlap['-vs-'.join(sorted([name1, name2]))] = mm2overlap
 
-    logging.debug("Returning {0} {1} {2}".format(scaffold, i, j))
+    # logging.debug("Returning {0} {1} {2}".format(scaffold, i, j))
 
     Cdb = pd.DataFrame(table)
+    # if len(Cdb) > 0:
+    #     Cdb['coverage_overlap'] = Cdb['coverage_overlap'].astype('int64')
+
     if len(snpLocs) > 0:
         Mdb = pd.concat(snpLocs, sort=False)
     else:
         Mdb = pd.DataFrame()
 
-    results = [pd.DataFrame(table), Mdb, pair2mm2covOverlap, scaffold]
-    log = ''
-    return (results, log)
+    results = [Cdb, Mdb, pair2mm2covOverlap, scaffold]
+    log_message += '\n' + inStrain.logUtils.get_worker_log('Compare', scaffold, 'end')
+    return (results, log_message)
 
 def _calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
     '''

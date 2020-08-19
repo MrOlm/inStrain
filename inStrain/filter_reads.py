@@ -45,12 +45,8 @@ class Controller():
 
         # Set up and parse .fasta file
         inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
-
-        # Load the .fasta file
-        inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "start")
-        fasta_db, scaff2sequence = inStrain.profile.fasta.load_fasta(**kwargs)
+        fasta_db, scaff2sequence, s2l = inStrain.profile.fasta.load_fasta(**kwargs)
         scaffolds = list(fasta_db['scaffold'].unique())
-        s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
         inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "end")
 
         # Filter the reads and store read reports

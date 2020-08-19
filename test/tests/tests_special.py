@@ -5,7 +5,8 @@ Run tests on inStrain plotting
 import glob
 import os
 import shutil
-from subprocess import call
+from subprocess import call, run, PIPE
+import numpy as np
 
 import inStrain
 import inStrain.SNVprofile
@@ -14,6 +15,7 @@ import inStrain.filter_reads
 import inStrain.irep_utilities
 import inStrain.profile.fasta
 import tests.test_utils as test_utils
+import inStrain.logUtils
 
 
 class test_special:
@@ -37,6 +39,8 @@ class test_special:
                      'N5_271_010G1_scaffold_min1000.fa.genes.fna'
         self.stb = test_utils.load_data_loc() + \
                    'GenomeCoverages.stb'
+        self.ISL = test_utils.load_data_loc() + \
+                   'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS'
 
     def setUp(self):
         self.tearDown()
@@ -45,22 +49,16 @@ class test_special:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
+    def run(self, min=1, max=5, tests='all'):
 
-        self.setUp()
-        self.test3()
-        self.tearDown()
-        #
-        # self.setUp()
-        # self.test4()
-        # self.tearDown()
+        if tests == 'all':
+            tests = np.arange(min, max+1)
+
+        for test_num in tests:
+            self.setUp()
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
     def test1(self):
         """
@@ -135,3 +133,52 @@ class test_special:
         print(cmd)
         call(cmd, shell=True)
         assert len(glob.glob(location + '/log/*')) == 3, location
+
+    def test5(self):
+        """
+        Test --version
+        """
+        # Super quick profile run
+        location = os.path.join(self.test_dir, os.path.basename(self.IS))
+        cmd = "inStrain profile {0} {1} -o {2} -s {3} -g {4} --version".format(
+            self.small_bam, self.small_fasta, location, self.stb, self.genes)
+        print(cmd)
+        result = run(cmd, shell=True, stdout=PIPE)
+
+        # Make sure the code is right
+        assert result.returncode == 0
+
+        # Make sure the program wasn't run
+        assert not os.path.isdir(location)
+
+        # Make sure the version was printed to STDOUT
+        m = result.stdout.decode("utf-8").strip()
+        assert 'inStrain version' in m
+
+    def test6(self):
+        """
+        Some specific tests for logging
+        """
+        # Copy over
+        location = os.path.join(self.test_dir, os.path.basename(self.ISL))
+        shutil.copytree(self.ISL, location)
+
+        cmd = "inStrain other --run_statistics {0} --debug".format(location)
+        print(cmd)
+        call(cmd, shell=True)
+        assert len(glob.glob(location + '/log/*')) == 3, glob.glob(location + '/log/*')
+
+
+        # cmd = "inStrain profile {0} {1} -o {2} -s {3} -g {4}".format(
+        #     self.small_bam, self.small_fasta, location, self.stb, self.genes)
+        # print(cmd)
+        # result = run(cmd, shell=True, stdout=PIPE)
+        #
+        # # Make sure the code is right
+        # assert result.returncode == 0
+
+        # Load a log file
+        # loc = glob.glob(location + '/log/*runtime*')[0]
+        # with open(loc) as l:
+        #     for line in l.readlines():
+        #         print(line.strip())

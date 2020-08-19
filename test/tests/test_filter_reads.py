@@ -48,11 +48,11 @@ class TestFilterReads:
 
     def run(self, min=0, max=4, tests='all'):
         if tests == 'all':
-            tests = np.arange(min, max)
+            tests = np.arange(min, max + 1)
 
         for test_num in tests:
             self.set_up()
-            print("\n*** Running test {0} ***\n".format(test_num))
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
             eval('self.test{0}()'.format(test_num))
             self.tear_down()
 

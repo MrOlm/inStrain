@@ -31,7 +31,7 @@ Contents
 
    installation
    overview
+   tutorial
    program_documentation
    example_output
-   tutorial
    Advanced_use

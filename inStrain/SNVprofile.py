@@ -11,6 +11,7 @@ import argparse
 import warnings
 import numpy as np
 import pandas as pd
+import Bio.Seq
 
 if __name__ != '__main__':
     from ._version import __version__
@@ -222,6 +223,9 @@ class SNVprofile:
                              'divergent_site_count']
 
             Gdb = self.get('genes_table')
+            if Gdb is None:
+                logging.info("Cannot generate genes_table, no genes were profiled")
+                return
 
             for thing in ['genes_coverage', 'genes_clonality', 'genes_SNP_count']:
                 db = self.get(thing)
@@ -804,6 +808,7 @@ def load_scaff2pair2mm2SNPs(location, scaffolds=[], pairs=[]):
 
 def _json_helper(o):
     if isinstance(o, np.int64): return int(o)
+    if isinstance(o, Bio.Seq.Seq): return str(o)
     raise TypeError
 
 class SNVprofile_old:

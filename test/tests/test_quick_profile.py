@@ -3,6 +3,7 @@ Run tests on inStrain quick_profile
 """
 
 import os
+import numpy as np
 import shutil
 from subprocess import call
 
@@ -37,14 +38,15 @@ class test_quickProfile:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+    def run(self, min=0, max=1, tests='all'):
+        if tests == 'all':
+            tests = np.arange(min, max + 1)
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
+        for test_num in tests:
+            self.setUp()
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
     def test0(self):
         """

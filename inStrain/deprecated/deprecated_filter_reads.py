@@ -426,7 +426,7 @@ def filter_reads(bam, positions, fasta_length, filter_cutoff = 0.97, max_insert_
         for read_pair in mapped_pairs:
             f.write(read_pair + "\t" + "\t" + str(pair_inserts[read_pair]) + "\t" + str(pair_mapqs[read_pair]) + "\t" + str(pair_mismatch[read_pair]) + "\n")
         f.close()
-    ## STEP 4: WRITE NEW BAM IF NEEDED (TODO)
+    ## STEP 4: WRITE NEW BAM IF NEEDED
 
     samfile.close()
     if write_bam:

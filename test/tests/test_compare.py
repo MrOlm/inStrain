@@ -7,6 +7,8 @@ import os
 import shutil
 from collections import defaultdict
 from subprocess import call
+import importlib
+import logging
 
 import numpy as np
 import pandas as pd
@@ -75,6 +77,7 @@ class test_readcomparer:
             if os.path.isdir(self.test_dir):
                 shutil.rmtree(self.test_dir)
             os.mkdir(self.test_dir)
+        importlib.reload(logging)
 
     def tearDown(self):
         if os.path.isdir(self.test_dir):
@@ -91,12 +94,6 @@ class test_readcomparer:
         # # # ### self.test10()
         # # # ### self.tearDown()
 
-        if skip is None:
-            skip = [9, 10]
-        if tests == 'all':
-            tests = np.arange(min, max)
-            tests = [x for x in tests if x not in skip]
-
         # self.setUp()
         # self.UPDATE_COMPARE_TEST_DATA()
         # self.tearDown()
@@ -105,9 +102,15 @@ class test_readcomparer:
         # self.testS()
         # self.tearDown()
 
+        if skip is None:
+            skip = [9, 10]
+        if tests == 'all':
+            tests = np.arange(min, max + 1)
+            tests = [x for x in tests if x not in skip]
+
         for test_num in tests:
             self.setUp()
-            print("\n*** Running test {0} ***\n".format(test_num))
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
             eval('self.test{0}()'.format(test_num))
             self.tearDown()
 
@@ -379,6 +382,9 @@ class test_readcomparer:
         covT2 = S2.get('covT', scaffolds=scaffs)
 
         # Get the nonredundant scaffold table
+        SXdb1 = S1.get('cumulative_snv_table')
+        SXdb2 = S2.get('cumulative_snv_table')
+
         SRdb1 = S1.get_nonredundant_scaffold_table()
         SRdb2 = S2.get_nonredundant_scaffold_table()
 
@@ -389,12 +395,12 @@ class test_readcomparer:
         for scaff in scaffs:
 
             # Get the SNP tables
-            ST1 = inStrain.readComparer._get_SNP_table(S1, scaff, 't1')
-            ST2 = inStrain.readComparer._get_SNP_table(S2, scaff, 't2')
+            ST1 = inStrain.readComparer._get_SNP_table(SXdb1, scaff)
+            ST2 = inStrain.readComparer._get_SNP_table(SXdb2, scaff)
 
             results, log = \
                 inStrain.readComparer.compare_scaffold(scaff, ['t1', 't2'], [ST1, ST2],
-                                                       [covT1, covT2], s2l[scaff], model,
+                                                       [covT1[scaff], covT2[scaff]], s2l[scaff], model,
                                                        include_self_comparisons=True)
 
             db, pair2mm2SNPlocs, pair2mm2cov, scaffold = results
@@ -926,7 +932,8 @@ class test_readcomparer:
             self.script, self.IS1, self.IS2,
             base, self.scafflistF)
         print(cmd)
-        call(cmd, shell=True)
+        #call(cmd, shell=True)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
         exp_RC = inStrain.SNVprofile.SNVprofile(base)
         sol_RC = inStrain.SNVprofile.SNVprofile(self.v12_solution)
@@ -945,7 +952,7 @@ class test_readcomparer:
                 print()
 
         # Make sure log is working
-        assert len(glob.glob(base + '/log/*')) == 2, glob.glob(base + '/log/*')
+        assert len(glob.glob(base + '/log/*')) == 3, glob.glob(base + '/log/*')
         Ldb = exp_RC.get_parsed_log()
         print(Ldb)
 
@@ -1057,6 +1064,7 @@ class test_readcomparer:
         """
         # Set up
         base = self.test_dir + 'test'
+        base2 = self.test_dir + 'test2'
 
         # Run profile and make the split crash
         cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=3000".format(None,
@@ -1065,9 +1073,18 @@ class test_readcomparer:
                                                                                                             base)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
+        # Again
+        new_bam_loc = os.path.join(self.test_dir, '2_' + os.path.basename(self.failure_bam))
+        shutil.copy2(self.failure_bam, new_bam_loc)
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.95 -p 6 --skip_genome_wide --window_length=3000".format(None,
+                                                                                                            new_bam_loc,
+                                                                                                            self.failure_fasta,
+                                                                                                            base2)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
         # Run compare without tripping the test failure
         out = self.test_dir + 'test.RC'
-        cmd = "inStrain compare -i {0} {0} -o {1}".format(base, out)
+        cmd = "inStrain compare -i {0} {1} -o {2}".format(base, base2, out)
         print(cmd)
         call(cmd, shell=True)
 
@@ -1078,7 +1095,7 @@ class test_readcomparer:
 
         # Run compare with tripping the test failure
         out = self.test_dir + 'test.RC.2'
-        cmd = "inStrain compare -i {0} {0} -o {1} -d".format(base, out)
+        cmd = "inStrain compare -i {0} {1} -o {2} -d".format(base, base2, out)
         print(cmd)
         call(cmd, shell=True)
 
@@ -1092,11 +1109,16 @@ class test_readcomparer:
         """
         Handle coverages over 10,000x
         """
+        new_IS = os.path.join(self.test_dir, os.path.basename(self.highcov_IS) + '_2')
+        shutil.copytree(self.highcov_IS, new_IS)
+        inStrain.SNVprofile.SNVprofile(new_IS).store('bam_loc', 'testero', 'value', 'Location of .bam file')
+
         # Run compare without tripping the test failure
         out = self.test_dir + 'test.RC'
-        cmd = "inStrain compare -i {0} {0} -o {1}".format(self.highcov_IS, out)
+        cmd = "inStrain compare -i {0} {1} -o {2}".format(self.highcov_IS, new_IS, out)
         print(cmd)
-        call(cmd, shell=True)
+        #call(cmd, shell=True)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
         # Make sure it didn't trip
         RC = inStrain.SNVprofile.SNVprofile(out)

@@ -1,55 +1,43 @@
-import os
-import sys
-import h5py
-import time
-import psutil
-import shutil
 import logging
+import os
+import time
 import traceback
-import numpy as np
-import pandas as pd
-from datetime import datetime
-from datetime import timedelta
 from collections import defaultdict
+from datetime import datetime
 
 import matplotlib
-matplotlib.use('Agg')
-import matplotlib.ticker as ticker
-from matplotlib import pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.backends.backend_pdf import PdfPages
+import numpy as np
+import pandas as pd
+import psutil
 
-import seaborn as sns
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
+
 
 def process_logs(IS_loc):
-    '''
+    """
     Generate the run report for an IS location
-    '''
+    """
     logging.shutdown()
     logloc = os.path.join(IS_loc, 'log/log.log')
     report_run_stats(logloc, most_recent=False, printToo=True, debug=True, save=True)
 
 def report_run_stats(logloc, save=True, most_recent=True, printToo=True,
-                    debug=False, plot=True):
-    '''
+                    debug=False, plot=False):
+    """
     Overall wrapper of this module.
 
     1) The text log is parsed into a dataframe with "load_log"
     2) A number of reports are generated with "generate_reports"
     3) These reports are saved / displayed here
 
-    '''
-    if logloc == None:
+    """
+    if logloc is None:
         return
 
     # Load the log
     try:
-        Ldb = load_log(logloc)
-
-        # Filter the log
-        if most_recent:
-            Ldb = filter_most_recent(Ldb)
-            assert len(Ldb['run_ID'].unique()) == 1
+        Ldb = load_log(logloc, most_recent=most_recent)
 
     except BaseException as e:
         if debug:
@@ -59,7 +47,11 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True,
 
     # Generate reports
     for run, ldb in Ldb.groupby('run_ID'):
-        name2report = generate_reports(ldb, debug=debug)
+        # Make the multi-processing log
+        MLdb = load_multiprocessing_log(ldb)
+
+        # Make the reports
+        name2report = generate_reports(ldb, MLdb, debug=debug)
 
         # Print
         if printToo:
@@ -67,7 +59,8 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True,
                 print("..:: {0} ::..\n{1}".format(name, report))
 
         if save == True:
-            saveloc = logloc.replace('log.log', '{0}.runtime_summary.txt'.format(run))
+            savelocs = [logloc.replace('log.log', '{0}.runtime_summary.txt'.format(run)),
+                        logloc.replace('log.log', 'latest.runtime_summary.txt'.format(run))]
             figloc = logloc.replace('log.log', '{0}.ramProfile.png'.format(run))
         elif save == False:
             continue
@@ -75,21 +68,22 @@ def report_run_stats(logloc, save=True, most_recent=True, printToo=True,
             saveloc = save
             figloc = save + '.mem_usage.png'
 
-        with open(saveloc, 'w') as o:
-            for name, report in name2report.items():
-                o.write("..:: {0} ::..\n{1}\n".format(name, report))
+        for saveloc in savelocs:
+            with open(saveloc, 'w') as o:
+                for name, report in name2report.items():
+                    o.write("..:: {0} ::..\n{1}\n".format(name, report))
 
-    # Make the plot
-    if plot:
-        try:
-            profile_plot(Ldb, saveloc=figloc)
-        except BaseException as e:
-            if debug:
-                print('Failed to make profile plot - {1}'.format('None', str(e)))
-                traceback.print_exc()
+    # # Make the plot
+    # if plot:
+    #     try:
+    #         profile_plot(Ldb, saveloc=figloc)
+    #     except BaseException as e:
+    #         if debug:
+    #             print('Failed to make profile plot - {1}'.format('None', str(e)))
+    #             traceback.print_exc()
 
-def load_log(logfile):
-    '''
+def load_log(logfile, most_recent=True):
+    """
     A bunch of messy logic to turn the text file into a dataframe
 
     The resulting dataframe has 4 columns:
@@ -108,7 +102,7 @@ def load_log(logfile):
     * WorkerLog
     * Failure
 
-    '''
+    """
     table = defaultdict(list)
     with open(logfile) as o:
         prev_line_2 = None
@@ -226,10 +220,15 @@ def load_log(logfile):
 
     Ldb = pd.DataFrame(table)
 
+    # Filter the log
+    if most_recent:
+        Ldb = filter_most_recent(Ldb)
+        assert len(Ldb['run_ID'].unique()) == 1
+
     return Ldb
 
-def generate_reports(Ldb, debug=False):
-    '''
+def generate_reports(Ldb, MLdb, debug=False):
+    """
     Using the parsed log dataframe, make "name2report".
 
     The following reports are made:
@@ -237,14 +236,14 @@ def generate_reports(Ldb, debug=False):
     * Checkpoints
     (lots more; a lot of this is redundent)
 
-    '''
+    """
     name2report = {}
     assert len(Ldb['run_ID'].unique()) == 1
 
     # Make the overall report
     name = 'Overall'
     try:
-        report, OVERALL_RUNTIME = _gen_overall_report(Ldb)
+        report, OVERALL_RUNTIME = gen_overall_report(Ldb)
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -254,8 +253,7 @@ def generate_reports(Ldb, debug=False):
     # Make the main checkpoint report
     name = 'Checkpoints'
     try:
-        ldb = Ldb[Ldb['log_type'] == 'checkpoint']
-        report = _gen_checkpoint_report2(ldb, overall_runtime=OVERALL_RUNTIME.total_seconds(), log_class='main_profile')
+        report = gen_checkpoint_report(Ldb, overall_runtime=OVERALL_RUNTIME.total_seconds(), log_class='main_profile')
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -265,7 +263,13 @@ def generate_reports(Ldb, debug=False):
     # Make the filter reads reaport
     name = "Filter reads report"
     try:
-        report = _gen_filter_reads_report(Ldb)
+        # Checkpoint log
+        report = ''
+        report += gen_checkpoint_report(Ldb, log_class='FilterReads')
+
+        # Set up multiprocessing log
+        report += '\n'
+        report += gen_multiprocessing_report(MLdb, commands=['GetPairedReads'])
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -273,30 +277,39 @@ def generate_reports(Ldb, debug=False):
             traceback.print_exc()
 
     # Make the profile RAM report
-    name = 'Profile RAM useage and paralellization efficiency'
+    name = 'Profile report'
     try:
-        report = _gen_profileRAM_report(Ldb)
+        # Set up checkpoint log
+        report = ''
+        report += gen_checkpoint_report(Ldb, log_class='Profile')
+
+        # Set up multiprocessing log
+        report += '\n* Profiling splits *\n'
+        report += gen_multiprocessing_report(MLdb, commands=['SplitProfile'])
+        report += '\n* Merging splits and profiling genes *\n'
+        report += gen_multiprocessing_report(MLdb, commands=['MergeProfile'])
+
         name2report[name] = report
     except BaseException as e:
         if debug:
             print('Failed to make log for {0} - {1}'.format(name, str(e)))
             traceback.print_exc()
 
-    # Make the genes report
-    name = 'Genes paralellization efficiency'
-    try:
-        report = _gen_genes_report(Ldb)
-        name2report[name] = report
-    except BaseException as e:
-        if debug:
-            print('Failed to make log for {0} - {1}'.format(name, str(e)))
-            traceback.print_exc()
+    # # Make the genes report
+    # name = 'Genes paralellization efficiency'
+    # try:
+    #     report = _gen_genes_report(Ldb)
+    #     name2report[name] = report
+    # except BaseException as e:
+    #     if debug:
+    #         print('Failed to make log for {0} - {1}'.format(name, str(e)))
+    #         traceback.print_exc()
 
     # Make the genes report
     name = 'Geneome level report'
     try:
         report = ''
-        report += _gen_checkpoint_report2(Ldb, log_class='GenomeLevel')
+        report += gen_checkpoint_report(Ldb, log_class='GenomeLevel')
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -314,8 +327,14 @@ def generate_reports(Ldb, debug=False):
 
     name = 'Compare'
     try:
+        # Checkpoint log
         report = ''
-        report += _gen_checkpoint_report2(Ldb, log_class='Compare')
+        report += gen_checkpoint_report(Ldb, log_class='Compare')
+
+        # Set up multiprocessing log
+        report += '\n'
+        report += gen_multiprocessing_report(MLdb, commands=['Compare'])
+
         name2report[name] = report
     except BaseException as e:
         if debug:
@@ -334,10 +353,10 @@ def generate_reports(Ldb, debug=False):
 
     return name2report
 
-def _gen_overall_report(Ldb):
-    '''
+def gen_overall_report(Ldb):
+    """
     Report on the overall runtime of the program
-    '''
+    """
     report = ''
     if 'program_end' in Ldb['log_type'].tolist():
         start = datetime.fromtimestamp(Ldb[Ldb['log_type'] == 'program_start']['time'].tolist()[0])
@@ -367,121 +386,59 @@ def _gen_overall_report(Ldb):
     OVERALL_RUNTIME = runtime
     return report, OVERALL_RUNTIME
 
-def _gen_checkpoint_report(Ldb, overall_runtime):
-    '''
-    Make a report on all of the major checkpoints
-    '''
-    report = ''
-    # Set up
-    ldb = Ldb[Ldb['log_type'] == 'checkpoint']
-    for i in ['name', 'status']:
-        ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
-    try:
-        i = 'RAM'
-        ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
-    except:
-        pass
+def load_multiprocessing_log(Ldb):
+    """
+    Generate a log table specifically for "WorkerLog" types
+    """
+    # Parse the initial datatable
+    ldb = Ldb[(Ldb['log_type'] == 'WorkerLog')]
+    table = defaultdict(list)
+    for i, row in ldb.iterrows():
+        for thing, value in parse_parsable_string(row['parsable_string']).items():
+            table[thing].append(value)
+        table['time'].append(row['time'])
+    Ldb = pd.DataFrame(table)
+    return Ldb
 
-    # actually go
-    order = list(ldb['name'].unique())
-    for name in order:
-        db = ldb[ldb['name'] == name]
-        if len(db) > 2:
-            report += '{0} has problems and cannot be reported\n'.format(name)
-        elif len(db) == 2:
-            start = datetime.fromtimestamp(db[db['status'] == 'start']['time'].tolist()[0])
-            end = datetime.fromtimestamp(db[db['status'] == 'end']['time'].tolist()[0])
-            runtime = end - start
-
-            start = start.strftime('%Y-%m-%d %H:%M:%S')
-            end = end.strftime('%Y-%m-%d %H:%M:%S')
-
-            if 'RAM' in ldb.columns:
-                startram = int(db[db['status'] == 'start']['RAM'].tolist()[0])
-                endram = int(db[db['status'] == 'end']['RAM'].tolist()[0])
-                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\tRAM use increased by {3}\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100, humanbytes(endram-startram))
-            else:
-                report += '{0:20} took {1:15} ({2:3.1f}% of overall)\n'.format(name, td_format(runtime), (runtime/overall_runtime)*100)
-        elif len(db) == 1:
-            start = datetime.fromtimestamp(db[db['status'] == 'start']['time'].tolist()[0])
-            start = start.strftime('%Y-%m-%d %H:%M:%S')
-            report += '{0:20} started at {1} and never finished\n'.format(name, start)
-
-    return report
-
-def _gen_multiprocessing_report(Ldb, commands):
+def gen_multiprocessing_report(MLdb, commands):
+    """
+    From MLdb
+    """
     # Load multiprocessing
-    ldb = _load_multiprocessing_log(Ldb, commands=commands)
+    if len(MLdb) > 0:
+        mldb = MLdb[MLdb['command'].isin(commands)]
+        if len(mldb) > 0:
+            ldb = parse_multiprocessing(mldb)
+            return gen_multiprocessing_text(ldb)
 
-    # Make report
-    if len(ldb) > 0:
-        return _gen_multiprocessing_text(ldb)
-    else:
-        return ''
+    return ''
 
-def _load_multiprocessing_log(Ldb, commands):
-    # Parse the initial datatable
-    ldb = Ldb[(Ldb['log_type'] == 'WorkerLog')]
-    table = defaultdict(list)
-    for i, row in ldb.iterrows():
-        for thing, value in parse_parsable_string(row['parsable_string']).items():
-            table[thing].append(value)
-        table['time'].append(row['time'])
-    Ldb = pd.DataFrame(table)
-    if len(Ldb) == 0:
-        return Ldb
+def parse_multiprocessing(Ldb):
+    """
+    Ldb looks like:
 
-    Ldb = Ldb[Ldb['command'].isin(commands)]
+                              unit    PID status  process_RAM  command  \
+    0    N5_271_010G1_scaffold_132  32031  end    188485632.0  Compare
+    1    N5_271_010G1_scaffold_75   32032  end    188555264.0  Compare
+    2    N5_271_010G1_scaffold_34   32033  end    188387328.0  Compare
+    3    N5_271_010G1_scaffold_152  32035  end    187920384.0  Compare
+    4    N5_271_010G1_scaffold_135  32036  end    188030976.0  Compare
+    ..                         ...    ...  ...            ...      ...
+    173  N5_271_010G1_scaffold_96   32035  end    198172672.0  Compare
+    174  N5_271_010G1_scaffold_15   32033  end    201838592.0  Compare
+    175  N5_271_010G1_scaffold_32   32034  end    199385088.0  Compare
+    176  N5_271_010G1_scaffold_10   32031  end    198950912.0  Compare
+    177  N5_271_010G1_scaffold_8    32036  end    199233536.0  Compare
 
-    table = defaultdict(list)
-    Ldb['time'] = Ldb['time'].astype(float)
-    Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
-    first_time = Ldb['time'].min()
+                 time
+    0    1.597446e+09
+    1    1.597446e+09
+    2    1.597446e+09
+    3    1.597446e+09
+    4    1.597446e+09
 
-    # Generate this on a per-unit level
-    for scaffold, ddb in Ldb.groupby('unit'):
-        for cmd, db in ddb.groupby('command'):
-            sdb = db[db['status'] == 'start']
-            edb = db[db['status'] == 'end']
 
-            table['unit'].append(scaffold)
-            table['PID'].append(db['PID'].iloc[0])
-
-            table['start_time'].append(sdb['time'].iloc[0])
-            table['adjusted_start'].append(sdb['time'].iloc[0] - first_time)
-            table['start_process_RAM'].append(sdb['process_RAM'].iloc[0])
-
-            if len(edb) > 0:
-                table['adjusted_end'].append(edb['time'].iloc[0] - first_time)
-                table['end_process_RAM'].append(edb['process_RAM'].iloc[0])
-                table['end_time'].append(edb['time'].iloc[0])
-            else:
-                for i in ['adjusted_end', 'end_process_RAM', 'end_time']:
-                    table[i].append(np.nan)
-
-            table['runs'].append(len(sdb))
-            table['command'].append(cmd)
-
-    db = pd.DataFrame(table)
-    db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
-    db['RAM_usage'] = [s-e for s,e in zip(db['end_process_RAM'], db['start_process_RAM'])]
-
-    return db
-
-def _load_profile_logtable(Ldb):
-    # Parse the initial datatable
-    ldb = Ldb[(Ldb['log_type'] == 'WorkerLog')]
-    table = defaultdict(list)
-    for i, row in ldb.iterrows():
-        for thing, value in parse_parsable_string(row['parsable_string']).items():
-            table[thing].append(value)
-        table['time'].append(row['time'])
-    Ldb = pd.DataFrame(table)
-    if len(Ldb) == 0:
-        return Ldb
-
-    Ldb = Ldb[Ldb['command'].isin(['MergeProfile', 'SplitProfile'])]
-
+    """
     table = defaultdict(list)
     Ldb['time'] = Ldb['time'].astype(float)
     Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
@@ -512,12 +469,12 @@ def _load_profile_logtable(Ldb):
             table['command'].append(cmd)
 
     db = pd.DataFrame(table)
-    db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
-    db['RAM_usage'] = [s-e for s,e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+    db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+    db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
 
     return db
 
-def _gen_multiprocessing_text(rdb, name='unit'):
+def gen_multiprocessing_text(rdb, name='unit'):
     report = ''
 
     # Overall wall time
@@ -539,7 +496,7 @@ def _gen_multiprocessing_text(rdb, name='unit'):
     report += "{0:30}\t{1}\n".format("Units profiled", len(rdb['unit'].unique()))
 
     # Report on splits
-    report += "\n"
+    #report += "\n"
     report += "{0:30}\t{1}\n".format("Average time per unit", td_format(None, seconds=rdb['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Average time per unit", td_format(None, seconds=rdb['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per unit", td_format(None, seconds=rdb['runtime'].median()))
@@ -548,7 +505,7 @@ def _gen_multiprocessing_text(rdb, name='unit'):
     report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(rdb['end_time'].max() - d['start_time'].min()))*100) for p, d in rdb.groupby('PID')]))
 
     # Report on RAM
-    report += "\n"
+    #report += "\n"
     report += "{0:35}\t{1}\n".format("{0} per-process strating RAM".format(name),
                 ["{0}".format(humanbytes(d['start_process_RAM'].iloc[0])) for p, d in rdb.groupby('PID')])
     report += "{0:35}\t{1}\n".format("{0} per-process final RAM".format(name),
@@ -560,96 +517,8 @@ def _gen_multiprocessing_text(rdb, name='unit'):
 
     return report
 
-
-def _gen_profileRAM_report(Ldb, detailed=False):
-    '''
-    Percent_RAM goes down over the run; it reports the percentage of RAM available
-    end_system_RAM describes the total about of ram _available_
-    '''
-    report = ''
-
-    # Set up checkpoint log
-    report += _gen_checkpoint_report2(Ldb, log_class='Profile')
-    report += '\n'
-
-    # Set up
-    #ldb = Ldb[Ldb['log_type'] == 'profile']
-    rdb = _load_profile_logtable(Ldb)
-
-    if len(rdb) == 0:
-        return ''
-
-    db = rdb[rdb['command'] == 'SplitProfile']
-    mdb = rdb[rdb['command'] == 'MergeProfile']
-
-    # Overall wall time
-    start = datetime.fromtimestamp(rdb['start_time'].min())
-    end = datetime.fromtimestamp(rdb['end_time'].max())
-    runtime = end - start
-
-    # User time
-    parallel_time = rdb['runtime'].sum()
-    avg_time = rdb['runtime'].mean()
-
-    # Number of processes used
-    PIDs = len(rdb['PID'].unique())
-
-    report += "{0:30}\t{1}\n".format("Wall time for Profile", td_format(runtime))
-    report += "{0:30}\t{1}\n".format("Total processes used (splits + merges)", PIDs)
-    report += "{0:30}\t{1:.1f}\n".format("Average number processes used", parallel_time/runtime.total_seconds())
-    report += "{0:30}\t{1:.1f}%\n".format("Paralellization efficiency", (parallel_time/runtime.total_seconds()/(max(PIDs/2, 1)))*100)
-    report += "{0:30}\t{1}\n".format("Scaffolds profiled", len(mdb['unit'].unique()))
-
-    # Report on splits
-    report += "\n"
-    report += "{0:30}\t{1}\n".format("User time profiling splits", td_format(None, seconds=db['runtime'].sum()))
-    report += "{0:30}\t{1:.1f}%\n".format("Profile paralell efficiency", ((db['runtime'].sum()/(db['end_time'].max() - db['start_time'].min()))/(max(PIDs/2, 1)))*100)
-    report += "{0:30}\t{1}\n".format("Average profile time per split", td_format(None, seconds=db['runtime'].mean()))
-    report += "{0:30}\t{1}\n".format("Average time per split", td_format(None, seconds=db['runtime'].mean()))
-    report += "{0:30}\t{1}\n".format("Median time per split", td_format(None, seconds=db['runtime'].median()))
-    report += "{0:30}\t{1}\n".format("Maximum split time", td_format(None, seconds=db['runtime'].max()))
-    report += "{0:30}\t{1}\n".format("Longest running split", db.sort_values('runtime', ascending=False)['unit'].iloc[0])
-    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(db['end_time'].max() - d['start_time'].min()))*100) for p, d in db.groupby('PID')]))
-
-    # Report on merges
-    report += "\n"
-    report += "{0:30}\t{1}\n".format("User time merging splits", td_format(None, seconds=mdb['runtime'].sum()))
-    report += "{0:30}\t{1:.1f}%\n".format("Merge paralell efficiency", ((mdb['runtime'].sum()/(mdb['end_time'].max() - mdb['start_time'].min()))/(PIDs/2))*100)
-    report += "{0:30}\t{1}\n".format("Average time per merge", td_format(None, seconds=mdb['runtime'].mean()))
-    report += "{0:30}\t{1}\n".format("Median time per merge", td_format(None, seconds=mdb['runtime'].median()))
-    report += "{0:30}\t{1}\n".format("Maximum merge time", td_format(None, seconds=mdb['runtime'].max()))
-    report += "{0:30}\t{1}\n".format("Longest running merge", mdb.sort_values('runtime', ascending=False)['unit'].iloc[0])
-    report += "{0:30}\t{1}\n".format("Per-process efficiency", sorted(["{0:.1f}".format((d['runtime'].sum()/(mdb['end_time'].max() - d['start_time'].min()))*100) for p, d in mdb.groupby('PID')]))
-
-    # Report on RAM
-    report += "\n"
-    for name, ndb in zip(["Split profiling", 'Split merging'], [db, mdb]):
-        report += "{0:35}\t{1}\n".format("{0} per-process strating RAM".format(name),
-                    ["{0}".format(humanbytes(d['start_process_RAM'].iloc[0])) for p, d in ndb.groupby('PID')])
-        report += "{0:35}\t{1}\n".format("{0} per-process final RAM".format(name),
-                    ["{0}".format(humanbytes(d['start_process_RAM'].iloc[-1])) for p, d in ndb.groupby('PID')])
-        report += "{0:35}\t{1}\n".format("{0} per-process minimum RAM".format(name),
-                    ["{0}".format(humanbytes(d['start_process_RAM'].min())) for p, d in ndb.groupby('PID')])
-        report += "{0:35}\t{1}\n".format("{0} per-process maximum RAM".format(name),
-                    ["{0}".format(humanbytes(d['start_process_RAM'].max())) for p, d in ndb.groupby('PID')])
-
-    # # Report on RAM
-    # report += "\n"
-    # report += "{0:30}\t{1}\n".format("System RAM available", humanbytes(sys_ram))
-    # report += "{0:30}\t{1:.1f}%\n".format("Starting RAM usage (%)", 100 - rdb['percent_RAM'].iloc[0]) # Percent ram is the amout AVAILABLE
-    # report += "{0:30}\t{1:.1f}%\n".format("Ending RAM usage (%)", 100 - rdb['percent_RAM'].iloc[-1])
-    # report += "{0:30}\t{1}\n".format("Peak RAM used", humanbytes(sys_ram - rdb['end_system_RAM'].min()))
-    # report += "{0:30}\t{1}\n".format("Mimimum RAM used", humanbytes(sys_ram - rdb['start_system_RAM'].max()))
-
-    # Report on failures
-    report += "\n"
-    report += '{0} scaffolds needed to be run a second time\n'.format(
-            len(rdb[rdb['runs'] > 1]['unit'].unique()))
-
-    return report
-
-def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
-    '''
+def gen_checkpoint_report(ldb, overall_runtime=None, log_class=None):
+    """
     The prefered way of handling checkpoints
 
     ldb should have the columns:
@@ -657,7 +526,7 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
         status = start or end
         RAM = RAM usage
         time = time in epoch time
-    '''
+    """
     # Parse the parseable strings
     ldb = ldb[ldb['log_type'] == 'checkpoint']
     if len(ldb) > 0:
@@ -717,23 +586,11 @@ def _gen_checkpoint_report2(ldb, overall_runtime=None, log_class=None):
 
     return report
 
-def _gen_filter_reads_report(Ldb, detailed=False):
-    report = ''
-
-    # Set up checkpoint log
-    report += _gen_checkpoint_report2(Ldb, log_class='FilterReads')
-
-    # Set up multiprocessing log
-    report += '\n'
-    report += _gen_multiprocessing_report(Ldb, commands=['GetPairedReads'])
-
-    return report
-
 def _gen_genes_report(Ldb, detailed=False):
     report = ''
 
     # Set up checkpoint log
-    report += _gen_checkpoint_report2(Ldb, log_class='GeneProfile')
+    report += gen_checkpoint_report(Ldb, log_class='GeneProfile')
     if report != '':
         report += '\n'
 
@@ -949,9 +806,9 @@ def parse_parsable_string(pstring):
     return object2string
 
 def filter_most_recent(Ldb):
-    '''
+    """
     Only keep the most recent run
-    '''
+    """
     ID = Ldb.sort_values('time')['run_ID'].tolist()[-1]
     return Ldb[Ldb['run_ID'] == ID]
 
@@ -969,7 +826,7 @@ def log_fmt_to_epoch(ttime):
     return datetimeobject.timestamp()
 
 def log_checkpoint(log_class, name, status, inc_children=True):
-    '''
+    """
     Log a checkpoint for the program in the debug under "log" status
 
     Arguments:
@@ -988,7 +845,7 @@ def log_checkpoint(log_class, name, status, inc_children=True):
         task = linewords[5]
         start/end = linewords[6]
         RAM = linewords[7]
-    '''
+    """
     current_process = psutil.Process(os.getpid())
     mem = current_process.memory_info().rss
     if inc_children:
@@ -999,11 +856,12 @@ def log_checkpoint(log_class, name, status, inc_children=True):
                 pass
 
     assert status in ['start', 'end'], [log_class, name, status]
+    assert len(name.split()) == 1
 
     logging.debug("Checkpoint {0} {1} {2} {3}".format(log_class, name, status, mem))
 
 def get_worker_log(worker_type, unit, status, inc_children=False):
-    '''
+    """
     Return a string with log information intended to be generated within a worker process
 
     Arguments:
@@ -1024,7 +882,7 @@ def get_worker_log(worker_type, unit, status, inc_children=False):
         time = linewords[5]
         PID = linewords[6]
 
-    '''
+    """
     pid = os.getpid()
     current_process = psutil.Process(pid)
     mem = current_process.memory_info().rss
@@ -1035,29 +893,6 @@ def get_worker_log(worker_type, unit, status, inc_children=False):
             except:
                 pass
 
-    assert status in ['start', 'end'], [log_class, name, status]
+    assert status in ['start', 'end'], status
 
     return "\nWorkerLog {0} {1} {2} {3} {4} {5}".format(worker_type, unit, status, mem, time.time(), pid)
-
-def profile_plot(Ldb, saveloc=None):
-    #ldb = Ldb[Ldb['log_type'] == 'profile']
-    rdb = _load_profile_logtable(Ldb)
-    if len(rdb) == 0:
-        return
-
-    if 'command' not in list(rdb.columns):
-        print(rdb)
-        return
-
-    db = rdb[rdb['command'] == 'profile']
-    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='red', label='split profiling')
-
-    db = rdb[rdb['command'] == 'merge']
-    plt.scatter(db['adjusted_start'], db['RAM_usage'], color='blue', label='split merging')
-
-    plt.xlabel('Runtime (seconds)')
-    plt.ylabel('RAM usage)')
-    plt.legend()
-
-    if saveloc != None:
-        plt.gcf().savefig(saveloc, bbox_inches='tight')

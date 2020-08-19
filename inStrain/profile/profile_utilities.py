@@ -24,6 +24,7 @@ import inStrain.profile.linkage
 import inStrain.SNVprofile
 import inStrain.readComparer
 import inStrain.logUtils
+import inStrain.GeneProfile
 
 from inStrain import __version__
 
@@ -139,7 +140,7 @@ def profile_split(samfile, scaffold, start, end, split_number,
                                 ignore_orphans=True, ignore_overlaps=True,
                                 min_base_quality=30, start=start, stop=end+1)
     except ValueError:
-        logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, bam))
+        logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, samfile))
         return None, log_message
 
     # Initialize
@@ -280,29 +281,45 @@ def update_covT(covT, MMcounts, position, mLen):
             covT[mm] = np.zeros(mLen, dtype=int)
         covT[mm][position] = sum(count)
 
-
 def mm_counts_to_counts(MMcounts, maxMM=100):
     '''
     Take mm counts and return just counts
     '''
-    counts = np.zeros(4, dtype=int)
+    counts = None
+    for mm, count in [(mm, count) for mm, count in MMcounts.items() if mm <= maxMM]:
+        if counts is None:
+            counts = count
+        else:
+            counts = np.add(counts, count)
 
-    mms = np.array(list(MMcounts.keys()), dtype='int32')
-    covs = np.array(list(MMcounts.values()))
+    if counts is None:
+        return np.zeros(4, dtype=int)
 
-    return _mm_counts_to_counts_fast(mms, covs, counts, maxMM)
+    else:
+        return counts
 
-@jit(nopython=True)
-def _mm_counts_to_counts_fast(mms, covs, counts, maxMM):
-    '''
-    Fast implementation
-    '''
-    i = 0
-    for mm in mms:
-        if mm <= maxMM:
-            counts = np.add(counts, covs[i])
-        i += 1
-    return counts
+# def mm_counts_to_counts(MMcounts, maxMM=100):
+#     '''
+#     Take mm counts and return just counts
+#     '''
+#     counts = np.zeros(4, dtype=int)
+#
+#     mms = np.array(list(MMcounts.keys()), dtype='int32')
+#     covs = np.array(list(MMcounts.values()))
+#
+#     return _mm_counts_to_counts_fast(mms, covs, counts, maxMM)
+#
+# @jit(nopython=True)
+# def _mm_counts_to_counts_fast(mms, covs, counts, maxMM):
+#     '''
+#     Fast implementation
+#     '''
+#     i = 0
+#     for mm in mms:
+#         if mm <= maxMM:
+#             counts = np.add(counts, covs[i])
+#         i += 1
+#     return counts
 
 def shrink_basewise(mm2array, name, start=0, len=0):
     NAME2TYPE = {'coverage':'int32', 'clonality':'float32', 'snpCounted':'bool'}
@@ -322,7 +339,7 @@ def shrink_basewise(mm2array, name, start=0, len=0):
 def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles,
                         null_model, single_thread=False):
     '''
-    Worker to merge_cplits
+    Worker to merge_splits
     '''
 
     while True:
@@ -334,18 +351,23 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles,
             except:
                 return
 
-        # scaff, splits = cmd
-        # Sprofile = ScaffoldSplitObject(splits)
-        # Sprofile.null_model = null_model
-        # Sprofile.scaffold = scaff
-
         Sprofile = cmd
         Sprofile.null_model = null_model
 
         for i in range(Sprofile.number_splits):
             Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(
                                             Sprofile.scaffold + '.' + str(i)))
+
         Sprofile = Sprofile.merge()
+
+        if Sprofile is not None:
+            if Sprofile.profile_genes:
+                try:
+                    Sprofile.run_profile_genes()
+                except:
+                    t = time.strftime('%m-%d %H:%M')
+                    Sprofile.merge_log += "\n{1} DEBUG FAILURE GeneException {0}".format(str(Sprofile.scaffold), t)
+
         Sprofiles.put(Sprofile)
 
 def merge_basewise(mm2array_list):
@@ -362,6 +384,7 @@ def merge_basewise(mm2array_list):
     return mm2bases
 
 def merge_special(vals, thing):
+    #TODO ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']
     return True
 
 def make_coverage_table(covT, clonT, clonTR, lengt, scaff, SNPTable, null_model,
@@ -576,6 +599,8 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
 
     scaffold_2_mm_2_read_2_snvs = {}
 
+    gene_level_results = defaultdict(list)
+
     for Sprof in Sprofiles:
 
         scaffold_list.append(Sprof.scaffold)
@@ -590,6 +615,10 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
 
         if hasattr(Sprof, 'mm_reads_to_snvs'):
             scaffold_2_mm_2_read_2_snvs[Sprof.scaffold] = Sprof.mm_reads_to_snvs
+
+        if hasattr(Sprof, 'gene_results'):
+            for i, name in enumerate(['coverage', 'clonality', 'SNP_density', 'SNP_mutation_types']):
+                gene_level_results[name].append(Sprof.gene_results[i])
 
     # Make some dataframes
     raw_snp_table = pd.concat(raw_snp_dbs).reset_index(drop=True)
@@ -620,6 +649,16 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
     if scaffold_2_mm_2_read_2_snvs is not {}:
         Sprofile.store('scaffold_2_mm_2_read_2_snvs', scaffold_2_mm_2_read_2_snvs,
                         'pickle', 'crazy nonsense needed for linkage')
+
+    if len(gene_level_results['coverage']) > 0:
+        Sprofile.store('genes_coverage', pd.concat(gene_level_results['coverage']).reset_index(drop=True),
+                 'pandas', 'Coverage of individual genes')
+        Sprofile.store('genes_clonality', pd.concat(gene_level_results['clonality']).reset_index(drop=True),
+                 'pandas', 'Clonality of individual genes')
+        Sprofile.store('genes_SNP_count', pd.concat(gene_level_results['SNP_density']).reset_index(drop=True),
+                 'pandas', 'SNP density and counts of individual genes')
+        Sprofile.store('SNP_mutation_types', pd.concat(gene_level_results['SNP_mutation_types']).reset_index(drop=True),
+                 'pandas', 'The mutation types of SNPs')
 
     # Store extra things
     att2descr = {'covT':'Scaffold -> mm -> position based coverage',
@@ -684,7 +723,7 @@ class ScaffoldSplitObject():
 
         try:
             if self.number_splits == 1:
-                Sprofile = self.split_dict[0].merge_single_profile(self.null_model)
+                Sprofile = self.split_dict[0].merge_single_profile(self)
                 log_message += inStrain.logUtils.get_worker_log('MergeProfile', self.scaffold, 'end')
                 Sprofile.merge_log = log_message
                 return Sprofile
@@ -692,6 +731,11 @@ class ScaffoldSplitObject():
             else:
                 Sprofile = scaffold_profile()
                 Sprofile.null_model = self.null_model
+                # Handle gene stuff
+                for att in ['profile_genes', 'gene_database', 'gene2sequence']:
+                    if hasattr(self, att):
+                        setattr(Sprofile, att, getattr(self, att))
+
                 # Handle value objects
                 for att in ['scaffold', 'bam', 'min_freq']:
                     vals = set([getattr(Split, att) for num, Split in self.split_dict.items()])
@@ -749,13 +793,13 @@ class SplitObject():
     def __init__(self):
         pass
 
-    def merge_single_profile(self, null_model):
+    def merge_single_profile(self, ScaffoldSplitObject):
         '''
         Convert self into scaffold_profile object
         '''
         Sprofile = scaffold_profile()
         Sprofile.scaffold = self.scaffold
-        Sprofile.null_model = null_model
+        Sprofile.null_model = ScaffoldSplitObject.null_model
         Sprofile.bam = self.bam
         Sprofile.length = self.length
         Sprofile.raw_snp_table = self.raw_snp_table
@@ -765,9 +809,13 @@ class SplitObject():
         Sprofile.clonTR = self.clonTR
         Sprofile.min_freq = self.min_freq
 
-        for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts']:
+        for att in ['read_to_snvs', 'mm_to_position_graph', 'pileup_counts'] + ['profile_genes', 'gene_database', 'gene2sequence']:
             if hasattr(self, att):
                 setattr(Sprofile, att, getattr(self, att))
+
+        for att in ['profile_genes', 'gene_database', 'gene2sequence']:
+            if hasattr(ScaffoldSplitObject, att):
+                setattr(Sprofile, att, getattr(ScaffoldSplitObject, att))
 
         # Make cummulative tables
         Sprofile.make_cumulative_tables()
@@ -797,6 +845,21 @@ class scaffold_profile():
         self.cumulative_scaffold_table = make_coverage_table(self.covT, self.clonT,
                             self.clonTR, self.length, self.scaffold, self.raw_snp_table,
                             self.null_model, min_freq=self.min_freq)
+
+    def run_profile_genes(self):
+        """
+        Run gene-level profile
+        """
+        if hasattr(self, 'gene_database'):
+
+            scaffold = self.scaffold
+            Gdb = self.gene_database
+            covT = self.covT
+            clonT = self.clonT
+            gene2sequence = self.gene2sequence
+            cumulative_snv_table = self.cumulative_snv_table
+
+            self.gene_results = inStrain.GeneProfile.profile_genes_from_profile(scaffold, Gdb, covT, clonT, cumulative_snv_table, gene2sequence)
 
 def _dlist():
     return defaultdict(list)

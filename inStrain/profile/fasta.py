@@ -51,7 +51,7 @@ def load_fasta(**kwargs):
         logging.error("Example scaffolds in list: {0}".format("\n".join(scaffolds_to_profile)))
         sys.exit()
 
-    return Fdb, scaff2sequence # also return s2l - alexcc 5/9/2019: Nah, make it scaff2sequence (s2s) (M.O. 6/10/19)
+    return Fdb, scaff2sequence, s2l # also return s2l - alexcc 5/9/2019: Nah, make it scaff2sequence (s2s) (M.O. 6/10/19)
 
 def iterate_splits(sLen, WINDOW_LEN):
     '''

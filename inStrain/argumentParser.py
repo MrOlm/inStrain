@@ -44,7 +44,7 @@ def printHelp():
     compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
 
   Single operations:
-    profile_genes   -> Calculate gene-level metrics on an inStrain profile
+    profile_genes   -> Calculate gene-level metrics on an inStrain profile [DEPRECATED; USE profile INSTEAD]
     genome_wide     -> Calculate genome-level metrics on an inStrain profile
     quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
     filter_reads    -> Commands related to filtering reads from .bam files
@@ -64,6 +64,10 @@ def parse_args(args):
     Bflags.add_argument('-d','--debug',help='Make extra debugging output',default=False,
                         action= "store_true")
     Bflags.add_argument("-h", "--help", action="help", help="show this help message and exit")
+    Bflags.add_argument(
+        "--version",
+        action="version",
+        version="inStrain version {version}".format(version=__version__))
 
 
     # Make a parent parser for read filtering

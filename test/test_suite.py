@@ -34,7 +34,7 @@ if __name__ == '__main__':
     tests.test_quick_profile.test_quickProfile().run()
     tests.test_genome_level.test_genome_wide().run()
     tests.test_plotting.test_plot().run()
-    tests.tests_special.test_special().run()
     tests.test_compare.test_readcomparer().run()
+    tests.tests_special.test_special().run()
 
     print('everything is working swimmingly!')

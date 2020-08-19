@@ -52,34 +52,15 @@ class test_genome_wide:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+    def run(self, min=0, max=6, tests='all'):
+        if tests == 'all':
+            tests = np.arange(min, max + 1)
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
-
-        self.setUp()
-        self.test4()
-        self.tearDown()
-
-        self.setUp()
-        self.test5()
-        self.tearDown()
-
-        self.setUp()
-        self.test6()
-        self.tearDown()
+        for test_num in tests:
+            self.setUp()
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
+            eval('self.test{0}()'.format(test_num))
+            self.tearDown()
 
     def test0(self):
         """

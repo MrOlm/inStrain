@@ -96,11 +96,11 @@ class test_profile:
         # self.tearDown()
 
         if tests == 'all':
-            tests = np.arange(min, max)
+            tests = np.arange(min, max+1)
 
         for test_num in tests:
             self.setUp()
-            print("\n*** Running test {0} ***\n".format(test_num))
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
             eval('self.test{0}()'.format(test_num))
             self.tearDown()
 
@@ -823,7 +823,7 @@ class test_profile:
                                                                                              self.fasta, base,
                                                                                              self.genes)
         print(cmd)
-        call(cmd, shell=True)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
         exp_IS = inStrain.SNVprofile.SNVprofile(base)
         sol_IS = inStrain.SNVprofile.SNVprofile(self.v12_solution)
@@ -847,7 +847,7 @@ class test_profile:
         # MAKE SURE LOG IS WORKING
         assert len(glob.glob(base + '/log/*')) == 3, base
         Ldb = exp_IS.get_parsed_log()
-        rdb = inStrain.logUtils._load_profile_logtable(Ldb)
+        rdb = inStrain.logUtils.load_multiprocessing_log(Ldb)
 
         LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'MergeProfile']['unit'].tolist())
         TRUE_SCAFFOLDS = \

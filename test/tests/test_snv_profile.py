@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 from subprocess import call
+import numpy as np
 
 import inStrain
 import inStrain.SNVprofile
@@ -20,7 +21,7 @@ class test_SNVprofile:
                   'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.v3.IS.pickle'
         self.script = test_utils.get_script_loc('SNVprofile')
 
-    def setUp(self):
+    def set_up(self):
 
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -28,18 +29,19 @@ class test_SNVprofile:
 
         importlib.reload(logging)
 
-    def tearDown(self):
+    def tear_down(self):
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
+    def run(self, min=0, max=1, tests='all'):
+        if tests == 'all':
+            tests = np.arange(min, max + 1)
 
-        self.setUp()
-        self.test1()
-        self.tearDown()
+        for test_num in tests:
+            self.set_up()
+            print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
+            eval('self.test{0}()'.format(test_num))
+            self.tear_down()
 
     def test0(self):
         """

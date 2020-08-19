@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1] - 2020-08-19
+- Undid some numba that actually slowed things down
+- Change the way iterate_commands works
+- Make compare log it's multiprocessing efficiency
+- Save all counts into counts_table.npz (thanks https://github.com/apcamargo)
+- Avoid sorting pre-sorted BAMs and use multiple threads to index and sort BAMs (thanks https://github.com/apcamargo)
+- Handle "--version" in argparse correctly
+- Make profile properly handle profile_genes
+- Add a "DEPRECATED" flag to standalone profile_genes module
+
 ## [1.3.0w] - 2020-08-13
 - Significant refactoring of controller.py and profile
 - Re-writting the test suite to be in multiple modules

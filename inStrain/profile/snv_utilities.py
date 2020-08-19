@@ -83,9 +83,10 @@ def update_snp_table(Stable, clonT, clonTR, MMcounts, p2c,\
     '''
     anySNP = False
     bases = set()
-    ret_counts = np.zeros(4, dtype=int)
+    ret_counts = None
     for mm in sorted(list(MMcounts.keys())):
         counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts, mm)
+        ret_counts = counts
         snp, morphia = call_snv_site(counts, ref_base, null_model, min_cov=min_cov, min_freq=min_freq) # Call SNP
 
         # Update clonality
@@ -137,6 +138,9 @@ def update_snp_table(Stable, clonT, clonTR, MMcounts, p2c,\
         # if it's now not a SNP, but it was in the past, mark it cryptic
         elif (snp == -1) & (anySNP == True):
             p2c[pos] = True
+
+    if ret_counts is None:
+        ret_counts = np.zeros(4, dtype=int)
 
     return anySNP, bases, ret_counts
 

@@ -277,7 +277,7 @@ def profile_genes(scaffold, **kwargs):
     if len(Ldb) == 0:
         sdb = pd.DataFrame()
     else:
-        sdb = Characterize_SNPs_wrapper(Ldb, gdb)
+        sdb = Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence)
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character end {2}".format(scaffold, pid, time.time())
 
     # Calculate gene-level SNP counts
@@ -287,13 +287,61 @@ def profile_genes(scaffold, **kwargs):
         sublog = ''
     else:
         #ldb = calc_gene_snp_density(gdb, Ldb)
-        ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, scaffold=scaffold)
+        ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, gene2sequence, scaffold=scaffold)
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts end {2}".format(scaffold, pid, time.time())
     log_message += sublog
 
     log_message += "\nSpecialPoint_genes {0} PID {1} whole end {2}".format(scaffold, pid, time.time())
 
     results = (cdb, cldb, ldb, sdb, log_message)
+
+    return results
+
+def profile_genes_from_profile(scaffold, gdb, covT, clonT, Ldb, gene2sequence):
+    '''
+    Call profile genes from elsewhere
+
+    Arguments:
+        scaffold = name of scaffold
+        gdb = gene_datatable
+        covT = covT for this scaffold
+        clonT = clonT for this scaffold
+        Ldb = cumulative SNP table for this scaffold
+
+    * Calculate the clonality, coverage, linkage, and SNV_density for each gene
+    * Determine whether each SNP is synynomous or nonsynonymous
+    '''
+    # Log
+    log = inStrain.logUtils.get_worker_log('ProfileGenes', scaffold, 'start')
+
+    # For testing purposes
+    if ((scaffold == 'FailureScaffoldHeaderTesting')):
+        assert False
+
+    # Calculate gene-level coverage
+    #log_message += "\nSpecialPoint_genes {0} PID {1} coverage start {2}".format(scaffold, pid, time.time())
+    cdb = calc_gene_coverage(gdb, covT)
+    #log_message += "\nSpecialPoint_genes {0} PID {1} coverage end {2}".format(scaffold, pid, time.time())
+
+    # Calculate gene-level clonality
+    # log_message += "\nSpecialPoint_genes {0} PID {1} clonality start {2}".format(scaffold, pid, time.time())
+    cldb = calc_gene_clonality(gdb, clonT)
+    # log_message += "\nSpecialPoint_genes {0} PID {1} clonality end {2}".format(scaffold, pid, time.time())
+
+    # Determine whether SNPs are synonmous or non-synonmous
+    #log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character start {2}".format(scaffold, pid, time.time())
+    sdb = Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence)
+    #log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character end {2}".format(scaffold, pid, time.time())
+
+    # Calculate gene-level SNP counts
+    #log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts start {2}".format(scaffold, pid, time.time())
+    ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, gene2sequence, scaffold=scaffold)
+    #log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts end {2}".format(scaffold, pid, time.time())
+    #log_message += sublog
+
+    log += inStrain.logUtils.get_worker_log('ProfileGenes', scaffold, 'end')
+
+    results = (cdb, cldb, ldb, sdb, log)
 
     return results
 
@@ -467,7 +515,7 @@ def convert_to_codons(seq):
         codons.append(co)
     return codons
 
-def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
+def calc_gene_snp_counts(gdb, ldb, sdb, gene2sequence, scaffold=None):
     '''
     Count the number of SNPs in each gene, as well as N and S sites
 
@@ -478,6 +526,9 @@ def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
         ldb = Raw cumulative snp table for a single scaffold (mm-level)
         sdb = SNP table with N and S and I annotated
     '''
+    if len(ldb) == 0:
+        return pd.DataFrame(), ''
+
     pid = os.getpid()
 
     # Merge ldb and sdb
@@ -542,7 +593,7 @@ def calc_gene_snp_counts(gdb, ldb, sdb, scaffold=None):
 
     return GGdb, log_message
 
-def Characterize_SNPs_wrapper(Ldb, gdb):
+def Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence):
     '''
     A wrapper for characterizing SNPs
 
@@ -555,6 +606,9 @@ def Characterize_SNPs_wrapper(Ldb, gdb):
     Returns:
         Sdb = The Cumulative SNV table with extra information added
     '''
+    if len(Ldb) == 0:
+        return pd.DataFrame()
+
     # Get a non-nonredundant list of SNPs
     Sdb = Ldb.drop_duplicates(subset=['scaffold', 'position'], keep='last')\
                 .sort_index().drop(columns=['mm'])
@@ -576,14 +630,14 @@ def Characterize_SNPs_wrapper(Ldb, gdb):
         return pd.DataFrame()
 
     # Characterize
-    sdb = characterize_SNPs(gdb, Sdb)
+    sdb = characterize_SNPs(gdb, Sdb, gene2sequence)
     assert len(Sdb) == len(sdb)
     sdb = pd.merge(Sdb, sdb, on=['position'], how='left').reset_index(drop=True)
 
     # Return
     return sdb
 
-def characterize_SNPs(gdb, Sdb):
+def characterize_SNPs(gdb, Sdb, gene2sequence):
     '''
     Determine the type of SNP (synonymous, non-synynomous, or intergenic)
 
@@ -604,7 +658,7 @@ def characterize_SNPs(gdb, Sdb):
             table['gene'].append(','.join(db['gene'].tolist()))
         else:
             # Get the original sequence
-            original_sequence = gene2sequence[db['gene'].tolist()[0]]
+            original_sequence = gene2sequence[db ['gene'].tolist()[0]]
             if db['direction'].tolist()[0] == '-1':
                 original_sequence = original_sequence.reverse_complement()
 
@@ -685,7 +739,7 @@ class Command():
     def __init__(self):
         pass
 
-def parse_genes(gene_file, **kwargs):
+def parse_genes(gene_file_loc, **kwargs):
     '''
     Parse a file of genes based on the file extention.
 
@@ -695,14 +749,14 @@ def parse_genes(gene_file, **kwargs):
 
     Methods return a table of genes (Gdb) and a dictionary of gene -> sequence
     '''
-    if ((gene_file[-4:] == '.fna') | (gene_file[-3:] == '.fa')):
-        return parse_prodigal_genes(gene_file)
+    if ((gene_file_loc[-4:] == '.fna') | (gene_file_loc[-3:] == '.fa')):
+        return parse_prodigal_genes(gene_file_loc)
 
-    elif ((gene_file[-3:] == '.gb') | (gene_file[-4:] == '.gbk')):
-        return parse_genbank_genes(gene_file)
+    elif ((gene_file_loc[-3:] == '.gb') | (gene_file_loc[-4:] == '.gbk')):
+        return parse_genbank_genes(gene_file_loc)
 
     else:
-        print("I dont know how to process {0}".format(gene_file))
+        print("I dont know how to process {0}".format(gene_file_loc))
         raise Exception
 
 def parse_prodigal_genes(gene_fasta):

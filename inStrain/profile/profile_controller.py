@@ -1,6 +1,6 @@
-'''
+"""
 This handles the argument parsing and logic for profiling bam files
-'''
+"""
 
 # Import packages
 import os
@@ -11,17 +11,20 @@ import multiprocessing
 
 import inStrain.logUtils
 import inStrain.SNVprofile
+import inStrain.GeneProfile
 
 import inStrain.profile.linkage
 import inStrain.profile.profile_utilities
 import inStrain.profile.snv_utilities
 
+
 class BamProfileController(object):
-    '''
+    """
     Handle the logic of profiling
-    '''
+    """
+
     def __init__(self, bam, Fdb, sR2M, ISP_loc, **kwargs):
-        '''
+        """
         The requirements are bam, Fdb, and sR2M
 
         Arguments:
@@ -29,7 +32,7 @@ class BamProfileController(object):
             Fdb = dictionary listing fasta locations to profile
             sR2M = dictionary of scaffold -> read pair -> number of mm
             ISP_loc = location of ISP profile to store results
-        '''
+        """
         self.bam_loc = bam
         self.sR2M = sR2M
         self.Fdb = Fdb
@@ -37,9 +40,9 @@ class BamProfileController(object):
         self.kwargs = kwargs
 
     def main(self):
-        '''
+        """
         Profile the bam with inStrain using the options in kwargs
-        '''
+        """
         # Get arguments
         self.gen_prof_args()
 
@@ -53,9 +56,9 @@ class BamProfileController(object):
         return self.ISP
 
     def gen_prof_args(self):
-        '''
+        """
         Generate a set of arguments to be passed to prepare_comands
-        '''
+        """
         # Make a special copy of the arguments
         profArgs = copy.deepcopy(self.kwargs)
         scaff2sequence = profArgs.pop('s2s')
@@ -69,14 +72,33 @@ class BamProfileController(object):
         null_model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
         self.null_model = null_model
 
+        # Parse for ProfileGenes as needed
+        if self.kwargs.get('gene_file') is not None:
+            self.gen_genes_args()
+        else:
+            self.profile_genes = False
+
+    def gen_genes_args(self):
+        """
+        Parse arguments as needed to profile genes during the "merge" step
+        """
+        gene_file = self.kwargs.get('gene_file')
+
+        inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'start')
+        gene_database, gene2sequence = inStrain.GeneProfile.parse_genes(gene_file, **self.kwargs)
+        self.profile_genes = True
+        self.gene_database = gene_database
+        self.gene2sequence = gene2sequence
+        inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'end')
+
     def make_profile_commands(self):
-        '''
+        """
         Make a set of commands to run with profile
-        '''
+        """
         logging.debug('Creating commands')
 
         cmd_groups, Sprofile_dict, s2splits = prepare_commands(self.Fdb, self.bam_loc,
-                    self.scaff2sequence, self.profArgs, self.sR2M)
+                                                               self.scaff2sequence, self.profArgs, self.sR2M)
         self.cmd_groups = cmd_groups
         self.Sprofile_dict = Sprofile_dict
         self.s2splits = s2splits
@@ -84,9 +106,9 @@ class BamProfileController(object):
         logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     def run_profile_processing(self):
-        '''
+        """
         Do the actual multiprocessing involved
-        '''
+        """
         # Establish command and result queues
         self.make_profile_queues()
 
@@ -104,16 +126,26 @@ class BamProfileController(object):
 
         # Collate and return results
         ISP = inStrain.profile.profile_utilities.gen_snv_profile(
-                        [s for s in self.Sprofiles if s is not None],
-                        ISP_loc = self.ISP_loc,
-                        **self.kwargs)
+            [s for s in self.Sprofiles if s is not None],
+            ISP_loc=self.ISP_loc,
+            **self.kwargs)
+
+        # Store gene stuff if you have it
+        if self.profile_genes:
+            ISP.store('genes_fileloc', self.kwargs.get('gene_file'), 'value',
+                      'Location of genes file that was used to call genes')
+            ISP.store('genes_table', self.gene_database, 'pandas',
+                      'Location of genes in the associated genes_file')
+            if self.kwargs.get('store_everything', False):
+                ISP.store('gene2sequence', self.gene2sequence, 'pickle',
+                          'Dicitonary of gene -> nucleotide sequence')
 
         self.ISP = ISP
 
     def make_profile_queues(self):
-        '''
+        """
         Make the queues that will be used for profile multiprocessing
-        '''
+        """
         inStrain.logUtils.log_checkpoint("Profile", "initialize_multiprocessing", "start")
 
         # Get the arguments
@@ -126,7 +158,7 @@ class BamProfileController(object):
         self.ctx = ctx
 
         manager = self.ctx.Manager()
-        self.Sprofile_dict = manager.dict(Sprofile_dict) # Holds a synced directory of splits
+        self.Sprofile_dict = manager.dict(Sprofile_dict)  # Holds a synced directory of splits
 
         self.log_list = ctx.Queue()
         self.split_cmd_queue = ctx.Queue()
@@ -143,14 +175,29 @@ class BamProfileController(object):
         for scaff, splits in s2splits.items():
             Sprofile = inStrain.profile.profile_utilities.ScaffoldSplitObject(splits)
             Sprofile.scaffold = scaff
+            Sprofile.profile_genes = self.profile_genes
+
+            if self.profile_genes:
+                self.add_gene_info(Sprofile)
+
             self.sprofile_cmd_queue.put(Sprofile)
 
         inStrain.logUtils.log_checkpoint("Profile", "initialize_multiprocessing", "end")
 
+    def add_gene_info(self, Sprofile):
+        gdb = self.gene_database[self.gene_database['scaffold'] == Sprofile.scaffold]
+        genes = set(gdb['gene'].tolist())
+        if len(gdb) == 0:
+            return
+        else:
+            Sprofile.gene_database = gdb
+            Sprofile.gene2sequence = {g:s for g, s in self.gene2sequence.items() if g in genes}
+
+
     def spawn_profile_workers(self):
-        '''
+        """
         Spawn worker threads for profiling splits; or just run them all if a single core
-        '''
+        """
         p = int(self.kwargs.get('processes', 6))
 
         if p > 1:
@@ -158,29 +205,29 @@ class BamProfileController(object):
             self.processes = []
             for i in range(0, p):
                 self.processes.append(self.ctx.Process(
-                                target=inStrain.profile.profile_utilities.split_profile_worker,
-                                args=(self.split_cmd_queue,
-                                      self.Sprofile_dict,
-                                      self.log_list,
-                                      self.null_model,
-                                      self.bam_loc)))
+                    target=inStrain.profile.profile_utilities.split_profile_worker,
+                    args=(self.split_cmd_queue,
+                          self.Sprofile_dict,
+                          self.log_list,
+                          self.null_model,
+                          self.bam_loc)))
             for proc in self.processes:
                 proc.start()
             inStrain.logUtils.log_checkpoint("Profile", "SpawningSplitWorkers", "end")
 
         else:
             inStrain.profile.profile_utilities.split_profile_worker(self.split_cmd_queue,
-                                 self.Sprofile_dict,
-                                 self.log_list,
-                                 self.null_model,
-                                 self.bam_loc,
-                                single_thread=True)
+                                                                    self.Sprofile_dict,
+                                                                    self.log_list,
+                                                                    self.null_model,
+                                                                    self.bam_loc,
+                                                                    single_thread=True)
             logging.info("Done profiling splits")
 
     def recieve_profile_results(self):
-        '''
+        """
         Get the results from the queues for profiling splits
-        '''
+        """
         p = int(self.kwargs.get('processes', 6))
         total_cmd_count = len(self.cmd_groups)
 
@@ -221,9 +268,9 @@ class BamProfileController(object):
                     assert False
 
     def spawn_profile_merge_workers(self):
-        '''
+        """
         Spawn worker threads for merging splits; or just run them all if a single core
-        '''
+        """
         p = int(self.kwargs.get('processes', 6))
 
         logging.debug('Establishing processes for merging')
@@ -231,32 +278,32 @@ class BamProfileController(object):
             self.processes = []
             for i in range(0, p):
                 self.processes.append(self.ctx.Process(
-                                    target=inStrain.profile.profile_utilities.merge_profile_worker,
-                                    args=(self.sprofile_cmd_queue,
-                                         self.Sprofile_dict,
-                                         self.sprofile_result_queue,
-                                         self.null_model)))
+                    target=inStrain.profile.profile_utilities.merge_profile_worker,
+                    args=(self.sprofile_cmd_queue,
+                          self.Sprofile_dict,
+                          self.sprofile_result_queue,
+                          self.null_model)))
             for proc in self.processes:
                 proc.start()
 
         else:
             inStrain.profile.profile_utilities.merge_profile_worker(
-                                 self.sprofile_cmd_queue,
-                                 self.Sprofile_dict,
-                                 self.sprofile_result_queue,
-                                 self.null_model,
-                                 single_thread=True)
+                self.sprofile_cmd_queue,
+                self.Sprofile_dict,
+                self.sprofile_result_queue,
+                self.null_model,
+                single_thread=True)
 
     def recieve_merge_results(self):
-        '''
+        """
         Get the results from queues after doing merges
-        '''
+        """
         p = int(self.kwargs.get('processes', 6))
 
         Sprofiles = []
         if p > 1:
             # Set up progress bar
-            pbar = tqdm(desc='Merging splits: ', total=self.scaffold_num)
+            pbar = tqdm(desc='Merging splits and profiling genes: ', total=self.scaffold_num)
 
             # Get results
             received_profiles = 0
@@ -289,23 +336,27 @@ class BamProfileController(object):
 
         self.Sprofiles = Sprofiles
 
+
 class profile_command():
-    '''
+    """
     This is a stupid object that just holds the arguments to profile a split
-    '''
+    """
+
     def __init__(self):
         pass
 
+
 def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
-    '''
+    """
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
-    '''
+    """
 
     processes = args.get('processes', 6)
     s2p = args.get('s2p', None)
     if s2p is not None:
-        SECONDS = min(60, sum(calc_estimated_runtime(s2p[scaff]) for scaff in Fdb['scaffold'].unique())/(processes+1))
+        SECONDS = min(60,
+                      sum(calc_estimated_runtime(s2p[scaff]) for scaff in Fdb['scaffold'].unique()) / (processes + 1))
     else:
         SECONDS = 60
 
@@ -332,7 +383,7 @@ def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
             cmd.start = start
             cmd.end = end
             cmd.split_number = int(row['split_number'])
-            cmd.sequence = scaff2sequence[scaff][start:end+1]
+            cmd.sequence = scaff2sequence[scaff][start:end + 1]
 
             # Add to the Sdict
             Sdict[scaff + '.' + str(row['split_number'])] = None
@@ -352,9 +403,10 @@ def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
 
     return cmd_groups, Sdict, s2splits
 
+
 def calc_estimated_runtime(pairs):
-    '''
+    """
     Based on the number of mapped pairs, guess how long the split will take
-    '''
+    """
     SLOPE_CONSTANT = 0.0061401594694834305
     return (pairs * SLOPE_CONSTANT) + 0.2
