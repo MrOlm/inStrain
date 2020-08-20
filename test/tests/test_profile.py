@@ -86,6 +86,7 @@ class test_profile:
         importlib.reload(logging)
 
     def tearDown(self):
+        logging.shutdown()
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
