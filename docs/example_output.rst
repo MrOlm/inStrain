@@ -1,10 +1,10 @@
-Example output and explanations
+Example output
 ===================
 
 InStrain produces a variety of output in the IS folder depending on which operations are run. Generally, output that is meant for human eyes to be easily interpretable is located in the ``output`` folder.
 
 inStrain profile
--------
+---------------------
 
 A typical run of inStrain will yield the following files in the output folder:
 
@@ -15,139 +15,143 @@ This gives basic information about the scaffolds in your sample at the highest a
 
 .. csv-table:: scaffold_info.tsv
 
-  scaffold,length,breadth,coverage,coverage_median,coverage_std,bases_w_0_coverage,mean_clonality,median_clonality,mean_microdiversity,median_microdiversity,unmaskedBreadth,breadth_expected,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,conANI,popANI
-  S3_003_000X1_scaffold_21039,1049,0.9609151572926596,7.778836987607247,9,3.6242339424115295,41,0.9984115827692688,1.0,0.0015884172307313313,0.0,0.7836034318398475,0.9989601856174312,1,0,1,0,0,0,1.0,1.0
-  S3_003_000X1_scaffold_21063,1048,0.3721374045801527,0.6698473282442748,0,0.978669048484894,658,,,,,0.0,0.4464898509344126,0,0,0,0,0,0,0.0,0.0
-  S3_003_000X1_scaffold_21081,1047,0.2082139446036294,0.2082139446036294,0,0.4060306612513717,829,,,,,0.0,0.1679418203027453,0,0,0,0,0,0,0.0,0.0
-  S3_003_000X1_scaffold_21188,1043,0.3547459252157239,0.4688398849472674,0,0.6908089219842111,673,,,,,0.0,0.338989542420026,0,0,0,0,0,0,0.0,0.0
-  S3_003_000X1_scaffold_21225,1042,0.7821497120921305,4.341650671785029,5,3.4491608427332947,227,1.0,1.0,0.0,0.0,0.5374280230326296,0.9783700757950428,0,0,0,0,0,0,1.0,1.0
+    scaffold,length,coverage,breadth,nucl_diversity,coverage_median,coverage_std,coverage_SEM,breadth_minCov,breadth_expected,nucl_diversity_median,nucl_diversity_rarefied,nucl_diversity_rarefied_median,breadth_rarefied,conANI_reference,popANI_reference,SNS_count,SNV_count,divergent_site_count,consensus_divergent_sites,population_divergent_sites
+    N5_271_010G1_scaffold_100,1148,1.89808362369338,0.9764808362369338,0.0,2,1.0372318863390368,0.030626273060932862,0.018292682926829267,0.8128805020451009,0.0,,,0.0,1.0,1.0,0,0,0,0,0
+    N5_271_010G1_scaffold_102,1144,2.388986013986014,0.9956293706293706,0.003678160837326971,2,1.3042095721915248,0.038576628450898466,0.07604895104895107,0.8786983245100435,0.0,,,0.0,1.0,1.0,0,0,0,0,0
+    N5_271_010G1_scaffold_101,1148,1.7439024390243902,0.9599303135888502,,2,0.8728918441975071,0.025773816178570358,0.0,0.7855901382035807,,,,0.0,0.0,0.0,0,00,0,0
+    N5_271_010G1_scaffold_103,1142,2.039404553415061,0.9938704028021016,0.0,2,1.1288397384374758,0.03341869350286944,0.04028021015
 
 scaffold
-  The name of the scaffold in the input .fasta file
+  The name of the :term:`scaffold` in the input .fasta file
 
 length
-  Full length of the scaffold in the input .fasta file
-
-breadth
-  The percentage of bases in the scaffold that are covered by at least a single read. A breadth of 1 means that all bases in the scaffold have at least one read covering them
+  Full length of the :term:`scaffold` in the input .fasta file
 
 coverage
   The average depth of coverage on the scaffold. If half the bases in a scaffold have 5 reads on them, and the other half have 10 reads, the coverage of the scaffold will be 7.5
 
+breadth
+  The percentage of bases in the scaffold that are covered by at least a single read. A breadth of 1 means that all bases in the scaffold have at least one read covering them
+
+nucl_diversity
+  The mean :term:`nucleotide diversity` of all bases in the scaffold that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meats the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
+
 coverage_median
-  The median coverage value of all bases in the scaffold, included bases with 0 coverage
+  The median depth of coverage value of all bases in the scaffold, included bases with 0 coverage
 
 coverage_std
   The standard deviation of all coverage values
 
-bases_w_0_coverage
-  The number of bases with 0 coverage
+coverage_SEM
+  The standard error of the mean of all coverage values (calculated using `scipy.stats.sem <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.sem.html>`_)
 
-mean_clonality
-  The mean clonality value of all bases in the scaffold that have a clonality value calculated. So if only 1 base on the scaffold meats the minimum coverage to calculate clonality, the mean_clonality of the scaffold will be the clonality of that base
-
-median_clonality
-  The median clonality value of all bases in the scaffold that have a clonality value calculated
-
-mean_microdiversity
-  The mean mean_microdiversity value of all bases in the scaffold that have a mean_microdiversity value calculated (microdiveristy = 1 - clonality)
-
-median_microdiversity
-  The median microdiversity value of all bases in the scaffold that have a microdiversity value calculated
-
-unmaskedBreadth
-  The percentage of bases in the scaffold that have at least the min_cov number of bases. This value multiplied by the length of the scaffold gives the percentage of bases for which clonality is calculated and on which SNPs can be called
-
-SNPs
-  The total number of SNPs called on this scaffold
+breadth_minCov
+  The percentage of bases in the scaffold that have at least min_cov coverage (e.g. the percentage of bases that have a nucl_diversity value and meet the minimum sequencing depth to call SNVs)
 
 breadth_expected
-  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, etc.)
+  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, prophage, etc.)
 
-SNPs
-  The total number of SNPs called on this scaffold
+nucl_diversity_median
+  The median :term:`nucleotide diversity` value of all bases in the scaffold that have a :term:`nucleotide diversity` value calculated
 
-Referece_SNPs
-  The number of SNPs called on this scaffold with allele_count = 1. This means that the only allele detected in the reads is different from the reference base
+nucl_diversity_rarefied
+  The average :term:`nucleotide diversity` among positions that have at least ``--rarefied_coverage`` (50x by default). These values are also calculated by randomly subsetting the reads at that position to ``--rarefied_coverage`` reads
 
-BiAllelic_SNPs
-  The number of SNPs called on this scaffold with allele_count = 2. This means that there are two possible alleles at this position
+nucl_diversity_rarefied_median
+  The median rarefied :term:`nucleotide diversity` (similar to that described above)
 
-MultiAllelic_SNPs
-  The number of SNPs called on this scaffold with allele_count > 2. This means that there are more than two possible alleles at this position
+breadth_rarefied
+  The percentage of bases in a scaffold that have at least ``--rarefied_coverage``
 
-consensus_SNPs
-  The number of SNPs called on this scaffold with allele_count > 0 **and** where consensus base is not the reference base. This should be the same as Reference_SNPs under almost all circumstances
+conANI_reference
+  The :term:`conANI` between the reads and the reference genome
 
-population_SNPs
-  These are SNPs where the reference base isn't detected at all, regardless of the allele count.
+popANI_reference
+    The :term:`popANI` between the reads and the reference genome
 
-conANI
-  The average nucleotide identity between the reads in the sample and the .fasta file based on consensus SNPs. Calculated using the formula ANI = (unmaskedBreadth * length) - consensus_SNPs)/ (unmaskedBreadth * length))
+SNS_count
+  The total number of :term:`SNSs<SNS>` called on this scaffold
 
-popANI
-  The average nucleotide identity between the reads in the sample and the .fasta file based on consensus SNPs. Calculated using the formula ANI = (unmaskedBreadth * length) - population_SNPs)/ (unmaskedBreadth * length))
+SNV_count
+  The total number of :term:`SNVs<SNV>` called on this scaffold
+
+divergent_site_count
+  The total number of :term:`divergent sites<divergent site>` called on this scaffold
+
+consensus_divergent_sites
+  The total number of :term:`divergent sites<divergent site>` in which the reads have a different consensus allele than the reference genome. These count as "differences" in the conANI_reference calculation, and ``breadth_minCov`` * ``length`` counts as the denominator.
+
+population_divergent_sites
+  The total number of :term:`divergent sites<divergent site>` in which the reads do not have the reference genome base as any allele at all (major or minor). These count as "differences" in the popANI_reference calculation, and ``breadth_minCov`` * ``length`` counts as the denominator.
 
 mapping_info.tsv
 +++++++++++++++++
 
-This provides an overview of the number of reads that map to each scaffold, and some basic metrics about their quality.
+This provides an overview of the number of reads that map to each scaffold, and some basic metrics about their quality. The header line (starting with #; not shown in the table below) describes the parameters that were used to filter the reads
 
 .. csv-table:: mapping_info.tsv
 
-  scaffold,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
-  all_scaffolds,3802370,1790817,1674511,1784011,1790699,1790817,1668496,2.7480758782164787,293.0713925543481,23.46918082640493,298.38404705785126,246.0,0.9906729188638016
-  S3_002_000X1_scaffold_1162,12,6,6,6,6,6,6,1.0,281.1666666666667,25.16666666666667,300.0,287.0,0.9966666666666668
-  S3_002_000X1_scaffold_1005,10,5,5,5,5,5,5,0.2,318.0,33.2,299.8,208.0,0.9993333333333332
-  S3_002_000X1_scaffold_1151,6,3,3,3,3,3,3,5.666666666666668,280.3333333333333,19.666666666666668,300.0,293.0,0.9811111111111112
-  S3_002_000X1_scaffold_1004,14,6,6,6,6,6,6,0.5,295.5,16.666666666666668,300.0,248.0,0.9983333333333334
-
-The following metrics are provided for all individual scaffolds, and for all scaffolds together (scaffold "all_scaffolds"). For the max insert cutoff, the median_insert for all_scaffolds is used
-
-header line
-  The header line (starting with #; not shown in the above table) describes the parameters that were used to filter the reads
+    scaffold,pass_pairing_filter,filtered_pairs,unfiltered_priority_reads,filtered_priority_reads,pass_min_mapq,mean_insert_distance,median_insert,unfiltered_pairs,pass_min_read_ani,unfiltered_reads,mean_pair_length,mean_mapq_score,pass_max_insert,unfiltered_singletons,pass_min_insert,mean_PID,mean_mistmaches,filtered_singletons
+    all_scaffolds,19293,7179,0,0,19293.0,307.724044990411,303.28290053387235,19293,7257.060551,253.4114963976572,15.254807443114085,19230.0,21965,19201.0,0.9388488368388499,15.244959311667445,0
+    N5_271_010G1_scaffold_0,162,138,0,0,162.0,353.45061728395063,363.5,162,138.0,364,278.34567901234567,35.481481481481474,162.0,40,162.0,0.9829159042607164,4.697530864197532,0
+    N5_271_010G1_scaffold_5,140,121,0,0,140.0,339.3142857142857,357.0,140,121.0,346,257.9214285714286,37.785714285714285,140.0,66,140.0,0.980420305410384,4.85,0
 
 scaffold
-  The name of the scaffold in the input .fasta file
+  The name of the :term:`scaffold` in the input .fasta file. For the top row this will read ``all_scaffolds``, and it has the sum of all rows.
 
-unfiltered_reads
-  The raw number of reads that map to this scaffold
-
-unfiltered_pairs
-  The raw number of pairs of reads that map to this scaffold. Only paired reads are used by inStrain
-
-pass_filter_cutoff
-  The number of pairs of reads mapping to this scaffold that pass the ANI filter cutoff (specified in the header as "filter_cutoff")
-
-pass_max_insert
-  The number of pairs of reads mapping to this scaffold that pass the maximum insert size cutoff- that is, their insert size is less than 3x the median insert size of all_scaffolds. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
-
-pass_min_insert
-  The number of pairs of reads mapping to this scaffold that pass the minimum insert size cutoff
-
-pass_min_mapq
-  The number of pairs of reads mapping to this scaffold that pass the minimum mapQ score cutoff
+pass_pairing_filter
+  The number of individual reads that pass the selecting pairing filter (only paired reads will pass this filter by default)
 
 filtered_pairs
   The number of pairs of reads that pass all cutoffs
 
-mean_mistmaches
-  Among all pairs of reads mapping to this scaffold, the mean number of mismatches
+unfiltered_priority_reads
+  The number of reads that pass the pairing filter because they were part of the ``priority_reads`` input file (will only be non-0 if a priority reads input file is provided).
+
+filtered_priority_reads
+  The number of priority reads that pass the rest of the filters (will only be non-0 if a priority reads input file is provided).
+
+pass_min_mapq
+  The number of pairs of reads mapping to this scaffold that pass the minimum mapQ score cutoff
 
 mean_insert_distance
   Among all pairs of reads mapping to this scaffold, the mean insert distance. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
 
-mean_mapq_score
-  Among all pairs of reads mapping to this scaffold, the average mapQ score
+median_insert
+  Among all pairs of reads mapping to this scaffold, the median insert distance.
+
+unfiltered_pairs
+  The raw number of pairs of reads that map to this scaffold. Only paired reads are used by inStrain
+
+pass_min_read_ani
+  The number of pairs of reads mapping to this scaffold that pass the min_read_ani cutoff
+
+unfiltered_reads
+  The raw number of reads that map to this scaffold
 
 mean_pair_length
   Among all pairs of reads mapping to this scaffold, the average length of both reads in the pair summed together
 
-median_insert
-  Among all pairs of reads mapping to this scaffold, the median insert distance.
+mean_mapq_score
+  Among all pairs of reads mapping to this scaffold, the average mapQ score
+
+pass_max_insert
+  The number of pairs of reads mapping to this scaffold that pass the maximum insert size cutoff- that is, their insert size is less than 3x the median insert size of all_scaffolds. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
+
+unfiltered_singletons
+  The number of reads detected in which only one read of the pair is mapped.
+
+pass_min_insert
+  The number of pairs of reads mapping to this scaffold that pass the minimum insert size cutoff
 
 mean_PID
   Among all pairs of reads mapping to this scaffold, the average percentage ID of both reads in the pair to the reference .fasta file
+
+mean_mistmaches
+  Among all pairs of reads mapping to this scaffold, the mean number of mismatches
+
+filtered_singletons
+  The number of reads detected in which only one read of the pair is mapped AND which make it through to be considered. This will only be non-0 if the filtering settings allows non-paired reads.
 
 SNVs.tsv
 +++++++++++++++++

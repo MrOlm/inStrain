@@ -4,118 +4,62 @@ Tutorial
 Quick Start
 -----------
 
-The functionality of inStrain is broken up into several core modules. For more details on these modules, see :doc:`module_descriptions`.::
+The functionality of inStrain is broken up into several core modules. To get an overview of these modules, run ``inStrain -h`` ::
 
-  $ inStrain -h
+    $ inStrain -h
 
-                ...::: inStrain v1.3.0 :::...
+                    ...::: inStrain v1.3.2 :::...
 
-  Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley. 2019
+      Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley. 2019
 
-  Choose one of the operations below for more detailed help. See https://instrain.readthedocs.io for documentation.
-  Example: inStrain profile -h
+      Choose one of the operations below for more detailed help. See https://instrain.readthedocs.io for documentation.
+      Example: inStrain profile -h
 
-  Workflows:
-    profile         -> Create an inStrain profile (microdiversity analysis) from a mapping.
-    compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
+      Workflows:
+        profile         -> Create an inStrain profile (microdiversity analysis) from a mapping.
+        compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
 
-  Single operations:
-    profile_genes   -> Calculate gene-level metrics on an inStrain profile
-    genome_wide     -> Calculate genome-level metrics on an inStrain profile
-    quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
-    filter_reads    -> Commands related to filtering reads from .bam files
-    plot            -> Make figures from the results of "profile" or "compare"
-    other           -> Other miscellaneous operations
+      Single operations:
+        profile_genes   -> Calculate gene-level metrics on an inStrain profile [DEPRECATED; USE profile INSTEAD]
+        genome_wide     -> Calculate genome-level metrics on an inStrain profile
+        quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
+        filter_reads    -> Commands related to filtering reads from .bam files
+        plot            -> Make figures from the results of "profile" or "compare"
+        other           -> Other miscellaneous operations
 
-Below is a list of brief descriptions of each of the modules. For more information see :doc:`module_descriptions`, for help understanding the output, see :doc:`example_output`, and to change the parameters see :doc:`choosing_parameters`
-
-
-.. seealso::
-  :doc:`module_descriptions`
-    for more information on the modules
-  :doc:`example_output`
-    to view example output
-  :doc:`choosing_parameters`
-    for guidance changing parameters
-  :doc:`preparing_input`
-    for information on how to prepare data for inStrain
+The most useful and commonly-used modules are ``profile`` and ``compare``, which are described below.
 
 profile
 +++++++++++++++++
 
-inStrain profile is the main method of the program. It takes a `.fasta` file and a `.bam` file (consisting of reads mapping to the `.fasta` file) and runs a series of steps to characterize the microdiversity, SNPs, linkage, etc. Details on how to generate the mapping, how the profiling is done, explanations of the output, how to choose the parameters can be found at :doc:`preparing_input` and :doc:`module_descriptions`
+inStrain profile is the main method of the program. It takes a :term:`fasta file` and a :term:`bam file` (consisting of reads mapping to the `.fasta` file) and runs a series of steps to characterize the :term:`nucleotide diversity`, :term:`SNS`s and :term:`SNV`s, :term:`linkage`, etc.. By providing a scaffold to bin file and/or a genes file to the profile operation, it will also perform all operations in the ``profile_genes`` and ``genome_wide`` modules as well.
 
-To run inStrain on a mapping run the following command::
+The most basic inStrain profile command looks like this::
 
  $ inStrain profile .bam_file .fasta_file -o IS_output_name
 
 compare
 +++++++++++++++++
 
-inStrain is able to compare multiple read mappings to the same .fasta file. Each mapping file must first be make into an inStrain profile using the above command. The coverage overlap and popANI between all pairs is calculated::
+inStrain is able to compare multiple read mappings to the same .fasta file. Each mapping file must first be make into an inStrain profile using something like the above ``profile`` command. A basic inStrain compare command looks like this::
 
  $ inStrain compare -i IS_output_1 IS_output_2 IS_output_3
 
-profile_genes
-+++++++++++++++++
+Example inStrain commands
+----------------------------
 
-Once you've run `inStrain profile`, you can also calculate gene-wise microdiversity, coverage, and SNP functions using this command. It relies on having gene calls in the `.fna` format from the program prodigal::
+TODO
 
- $ inStrain profile_genes -i IS_output -g called_genes.fna
-
-genome_wide
-+++++++++++++++++
-
-This module is able to translate scaffold-level results to genome-level results. If the `.fasta` file you mapped to consists of a single genome, running this module on its own will average the results among all scaffolds. If the `.fasta` file you mapped to consists of several genomes, by providing a `scaffold to bin file` or a list of the individual `.fasta` files making up the combined `.fasta` file, you can get summary results for each individual genome. Running this module is also required before generating plots.::
-
- $ inStrain genome_wide -i IS_output -s genome1.fasta genome2.fasta genome3.fasta
-
-quick_profile
-+++++++++++++++++
-
-This auxiliary module  is merely a quick way to calculate the coverage and breadth using the blazingly fast program `coverM <https://github.com/wwood/CoverM>`_. This can be useful for quickly figuring out which scaffolds have any coverage, and then generating a list of these scaffolds to profile with inStrain profile, making it run faster::
-
- $ inStrain quick_profile -b .bam_file -f .fasta_file -s scaffold_to_bin_file -o output_name
-
-filter_reads
-+++++++++++++++++
-
-This auxiliary module lets you do various tasks to filter and/or characterize a mapping file, and then generate a new mapping file with those filters applied::
-
- $ inStrain filter_reads .bam_file .fasta_file -g new_sam_file_location
-
-plot
-+++++++++++++++++
-
-This method makes a number of plots from an inStrain object. It is required that you run `genome_wide` first before running this module::
-
- $ inStrain plot -i IS_output
-
-other
-+++++++++++++++++
-
-This module lets you do random small things, like convert IS_profile objects that are in an old format to the newest format.
-
-Running inStrain with custom genomes
------------
+Tutorial #1) Running inStrain with custom genomes
+-------------------------------------------------------
 
 The following tutorial goes through an example run of inStrain using your own set of genomes. You can follow along with your own data, or use a small set of reads that are included in the inStrain install for testing. They can be found in the folder `test/test_data/` of your install folder, or can be downloaded from the inStrain source code at `this link on GitHub
 <https://github.com/MrOlm/inStrain/tree/master/test/test_data>`_. The only files that you'll need for this tutorial are forward and reverse metagenomic reads (`N5_271_010G1.R1.fastq.gz` and `N5_271_010G1.R2.fastq.gz`) and a .fasta file to map to (`N5_271_010G1_scaffold_min1000.fa`). In case you're curious, these metagenomic reads come from a premature infant fecal sample.
 
-.. seealso::
-  :doc:`overview`
-    To get started using the program
-  :doc:`program_documentation`
-    For descriptions of what the modules can do and information on how to prepare data for inStrain
-  :doc:`example_output`
-    To view example output
-  :doc:`Advanced_use`
-    For detailed information on how to rationally adjust inStrain parameters
-
 Preparing .bam and .fasta files
-+++++++++++++++++
+++++++++++++++++++++++++++++++++++
 
-After downloading the genome file that you would like to profile (.fasta file) and at least one set of paired reads, the first thing to do is to map the reads to the .fasta file in order to generate a .bam file.
+After downloading the genome file that you would like to profile (:term:`fasta file`) and at least one set of paired reads, the first thing to do is to map the reads to the .fasta file in order to generate a :term:`bam file`.
 
 When this mapping is performed it is important that you map to all genomes simultaneously, so the first thing to do is to combine all of the genomes that you'd like to map into a single .fasta file. In our case our .fasta file already has all of the genomes that we'd like to profile within it, but if you did want to profile a number of different genomes, you could combine them using a command like this ::
 
@@ -140,7 +84,7 @@ At this point we  have generated a .sam file, the precursor to .bam files. Lets 
 Perfect. At this point we could convert the .sam file to a sorted and indexed .bam file, but since inStrain can do that for us automatically we won't bother.
 
 Preparing genes file
-+++++++++++++++++
+++++++++++++++++++++++++++++++++++
 
 If we want inStrain to do gene-level profiling we need to give it a list of genes to profile. **Note - this is an optional step that is not required for inStrain to work in general, but without this you will not get gene-level profiles**
 
@@ -149,7 +93,7 @@ We will profile our genes using the program prodigal, which can be run using the
  $ prodigal -i ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -d N5_271_010G1_scaffold_min1000.fa.genes.fna
 
 Preparing for genome-level characterization
-+++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 In the step above ("Preparing .bam and .fasta files"), we combined all of our genomes into a single .fasta file for mapping. However we likely want to profile the microdiversity of the individual genomes in that .fasta file. In order to do that we need to tell inStrain which scaffolds belong to which genomes.
 
@@ -163,16 +107,17 @@ There are two ways of providing this information. One is to give inStrain a list
   N5_271_010G1_scaffold_4 	 maxbin2.maxbin.001.fasta
 
 Running inStrain profile
-+++++++++++++++++
+++++++++++++++++++++++++++++++++++
 
 Now that we've gotten everything set up, it's time to run inStrain. To see all of the options, run ::
 
  $ inStrain -h
 
-A long list of arguments and options will show up. For more details on what these do, see :doc:`program_documentation`. The **only** arguments that are absolutely required, however, are a .sam or .bam mapping file, and the .fasta file that the mapping file is mapped to.
+A long list of arguments and options will show up. For more details on what these do, see :doc:`user_manual`. The **only** arguments that are absolutely required, however, are a .sam or .bam mapping file, and the .fasta file that the mapping file is mapped to.
 
 .. note::
-  In this case we're going to have inStrain profile the mapping, call genes, make the results genome wide, and plot the results all in one command. It is possible to do these all as separate steps, however, using the subcommands "inStrain profile", "inStrain profile_genes", "inStrain genome_wide", and "inStrain plot". See :doc:`program_documentation` for more information.
+  In this case we're going to have inStrain profile the mapping, call genes, make the results genome wide, and plot the results all in one command. It is possible to do these all as separate steps, however, using the subcommands "inStrain profile", "inStrain profile_genes", "inStrain genome_wide", and "inStrain plot". See :doc:`user_manual
+` for more information.
 
 Using all of the files we generated above, here is going to be our inStrain command ::
 
@@ -278,12 +223,12 @@ The last note shows you where the plots and figures have been made. Here's a lis
 
 For help interpreting these output files, see :doc:`example_output`
 
-inStrain compare
-+++++++++++++++++
+Tutorial #2) Comparing strains with inStrain compare
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-inStrain compare allows you to compare genomes that have been profiled by multiple mappings. To compare a genome in multiple samples, you must first map reads from multiple samples to the **same** .fasta file, then run run `inStrain profile on each mapping.
+InStrain compare allows you to compare genomes that have been profiled by multiple mappings. To compare a genome in multiple samples, you must first map reads from multiple samples to the **same** .fasta file, then run run ``inStrain profile`` on each mapping.
 
-In this tutorial we profiled reads mapped to the .fasta file "N5_271_010G1_scaffold_min1000.fa". Provided in the inStrain test_data folder (<https://github.com/MrOlm/inStrain/tree/master/test/test_data>) is also a different set of reads mapped to the same .fasta file. We've also already run inStrain on this mapping for you! The resulting inStrain profile is the folder `N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/`
+In Tutorial #1 we profiled reads mapped to the .fasta file "N5_271_010G1_scaffold_min1000.fa". Provided in the `inStrain test_data folder <https://github.com/MrOlm/inStrain/tree/master/test/test_data>`_ is also a different set of reads mapped to the same .fasta file. We've also already run inStrain on this mapping for you! The resulting inStrain profile is the folder `N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS/`
 
 To compare these inStrain profiles we will use the following command ::
 
@@ -302,7 +247,7 @@ You should now have the following output file created ::
   total 64
   -rw-r--r--  1 mattolm  staff    30K Jan 23 15:20 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_comparisonsTable.tsv
 
-This file shows the comparison values between scaffolds, however. To make these on the genome level, we can run `inStrain genome_wide` ::
+This file shows the comparison values between scaffolds, however. To make these on the genome level, we can run ``inStrain genome_wide`` ::
 
   $ inStrain genome_wide -i N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/ -s ~/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
   Scaffold to bin was made using .stb file
@@ -315,7 +260,7 @@ Now we should also have a table that compares these genomes on the genome level 
   -rw-r--r--  1 mattolm  staff   556B Jan 23 15:23 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_genomeWide_compare.tsv
   -rw-r--r--  1 mattolm  staff    30K Jan 23 15:20 N5_271_010G1_scaffold_min1000.fa.IS.COMPARE_comparisonsTable.tsv
 
-Finally, we can also plot these results using the `inStrain plot` function ::
+Finally, we can also plot these results using the ``inStrain plot`` function ::
 
   $ inStrain plot -i N5_271_010G1_scaffold_min1000.fa.IS.COMPARE/
   making plots 10
@@ -331,7 +276,9 @@ This should make a figure in the figures folder ::
 
 As before, for help interpreting this output see :doc:`example_output` .
 
-Running inStrain with public reference genomes
------------
+Tutorial #3) Running inStrain using public reference genomes
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The following tutorial goes through running inStrain with a set of publically available reference genomes.
+TODO
+
+We are working on a tutorial on the use of inStrain with publicaly available reference genomes but it's not complete yet. If this is something you'd like to do, reach out via email or GitHub and we we'll do our best to speed-up the creation of this tutorial.

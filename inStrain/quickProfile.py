@@ -56,14 +56,17 @@ def parse_validate(args):
     if args.output[-1] != '/':
         args.output += '/'
 
+    # Get genome to length
+    scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
+    s2l = {s: len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
+    del scaff2sequence
+
     # Set up the stb
     #args.stb = parse_stb(args.stb)
     args.stb = inStrain.genomeUtilities.load_scaff2bin(args.stb)
 
-    # Get genome to length
-    scaff2sequence = SeqIO.to_dict(SeqIO.parse(args.fasta, "fasta"))
-    s2l = {s:len(scaff2sequence[s]) for s in list(scaff2sequence.keys())}
-    del scaff2sequence
+    if args.stb == {}:
+        args.stb = {s:'all_scaffolds' for s, l in s2l.items()}
 
     genome2length = {}
     for scaffold, length in s2l.items():
@@ -136,11 +139,12 @@ def produce_output(CGdb, args):
     CGdb.to_csv(args.output + 'genomeCoverage.csv', index=False)
 
     # Save the scaffolds
-    genomes = set(CGdb[CGdb['breadth'] >= args.breadth_cutoff]['genome'].unique())
-    with open(args.output + 'scaffolds.txt', 'w') as o:
-        for scaffold, bin in args.stb.items():
-            if bin in genomes:
-                o.write(scaffold + '\n')
+    if len(CGdb) > 0:
+        genomes = set(CGdb[CGdb['breadth'] >= args.breadth_cutoff]['genome'].unique())
+        with open(args.output + 'scaffolds.txt', 'w') as o:
+            for scaffold, bin in args.stb.items():
+                if bin in genomes:
+                    o.write(scaffold + '\n')
 
 
 # if __name__ == '__main__':

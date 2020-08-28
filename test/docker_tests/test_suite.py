@@ -199,7 +199,7 @@ def run_docker(image, cmd, simulate_aegea=True):
 class test_instrain():
     def setUp(self):
         self.test_dir = load_random_test_dir()
-        self.IMAGE = "sonnenburglab/instrain:MO_dev"
+        self.IMAGE = "mattolm/instrain:latest"
         self.BAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
         self.SAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
         self.GENES_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna'
@@ -216,21 +216,21 @@ class test_instrain():
         clear_s3_results()
 
     def run(self):
-        self.setUp()
-        self.test0()
-        self.tearDown()
-
-        self.setUp()
-        self.test1()
-        self.tearDown()
-
-        self.setUp()
-        self.test2()
-        self.tearDown()
-
-        self.setUp()
-        self.test3()
-        self.tearDown()
+        # self.setUp()
+        # self.test0()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test1()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test2()
+        # self.tearDown()
+        #
+        # self.setUp()
+        # self.test3()
+        # self.tearDown()
 
         self.setUp()
         self.test4()
@@ -269,7 +269,7 @@ class test_instrain():
         run_docker(self.IMAGE, CMD, simulate_aegea=True)
 
         # Set up intended output
-        OUTPUT = ['docker_log.log', 'log.log', 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
+        OUTPUT = ['docker_log.log', 'log.log', 'test_genome_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
 
         # Estimate cost
         dls = [self.BAM_S3, self.FASTA_S3, self.BAM_S3 + 'bai']
@@ -279,7 +279,7 @@ class test_instrain():
         basenames = [os.path.basename(b) for b in output_files]
         for o in OUTPUT:
             have = o in basenames
-            assert have, o
+            assert have, [o, basenames]
 
     def test2(self):
         '''
@@ -305,7 +305,7 @@ class test_instrain():
         basenames = [os.path.basename(b) for b in output_files]
         for o in OUTPUT:
             have = o in basenames
-            assert have, o
+            assert have, [o, basenames]
 
     def test3(self):
         '''
@@ -332,7 +332,7 @@ class test_instrain():
         basenames = [os.path.basename(b) for b in output_files]
         for o in OUTPUT:
             have = o in basenames
-            assert have, o
+            assert have, [o, basenames]
 
         for o in MISSING_OUT:
             have = o in basenames
@@ -361,7 +361,7 @@ class test_instrain():
         basenames = [os.path.basename(b) for b in output_files]
         for o in OUTPUT:
             have = o in basenames
-            assert have, o
+            assert have, [o, basenames]
 
         for o in MISSING_OUT:
             have = o in basenames

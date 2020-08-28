@@ -2,7 +2,7 @@ Advanced use
 ===================
 
 Adjusting parameters
-------------------
+----------------------------
 
 There are a number of important considerations when running inStrain. Here is some theory and data about how to make inStrain work best
 

@@ -32,6 +32,6 @@ Contents
    installation
    overview
    tutorial
-   program_documentation
+   user_manual
    example_output
    Advanced_use

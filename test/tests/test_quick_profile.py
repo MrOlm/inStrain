@@ -38,7 +38,7 @@ class test_quickProfile:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, min=0, max=1, tests='all'):
+    def run(self, min=0, max=2, tests='all'):
         if tests == 'all':
             tests = np.arange(min, max + 1)
 
@@ -92,3 +92,21 @@ class test_quickProfile:
         assert abs(Cdb['breadth'].max() - 1) < 0.0001
         assert Cdb['breadth'].min() >= 0.5
         assert Cdb['breadth'].max() <= 1
+
+    def test2(self):
+        """
+        Test no stb
+        """
+        # Run program
+        base = self.test_dir + 'test'
+
+        cmd = "inStrain quick_profile {1} {2} -o {3}".format(self.script, self.bam, self.fasta,
+                                                                    base, self.stb)
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load output
+        scaffs = inStrain.profile.fasta.load_scaff_list(base + '/scaffolds.txt')
+
+        # Compare
+        assert len(scaffs) == 178

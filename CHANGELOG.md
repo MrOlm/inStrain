@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - UNCOMITTED
+- Fixed a bug in quick_profile where it didn't work without an .stb file
+- Edited the Docker image to work with version 1.3
+- Overhaul of the Glossary
+
 ## [1.3.1] - 2020-08-19
 - Undid some numba that actually slowed things down
 - Change the way iterate_commands works

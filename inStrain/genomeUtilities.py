@@ -869,6 +869,10 @@ def load_scaff2bin(input_stb, IS=None):
         except:
             stb = None
 
+    # Check if you didn't have an input
+    if input_stb == []:
+        return {}
+
     if stb == None:
         logging.error('Could not load the scaffold to bin file!')
         assert False

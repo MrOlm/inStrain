@@ -188,7 +188,7 @@ def parse_arguments():
     file_path_group.add_argument('--bam', type=str, help='s3 path to the .bam file')
     file_path_group.add_argument('--fasta', type=str, help='s3 path to the .fasta file')
     file_path_group.add_argument('--genes', type=str, help='s3 path to the genes file')
-    file_path_group.add_argument('--stb', help='s3 path to the stb file', nargs='*', default=[]))
+    file_path_group.add_argument('--stb', help='s3 path to the stb file')
     file_path_group.add_argument('--results_directory', type=str, help='s3 path to the folder to put the results in')
 
     run_group = argparser.add_argument_group(title='Run command args')

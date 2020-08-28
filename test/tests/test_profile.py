@@ -90,7 +90,7 @@ class test_profile:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, min=0, max=18, tests='all'):
+    def run(self, min=0, max=18, tests='all', cleanUp=True):
         # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
         # self.setUp()
         # self.test0()
@@ -103,7 +103,8 @@ class test_profile:
             self.setUp()
             print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
             eval('self.test{0}()'.format(test_num))
-            self.tearDown()
+            if cleanUp:
+                self.tearDown()
 
         # self.setUp(destroy=True)
         # self.test16()
