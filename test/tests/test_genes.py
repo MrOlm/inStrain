@@ -215,7 +215,7 @@ class test_gene_statistics:
         IS = inStrain.SNVprofile.SNVprofile(location)
         Gdb = IS.get('genes_table')
         db = IS.get('genes_coverage')
-        gene2sequence = IS.get('gene2sequence')
+        scaff2gene2sequence = IS.get('scaff2gene2sequence')
         RGdb = pd.merge(Gdb, db, on='gene', how='left')
 
         for scaff, d in RGdb.groupby('gene'):
@@ -223,7 +223,7 @@ class test_gene_statistics:
             for thing in ['coverage', 'breadth']:
                 assert d[thing].tolist() == sorted(d[thing].tolist()), [d, thing]
             for i, row in d.iterrows():
-                seq = gene2sequence[row['gene']]
+                seq = scaff2gene2sequence[row['scaffold']][row['gene']]
                 assert len(seq) == (row['end'] - row['start'] + 1), [len(seq), row['end'] - row['start'] + 1]
 
         # Make sure the values make a little bit of sense when compared to the scaffolds
@@ -288,11 +288,11 @@ class test_gene_statistics:
         IS = inStrain.SNVprofile.SNVprofile(location)
         Gdb = IS.get('genes_table')
         db = IS.get('genes_coverage')
-        gene2sequence = IS.get('gene2sequence')
+        scaff2gene2sequence = IS.get('scaff2gene2sequence')
         RGdb = pd.merge(Gdb, db, on='gene', how='left')
 
         for i, row in Gdb.iterrows():
-            seq = gene2sequence[row['gene']]
+            seq = scaff2gene2sequence[row['scaffold']][row['gene']]
             try:
                 assert len(seq) == (row['end'] - row['start'] + 1), [len(seq), row['end'] - row['start'] + 1]
             except:

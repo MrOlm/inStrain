@@ -85,10 +85,15 @@ class BamProfileController(object):
         gene_file = self.kwargs.get('gene_file')
 
         inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'start')
-        gene_database, gene2sequence = inStrain.GeneProfile.parse_genes(gene_file, **self.kwargs)
+        gene_database, scaff2gene2sequence = inStrain.GeneProfile.parse_genes(gene_file, **self.kwargs)
+
+        # Filter gene database to relevant scaffolds
+        scaffs = self.scaff2sequence.keys()
+        gene_database = gene_database[gene_database['scaffold'].isin(scaffs)]
+
         self.profile_genes = True
         self.gene_database = gene_database
-        self.gene2sequence = gene2sequence
+        self.scaff2gene2sequence = scaff2gene2sequence
         inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'end')
 
     def make_profile_commands(self):
@@ -98,7 +103,8 @@ class BamProfileController(object):
         logging.debug('Creating commands')
 
         cmd_groups, Sprofile_dict, s2splits = prepare_commands(self.Fdb, self.bam_loc,
-                                                               self.scaff2sequence, self.profArgs, self.sR2M)
+                                                               self.scaff2sequence, self.profArgs, self.sR2M,
+                                                               self)
         self.cmd_groups = cmd_groups
         self.Sprofile_dict = Sprofile_dict
         self.s2splits = s2splits
@@ -137,8 +143,8 @@ class BamProfileController(object):
             ISP.store('genes_table', self.gene_database, 'pandas',
                       'Location of genes in the associated genes_file')
             if self.kwargs.get('store_everything', False):
-                ISP.store('gene2sequence', self.gene2sequence, 'pickle',
-                          'Dicitonary of gene -> nucleotide sequence')
+                ISP.store('scaff2gene2sequence', self.scaff2gene2sequence, 'pickle',
+                          'Dicitonary of scaffold -> gene -> nucleotide sequence')
 
         self.ISP = ISP
 
@@ -151,7 +157,7 @@ class BamProfileController(object):
         # Get the arguments
         Sprofile_dict = self.Sprofile_dict
         cmd_groups = self.cmd_groups
-        s2splits = self.s2splits
+
 
         # Create the queues
         ctx = multiprocessing.get_context('spawn')
@@ -172,6 +178,32 @@ class BamProfileController(object):
             self.split_cmd_queue.put(cmd_group)
 
         logging.debug("Submitting merge tasks to queue")
+        c = 0
+        for cmd_group in self.gen_merge_cmds():
+            self.sprofile_cmd_queue.put(cmd_group)
+            c += 1
+        self.num_merge_groups = c
+
+        inStrain.logUtils.log_checkpoint("Profile", "initialize_multiprocessing", "end")
+
+    def gen_merge_cmds(self):
+        processes = self.profArgs.get('processes', 6)
+        s2splits = self.s2splits
+        scaffolds_to_profile = list(s2splits.keys())
+
+        s2g = {}
+        if self.profile_genes:
+            s2g = self.gene_database['scaffold'].value_counts().to_dict()
+        for scaff, splits in s2splits.items():
+            if scaff not in s2g:
+                s2g[scaff] = splits * 50
+
+
+        SECONDS = min(60, sum(inStrain.GeneProfile.calc_estimated_runtime(s2g[scaffold]) for scaffold in scaffolds_to_profile) / (
+                    processes + 1))
+
+        cmds = []
+        seconds = 0
         for scaff, splits in s2splits.items():
             Sprofile = inStrain.profile.profile_utilities.ScaffoldSplitObject(splits)
             Sprofile.scaffold = scaff
@@ -180,18 +212,27 @@ class BamProfileController(object):
             if self.profile_genes:
                 self.add_gene_info(Sprofile)
 
-            self.sprofile_cmd_queue.put(Sprofile)
+            # Add estimated seconds
+            seconds += inStrain.GeneProfile.calc_estimated_runtime(s2g[scaff])
+            cmds.append(Sprofile)
 
-        inStrain.logUtils.log_checkpoint("Profile", "initialize_multiprocessing", "end")
+            # See if you're done
+            if seconds >= SECONDS:
+                yield cmds
+                seconds = 0
+                cmds = []
+
+        if len(cmds) > 0:
+            yield cmds
 
     def add_gene_info(self, Sprofile):
-        gdb = self.gene_database[self.gene_database['scaffold'] == Sprofile.scaffold]
-        genes = set(gdb['gene'].tolist())
+        df = self.gene_database
+        gdb = df.query('scaffold == "{0}"'.format(Sprofile.scaffold))
         if len(gdb) == 0:
             return
         else:
             Sprofile.gene_database = gdb
-            Sprofile.gene2sequence = {g:s for g, s in self.gene2sequence.items() if g in genes}
+            Sprofile.gene2sequence = self.scaff2gene2sequence[Sprofile.scaffold]
 
 
     def spawn_profile_workers(self):
@@ -303,16 +344,17 @@ class BamProfileController(object):
         Sprofiles = []
         if p > 1:
             # Set up progress bar
-            pbar = tqdm(desc='Merging splits and profiling genes: ', total=self.scaffold_num)
+            pbar = tqdm(desc='Merging splits and profiling genes: ', total=self.num_merge_groups)
 
             # Get results
             received_profiles = 0
-            while received_profiles < self.scaffold_num:
+            while received_profiles < self.num_merge_groups:
                 try:
-                    Sprofile = self.sprofile_result_queue.get()
-                    if Sprofile is not None:
-                        logging.debug(Sprofile.merge_log)
-                        Sprofiles.append(Sprofile)
+                    Sprofile_group = self.sprofile_result_queue.get()
+                    for Sprofile in Sprofile_group:
+                        if Sprofile is not None:
+                            logging.debug(Sprofile.merge_log)
+                            Sprofiles.append(Sprofile)
                     pbar.update(1)
                     received_profiles += 1
                 except KeyboardInterrupt:
@@ -328,10 +370,11 @@ class BamProfileController(object):
         else:
             # Get results
             received_profiles = 0
-            while received_profiles < self.scaffold_num:
-                Sprofile = self.sprofile_result_queue.get(timeout=5)
-                logging.debug(Sprofile.merge_log)
-                Sprofiles.append(Sprofile)
+            while received_profiles < self.num_merge_groups:
+                Sprofile_group = self.sprofile_result_queue.get(timeout=5)
+                for Sprofile in Sprofile_group:
+                    logging.debug(Sprofile.merge_log)
+                    Sprofiles.append(Sprofile)
                 received_profiles += 1
 
         self.Sprofiles = Sprofiles
@@ -346,12 +389,13 @@ class profile_command():
         pass
 
 
-def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
+def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M, Sprofile):
     """
     Make and iterate profiling commands
     Doing it in this way makes it use way less RAM
     """
 
+    # Make the SplitProfile command groups
     processes = args.get('processes', 6)
     s2p = args.get('s2p', None)
     if s2p is not None:
@@ -400,6 +444,10 @@ def prepare_commands(Fdb, bam, scaff2sequence, args, sR2M):
 
     if len(cmds) > 0:
         cmd_groups.append(cmds)
+
+    # Make the MergeProfile command groups
+
+
 
     return cmd_groups, Sdict, s2splits
 

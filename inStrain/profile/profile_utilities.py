@@ -55,7 +55,13 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
     # Initilize the .bam file
     bam_init = samfile = pysam.AlignmentFile(bam)
 
+    j = 0
+    pid = os.getpid()
     while True:
+        j += 1
+        group_name = "{0}_{1}".format(pid, j)
+        group_log = inStrain.logUtils.get_group_log('SplitProfile', group_name, 'start')
+
         # Get command
         if not single_thread:
             cmds = split_cmd_queue.get(True)
@@ -75,6 +81,9 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
                 continue
             Sprofile_dict[Split.scaffold + '.' + str(Split.split_number)] = Split
             LOG += Split.log + '\n'
+
+        group_log += inStrain.logUtils.get_group_log('SplitProfile', group_name, 'end')
+        LOG += group_log + '\n'
         log_list.put(LOG)
 
 def split_profile_wrapper_groups(cmds, null_model, bam_init):
@@ -342,33 +351,50 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles,
     Worker to merge_splits
     '''
 
+    j = 0
+    pid = os.getpid()
     while True:
+        j += 1
+        group_name = "{0}_{1}".format(pid, j)
+        group_log = inStrain.logUtils.get_group_log('MergeProfile', group_name, 'start')
+
         if not single_thread:
-            cmd = sprofile_cmd_queue.get(True)
+            cmds = sprofile_cmd_queue.get(True)
         else:
             try:
-                cmd = sprofile_cmd_queue.get(timeout=5)
+                cmds = sprofile_cmd_queue.get(timeout=5)
             except:
                 return
 
-        Sprofile = cmd
-        Sprofile.null_model = null_model
+        last_c = len(cmds) - 1
+        result_list = []
+        for c, cmd in enumerate(cmds):
+            Sprofile = cmd
+            Sprofile.null_model = null_model
 
-        for i in range(Sprofile.number_splits):
-            Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(
-                                            Sprofile.scaffold + '.' + str(i)))
+            for i in range(Sprofile.number_splits):
+                Sprofile = Sprofile.update_splits(i, Sprofile_dict.pop(
+                                                Sprofile.scaffold + '.' + str(i)))
 
-        Sprofile = Sprofile.merge()
+            Sprofile = Sprofile.merge()
 
-        if Sprofile is not None:
-            if Sprofile.profile_genes:
+            if Sprofile is not None:
+                if Sprofile.profile_genes:
+                    try:
+                        Sprofile.run_profile_genes()
+                    except:
+                        t = time.strftime('%m-%d %H:%M')
+                        Sprofile.merge_log += "\n{1} DEBUG FAILURE GeneException {0}".format(str(Sprofile.scaffold), t)
+
+            if c == last_c:
                 try:
-                    Sprofile.run_profile_genes()
+                    group_log += inStrain.logUtils.get_group_log('MergeProfile', group_name, 'end')
+                    Sprofile.merge_log += "\n{0}".format(group_log)
                 except:
-                    t = time.strftime('%m-%d %H:%M')
-                    Sprofile.merge_log += "\n{1} DEBUG FAILURE GeneException {0}".format(str(Sprofile.scaffold), t)
+                    pass
+            result_list.append(Sprofile)
 
-        Sprofiles.put(Sprofile)
+        Sprofiles.put(result_list)
 
 def merge_basewise(mm2array_list):
     NAME2TYPE = {'coverage':'int32', 'clonality':'float32', 'snpCounted':'bool'}

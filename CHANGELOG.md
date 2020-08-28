@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.2] - UNCOMITTED
+## [1.3.2] - 2020-08-28
 - Fixed a bug in quick_profile where it didn't work without an .stb file
+- Optimize gene initilization
+- Put the split merging + gene profiling in groups
+- Add logging of how long groups take to run
 - Edited the Docker image to work with version 1.3
 - Overhaul of the Glossary
+- Update the Docker
 
 ## [1.3.1] - 2020-08-19
 - Undid some numba that actually slowed things down

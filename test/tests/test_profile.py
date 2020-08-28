@@ -437,7 +437,7 @@ class test_profile:
 
         # Make sure you get a result
         Odb = Sprofile.get('cumulative_scaffold_table')
-        assert len(Odb['scaffold'].unique()) == 178
+        assert len(Odb['scaffold'].unique()) == 178, Odb
 
     def test6(self):
         """
@@ -851,7 +851,7 @@ class test_profile:
         Ldb = exp_IS.get_parsed_log()
         rdb = inStrain.logUtils.load_multiprocessing_log(Ldb)
 
-        LOGGED_SCAFFOLDS = set(rdb[rdb['command'] == 'MergeProfile']['unit'].tolist())
+        LOGGED_SCAFFOLDS = set(rdb[(rdb['command'] == 'MergeProfile') & (rdb['multi_log_type'] == 'WorkerLog')]['unit'].tolist())
         TRUE_SCAFFOLDS = \
             set(exp_IS.get_nonredundant_scaffold_table()['scaffold'].tolist())
         assert (LOGGED_SCAFFOLDS == TRUE_SCAFFOLDS)

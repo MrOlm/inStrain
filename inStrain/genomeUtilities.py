@@ -847,37 +847,32 @@ def load_scaff2bin(input_stb, IS=None):
             for scaffold in list(s2l.keys()):
                 stb[scaffold] = 'all_scaffolds'
             logging.info('Scaffold to bin will consider all scaffolds the same genome')
-        else:
-            stb = None
-    else:
-        stb = None
+            return stb
 
     # Check if this is a .fasta file
-    if stb == None:
-        try:
-            stb = gen_stb(input_stb)
-            logging.info('Scaffold to bin was made using .fasta files')
-        except:
-            stb = None
-            #traceback.print_exc()
+    try:
+        stb = gen_stb(input_stb)
+        logging.info('Scaffold to bin was made using .fasta files')
+        return stb
+    except:
+        pass
 
     # Check if this is a regular stb file
-    if (stb == None) & (len(input_stb) == 1):
+    if (len(input_stb) == 1):
         try:
             stb = parse_stb(input_stb[0])
             logging.info('Scaffold to bin was made using .stb file')
+            return stb
         except:
-            stb = None
+            pass
 
     # Check if you didn't have an input
-    if input_stb == []:
+    if (input_stb == []):
         return {}
 
-    if stb == None:
-        logging.error('Could not load the scaffold to bin file!')
-        assert False
-
-    return stb
+    # Fail
+    logging.error('Could not load the scaffold to bin file!')
+    assert False
 
 def parse_stb(stb_loc):
     stb = {}

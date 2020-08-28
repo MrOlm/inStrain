@@ -173,6 +173,16 @@ def load_log(logfile, most_recent=True):
                 table['parsable_string'].append(pstring)
                 table['run_ID'].append(run_ID)
 
+            # Group log
+            elif (len(linewords) > 3) and ('GroupLog' == linewords[0]):
+                pstring = "unit={0};PID={1};status={2};process_RAM={3};command={4};task={5}".format(
+                    linewords[2], linewords[6], linewords[3], linewords[4], linewords[1], linewords[7])
+
+                table['log_type'].append(linewords[0])
+                table['time'].append(float(linewords[5]))
+                table['parsable_string'].append(pstring)
+                table['run_ID'].append(run_ID)
+
             # Special Failure
             elif 'FAILURE' in line:
                 epoch_time = log_fmt_to_epoch("{0} {1}".format(linewords[0], linewords[1]))
@@ -386,19 +396,31 @@ def gen_overall_report(Ldb):
     OVERALL_RUNTIME = runtime
     return report, OVERALL_RUNTIME
 
-def load_multiprocessing_log(Ldb):
+def load_multiprocessing_log(Odb):
     """
     Generate a log table specifically for "WorkerLog" types
     """
     # Parse the initial datatable
-    ldb = Ldb[(Ldb['log_type'] == 'WorkerLog')]
+    ldb = Odb[(Odb['log_type'] == 'WorkerLog')]
     table = defaultdict(list)
     for i, row in ldb.iterrows():
         for thing, value in parse_parsable_string(row['parsable_string']).items():
             table[thing].append(value)
         table['time'].append(row['time'])
     Ldb = pd.DataFrame(table)
-    return Ldb
+    Ldb['multi_log_type'] = 'WorkerLog'
+
+    ldb = Odb[(Odb['log_type'] == 'GroupLog')]
+    table = defaultdict(list)
+    for i, row in ldb.iterrows():
+        for thing, value in parse_parsable_string(row['parsable_string']).items():
+            table[thing].append(value)
+        table['time'].append(row['time'])
+    Gdb = pd.DataFrame(table)
+    if len(Gdb) > 0:
+        Gdb['multi_log_type'] = 'GroupLog'
+
+    return pd.concat([Ldb, Gdb]).reset_index(drop=True)
 
 def gen_multiprocessing_report(MLdb, commands):
     """
@@ -408,12 +430,12 @@ def gen_multiprocessing_report(MLdb, commands):
     if len(MLdb) > 0:
         mldb = MLdb[MLdb['command'].isin(commands)]
         if len(mldb) > 0:
-            ldb = parse_multiprocessing(mldb)
-            return gen_multiprocessing_text(ldb)
+            ldb, gdb = parse_multiprocessing(mldb)
+            return gen_multiprocessing_text(ldb, gdb)
 
     return ''
 
-def parse_multiprocessing(Ldb):
+def parse_multiprocessing(Odb):
     """
     Ldb looks like:
 
@@ -440,6 +462,7 @@ def parse_multiprocessing(Ldb):
 
     """
     table = defaultdict(list)
+    Ldb = Odb[Odb['multi_log_type'] == 'WorkerLog']
     Ldb['time'] = Ldb['time'].astype(float)
     Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
     first_time = Ldb['time'].min()
@@ -471,10 +494,49 @@ def parse_multiprocessing(Ldb):
     db = pd.DataFrame(table)
     db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
     db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+    WorkerDB = db
 
-    return db
+    table = defaultdict(list)
+    Ldb = Odb[Odb['multi_log_type'] == 'GroupLog']
+    if len(Ldb) > 0:
+        Ldb['time'] = Ldb['time'].astype(float)
+        Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
+        first_time = Ldb['time'].min()
 
-def gen_multiprocessing_text(rdb, name='unit'):
+        # Generate this on a per-unit level
+        for scaffold, ddb in Ldb.groupby('unit'):
+            for cmd, db in ddb.groupby('command'):
+                sdb = db[db['status'] == 'start']
+                edb = db[db['status'] == 'end']
+
+                table['unit'].append(scaffold)
+                table['PID'].append(db['PID'].iloc[0])
+
+                table['start_time'].append(sdb['time'].iloc[0])
+                table['adjusted_start'].append(sdb['time'].iloc[0] - first_time)
+                table['start_process_RAM'].append(sdb['process_RAM'].iloc[0])
+
+                if len(edb) > 0:
+                    table['adjusted_end'].append(edb['time'].iloc[0] - first_time)
+                    table['end_process_RAM'].append(edb['process_RAM'].iloc[0])
+                    table['end_time'].append(edb['time'].iloc[0])
+                else:
+                    for i in ['adjusted_end', 'end_process_RAM', 'end_time']:
+                        table[i].append(np.nan)
+
+                table['runs'].append(len(sdb))
+                table['command'].append(cmd)
+
+        db = pd.DataFrame(table)
+        db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+        db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+        GroupDB = db
+    else:
+        GroupDB = pd.DataFrame()
+
+    return WorkerDB, GroupDB
+
+def gen_multiprocessing_text(rdb, gdb, name='unit'):
     report = ''
 
     # Overall wall time
@@ -498,7 +560,6 @@ def gen_multiprocessing_text(rdb, name='unit'):
     # Report on splits
     #report += "\n"
     report += "{0:30}\t{1}\n".format("Average time per unit", td_format(None, seconds=rdb['runtime'].mean()))
-    report += "{0:30}\t{1}\n".format("Average time per unit", td_format(None, seconds=rdb['runtime'].mean()))
     report += "{0:30}\t{1}\n".format("Median time per unit", td_format(None, seconds=rdb['runtime'].median()))
     report += "{0:30}\t{1}\n".format("Maximum unit time", td_format(None, seconds=rdb['runtime'].max()))
     report += "{0:30}\t{1}\n".format("Longest running unit", rdb.sort_values('runtime', ascending=False)['unit'].iloc[0])
@@ -514,6 +575,12 @@ def gen_multiprocessing_text(rdb, name='unit'):
                 ["{0}".format(humanbytes(d['start_process_RAM'].min())) for p, d in rdb.groupby('PID')])
     report += "{0:35}\t{1}\n".format("{0} per-process maximum RAM".format(name),
                 ["{0}".format(humanbytes(d['start_process_RAM'].max())) for p, d in rdb.groupby('PID')])
+
+    # Report on groups
+    if len(gdb) > 0:
+        report += "{0:30}\t{1}\n".format("Number of groups", len(gdb['unit'].unique()))
+        report += "{0:30}\t{1}\n".format("Average time per group", td_format(None, seconds=gdb['runtime'].mean()))
+        report += "{0:30}\t{1}\n".format("Median time per group", td_format(None, seconds=gdb['runtime'].median()))
 
     return report
 
@@ -862,7 +929,8 @@ def log_checkpoint(log_class, name, status, inc_children=True):
 
 def get_worker_log(worker_type, unit, status, inc_children=False):
     """
-    Return a string with log information intended to be generated within a worker process
+    Return a string with log information intended to be generated within a worker process to track how long
+    actual multiprocessing is taking place
 
     Arguments:
         worker_type  = The type of worker this is
@@ -896,3 +964,41 @@ def get_worker_log(worker_type, unit, status, inc_children=False):
     assert status in ['start', 'end'], status
 
     return "\nWorkerLog {0} {1} {2} {3} {4} {5}".format(worker_type, unit, status, mem, time.time(), pid)
+
+def get_group_log(worker_type, unit, status, task='overall', inc_children=False):
+    """
+    Return a string with log information intended to track how long a group of units takes
+
+    Arguments:
+        worker_type  = The type of worker this is (Profile, Merge, etc.)
+        unit         = The unit this worker is currently processing
+        status       = start / end
+        task         = what are you doing?
+        inc_children = include child processes as well in RAM tally
+
+    Returns:
+        A string with the following structure:
+        "WorkerLog worker_type unit status RAM time PID"
+
+        "GroupLog" = linewords[0]
+        worker_type = linewords[1]
+        unit = linewords[2]
+        status = linewords[3]
+        ram = linewords[4]
+        time = linewords[5]
+        PID = linewords[6]
+
+    """
+    pid = os.getpid()
+    current_process = psutil.Process(pid)
+    mem = current_process.memory_info().rss
+    if inc_children:
+        for child in current_process.children(recursive=True):
+            try:
+                mem += child.memory_info().rss
+            except:
+                pass
+
+    assert status in ['start', 'end'], status
+
+    return "\nGroupLog {0} {1} {2} {3} {4} {5} {6}".format(worker_type, unit, status, mem, time.time(), pid, task)

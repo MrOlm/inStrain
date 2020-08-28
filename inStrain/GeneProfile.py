@@ -47,10 +47,10 @@ class Controller():
 
         # Read the genes file
         logging.debug('Loading genes')
-        GdbP, gene2sequence = parse_genes(GF, **vargs)
+        GdbP, scaff2gene2sequence = parse_genes(GF, **vargs)
 
         # Calculate all your parallelized gene-level stuff
-        name2result = calculate_gene_metrics(IS, GdbP, gene2sequence, **vargs)
+        name2result = calculate_gene_metrics(IS, GdbP, scaff2gene2sequence, **vargs)
 
         # Store information
         IS.store('genes_fileloc', GF, 'value', 'Location of genes file that was used to call genes')
@@ -61,7 +61,7 @@ class Controller():
         IS.store('SNP_mutation_types', name2result['SNP_mutation_types'], 'pandas', 'The mutation types of SNPs')
 
         if vargs.get('store_everything', False):
-            IS.store('gene2sequence', gene2sequence, 'pickle', 'Dicitonary of gene -> nucleotide sequence')
+            IS.store('scaff2gene2sequence', scaff2gene2sequence, 'pickle', 'Dicitonary of scaff -> gene -> nucleotide sequence')
 
         # Store the output
         IS.generate('gene_info')
@@ -114,7 +114,7 @@ def profile_genes_wrapper(cmds):
             results.append(None)
     return results
 
-def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
+def calculate_gene_metrics(IS, GdbP, scaff2gene2sequenceP, **kwargs):
     '''
     Calculate the metrics of all genes on a parallelized scaffold-level basis
 
@@ -153,8 +153,8 @@ def calculate_gene_metrics(IS, GdbP, gene2sequenceP, **kwargs):
     global clonTs
     clonTs = IS.get('clonT', scaffolds=scaffolds_to_profile)
 
-    global gene2sequence
-    gene2sequence =  gene2sequenceP
+    global scaff2gene2sequence
+    scaff2gene2sequence =  scaff2gene2sequenceP
 
     global Gdb
     Gdb = GdbP
@@ -277,7 +277,7 @@ def profile_genes(scaffold, **kwargs):
     if len(Ldb) == 0:
         sdb = pd.DataFrame()
     else:
-        sdb = Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence)
+        sdb = Characterize_SNPs_wrapper(Ldb, gdb, scaff2gene2sequence[scaffold])
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_character end {2}".format(scaffold, pid, time.time())
 
     # Calculate gene-level SNP counts
@@ -287,7 +287,7 @@ def profile_genes(scaffold, **kwargs):
         sublog = ''
     else:
         #ldb = calc_gene_snp_density(gdb, Ldb)
-        ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, gene2sequence, scaffold=scaffold)
+        ldb, sublog = calc_gene_snp_counts(gdb, Ldb, sdb, scaff2gene2sequence[scaffold], scaffold=scaffold)
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts end {2}".format(scaffold, pid, time.time())
     log_message += sublog
 
@@ -766,12 +766,13 @@ def parse_prodigal_genes(gene_fasta):
     Return a datatable with gene info and a dictionary of gene -> sequence
     '''
     table = defaultdict(list)
-    gene2sequence = {}
+    scaff2gene2sequence = {}
     for record in SeqIO.parse(gene_fasta, 'fasta'):
         gene = str(record.id)
+        scaff = "_".join(gene.split("_")[:-1])
 
         table['gene'].append(gene)
-        table['scaffold'].append("_".join(gene.split("_")[:-1]))
+        table['scaffold'].append(scaff)
         table['direction'].append(record.description.split("#")[3].strip())
         table['partial'].append('partial=01' in record.description)
 
@@ -779,19 +780,22 @@ def parse_prodigal_genes(gene_fasta):
         table['start'].append(int(record.description.split("#")[1].strip())-1)
         table['end'].append(int(record.description.split("#")[2].strip())-1)
 
-        gene2sequence[gene] = record.seq
+        if scaff not in scaff2gene2sequence:
+            scaff2gene2sequence[scaff] = {}
+        scaff2gene2sequence[scaff][gene] = record.seq
 
     Gdb = pd.DataFrame(table)
+    Gdb['scaffold'] = Gdb['scaffold'].astype('category')
     logging.debug("{0:.1f}% of the input {1} genes were marked as incomplete".format((len(Gdb[Gdb['partial'] == True])/len(Gdb))*100, len(Gdb)))
 
-    return Gdb, gene2sequence
+    return Gdb, scaff2gene2sequence
 
 def parse_genbank_genes(gene_file, gene_name='gene'):
     '''
     Parse a genbank file. Gets features marked as CDS
     '''
     table = defaultdict(list)
-    gene2sequence = {}
+    scaff2gene2sequence = {}
     for record in SeqIO.parse(gene_file, 'gb'):
         scaffold = record.id
         for feature in record.features:
@@ -811,12 +815,15 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
                 table['start'].append(loc.start)
                 table['end'].append(loc.end - 1)
 
-                gene2sequence[gene] = feature.location.extract(record).seq
+                if scaffold not in scaff2gene2sequence:
+                    scaff2gene2sequence[scaffold] = {}
+                scaff2gene2sequence[scaffold][gene] = feature.location.extract(record).seq
 
     Gdb = pd.DataFrame(table)
+    Gdb['scaffold'] = Gdb['scaffold'].astype('category')
     logging.debug("{0:.1f}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
 
-    return Gdb, gene2sequence
+    return Gdb, scaff2gene2sequence
 
 def get_gene_info(IS,  ANI_level=0):
     #IS = inStrain.SNVprofile.SNVprofile(IS_loc)
