@@ -34,4 +34,5 @@ Contents
    tutorial
    user_manual
    example_output
-   Advanced_use
+   advanced_use
+   acknowledgements

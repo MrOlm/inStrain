@@ -31,7 +31,7 @@ An IS_profile (inStrain profile) is created by running the `inStrain profile` co
 :doc:`example_output`
   For help finding where the output from your run is located in the IS_profile
 
-:doc:`Advanced_use`
+:doc:`advanced_use`
   For access to the raw internal data (which can be very useful)
 
 
@@ -67,7 +67,7 @@ Finally, this information is stored as an IS_profile object. This includes the l
   :doc:`example_output`
     For help interpreting the output
 
-  :doc:`Advanced_use`
+  :doc:`advanced_use`
     For access to the raw internal data (which can be very useful)
 
   :doc:`choosing_parameters`
@@ -258,7 +258,7 @@ There are a number of ways of telling *inStrain* which scaffold belongs to which
 
 3. Nothing. If all of your scaffolds belong to the same genome, by running *inStrain genome_wide* without any *-s* options it will summarize the results of all scaffolds together.
 
-The flag `--mm_level` produces output for each mm. You probably don't want this. For information on what I mean by mm_level see :doc:`Advanced_use`, for information on the output see :doc:`example_output`
+The flag `--mm_level` produces output for each mm. You probably don't want this. For information on what I mean by mm_level see :doc:`advanced_use`, for information on the output see :doc:`example_output`
 
 To see the command-line options, check the help::
 

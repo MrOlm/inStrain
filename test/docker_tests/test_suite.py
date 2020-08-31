@@ -23,6 +23,7 @@ import pandas as pd
 from subprocess import call
 from Bio import SeqIO
 from collections import defaultdict
+from inStrain._version import __version__
 
 def estimate_cost(downfolder, upfolder):
     '''
@@ -101,6 +102,12 @@ def get_accessible_test_data():
     loc = os.path.join(str(os.getcwd()), \
         'accessible_test_data/')
     return loc
+
+def read_s3_file(key, bucketname='czbiohub-microbiome'):
+    s3 = boto3.resource('s3')
+    obj = s3.Object(bucketname, key)
+    body = obj.get()['Body'].read()
+    return body.decode("utf-8").strip()
 
 def get_matching_s3_objects(bucket, prefix="", suffix=""):
     """
@@ -216,21 +223,21 @@ class test_instrain():
         clear_s3_results()
 
     def run(self):
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test1()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test2()
-        # self.tearDown()
-        #
-        # self.setUp()
-        # self.test3()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
+
+        self.setUp()
+        self.test1()
+        self.tearDown()
+
+        self.setUp()
+        self.test2()
+        self.tearDown()
+
+        self.setUp()
+        self.test3()
+        self.tearDown()
 
         self.setUp()
         self.test4()
@@ -243,14 +250,21 @@ class test_instrain():
 
     def test0(self):
         '''
-        make sure dependencies are working
+        make sure dependencies are working; make sure the right version of inStrain is in there
         '''
         # Set up command
 
-        CMD = "./prepare.sh; conda activate work; pip install inStrain --upgrade; inStrain -h".format(get_s3_results_folder())
+        CMD = "./prepare.sh; conda activate work; inStrain profile --version > version.txt; aws s3 cp version.txt {0}/"\
+                .format(get_s3_results_folder())
 
         # Run command
         run_docker(self.IMAGE, CMD, simulate_aegea=True)
+
+        # Upload results
+        output_files = load_s3_results()
+        reported_version = read_s3_file(output_files[0])
+        correct_version = "inStrain version {0}".format(__version__)
+        assert reported_version == correct_version, [correct_version, reported_version]
 
         # Estimate cost
         estimate_cost(None, get_s3_results_folder())
@@ -350,7 +364,7 @@ class test_instrain():
         run_docker(self.IMAGE, CMD, simulate_aegea='semi')
 
         # Set up intended output
-        OUTPUT = ['docker_log.log', 'log.log']#, 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
+        OUTPUT = ['docker_log.log', 'coverm_raw.tsv']#, 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
         MISSING_OUT =  ['test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
 
         # Estimate cost

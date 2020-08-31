@@ -7,7 +7,7 @@ Adjusting parameters
 There are a number of important considerations when running inStrain. Here is some theory and data about how to make inStrain work best
 
 Reference genome selection
-++++++++++++++++++++
+++++++++++++++++++++++++++++++++
 
 inStrain relies on mapping reads from a sample to a reference genome. How similar the reference genome is to the reads, and the minimum read ANI threshold that you set, are very important and will determine much of what you get out of inStrain.
 

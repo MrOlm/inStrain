@@ -428,7 +428,7 @@ To see the command-line options, check the help::
       --version             show program's version number and exit
 
 quick_profile
-+++++++++++++
+````````````````````
 
 This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth.
 
@@ -475,7 +475,7 @@ To see the command-line options, check the help::
                             equal to) (default: 0.0)
 
 plot
-+++++++++++++
+````````````````````
 
 This module produces plots based on the results of *inStrain profile* and *inStrain compare*. In both cases, before plots can be made, *inStrain genome_wide* must be run on the output folder first. In order to make plots 8 and 9, *inStrain profile_genes* must be run first as well.
 
@@ -511,7 +511,7 @@ To see the command-line options, check the help::
     -h, --help            show this help message and exit
 
 other
-+++++++++++++
+````````````````````
 
 This module holds odds and ends functionalities. As of version 1.3.1, all it can do is convert old *IS_profile* objects (>v0.3.0) to newer versions (v0.8.0). As the code base around *inStrain* matures, we expect more functionalities to be included here.
 

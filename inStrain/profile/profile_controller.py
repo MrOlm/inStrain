@@ -6,6 +6,7 @@ This handles the argument parsing and logic for profiling bam files
 import os
 import copy
 import logging
+import pandas as pd
 from tqdm import tqdm
 import multiprocessing
 
@@ -85,14 +86,16 @@ class BamProfileController(object):
         gene_file = self.kwargs.get('gene_file')
 
         inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'start')
-        gene_database, scaff2gene2sequence = inStrain.GeneProfile.parse_genes(gene_file, **self.kwargs)
+        scaff2geneinfo, scaff2gene2sequence = inStrain.GeneProfile.parse_genes(gene_file, **self.kwargs)
 
         # Filter gene database to relevant scaffolds
-        scaffs = self.scaff2sequence.keys()
-        gene_database = gene_database[gene_database['scaffold'].isin(scaffs)]
+        scaffs = set(self.scaff2sequence.keys())
+        for scaff in scaff2geneinfo.keys():
+            if scaff not in scaffs:
+                del scaff2geneinfo[scaff]
 
         self.profile_genes = True
-        self.gene_database = gene_database
+        self.scaff_2_gene_database = scaff2geneinfo
         self.scaff2gene2sequence = scaff2gene2sequence
         inStrain.logUtils.log_checkpoint('Profile', 'Loading_genes', 'end')
 
@@ -140,8 +143,11 @@ class BamProfileController(object):
         if self.profile_genes:
             ISP.store('genes_fileloc', self.kwargs.get('gene_file'), 'value',
                       'Location of genes file that was used to call genes')
-            ISP.store('genes_table', self.gene_database, 'pandas',
+
+            gdb = pd.concat([x for x in self.scaff_2_gene_database.values()])
+            ISP.store('genes_table', gdb, 'pandas',
                       'Location of genes in the associated genes_file')
+
             if self.kwargs.get('store_everything', False):
                 ISP.store('scaff2gene2sequence', self.scaff2gene2sequence, 'pickle',
                           'Dicitonary of scaffold -> gene -> nucleotide sequence')
@@ -193,7 +199,8 @@ class BamProfileController(object):
 
         s2g = {}
         if self.profile_genes:
-            s2g = self.gene_database['scaffold'].value_counts().to_dict()
+            for scaff, gdb in self.scaff_2_gene_database.items():
+                s2g[scaff] = len(gdb)
         for scaff, splits in s2splits.items():
             if scaff not in s2g:
                 s2g[scaff] = splits * 50
@@ -226,13 +233,11 @@ class BamProfileController(object):
             yield cmds
 
     def add_gene_info(self, Sprofile):
-        df = self.gene_database
-        gdb = df.query('scaffold == "{0}"'.format(Sprofile.scaffold))
-        if len(gdb) == 0:
-            return
-        else:
-            Sprofile.gene_database = gdb
+        if Sprofile.scaffold in self.scaff_2_gene_database:
+            Sprofile.gene_database = self.scaff_2_gene_database[Sprofile.scaffold]
             Sprofile.gene2sequence = self.scaff2gene2sequence[Sprofile.scaffold]
+        else:
+            return
 
 
     def spawn_profile_workers(self):

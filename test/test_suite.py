@@ -25,12 +25,12 @@ pd.set_option('display.max_colwidth', -1)
 
 if __name__ == '__main__':
     # tests.test_profile.test_profile().run(tests=[16], cleanUp=True)
-    # tests.test_compare.test_readcomparer().run(tests=[13])
+    # tests.test_compare.test_readcomparer().run(tests=[13], cleanUp=False)
 
-    # tests.test_profile.test_profile().run()
-    # tests.test_filter_reads.TestFilterReads().run()
-    # tests.test_snv_profile.test_SNVprofile().run()
-    tests.test_genes.test_gene_statistics().run(min=2)
+    tests.test_profile.test_profile().run()
+    tests.test_filter_reads.TestFilterReads().run()
+    tests.test_snv_profile.test_SNVprofile().run()
+    tests.test_genes.test_gene_statistics().run()
     tests.test_quick_profile.test_quickProfile().run()
     tests.test_genome_level.test_genome_wide().run()
     tests.test_plotting.test_plot().run()

@@ -224,7 +224,7 @@ The last note shows you where the plots and figures have been made. Here's a lis
 For help interpreting these output files, see :doc:`example_output`
 
 Tutorial #2) Comparing strains with inStrain compare
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-------------------------------------------------------
 
 InStrain compare allows you to compare genomes that have been profiled by multiple mappings. To compare a genome in multiple samples, you must first map reads from multiple samples to the **same** .fasta file, then run run ``inStrain profile`` on each mapping.
 
@@ -277,7 +277,7 @@ This should make a figure in the figures folder ::
 As before, for help interpreting this output see :doc:`example_output` .
 
 Tutorial #3) Running inStrain using public reference genomes
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+---------------------------------------------------------------
 
 TODO
 

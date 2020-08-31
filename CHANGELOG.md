@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.3] - 2020-08-31
+- More upgrades to the docs
+- An additional refinement to creating profile_merge jobs in linear time even when the amount of genes loaded is huge
+
 ## [1.3.2] - 2020-08-28
 - Fixed a bug in quick_profile where it didn't work without an .stb file
 - Optimize gene initilization

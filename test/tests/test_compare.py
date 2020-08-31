@@ -83,7 +83,7 @@ class test_readcomparer:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, min=0, max=15, skip=None, tests='all'):
+    def run(self, min=0, max=15, skip=None, tests='all', cleanUp=True):
         # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
         # # # self.setUp()
         # # # self.test9()
@@ -112,7 +112,8 @@ class test_readcomparer:
             self.setUp()
             print("\n*** Running {1} test {0} ***\n".format(test_num, self.__class__))
             eval('self.test{0}()'.format(test_num))
-            self.tearDown()
+            if cleanUp:
+                self.tearDown()
 
     def UPDATE_COMPARE_TEST_DATA(self):
         """

@@ -1145,6 +1145,8 @@ class test_profile:
                             del e[r]
                         if r in s.columns:
                             del s[r]
+                    e = e.sort_values(['scaffold', 'gene']).reset_index(drop=True)
+                    s = s.sort_values(['scaffold', 'gene']).reset_index(drop=True)
 
                 if i in ['cumulative_scaffold_table']:
                     e = e.sort_values(['scaffold', 'mm']).reset_index(drop=True)

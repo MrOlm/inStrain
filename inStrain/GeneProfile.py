@@ -47,7 +47,8 @@ class Controller():
 
         # Read the genes file
         logging.debug('Loading genes')
-        GdbP, scaff2gene2sequence = parse_genes(GF, **vargs)
+        scaff_2_gene_database, scaff2gene2sequence = parse_genes(GF, **vargs)
+        GdbP = pd.concat([x for x in scaff_2_gene_database.values()])
 
         # Calculate all your parallelized gene-level stuff
         name2result = calculate_gene_metrics(IS, GdbP, scaff2gene2sequence, **vargs)
@@ -765,11 +766,15 @@ def parse_prodigal_genes(gene_fasta):
 
     Return a datatable with gene info and a dictionary of gene -> sequence
     '''
-    table = defaultdict(list)
     scaff2gene2sequence = {}
+    scaff2geneinfo = {}
     for record in SeqIO.parse(gene_fasta, 'fasta'):
         gene = str(record.id)
         scaff = "_".join(gene.split("_")[:-1])
+
+        if scaff not in scaff2geneinfo:
+            scaff2geneinfo[scaff] = defaultdict(list)
+        table = scaff2geneinfo[scaff]
 
         table['gene'].append(gene)
         table['scaffold'].append(scaff)
@@ -784,17 +789,17 @@ def parse_prodigal_genes(gene_fasta):
             scaff2gene2sequence[scaff] = {}
         scaff2gene2sequence[scaff][gene] = record.seq
 
-    Gdb = pd.DataFrame(table)
-    Gdb['scaffold'] = Gdb['scaffold'].astype('category')
-    logging.debug("{0:.1f}% of the input {1} genes were marked as incomplete".format((len(Gdb[Gdb['partial'] == True])/len(Gdb))*100, len(Gdb)))
+    scaffs = list(scaff2geneinfo.keys())
+    for scaff in scaffs:
+        scaff2geneinfo[scaff] = pd.DataFrame(scaff2geneinfo[scaff])
 
-    return Gdb, scaff2gene2sequence
+    return scaff2geneinfo, scaff2gene2sequence
 
 def parse_genbank_genes(gene_file, gene_name='gene'):
     '''
     Parse a genbank file. Gets features marked as CDS
     '''
-    table = defaultdict(list)
+    scaff2geneinfo = {}
     scaff2gene2sequence = {}
     for record in SeqIO.parse(gene_file, 'gb'):
         scaffold = record.id
@@ -806,6 +811,10 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
                     partial = 'compound'
                 else:
                     partial = False
+
+                if scaffold not in scaff2geneinfo:
+                    scaff2geneinfo[scaffold] = defaultdict(list)
+                table = scaff2geneinfo[scaffold]
 
                 table['gene'].append(gene)
                 table['scaffold'].append(scaffold)
@@ -819,11 +828,11 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
                     scaff2gene2sequence[scaffold] = {}
                 scaff2gene2sequence[scaffold][gene] = feature.location.extract(record).seq
 
-    Gdb = pd.DataFrame(table)
-    Gdb['scaffold'] = Gdb['scaffold'].astype('category')
-    logging.debug("{0:.1f}% of the input {1} genes were marked as compound".format((len(Gdb[Gdb['partial'] != False])/len(Gdb))*100, len(Gdb)))
+    scaffs = list(scaff2geneinfo.keys())
+    for scaff in scaffs:
+        scaff2geneinfo[scaff] = pd.DataFrame(scaff2geneinfo[scaff])
 
-    return Gdb, scaff2gene2sequence
+    return scaff2geneinfo, scaff2gene2sequence
 
 def get_gene_info(IS,  ANI_level=0):
     #IS = inStrain.SNVprofile.SNVprofile(IS_loc)

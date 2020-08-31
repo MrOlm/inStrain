@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 
 import inStrain
+import inStrain.argumentParser
+import inStrain.controller
 import inStrain.GeneProfile
 import inStrain.SNVprofile
 import inStrain.deprecated.deprecated_filter_reads
@@ -37,7 +39,6 @@ class test_gene_statistics:
                        'sars_cov_2_MT039887.1.gb'
 
     def setUp(self):
-
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
         os.mkdir(self.test_dir)
@@ -129,7 +130,9 @@ class test_gene_statistics:
         cmd = "inStrain profile_genes -i {1} -g {3}".format(self.script, location,
                                                             base, self.genes)
         print(cmd)
-        call(cmd, shell=True)
+        sys_args = cmd.split(' ')
+        args = inStrain.argumentParser.parse_args(sys_args[1:])
+        inStrain.controller.Controller().main(args)
 
         # Get the mutations in this IS
         Sdb = inStrain.SNVprofile.SNVprofile(location).get_nonredundant_snv_table()
@@ -191,6 +194,9 @@ class test_gene_statistics:
         assert test_utils.compare_dfs(RNdb, Rdb, verbose=True)
 
         # Also compare gene clonalities
+        print("MADE IT!")
+        print(Rdb)
+        print(RNdb)
 
     def test2(self):
         """

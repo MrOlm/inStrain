@@ -156,68 +156,88 @@ filtered_singletons
 SNVs.tsv
 +++++++++++++++++
 
-This describes the SNPs that are detected in this mapping.
+This describes the :term:`SNVs<SNV>` and :term:`SNSs<SNS>` that are detected in this mapping. While we should refer to these mutations as :term:`divergent sites<divergent site>`, sometimes SNV is used to refer to both SNVs and SNSs
 
 .. csv-table:: SNVs.tsv
 
-  scaffold,position,ref_base,A,C,T,G,con_base,var_base,allele_count,cryptic,position_coverage,var_freq,ref_freq
-  S3_003_000X1_scaffold_21039,833,C,2,7,0,0,C,A,2,False,9,0.2222222222222222,0.7777777777777778
-  S3_003_000X1_scaffold_20,99,C,0,0,5,0,T,A,1,False,5,0.0,1.0
-  S3_003_000X1_scaffold_20,123,A,0,0,0,11,G,A,1,False,11,0.0,1.0
-  S3_003_000X1_scaffold_20,261,T,19,0,0,0,A,A,1,False,19,1.0,1.0
-  S3_003_000X1_scaffold_20,291,C,0,16,2,0,C,T,2,False,18,0.1111111111111111,0.8888888888888888
+    scaffold,position,position_coverage,allele_count,ref_base,con_base,var_base,ref_freq,con_freq,var_freq,A,C,T,G,gene,mutation,mutation_type,cryptic,class
+    N5_271_010G1_scaffold_120,174,5,2,C,C,A,0.6,0.6,0.4,2,3,0,0,,,I,False,SNV
+    N5_271_010G1_scaffold_120,195,6,1,T,C,A,0.0,1.0,0.0,0,6,0,0,,,I,False,SNS
+    N5_271_010G1_scaffold_120,411,8,2,A,A,C,0.75,0.75,0.25,6,2,0,0,N5_271_010G1_scaffold_120_1,N:V163G,N,False,SNV
+    N5_271_010G1_scaffold_120,426,9,2,G,G,T,0.7777777777777778,0.7777777777777778,0.2222222222222222,0,0,2,7,N5_271_010G1_scaffold_120_1,N:S178Y,N,False,SNV
+    N5_271_010G1_scaffold_120,481,6,2,C,T,C,0.3333333333333333,0.6666666666666666,0.3333333333333333,0,2,4,0,N5_271_010G1_scaffold_120_1,N:D233N,N,False,con_SNV
+    N5_271_010G1_scaffold_120,484,6,2,G,A,G,0.3333333333333333,0.6666666666666666,0.3333333333333333,4,0,0,2,N5_271_010G1_scaffold_120_1,N:P236S,N,False,con_SNV
+    N5_271_010G1_scaffold_120,488,5,1,T,C,T,0.2,0.8,0.2,0,4,1,0,N5_271_010G1_scaffold_120_1,S:240,S,False,SNS
+    N5_271_010G1_scaffold_120,811,5,1,T,A,T,0.2,0.8,0.2,4,0,1,0,N5_271_010G1_scaffold_120_1,N:N563Y,N,False,SNS
+    N5_271_010G1_scaffold_120,897,7,2,G,G,T,0.7142857142857143,0.7142857142857143,0.2857142857142857,0,0,2,5,,,I,False,SNV
 
 See the :doc:`module_descriptions` for what constitutes a SNP (what makes it into this table)
 
 scaffold
-  The scaffold that the SNP is on
+  The scaffold that the SNV is on
 
 position
-  The genomic position of the SNP
+  The genomic position of the SNV
+
+position_coverage
+  The number of reads detected at this position
+
+allele_count
+  The number of bases that are detected above background levels (according to the :term:`null model`. An allele_count of 0 means no bases are supported by the reads, an allele_count of 1 means that only 1 base is supported by the reads, an allele_count of 2 means two bases are supported by the reads, etc.
 
 ref_base
   The reference base in the .fasta file at that position
 
-A, C, T, and G
-  The number of mapped reads encoding each of the bases
-
 con_base
-  The consensus base; the base that is supported by the most reads
+  The consensus base (the base that is supported by the most reads)
 
 var_base
   Variant base; the base with the second most reads
 
-morphia
-  The number of bases that are detected above background levels. In order to be detected above background levels, you must pass an fdr filter. See module descriptions for a description of how that works. A morphia of 0 means no bases are supported by the reads, a morphia of 1 means that only 1 base is supported by the reads, a morphia of 2 means two bases are supported by the reads, etc.
-
-cryptic
-  If a SNP is cryptic, it means that it is detected when using a lower read mismatch threshold, but becomes undetected when you move to a higher read mismatch level. See "dealing with mm" in the advanced_use section for more details on what this means.
-
-position_coverage
-  The total number of reads at this position
-
-var_freq
-  The fraction of reads supporting the var_base
-
 ref_freq
-  The fraction of reds supporting the ref_base
+  The fraction of reads supporting the ref_base
 
 con_freq
   The fraction of reds supporting the con_base
 
+var_freq
+  The fraction of reads supporting the var_base
+
+A, C, T, and G
+  The number of mapped reads encoding each of the bases
+
+gene
+  If a gene file was included, this column will be present listing if the SNV is in the coding sequence of a gene
+
+mutation
+  Short-hand code for the amino acid switch. If synonymous, this will be S: + the position. If nonsynonymous, this will be N: + the old amino acid + the position + the new amino acid.
+
+mutation_type
+  What type of mutation this is. N = nonsynonymous, S = synonymous, I = intergenic, M = there are multiple genes with this base so you cant tell
+
+cryptic
+  If an SNV is cryptic, it means that it is detected when using a lower read mismatch threshold, but becomes undetected when you move to a higher read mismatch level. See "dealing with mm" in the advanced_use section for more details on what this means.
+
+class
+  The classification of this divergent site. The options are :term:`SNS` (meaning allele_count is 1 and con_base does not equal ref_base), :term:`SNV` (meaning allele_count is > 1 and con_base *does* equal ref_base), con_SNV (meaning allele_count is > 1, con_base does not equal ref_base, and ref_base *is* present in the reads; these count as differences in conANI calculations), pop_SNV (meaning allele_count is > 1, con_base does not equal ref_base, and ref_base *is not* present in the reads; these count as differences in popANI and conANI calculations), DivergentSite (meaning allele count is 0), and AmbiguousReference (meaning the ref_base is not A, C, T, or G)
+
 linkage.tsv
 +++++++++++++++++
 
-This describes the linkage between pairs of SNPs in the mapping that are found on the same read pair at least min_snp times.
+This describes the :term:`linkage` between pairs of SNPs in the mapping that are found on the same read pair at least min_snp times.
 
 .. csv-table:: linkage.tsv
 
-  r2,d_prime,r2_normalized,d_prime_normalized,total,countAB,countAb,countaB,countab,allele_A,allele_a,allele_B,allele_b,distance,position_A,position_B,scaffold
-  1.0,1.0,1.0,1.0,27,0,14,13,0,G,A,T,C,45,191425,191470,S3_003_000X1_scaffold_20
-  0.10743801652892566,1.0000000000000002,0.05263157894736843,1.0,24,13,0,9,2,G,A,C,A,80,191425,191505,S3_003_000X1_scaffold_20
-  0.08333333333333348,1.0,0.07894736842105264,1.0,26,11,2,13,0,T,C,C,A,35,191470,191505,S3_003_000X1_scaffold_20
-  1.0000000000000009,1.0,1.0,1.0,30,22,0,0,8,C,T,T,C,12,99342,99354,S3_003_000X1_scaffold_88
-  1.0000000000000004,1.0,1.0,1.0,22,17,0,0,5,C,T,T,A,60,99342,99402,S3_003_000X1_scaffold_88
+    scaffold,position_A,position_B,distance,r2,d_prime,r2_normalized,d_prime_normalized,allele_A,allele_a,allele_B,allele_b,countab,countAb,countaB,countAB,total
+    N5_271_010G1_scaffold_93,58,59,1,0.021739130434782702,1.0,0.031141868512110725,1.0,C,T,G,A,0,3,4,20,27
+    N5_271_010G1_scaffold_93,58,70,12,0.012820512820512851,1.0,,,C,T,T,A,0,2,4,22,28
+    N5_271_010G1_scaffold_93,58,80,22,0.016722408026755814,1.0,0.005847953216374271,1.0,C,T,G,A,0,2,5,21,28
+    N5_271_010G1_scaffold_93,58,84,26,0.7652173913043475,1.0000000000000002,0.6296296296296297,1.0,C,T,G,C,4,0,1,22,27
+    N5_271_010G1_scaffold_93,58,101,43,0.00907029478458067,1.0,,,C,T,C,A,0,2,2,19,23
+    N5_271_010G1_scaffold_93,58,126,68,0.01754385964912257,1.0,0.002770083102493075,1.0,C,T,A,T,0,2,3,16,21
+    N5_271_010G1_scaffold_93,58,133,75,0.008333333333333352,1.0,,,C,T,G,T,0,1,3,17,21
+    N5_271_010G1_scaffold_93,59,70,11,0.010869565217391413,1.0,0.02777777777777779,1.0,G,A,T,A,0,2,3,21,26
+    N5_271_010G1_scaffold_93,59,80,21,0.6410256410256397,1.0,1.0,1.0,G,A,G,A,2,0,1,25,28
 
 Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP as two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
 
@@ -233,6 +253,15 @@ position_B
 distance
   The distance between the two SNPs
 
+r2
+  This is the r-squared linkage metric. See below for how it's calculated
+
+d_prime
+  This is the d-prime linkage metric. See below for how it's calculated
+
+r2_normalized, d_prime_normalized
+  These are calculated by rarefying to ``min_snp`` number of read pairs. See below for how it's calculated
+
 allele_A
   One of the two bases at position_A
 
@@ -245,8 +274,8 @@ allele_B
 allele_b
   The other of the two bases at position_B
 
-countAB
-  The number of read-pairs that have allele_A and allele_B
+countab
+  The number of read-pairs that have allele_a and allele_b
 
 countAb
   The number of read-pairs that have allele_A and allele_b
@@ -254,20 +283,11 @@ countAb
 countaB
   The number of read-pairs that have allele_a and allele_B
 
-countab
-  The number of read-pairs that have allele_a and allele_b
+countAB
+  The number of read-pairs that have allele_A and allele_B
 
 total
   The total number of read-pairs that have have information for both position_A and position_B
-
-r2
-  This is the r-squared linkage metric. See below for how it's calculated
-
-d_prime
-  This is the d-prime linkage metric. See below for how it's calculated
-
-r2_normalized, d_prime_normalized
-  These are calculated by rarefying to ``min_snp`` number of read pairs. See below for how it's calculated
 
 Python code for the calculation of these metrics::
 
@@ -338,19 +358,203 @@ Python code for the calculation of these metrics::
               'allele_B', 'allele_b']:
       rt_dict[att] = eval(att)
 
+gene_info.tsv
++++++++++++++++++
+
+This describes some basic information about the genes being profiled
+
+.. csv-table:: gene_info.tsv
+
+    scaffold,gene,gene_length,coverage,breadth,breadth_minCov,nucl_diversity,start,end,direction,partial,dNdS_substitutions,pNpS_variants,SNV_count,SNV_S_count,SNV_N_count,SNS_count,SNS_S_count,SNS_N_count,divergent_site_count
+    N5_271_010G1_scaffold_0,N5_271_010G1_scaffold_0_1,141.0,0.7092198581560284,0.7092198581560284,0.0,,143,283,-1,False,,,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+    N5_271_010G1_scaffold_0,N5_271_010G1_scaffold_0_2,219.0,4.849315068493151,1.0,0.45662100456620996,0.012312216758728069,2410,2628,-1,False,,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+    N5_271_010G1_scaffold_0,N5_271_010G1_scaffold_0_3,282.0,7.528368794326241,1.0,0.9609929078014184,0.00805835530326815,3688,3969,-1,False,,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_1,336.0,2.7261904761904763,1.0,0.0625,0.0,0,335,-1,False,,,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_2,717.0,7.714086471408647,1.0,0.8926080892608089,0.011336830817162968,378,1094,-1,False,,0.554203539823008,9.0,2.0,6.0,0.0,0.0,0.0,9.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_3,114.0,13.105263157894735,1.0,1.0,0.016291986431991808,1051,1164,-1,False,,0.3956834532374099,4.0,1.0,2.0,0.0,0.0,0.0,4.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_4,111.0,11.342342342342342,1.0,1.0,0.02102806761458109,1164,1274,-1,False,,,5.0,0.0,5.0,0.0,0.0,0.0,5.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_5,174.0,9.057471264367816,1.0,1.0,0.006896087493019509,1476,1649,-1,False,,0.0,2.0,2.0,0.0,0.0,0.0,0.0,2.0
+    N5_271_010G1_scaffold_1,N5_271_010G1_scaffold_1_6,174.0,6.195402298850576,1.0,0.7413793103448276,0.028698649055273976,1656,1829,-1,False,,0.5790697674418601,4.0,1.0,3.0,0.0,0.0,0.0,4.0
+
+scaffold
+  Scaffold that the gene is on
+
+gene
+  Name of the gene being profiled
+
+gene_length
+  Length of the gene in nucleotides
+
+:term:`breadth`
+  The number of bases in the gene that have at least 1x coverage
+
+breadth_minCov
+  The number of bases in the gene that have at least min_cov coverage
+
+nucl_diversity
+  The mean :term:`nucleotide diversity` of all bases in the gene that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meats the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
+
+start
+  Start of the gene (position on scaffold; 0-indexed)
+
+end
+  End of the gene (position on scaffold; 0-indexed)
+
+direction
+  Direction of the gene (based on prodigal call). If -1, means the gene is not coded in the direction expressed by the .fasta file
+
+partial
+  If True this is a partial gene; based on not having `partial=00` in the record description provided by Prodigal
+
+:term:`dNdS_substitutions<dN/dS>`
+  The :term:`dN/dS` of :term:`SNSs<SNS>` detected in this gene. Will be blank if 0 N and/or 0 S substitutions are detected
+
+:term:`pNpS_variants<pN/pS>`
+  The :term:`pN/pS` of :term:`SNVs<SNV>` detected in this gene. Will be blank if 0 N and/or 0 S SNVs are detected
+
+SNV_count
+  Total number of :term:`SNVs<SNV>` detected in this gene
+
+SNV_S_count
+  Number of synonymous :term:`SNVs<SNV>` detected in this gene
+
+SNV_N_count
+  Number of non-synonymous :term:`SNVs<SNV>` detected in this gene
+
+SNS_count
+  Total number of :term:`SNSs<SNS>` detected in this gens
+
+SNS_S_count
+  Number of synonymous :term:`SNSs<SNS>` detected in this gens
+
+SNS_N_count
+  Number of non-synonymous :term:`SNSs<SNS>` detected in this gens
+
+divergent_site_count
+  Number of :term:`divergent sites<divergent site>` detected in this gens
+
+genome_info.tsv
+++++++++++++++++
+
+Describes many of the above metrics on a genome-by-genome level, rather than a scaffold-by-scaffold level.
+
+.. csv-table:: genome_info.tsv
+
+    genome,coverage,breadth,nucl_diversity,length,true_scaffolds,detected_scaffolds,coverage_median,coverage_std,coverage_SEM,breadth_minCov,breadth_expected,nucl_diversity_rarefied,conANI_reference,popANI_reference,iRep,iRep_GC_corrected,linked_SNV_count,SNV_distance_mean,r2_mean,d_prime_mean,consensus_divergent_sites,population_divergent_sites,SNS_count,SNV_count,filtered_read_pair_count,reads_unfiltered_pairs,reads_mean_PID,reads_unfiltered_reads,divergent_site_count
+    all_scaffolds,5.443497717712342,0.9638091828515172,0.012999760411488584,279325,178,178,4,13.042121218437627,0.02641794817118796,0.3605549091560011,0.9918244597989267,0.0017126380217433116,0.9968126936214156,0.999344665978235,,False,3000.0,92.27933333333333,0.1035315133374686,0.9402437184830787,321,66,63,1745,7179,19293,0.9802826482449184,60551,1808
+
+genome
+  The name of the genome being profiled. If all scaffolds were a single genome, this will read "all_scaffolds"
+
+coverage
+  Average :term:`coverage depth<coverage>` of all scaffolds of this genome
+
+breadth
+  The :term:`breadth` of all scaffolds of this genome
+
+nucl_diversity
+  The average :term:`nucleotide diversity` of all scaffolds of this genome
+
+length
+  The full length of this genome across all scaffolds
+
+true_scaffolds
+  The number of scaffolds present in this genome based off of the scaffold-to-bin file
+
+detected_scaffolds
+  The number of scaffolds with at least a single read-pair mapping to them
+
+coverage_median
+  The median :term:`coverage` amoung all bases in the genome
+
+coverage_std
+  The standard deviation of all coverage values
+
+coverage_SEM
+  The standard error of the mean of all coverage values (calculated using `scipy.stats.sem <https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.sem.html>`_)
+
+breadth_minCov
+  The percentage of bases in the scaffold that have at least min_cov coverage (e.g. the percentage of bases that have a nucl_diversity value and meet the minimum sequencing depth to call SNVs)
+
+breadth_expected
+  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, prophage, etc.)
+
+nucl_diversity_rarefied
+  The average :term:`nucleotide diversity` among positions that have at least ``--rarefied_coverage`` (50x by default). These values are also calculated by randomly subsetting the reads at that position to ``--rarefied_coverage`` reads
+
+conANI_reference
+  The :term:`conANI` between the reads and the reference genome
+
+popANI_reference
+  The :term:`popANI` between the reads and the reference genome
+
+iRep
+  The :term:`iRep` value for this genome (if it could be successfully calculated)
+
+iRep_GC_corrected
+  A True / False value of whether the iRep value was corrected for GC bias
+
+linked_SNV_count
+  The number of :term:`divergent sites<divergent site>` that could be :term:`linked<linkage>` in this genome
+
+SNV_distance_mean
+  Average distance between linked :term:`divergent sites<divergent site>`
+
+r2_mean
+  Average r2 between linked SNVs (see explanation of linkage.tsv above for more info)
+
+d_prime_mean
+  Average d prime between linked SNVs (see explanation of linkage.tsv above for more info)
+
+consensus_divergent_sites
+  The total number of :term:`divergent sites<divergent site>` in which the reads have a different consensus allele than the reference genome. These count as "differences" in the conANI_reference calculation, and ``breadth_minCov`` * ``length`` counts as the denominator.
+
+population_divergent_sites
+  The total number of :term:`divergent sites<divergent site>` in which the reads do not have the reference genome base as any allele at all (major or minor). These count as "differences" in the popANI_reference calculation, and ``breadth_minCov`` * ``length`` counts as the denominator.
+
+SNS_count
+  The total number of :term:`SNSs<SNS>` called on this genome
+
+SNV_count
+  The total number of :term:`SNVs<SNV>` called on this genome
+
+filtered_read_pair_count
+  The total number of read pairs that pass filtering and map to this genome
+
+reads_unfiltered_pairs
+  The total number of pairs, filtered or unfiltered, that map to this genome
+
+reads_mean_PID
+  The average ANI of mapped read pairs to the reference genome for this genome
+
+reads_unfiltered_reads
+  The total number of reads, filtered or unfiltered, that map to this genome
+
+divergent_site_count
+  The total number of :term:`divergent sites<divergent site>` called on this genome
+
 inStrain compare
--------
+---------------------
 
 A typical run of inStrain will yield the following files in the output folder:
 
+comparisonsTable.tsv
++++++++++++++++++++++
+
+Summarizes the differences between two inStrain profiles on a scaffold by scaffold level
+
 .. csv-table:: comparisonsTable.tsv
 
-  scaffold,name1,name2,coverage_overlap,compared_bases_count,percent_genome_compared,length,consensus_SNPs,population_SNPs,conANI,popANI
-  S3_016_000X1_scaffold_14208,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9825304393859184,1856,0.9814912744579588,1891,7,0,0.996228448275862,1.0
-  S3_016_000X1_scaffold_9493,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9778541428025964,2561,0.977107974055704,2621,2,0,0.9992190550566185,1.0
-  S3_016_000X1_scaffold_12686,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9787336877718704,2025,0.9768451519536904,2073,7,0,0.9965432098765432,1.0
-  S3_016_000X1_scaffold_11829,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9739130434782608,2128,0.9712460063897764,2191,14,0,0.9934210526315792,1.0
-  S3_016_000X1_scaffold_8891,Sloan3AllGenomeInventory.fasta-vs-S3_003_000X1.sorted.bam,Sloan3AllGenomeInventory.fasta-vs-S3_016_000X1.sorted.bam,0.9826212889210716,2714,0.9826212889210716,2762,5,0,0.9981577008106116,1.0
+    scaffold,name1,name2,coverage_overlap,compared_bases_count,percent_genome_compared,length,consensus_SNPs,population_SNPs,popANI,conANI
+    N5_271_010G1_scaffold_98,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,61,0.05290546400693842,1153,0,0,1.0,1.0
+    N5_271_010G1_scaffold_133,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,78,0.0741444866920152,1052,0,0,1.0,1.0
+    N5_271_010G1_scaffold_144,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,172,0.16715257531584066,1029,0,0,1.0,1.0
+    N5_271_010G1_scaffold_158,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,36,0.035749751737835164,1007,0,0,1.0,1.0
+    N5_271_010G1_scaffold_57,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,24,0.0183206106870229,1310,0,0,1.0,1.0
+    N5_271_010G1_scaffold_139,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,24,0.023121387283236997,1038,0,0,1.0,1.0
+    N5_271_010G1_scaffold_92,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,336,0.286934244235696,1171,0,0,1.0,1.0
+    N5_271_010G1_scaffold_97,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,22,0.01901469317199654,1157,0,0,1.0,1.0
+    N5_271_010G1_scaffold_100,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,21,0.018292682926829267,1148,0,0,1.0,1.0
 
 scaffold
   The scaffold being compared
@@ -374,137 +578,123 @@ length
   The total length of the scaffold
 
 consensus_SNPs
-  The number of locations along the genome where both samples have the base at >= 5x coverage, and the consensus allele in each sample is different
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and the consensus allele in each sample is different. Used to calculate :term:`conANI`
 
 population_SNPs
-  The number of locations along the genome where both samples have the base at >= 5x coverage, and no alleles are shared between either sample. See inStrain manuscript for more details.
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and no alleles are shared between either sample. Used to calculate :term:`popANI`
 
-popANI
+:term:`popANI`
   The average nucleotide identity among compared bases between the two scaffolds, based on population_SNPs. Calculated using the formula popANI = (compared_bases_count - population_SNPs) / compared_bases_count
 
-conANI
+:term:`conNI`
   The average nucleotide identity among compared bases between the two scaffolds, based on consensus_SNPs. Calculated using the formula conANI = (compared_bases_count - consensus_SNPs) / compared_bases_count
 
-inStrain profile_genes
------------
+pairwise_SNP_locations.tsv
++++++++++++++++++++++++++++
 
-A typical run of inStrain profile_genes will yield the following additional files in the output folder:
+Lists the locations of all differences between profiles
 
-gene_info.tsv
-+++++++++++
+.. csv-table:: pairwise_SNP_locations.tsv
 
-This describes some basic information about the genes being profiled
-
-.. csv-table:: gene_info.tsv
-
-  gene,scaffold,direction,partial,start,end,coverage,breadth,clonality,microdiversity,masked_breadth,SNPs_per_bp,min_ANI
-  S3_002_028G1_scaffold_0_1,S3_002_028G1_scaffold_0,-1,False,957,2219,,,,,,,0
-  S3_002_028G1_scaffold_0_2,S3_002_028G1_scaffold_0,-1,False,2189,3136,,,,,,,0
-  S3_002_028G1_scaffold_0_3,S3_002_028G1_scaffold_0,1,False,3274,5013,,,,,,,0
-  S3_002_028G1_scaffold_0_4,S3_002_028G1_scaffold_0,-1,False,5018,5746,,,,,,,0
-  S3_002_028G1_scaffold_0_5,S3_002_028G1_scaffold_0,1,False,5888,6862,,,,,,,0
-
-gene
-  Name of the gene being profiled
+    scaffold,position,name1,name2,consensus_SNP,population_SNP,con_base_1,ref_base_1,var_base_1,position_coverage_1,A_1,C_1,T_1,G_1,con_base_2,ref_base_2,var_base_2,position_coverage_2,A_2,C_2,T_2,G_2
+    N5_271_010G1_scaffold_9,823,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,G,G,A,10.0,3.0,0.0,0.0,7.0,A,G,G,6.0,3.0,0.0,0.0,3.0
+    N5_271_010G1_scaffold_11,906,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,T,T,C,6.0,0.0,2.0,4.0,0.0,C,T,T,7.0,0.0,4.0,3.0,0.0
+    N5_271_010G1_scaffold_29,436,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,C,T,T,6.0,0.0,3.0,3.0,0.0,T,T,C,7.0,0.0,3.0,4.0,0.0
+    N5_271_010G1_scaffold_140,194,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,A,A,T,6.0,4.0,0.0,2.0,0.0,T,A,A,9.0,4.0,0.0,5.0,0.0
+    N5_271_010G1_scaffold_24,1608,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,G,G,A,8.0,2.0,0.0,0.0,6.0,A,G,G,6.0,5.0,0.0,0.0,1.0
+    N5_271_010G1_scaffold_112,600,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,A,G,G,6.0,4.0,0.0,0.0,2.0
+    N5_271_010G1_scaffold_88,497,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,A,G,G,5.0,3.0,0.0,0.0,2.0
+    N5_271_010G1_scaffold_53,1108,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,A,A,G,5.0,3.0,0.0,0.0,2.0,G,A,A,15.0,6.0,0.0,0.0,9.0
+    N5_271_010G1_scaffold_46,710,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,True,False,A,C,C,6.0,4.0,2.0,0.0,0.0,C,C,A,6.0,2.0,4.0,0.0,0.0
 
 scaffold
-  Scaffold that the gene is on
+  The scaffold on which the difference is located
 
-direction
-  Direction of the gene (based on prodigal call). If -1, means the gene is not coded in the direction expressed by the .fasta file
+position
+  The position where the difference is located (0-based)
 
-partial
-  If True this is a partial gene; based on not having `partial=00` in the record description provided by Prodigal
+name1
+  The name of the first `inStrain profile` being compared
 
-start
-  Start of the gene (position on scaffold; 0-indexed)
+name2
+  The name of the second `inStrain profile` being compared
 
-end
-  End of the gene (position on scaffold; 0-indexed)
+consensus_SNP
+  A True / False column listing whether or not this difference counts towards :term:`conANI` calculations
 
-coverage
-  The mean coverage across the length of the gene
+population_SNP
+  A True / False column listing whether or not this difference counts towards :term:`popANI` calculations
 
-breadth
-  The number of bases in the gene that have at least 1x coverage
+con_base_1
+  The consensus base of the profile listed in ``name1`` at this position
 
-microdiversity
-  The mean nucleotide diversity (pi) among positions on the gene with at least 5x coverage
+ref_base_1
+  The reference base of the profile listed in ``name1`` at this position (will be the same as ``ref_base_2``)
 
-clonality
-  1 - microdiversity
+var_base_1
+  The variant base of the profile listed in ``name1`` at this position
 
-masked_breadth
-  The percentage of positions in the gene with at least 5x coverage
+position_coverage_1
+  The number of reads mapping to this position in ``name1``
 
-SNPs_per_bp
-  The number of positions on the gene where a SNP is called
+A_1, C_1, T_1, G_1
+  The number of mapped reads with each nucleotide in ``name1``
 
-min_ANI
-  The minimum read ANI level when profile_genes was run (0 means the value is whatever was set with Profile was originally run)
+con_base_2, ref_base_2, ...
+  The above columns are also listed for the ``name2`` sample
 
-SNP_mutation_types.tsv
-+++++++++++++++
+genomeWide_compare.tsv
++++++++++++++++++++++++++++
 
-This describes whether SNPs are synonymous, nonsynonymous, or intergenic
+A genome-level summary of the differences detected by inStrain compare. Generated by running ``inStrain genome_wide`` on the results of ``inStrain compare``
 
-.. csv-table:: SNP_mutation_types.tsv
+.. csv-table:: genomeWide_compare.tsv
 
-  scaffold,position,ref_base,A,C,T,G,con_base,var_base,allele_count,position_coverage,var_freq,ref_freq,mutation_type,mutation,gene
-  S3_002_056W1_scaffold_121,2134,C,0,3,2,0,C,T,2,5,0.4,0.6,N,N:H936Y,S3_002_056W1_scaffold_121_2
-  S3_002_056W1_scaffold_121,8509,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G459R,S3_002_056W1_scaffold_121_11
-  S3_002_056W1_scaffold_121,8510,G,7,0,0,0,A,A,1,7,1.0,1.0,N,N:G460E,S3_002_056W1_scaffold_121_11
-  S3_002_056W1_scaffold_121,16899,G,0,2,0,5,G,C,2,7,0.2857142857142857,0.7142857142857143,N,N:G1068R,S3_002_056W1_scaffold_121_20
-  S3_002_056W1_scaffold_121,24347,C,0,9,2,0,C,T,2,11,0.18181818181818185,0.8181818181818182,N,N:Q894*,S3_002_056W1_scaffold_121_25
+    genome,name1,name2,coverage_overlap,compared_bases_count,consensus_SNPs,population_SNPs,popANI,conANI,percent_compared
+    all_scaffolds,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,1.0,100712,0,0,1.0,1.0,0.3605549091560011
+    all_scaffolds,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,0.6852932198159855,71900,196,,50.9999304589707928,0.9972739916550765,0.25740624720307886
+    all_scaffolds,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,1.0,145663,0,0,1.0,1.0,0.5214821444553835
 
-All genes with an allele_count of 1 or 2 make it into this table; see the above description of SNVs.tsv for details on what most of these columns mean
+genome
+  The genome being compared
 
-mutation_type
-  What type of mutation this is. N = nonsynonymous, S = synonymous, I = intergenic, M = there are multiple genes with this base so you cant tell
+name1
+  The name of the first `inStrain profile` being compared
 
-mutation
-  Short-hand code for the amino acid switch. If synonymous, this will be S: + the position. If nonsynonymous, this will be N: + the old amino acid + the position + the new amino acid.
+name2
+  The name of the second `inStrain profile` being compared
 
-gene
-  The gene this SNP is in
+coverage_overlap
+  The percentage of bases that are either covered or not covered in both of the profiles (covered = the base is present at at least min_snp coverage). The formula is length(coveredInBoth) / length(coveredInEither). If both scaffolds have 0 coverage, this will be 0.
 
-inStrain genome_wide
-------------
+compared_bases_count
+  The number of considered bases; that is, the number of bases with at least min_snp coverage in both profiles. Formula is length([x for x in overlap if x == True]).
 
-A typical run of inStrain genome_wide will yield the following additional files in the output folder:
+percent_genome_compared
+  The percentage of bases in the scaffolds that are covered by both. The formula is length([x for x in overlap if x == True])/length(overlap). When ANI is np.nan, this must be 0. If both scaffolds have 0 coverage, this will be 0.
 
-genomeWide_scaffold_info.tsv
-+++++++++++++
+length
+  The total length of the genome
 
-This is a genome-wide version of the scaffold report described above. See above for column descriptions.
+consensus_SNPs
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and the consensus allele in each sample is different. Used to calculate :term:`conANI`
 
-.. csv-table:: genomeWide_scaffold_info.tsv
+population_SNPs
+  The number of locations along the genome where both samples have the base at >= 5x coverage, and no alleles are shared between either sample. Used to calculate :term:`popANI`
 
-  genome,detected_scaffolds,true_scaffolds,length,SNPs,Referece_SNPs,BiAllelic_SNPs,MultiAllelic_SNPs,consensus_SNPs,population_SNPs,breadth,coverage,coverage_std,mean_clonality,conANI,popANI,unmaskedBreadth,breadth_expected
-  S3_002_S3_002_000X1_S3_002_000X1_scaffold_633.fasta.fa,1,1,19728,24,5,19,0,7,5,0.9462185725871858,4.5430859691808605,2.7106449701139903,0.998095248422326,0.9992792421746294,0.999485172981878,0.4922952149229522,0.9818945976123048
-  S3_002_S3_002_000X1_S3_002_000X1_scaffold_980.fasta.fa,1,1,11440,0,0,0,0,0,0,0.10113636363636364,0.10113636363636364,0.3015092031543595,,0.0,0.0,0.0,0.08543195678460236
-  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_1.fasta.fa,1,1,21455,0,0,0,0,0,0,0.5250058261477512,0.925378699603822,1.1239958370555831,0.9985388128180482,1.0,1.0,0.010207410859939408,0.5582933883068741
-  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_22.fasta.fa,1,1,15306,62,2,60,0,10,2,0.9562263164771984,4.977525153534561,4.1617488447219975,0.9939042740586184,0.9983668136534378,0.9996733627306876,0.4000392003136025,0.9876630284821302
-  S3_002_S3_002_028Y1_S3_002_028Y1_scaffold_24.fasta.fa,1,1,10383,64,6,58,0,18,6,0.9650390060676104,4.310507560435327,2.783478652159297,0.9912517160274896,0.9957865168539326,0.9985955056179776,0.4114417798324184,0.9777670126398924
+:term:`popANI`
+  The average nucleotide identity among compared bases between the two scaffolds, based on population_SNPs. Calculated using the formula popANI = (compared_bases_count - population_SNPs) / compared_bases_count
 
-genomeWide_mapping_info.tsv
-++++++++++++
-
-This is a genome-wide version of the read report described above. See above for column descriptions.
-
-.. csv-table:: genomeWide_mapping_info.tsv
-
-  genome,scaffolds,unfiltered_reads,unfiltered_pairs,pass_filter_cutoff,pass_max_insert,pass_min_insert,pass_min_mapq,filtered_pairs,mean_mistmaches,mean_insert_distance,mean_mapq_score,mean_pair_length,median_insert,mean_PID
-  S2_002_005G1_phage_Clostridioides_difficile.fasta,1,10605,5062,5048,5062,5062,5062,5048,0.3832477281706835,312.3638877913868,1.3024496246542872,293.6845120505729,308.0,0.998581261373412
-  S2_018_020G1_bacteria_Clostridioides_difficile.fasta,34,4453547,2163329,2149205,2163040,2162730,2163329,2148394,0.5636466689761853,321.3510672021471,41.47419579138972,293.33494491093336,312.5147058823529,0.9979527547934701
+:term:`conNI`
+  The average nucleotide identity among compared bases between the two scaffolds, based on consensus_SNPs. Calculated using the formula conANI = (compared_bases_count - consensus_SNPs) / compared_bases_count
 
 inStrain plot
-------------
+----------------
 
 This is what the results of inStrain plot look like.
 
 1) Coverage and breadth vs. read mismatches
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/Example1.png
   :width: 800px
@@ -513,7 +703,7 @@ This is what the results of inStrain plot look like.
 Breadth of coverage (blue line), coverage depth (red line), and expected breadth of coverage given the depth of coverage (dotted blue line) versus the minimum ANI of mapped reads. Coverage depth continues to increase while breadth of plateaus, suggesting that all regions of the reference genome are not present in the reads being mapped.
 
 2) Genome-wide microdiversity metrics
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/genomeWide_microdiveristy_metrics_1.png
   :width: 800px
@@ -526,7 +716,7 @@ Breadth of coverage (blue line), coverage depth (red line), and expected breadth
 SNV density, coverage, and nucleotide diversity. Spikes in nucleotide diversity and SNV density do not correspond with increased coverage, indicating that the signals are not due to read mis-mapping. Positions with nucleotide diversity and no SNV-density are those where diversity exists but is not high enough to call a SNV
 
 3) Read-level ANI distribution
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/readANI_distribution.png
   :width: 800px
@@ -535,7 +725,7 @@ SNV density, coverage, and nucleotide diversity. Spikes in nucleotide diversity 
 Distribution of read pair ANI levels when mapped to a reference genome; this plot suggests that the reference genome is >1% different than the mapped reads
 
 4) Major allele frequencies
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/MajorAllele_frequency_plot.png
   :width: 800px
@@ -544,7 +734,7 @@ Distribution of read pair ANI levels when mapped to a reference genome; this plo
 Distribution of the major allele frequencies of bi-allelic SNVs (the Site Frequency Spectrum). Alleles with major frequencies below 50% are the result of multiallelic sites. The lack of distinct puncta suggest that more than a few distinct strains are present.
 
 5) Linkage decay
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/LinkageDecay_plot.png
   :width: 800px
@@ -557,7 +747,7 @@ Distribution of the major allele frequencies of bi-allelic SNVs (the Site Freque
 Metrics of SNV linkage vs. distance between SNVs; linkage decay (shown in one plot and not the other) is a common signal of recombination.
 
 6) Read filtering plots
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/ReadFiltering_plot.png
   :width: 800px
@@ -566,7 +756,7 @@ Metrics of SNV linkage vs. distance between SNVs; linkage decay (shown in one pl
 Bar plots showing how many reads got filtered out during filtering. All percentages are based on the number of paired reads; for an idea of how many reads were filtered out for being non-paired, compare the top bar and the second to top bar.
 
 7) Scaffold inspection plot (large)
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/ScaffoldInspection_plot.png
   :width: 800px
@@ -575,7 +765,7 @@ Bar plots showing how many reads got filtered out during filtering. All percenta
 This is an elongated version of the genome-wide microdiversity metrics that is long enough for you to read scaffold names on the y-axis
 
 8) Linkage with SNP type (GENES REQUIRED)
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/LinkageDecay_types_plot.png
   :width: 800px
@@ -584,7 +774,7 @@ This is an elongated version of the genome-wide microdiversity metrics that is l
 Linkage plot for pairs of non-synonymous SNPs and all pairs of SNPs
 
 9) Gene histograms (GENES REQUIRED)
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/GeneHistogram_plot.png
   :width: 800px
@@ -593,7 +783,7 @@ Linkage plot for pairs of non-synonymous SNPs and all pairs of SNPs
 Histogram of values for all genes profiled
 
 10) Compare dendrograms (RUN ON COMPARE; NOT PROFILE)
-++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. figure:: images/ExampleIS_plots/Example10.png
   :width: 800px
