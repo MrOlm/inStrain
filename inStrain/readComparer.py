@@ -281,7 +281,7 @@ def parse_validate(args):
 
         scaffolds += list(S._get_covt_keys())
         names.append(name)
-        name2SNVprofile[name] = S.get('cumulative_snv_table')
+        name2SNVprofile[name] = S.get('cumulative_snv_table').rename(columns={'conBase':'con_base', 'refBase':'ref_base','varBase':'var_base','baseCoverage':'position_coverage'})
         Sprofiles.append(S)
 
         s2l = S.get('scaffold2length')
