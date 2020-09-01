@@ -507,7 +507,7 @@ def iterate_commands(names, sProfiles, s2l, scaffolds_to_compare, kwargs):
         i += 1
 
         full_covTs.append(S.get('covT', scaffolds=scaffolds_to_compare))
-        full_SNPtables.append(S.get('cumulative_snv_table'))
+        full_SNPtables.append(S.get('cumulative_snv_table').rename(columns={'conBase':'con_base', 'refBase':'ref_base','varBase':'var_base','baseCoverage':'position_coverage'}))
 
     # Make commands
     for scaff in scaffolds_to_compare:
