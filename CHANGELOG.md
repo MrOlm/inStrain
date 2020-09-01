@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.5] - 2020-09-01
+- Backwards compatibility when running inStrain compare on old inStrain profiles
+
 ## [1.3.4] - 2020-08-31
 - More updates to the docs
 - Bugfix regarding .stb files when scaffolds are present in the .fasta file, but not the .bam file
