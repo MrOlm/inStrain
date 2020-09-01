@@ -1,4 +1,4 @@
-Important concepts & FAQ
+Glossary & FAQ
 ==========================
 
 Overview
@@ -176,3 +176,19 @@ What is a population?
 ++++++++++++++++++++++++++++++
 
 To characterize intra-population genetic diversity, it stands to reason that you first require an adequate definition of "population". InStrain relies mainly on population definitions that are largely technically limited, but also coincide conveniently with possibly biological real microbial population constraints (see `Olm et. al. mSystems 2020 <https://msystems.asm.org/content/5/1/e00731-19>`_ and `Jain et. al. Nature Communications 2018 <https://www.nature.com/articles/s41467-018-07641-9>`_). Often, we dereplicate genomes from an environment at average nucleotide identities (ANI) from 95% to 99%, depending on the hetereogeneity expected within each sample - lower ANIs might be preferred with more complex samples. We then assign reads to each genome's population by stringently requiring that combined read pairs for SNP calling be properly mapped pairs with an similarity to the consensus of at least 95% by default, so that the cell that the read pair came from was at least 95% similar to the average consensus genotype at that position. Within environment, inStrain makes it possible to adjust these parameters as needed and builds plots which can be used to estimate the best cutoffs for each project.
+
+What are inStrain's computational requirements?
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The two computational resources to consider when running inStrain are the number of processes given (``-p``) and the amount of RAM on the computer (usually not adjustable unless using cloud-based computing).
+
+Using inStrain v1.3.3, running inStrain on a .bam file of moderate size (1 Gbp of less) will generally take less than an hour with 6 cores, and use about 8Gb of RAM. InStrain is designed to handle large .bam files as well. Running a huge .bam file (30 Gbp) with 32 cores, for example, will take ~2 hours and use about 128Gb of RAM. The more processes you give inStrain the longer it will run, but also the more RAM it will use.
+
+In the log folder InStrain provides a lot of information on where it's spending it's time and where it's using it's RAM.
+
+To reduce RAM usage, you can try the following things:
+
+* Use the ``--skip_mm`` flag. This won't profile things on the mm level (see the above section), and will treat every read pair as perfectly mapped
+
+* Use the ``database_mode`` flag. This will do a couple of things to try and reduce RAM usage
+

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.4] - 2020-08-31
+- More updates to the docs
+- Bugfix regarding .stb files when scaffolds are present in the .fasta file, but not the .bam file
+
 ## [1.3.3] - 2020-08-31
 - More upgrades to the docs
 - An additional refinement to creating profile_merge jobs in linear time even when the amount of genes loaded is huge

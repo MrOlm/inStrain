@@ -90,7 +90,7 @@ class test_profile:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, min=0, max=18, tests='all', cleanUp=True):
+    def run(self, min=0, max=19, tests='all', cleanUp=True):
         # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
         # self.setUp()
         # self.test0()
@@ -1281,3 +1281,25 @@ class test_profile:
         db = IS.get('genome_level_info')
         assert db is not None
         assert len(glob.glob(base + '/log/*')) == 3
+
+    def test19(self):
+        """
+        Test the case where a scaffold is not in the .bam but is in the .stb
+        """
+        # Run program
+        base = self.test_dir + 'test'
+        cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 -s {4} --store_everything --skip_plot_generation".format(
+            self.script, self.sorted_bam,
+            self.extra_single_scaff, base,
+            self.extra_single_scaff.replace('.fasta', '.stb'))
+        print(cmd)
+        sys_args = cmd.split(' ')
+        args = inStrain.argumentParser.parse_args(sys_args[1:])
+        inStrain.controller.Controller().main(args)
+
+        # Make sure scaffold table is OK
+        floc = os.path.join(base, 'output', 'test_genome_info.tsv')
+        db = pd.read_csv(floc, sep='\t')
+        assert db['true_scaffolds'].iloc[0] == 2
+        assert db['length'].iloc[0] == 1348
+

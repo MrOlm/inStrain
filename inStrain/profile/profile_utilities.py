@@ -615,7 +615,6 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
     # Merge things
     scaffold_list = []
     bam_list = []
-    scaffold2length = {}
 
     raw_snp_dbs = []
     raw_link_dbs = []
@@ -631,7 +630,6 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
 
         scaffold_list.append(Sprof.scaffold)
         bam_list.append(Sprof.bam)
-        scaffold2length[Sprof.scaffold] = Sprof.length
 
         raw_snp_dbs.append(Sprof.raw_snp_table)
         raw_link_dbs.append(Sprof.raw_linkage_table)
@@ -662,7 +660,6 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
     Sprofile.store('object_type', 'profile', 'value', 'Type of SNVprofile (profile or compare)')
     Sprofile.store('bam_loc', bam_list[0], 'value', 'Location of .bam file')
     Sprofile.store('scaffold_list', scaffold_list, 'list', '1d list of scaffolds that were profiled')
-    Sprofile.store('scaffold2length', scaffold2length, 'dictionary', 'Dictionary of scaffold 2 length')
     Sprofile.store('raw_linkage_table', pd.concat(raw_link_dbs).reset_index(drop=True),
                     'pandas', 'Raw table of linkage information')
     Sprofile.store('raw_snp_table', raw_snp_table,

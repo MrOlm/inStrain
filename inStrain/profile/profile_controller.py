@@ -90,7 +90,7 @@ class BamProfileController(object):
 
         # Filter gene database to relevant scaffolds
         scaffs = set(self.scaff2sequence.keys())
-        for scaff in scaff2geneinfo.keys():
+        for scaff in scaffs:
             if scaff not in scaffs:
                 del scaff2geneinfo[scaff]
 

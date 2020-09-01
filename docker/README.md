@@ -2,7 +2,7 @@
 
 ## Overview
 
-A Docker image containing inStrain is available on [Docker Hub](https://hub.docker.com/repository/docker/mattolm/instrain).
+A Docker image containing inStrain is available on [Docker Hub with name "mattolm/instrain:latest"](https://hub.docker.com/repository/docker/mattolm/instrain).
 
 The Docker image was made by running the command `make` in this directory. This puts all files in this directory inside of the resulting Docker image, as well as the most recent version of `inStrain` available on [Bioconda](https://bioconda.github.io/recipes/instrain/README.html). If you want to make sure inStrain is up to date, or use a different version, you can run `pip install instrain --upgrade` within the Docker image.
 
