@@ -245,14 +245,6 @@ class ProfileController(object):
         else:
             self.ISP.store('Rdic', self.Rdic, 'dictionary', 'Read pair -> mismatches')
 
-        # Handle exceptions
-        if self.RR['filtered_pairs'].tolist()[0] == 0:
-            logging.error("Because no read pairs remain I'm going to crash now. Maybe this is failing because you dont have paired reads (in which case you should adjust --pairing_filter option), or maybe its failing because the mapper you used uses full fasta headers (in which case you should use the flag --use_full_fasta_header)")
-            raise Exception('No paired reads detected; see above message and log')
-
-        if len(self.fasta_db) <= 0:
-            logging.error("No scaffolds passed initial filtering based on numbers of mapped reads")
-            raise Exception('No scaffolds detected; see above message and log')
 
         # Store results
         self.ISP.store('mapping_info', self.RR, 'pandas', "Report on reads")
@@ -270,6 +262,16 @@ class ProfileController(object):
         status += "{0:,} read pairs remain ({1:#.4g} Gbp)".format(
                     filterd_pairs, (filterd_pairs * pair_length)/1e9)
         logging.info(status)
+
+        # Handle exceptions
+        if self.RR['filtered_pairs'].tolist()[0] == 0:
+            logging.error(
+                "Because no read pairs remain I'm going to crash now. Maybe this is failing because you dont have paired reads (in which case you should adjust --pairing_filter option), or maybe its failing because the mapper you used uses full fasta headers (in which case you should use the flag --use_full_fasta_header)")
+            raise Exception('No paired reads detected; see above message and log')
+
+        if len(self.fasta_db) <= 0:
+            logging.error("No scaffolds passed initial filtering based on numbers of mapped reads")
+            raise Exception('No scaffolds detected; see above message and log')
 
     def run_profile(self):
         '''

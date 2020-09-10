@@ -132,8 +132,24 @@ def download_data(args, working_dir, tmp_dir):
         download_file(args.fasta, tmp_dir)
         cmd_string = cmd_string + os.path.join(tmp_dir, os.path.basename(args.fasta)) + ' '
 
+    # Download the IS profiles
+    if args.IS is not None:
+        cmd_string += '-i '
+        for is_loc in args.IS:
+            # Get the name
+            is_loc = is_loc.strip()
+            if is_loc[-1] == '/':
+                is_name = is_loc.split('/')[-2]
+            else:
+                is_name = is_loc.split('/')[-1]
+            is_dir = os.path.join(tmp_dir, is_name)
+
+            logging.info("Downloading IS to {0}".format(is_dir))
+            download_folder(is_loc, is_dir)
+            cmd_string += ' {0} '.format(is_dir)
+
     # Download other files
-    for f, name in zip([args.genes, args.stb], ['-g', '-s']):
+    for f, name in zip([args.genes, args.stb, args.scaffolds], ['-g', '-s', '-s']):
         if f is not None:
             logging.info("{0} is {1}; downloading".format(name, f))
             download_file(f, tmp_dir)
@@ -189,6 +205,8 @@ def parse_arguments():
     file_path_group.add_argument('--fasta', type=str, help='s3 path to the .fasta file')
     file_path_group.add_argument('--genes', type=str, help='s3 path to the genes file')
     file_path_group.add_argument('--stb', help='s3 path to the stb file')
+    file_path_group.add_argument('--IS', help='a space-separated list of IS profile directories', nargs='*')
+    file_path_group.add_argument('--scaffolds', help='s3 path to a list of scaffolds for compare')
     file_path_group.add_argument('--results_directory', type=str, help='s3 path to the folder to put the results in')
 
     run_group = argparser.add_argument_group(title='Run command args')

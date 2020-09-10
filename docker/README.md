@@ -43,8 +43,12 @@ Run command args:
                         will make it not
 ```
 
-### Example command
+### Example commands
 
 ```
 ./prepare.sh; conda activate work; ./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --cmd_args='--skip_plot_generation'
+```
+
+```
+"./prepare.sh; conda activate work; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}
 ```

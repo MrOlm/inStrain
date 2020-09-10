@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.3.5] - 2020-09-01
+## [1.3.5] - 2020-09-10
 - Backwards compatibility when running inStrain compare on old inStrain profiles
+- Print some more info before crashing due to no scaffolds detected
+- Update the Docker to be able to handle compare
 
 ## [1.3.4] - 2020-08-31
 - More updates to the docs
