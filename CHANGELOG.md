@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.6] - 2020-09-14
+- Apply a mutliprocessing patch to help python version 3.6
+- Allow the Docker to accept a FOF for inStrain compare input
+- Have the Docker download a reduced IS profile for running compare**
+
 ## [1.3.5] - 2020-09-10
 - Backwards compatibility when running inStrain compare on old inStrain profiles
 - Print some more info before crashing due to no scaffolds detected

@@ -3,10 +3,11 @@ import os
 import subprocess
 import shlex
 import boto3
+import pandas as pd
 
 s3 = boto3.resource('s3')
 
-def download_folder(s3_path, directory_to_download):
+def download_folder(s3_path, directory_to_download, exclude=None, include=None):
     """
     Downloads a folder from s3
     :param s3_path: s3 folder path
@@ -14,6 +15,15 @@ def download_folder(s3_path, directory_to_download):
     :return: directory that was downloaded
     """
     cmd = 'aws s3 cp --recursive %s %s' % (s3_path, directory_to_download)
+    if exclude is not None:
+        assert type(exclude) == type([])
+        for e in exclude:
+            cmd += " --exclude \"{0}\"".format(e)
+    if include is not None:
+        assert type(include) == type([])
+        for e in include:
+            cmd += " --include \"{0}\"".format(e)
+
     print(cmd)
 
     subprocess.check_call(shlex.split(cmd))
@@ -146,6 +156,14 @@ def load_coverage_report(s3_bucket, s3_key, sep='\t', names=None):
     df = pd.read_csv(io.BytesIO(obj['Body'].read()), sep=sep, names=names)
 
     return df
+
+def read_s3_file(s3_loc):
+    s3_bucket = s3_loc.split('/')[2]
+    s3_key = '/'.join(s3_loc.split('/')[3:])
+
+    s3 = boto3.resource('s3')
+    obj = s3.Object(s3_bucket, s3_key)
+    return obj.get()['Body'].read().decode('ascii')
 
 def glob_s3(s3_path):
     bucket = s3_path.split('/')[2]

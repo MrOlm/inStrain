@@ -9,7 +9,7 @@ import logging
 import subprocess
 from argparse import ArgumentParser
 
-from s3_utils import download_file, upload_file, download_folder, upload_folder
+from s3_utils import download_file, upload_file, download_folder, upload_folder, read_s3_file
 from job_utils import generate_working_dir, delete_working_dir#, setup_logger
 
 
@@ -135,9 +135,18 @@ def download_data(args, working_dir, tmp_dir):
     # Download the IS profiles
     if args.IS is not None:
         cmd_string += '-i '
-        for is_loc in args.IS:
+
+        if len(args.IS) > 1:
+            is_locs = args.IS
+        else:
+            is_locs = read_s3_file(args.IS[0]).split('\n')
+
+        for is_loc in is_locs:
             # Get the name
             is_loc = is_loc.strip()
+            if len(is_loc) == 0:
+                continue
+                
             if is_loc[-1] == '/':
                 is_name = is_loc.split('/')[-2]
             else:
@@ -145,7 +154,9 @@ def download_data(args, working_dir, tmp_dir):
             is_dir = os.path.join(tmp_dir, is_name)
 
             logging.info("Downloading IS to {0}".format(is_dir))
-            download_folder(is_loc, is_dir)
+            #download_folder(is_loc, is_dir)
+            download_folder(is_loc, is_dir, exclude=['*'],
+                            include=['*attributes*', '*cumulative_snv_table*', '*scaffold2length*', '*covT*'])
             cmd_string += ' {0} '.format(is_dir)
 
     # Download other files

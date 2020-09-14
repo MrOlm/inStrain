@@ -1,0 +1,2 @@
+s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
+s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS

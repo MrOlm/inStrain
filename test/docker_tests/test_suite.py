@@ -215,6 +215,7 @@ class test_instrain():
         self.GENOME_LIST = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/genomelist.txt'
         self.IS_1 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS/'
         self.IS_2 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/'
+        self.IS_FIF = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/is_locs.txt'
         self.scafflist = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/scaffList.txt'
 
         self.tearDown()
@@ -252,6 +253,10 @@ class test_instrain():
 
         self.setUp()
         self.test6()
+        self.tearDown()
+
+        self.setUp()
+        self.test7()
         self.tearDown()
 
 
@@ -404,11 +409,38 @@ class test_instrain():
 
     def test6(self):
         '''
-        Test beta version installation
+        Test compare
         '''
         # Set up command
         # CMD = "./prepare.sh; conda activate work; cp /root/accessible_testing_data/run_instrain.py ./; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
         #     self.IS_1, self.IS_2, get_s3_results_folder(), 'testRC', self.scafflist)
+        CMD = "./prepare.sh; conda activate work; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
+            self.IS_1, self.IS_2, get_s3_results_folder(), 'testRC', self.scafflist)
+
+        # Run command
+        run_docker(self.IMAGE, CMD, simulate_aegea='semi')
+
+        # Estimate cost
+        estimate_cost(None, get_s3_results_folder())
+
+        # Make sure done
+        output_files = load_s3_results()
+        basenames = [os.path.basename(b) for b in output_files]
+
+        # Set up intended output
+        OUTPUT = ['docker_log.log', 'testRC_comparisonsTable.tsv', 'testRC_pairwise_SNP_locations.tsv']
+
+        for o in OUTPUT:
+            have = o in basenames
+            assert have, [o, basenames]
+
+    def test7(self):
+        '''
+        Test compare using FOF (file of file
+        '''
+        # Set up command
+        # CMD = "./prepare.sh; conda activate work; cp /root/accessible_testing_data/* ./; ./run_instrain.py --IS {0} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
+        #     self.IS_FIF, None, get_s3_results_folder(), 'testRC', self.scafflist)
         CMD = "./prepare.sh; conda activate work; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
             self.IS_1, self.IS_2, get_s3_results_folder(), 'testRC', self.scafflist)
 
