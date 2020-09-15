@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.7] - 2020-09-15
+- More multiprocessing patching
+
 ## [1.3.6] - 2020-09-14
 - Apply a mutliprocessing patch to help python version 3.6
 - Allow the Docker to accept a FOF for inStrain compare input

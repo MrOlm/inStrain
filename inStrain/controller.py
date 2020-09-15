@@ -440,10 +440,10 @@ def patch_mp_connection_bpo_17560():
     """
     patchname = "Multiprocessing connection patch for bpo-17560"
     if not (3, 3) < sys.version_info < (3, 8):
-        print(
-            patchname + " not applied, not an applicable Python version: %s",
-            sys.version
-        )
+        # print(
+        #     patchname + " not applied, not an applicable Python version: %s",
+        #     sys.version
+        # )
         return
 
     from multiprocessing.connection import Connection
@@ -454,15 +454,13 @@ def patch_mp_connection_bpo_17560():
         orig_send_bytes.__code__.co_filename == __file__
         and orig_recv_bytes.__code__.co_filename == __file__
     ):
-        print(patchname + " already applied, skipping")
+        #print(patchname + " already applied, skipping")
         return
 
     @functools.wraps(orig_send_bytes)
     def send_bytes(self, buf):
         n = len(buf)
-        print("Sending; n is {0}".format(n))
         if n > 0x7fffffff:
-            print("sending with patch")
             pre_header = struct.pack("!i", -1)
             header = struct.pack("!Q", n)
             self._send(pre_header)
@@ -473,7 +471,6 @@ def patch_mp_connection_bpo_17560():
 
     @functools.wraps(orig_recv_bytes)
     def recv_bytes(self, maxsize=None):
-        print("loading with patch")
         buf = self._recv(4)
         size, = struct.unpack("!i", buf.getvalue())
         if size == -1:
@@ -486,4 +483,4 @@ def patch_mp_connection_bpo_17560():
     Connection._send_bytes = send_bytes
     Connection._recv_bytes = recv_bytes
 
-    print(patchname + " applied")
+   # print(patchname + " applied")

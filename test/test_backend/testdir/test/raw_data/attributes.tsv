@@ -1,7 +1,0 @@
-name	value	type	description
-location	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/test	value	Location of SNVprofile object
-version	1.3.6.P	value	Version of inStrain
-Rdic	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/raw_data/Rdic.json	dictionary	Read pair -> mismatches
-mapping_info	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/raw_data/mapping_info.csv.gz	pandas	Report on reads
-fasta_loc	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa	value	Location of .fasta file used during profile
-scaffold2length	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/raw_data/scaffold2length.json	dictionary	Dictionary of scaffold 2 length
