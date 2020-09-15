@@ -117,6 +117,9 @@ def read_profile_worker(read_cmd_queue, read_result_queue, bam, single_thread=Fa
     '''
     Worker to filter reads
     '''
+    # Apply patch
+    inStrain.controller.patch_mp_connection_bpo_17560()
+
     # Initilize the .bam file
     bam_init = samfile = pysam.AlignmentFile(bam)
 
