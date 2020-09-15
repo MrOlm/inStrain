@@ -460,6 +460,7 @@ def patch_mp_connection_bpo_17560():
     @functools.wraps(orig_send_bytes)
     def send_bytes(self, buf):
         n = len(buf)
+        print("Sending; n is {0}".format(n))
         if n > 0x7fffffff:
             print("sending with patch")
             pre_header = struct.pack("!i", -1)
