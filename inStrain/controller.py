@@ -461,6 +461,7 @@ def patch_mp_connection_bpo_17560():
     def send_bytes(self, buf):
         n = len(buf)
         if n > 0x7fffffff:
+            print("sending with patch")
             pre_header = struct.pack("!i", -1)
             header = struct.pack("!Q", n)
             self._send(pre_header)
@@ -471,6 +472,7 @@ def patch_mp_connection_bpo_17560():
 
     @functools.wraps(orig_recv_bytes)
     def recv_bytes(self, maxsize=None):
+        print("loading with patch")
         buf = self._recv(4)
         size, = struct.unpack("!i", buf.getvalue())
         if size == -1:

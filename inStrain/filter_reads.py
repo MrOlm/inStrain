@@ -19,6 +19,7 @@ from tqdm import tqdm
 
 import inStrain.logUtils
 import inStrain.profile.fasta
+import inStrain.controller
 
 global i2o
 global v2o
@@ -48,6 +49,8 @@ class Controller():
         fasta_db, scaff2sequence, s2l = inStrain.profile.fasta.load_fasta(**kwargs)
         scaffolds = list(fasta_db['scaffold'].unique())
         inStrain.logUtils.log_checkpoint("FilterReads", "load_fasta", "end")
+
+        inStrain.controller.patch_mp_connection_bpo_17560()
 
         # Filter the reads and store read reports
         if detailed_report:
