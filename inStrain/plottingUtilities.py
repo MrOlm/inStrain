@@ -938,7 +938,10 @@ def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=
         linkage = scipy.cluster.hierarchy.linkage(arr, method=cluster_method)
         fclust = scipy.cluster.hierarchy.fcluster(linkage, thresh,
                             criterion='distance')
-        Cdb = drep.d_cluster._gen_cdb_from_fclust(fclust, names)
+        try:
+            Cdb = drep.d_cluster._gen_cdb_from_fclust(fclust, names)
+        except AttributeError:
+            Cdb = drep.d_cluster.utils._gen_cdb_from_fclust(fclust, names)
 
         if thing == 'av_ani':
             name2cluster = Cdb.set_index('genome')['cluster'].to_dict()

@@ -25,6 +25,7 @@ import inStrain.SNVprofile
 import inStrain.readComparer
 import inStrain.logUtils
 import inStrain.GeneProfile
+import inStrain.controller
 
 from inStrain import __version__
 
@@ -54,6 +55,9 @@ def split_profile_worker(split_cmd_queue, Sprofile_dict, log_list,
     '''
     # Initilize the .bam file
     bam_init = samfile = pysam.AlignmentFile(bam)
+
+    # Apply patch
+    inStrain.controller.patch_mp_connection_bpo_17560()
 
     j = 0
     pid = os.getpid()
@@ -350,6 +354,8 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles,
     '''
     Worker to merge_splits
     '''
+    # Apply patch
+    inStrain.controller.patch_mp_connection_bpo_17560()
 
     j = 0
     pid = os.getpid()
