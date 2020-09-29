@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.9] - 2020-09-29
+- More multiprocessing patching for compare
+
 ## [1.3.8] - 2020-09-23
 - More multiprocessing patching
 

@@ -312,7 +312,7 @@ def compare_scaffold_worker(cmd_queue, result_queue, null_model, single_thread=F
     '''
     Worker to compare scaffolds
     '''
-
+    inStrain.controller.patch_mp_connection_bpo_17560()
     while True:
         if not single_thread:
             cmd = cmd_queue.get(True)
