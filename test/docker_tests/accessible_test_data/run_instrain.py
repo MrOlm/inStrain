@@ -146,7 +146,7 @@ def download_data(args, working_dir, tmp_dir):
             is_loc = is_loc.strip()
             if len(is_loc) == 0:
                 continue
-                
+
             if is_loc[-1] == '/':
                 is_name = is_loc.split('/')[-2]
             else:

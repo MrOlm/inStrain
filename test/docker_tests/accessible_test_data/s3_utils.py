@@ -45,7 +45,11 @@ def download_file(s3_path, directory_to_download):
 
     local_file_name = os.path.join(directory_to_download, object_name)
 
-    s3.Object(bucket, key).download_file(local_file_name)
+    #s3.Object(bucket, key).download_file(local_file_name)
+
+    cmd = f'aws s3 cp {s3_path} {local_file_name}'
+    print(cmd)
+    subprocess.check_call(shlex.split(cmd))
 
     return local_file_name
 

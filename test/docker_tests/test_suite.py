@@ -170,7 +170,7 @@ def check_s3_file(floc):
             found = True
     return found
 
-def run_docker(image, cmd, simulate_aegea=True):
+def run_docker(image, cmd, simulate_aegea=True, overwrite_accessible=False):
     '''
     Load the image and run the command
     '''
@@ -179,6 +179,9 @@ def run_docker(image, cmd, simulate_aegea=True):
     test_loc = get_accessible_test_data()
     output_loc = load_random_test_dir()
     mt_loc = os.getcwd() + '/mnt'
+
+    if overwrite_accessible:
+        cmd = 'cp /root/accessible_testing_data/* ./;' + cmd
 
     if simulate_aegea == True:
         AEGEA_JUNK = ['/bin/bash', '-c', 'for i in "$@"; do eval "$i"; done; cd /', 'aegea.util.aws.batch', 'set -a', 'if [ -f /etc/environment ]; then source /etc/environment; fi', 'if [ -f /etc/default/locale ]; then source /etc/default/locale; else export LC_ALL=C.UTF-8 LANG=C.UTF-8; fi', 'export AWS_DEFAULT_REGION=us-west-2', 'set +a', 'if [ -f /etc/profile ]; then source /etc/profile; fi', 'set -euo pipefail', 'sed -i -e "s|/archive.ubuntu.com|/us-west-2.ec2.archive.ubuntu.com|g" /etc/apt/sources.list', 'apt-get update -qq', 'apt-get install -qqy --no-install-suggests --no-install-recommends httpie awscli jq lsof python3-virtualenv > /dev/null', 'python3 -m virtualenv -q --python=python3 /opt/aegea-venv', '/opt/aegea-venv/bin/pip install -q argcomplete requests boto3 tweak pyyaml', '/opt/aegea-venv/bin/pip install -q --no-deps aegea==3.4.3']
@@ -195,6 +198,7 @@ def run_docker(image, cmd, simulate_aegea=True):
     # FULL_CMD="docker run -v {2}:/root/.aws/credentials -v {3}:/root/accessible_testing_data/ -v {4}:/root/accessible_results/ {0} /bin/bash -c \"{1}\"".format(image, cmd, cred_loc, test_loc, output_loc)
     # print(FULL_CMD)
     # call(FULL_CMD, shell=True)
+
 
     BASE_CMD = shlex.split("docker run -v {2}:/root/.aws/credentials -v {3}:/root/accessible_testing_data/ -v {4}:/root/accessible_results/ {0}".format(image, cmd, cred_loc, test_loc, output_loc, mt_loc))
     FULL_CMD = BASE_CMD + cmd
@@ -227,9 +231,9 @@ class test_instrain():
         clear_s3_results()
 
     def run(self):
-        # self.setUp()
-        # self.test0()
-        # self.tearDown()
+        self.setUp()
+        self.test0()
+        self.tearDown()
 
         self.setUp()
         self.test1()
