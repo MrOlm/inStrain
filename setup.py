@@ -18,7 +18,7 @@ setup(name='inStrain',
       python_requires='>=3.4.0',
       install_requires=[
           'numpy',
-          'pandas>=0.25',
+          'pandas>=0.25,!=1.1.3',
           'seaborn',
           'matplotlib',
           'biopython',

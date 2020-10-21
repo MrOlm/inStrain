@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.3.10] - 2020-10-21
+- Change the dependencies to not allow pandas version 1.1.3 (which causes the following bug: https://github.com/pandas-dev/pandas/issues/37094)
+
 ## [1.3.9] - 2020-09-29
 - More multiprocessing patching for compare
 
