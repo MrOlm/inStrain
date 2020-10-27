@@ -1,0 +1,3 @@
+name	value	type	description
+location	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/testSR	value	Location of SNVprofile object
+version	1.4.0	value	Version of inStrain

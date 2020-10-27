@@ -121,7 +121,6 @@ def parse_args(args):
     Rflags.add_argument('-s', '--stb', help="Scaffold to bin. This can be a file with each line listing a scaffold and a bin name, tab-seperated. This can also be a space-seperated list of .fasta files, with one genome per .fasta file. If nothing is provided, all scaffolds will be treated as belonging to the same genome",
                         nargs='*', default=[])
 
-
     # Make a parent for handling mm
     mm_parent = argparse.ArgumentParser(add_help=False)
     Rflags = mm_parent.add_argument_group('READ ANI OPTIONS')
@@ -189,13 +188,12 @@ def parse_args(args):
     Rflags.add_argument("-o", "--output", action="store", default='instrainComparer', \
                         help='Output prefix')
 
-
     compare_parser = subparsers.add_parser("compare",formatter_class=SmartFormatter,\
-                    parents = [compare_parent, parent_parser, variant_parent], add_help=False)
+                    parents = [compare_parent, parent_parser, geneomewide_parent, variant_parent], add_help=False)
 
     # Other Parameters
     Oflags = compare_parser.add_argument_group('OTHER OPTIONS')
-    Oflags.add_argument("-s", "--scaffolds", action="store", \
+    Oflags.add_argument("-sc", "--scaffolds", action="store", \
                         help='Location to a list of scaffolds to compare. You can also make this a .fasta file and it will load the scaffold names')
     Oflags.add_argument('--store_coverage_overlap', action='store_true', default=False,\
         help="Also store coverage overlap on an mm level")

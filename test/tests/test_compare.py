@@ -22,6 +22,7 @@ import inStrain.profile.profile_utilities
 import inStrain.profile.snv_utilities
 import inStrain.readComparer
 import tests.test_utils as test_utils
+import inStrain.compare_utils
 
 
 class test_readcomparer:
@@ -62,6 +63,8 @@ class test_readcomparer:
                              'L3_108_000G1_scaffold_35331.fasta'
         self.highcov_IS = test_utils.load_data_loc() + \
                           'L3_108_000G1_scaffold_35331.IS'
+        self.stb = test_utils.load_data_loc() + \
+                   'N5_271_010G1.maxbin2.stb'
 
     def setUp(self, destroy=True):
 
@@ -83,7 +86,7 @@ class test_readcomparer:
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
 
-    def run(self, min=0, max=15, skip=None, tests='all', cleanUp=True):
+    def run(self, min=0, max=16, skip=None, tests='all', cleanUp=True):
         # # # THE .BAM FILES TO MAKE THESE IS FILES ARE DELETED FROM BIOTITE; SHOULD BE RE-GENERATED
         # # # self.setUp()
         # # # self.test9()
@@ -396,8 +399,8 @@ class test_readcomparer:
         for scaff in scaffs:
 
             # Get the SNP tables
-            ST1 = inStrain.readComparer._get_SNP_table(SXdb1, scaff)
-            ST2 = inStrain.readComparer._get_SNP_table(SXdb2, scaff)
+            ST1 = inStrain.compare_utils.subset_SNP_table(SXdb1, scaff)
+            ST2 = inStrain.compare_utils.subset_SNP_table(SXdb2, scaff)
 
             results, log = \
                 inStrain.readComparer.compare_scaffold(scaff, ['t1', 't2'], [ST1, ST2],
@@ -510,7 +513,7 @@ class test_readcomparer:
         """
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4}".format(self.script, self.IS1, self.IS2,
+        cmd = "inStrain compare -i {1} {2} -o {3} -sc {4}".format(self.script, self.IS1, self.IS2,
                                                                  base, self.scafflist)
         print(cmd)
         call(cmd, shell=True)
@@ -527,7 +530,7 @@ class test_readcomparer:
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_coverage_overlap".format(self.script, self.IS1,
+        cmd = "inStrain compare -i {1} {2} -o {3} -sc {4} --store_coverage_overlap".format(self.script, self.IS1,
                                                                                           self.IS2,
                                                                                           base, self.scafflist)
         print(cmd)
@@ -544,7 +547,7 @@ class test_readcomparer:
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS1,
+        cmd = "inStrain compare -i {1} {2} -o {3} -sc {4} --store_mismatch_locations".format(self.script, self.IS1,
                                                                                             self.IS2,
                                                                                             base, self.scafflist)
         print(cmd)
@@ -561,7 +564,7 @@ class test_readcomparer:
         # Run program
         base = self.test_dir + 'testR'
 
-        cmd = "inStrain compare -i {1} {2} -o {3} -s {4} --store_mismatch_locations".format(self.script, self.IS1,
+        cmd = "inStrain compare -i {1} {2} -o {3} -sc {4} --store_mismatch_locations".format(self.script, self.IS1,
                                                                                             self.IS2,
                                                                                             base, self.scafflist)
         print(cmd)
@@ -1046,8 +1049,8 @@ class test_readcomparer:
                 for c in ['position', 'mm']:
                     s[c] = s[c].astype(int)
 
-                s = s.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
-                e = e.sort_values(['scaffold', 'name1', 'name2']).reset_index(drop=True)
+                s = s.sort_values(['scaffold', 'position', 'name1', 'name2']).reset_index(drop=True)
+                e = e.sort_values(['scaffold', 'position', 'name1', 'name2']).reset_index(drop=True)
 
                 assert set(e.columns) == set(s.columns), \
                     [i,
@@ -1130,3 +1133,43 @@ class test_readcomparer:
         null_loc = os.path.dirname(inStrain.readComparer.__file__) + '/helper_files/NullModel.txt'
         model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=1e-6)
         assert not inStrain.readComparer.is_present(5, 1000000, model, 0.0)
+
+    def test16(self):
+        """
+        Test providing an .stb to compare
+        """
+        # Run program in two steps
+        sol_base = self.test_dir + 'testR'
+        cmd = f"inStrain compare -i {self.IS1} {self.IS2} -o {sol_base} --store_mismatch_locations"
+        print(cmd)
+        # call(cmd, shell=True)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+        cmd = f"inStrain genome_wide -i {sol_base} -s {self.stb}"
+        print(cmd)
+        call(cmd, shell=True)
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(sol_base)
+        files = glob.glob(IS.get_location('output') + '*')
+        files = [f for f in files if 'genomeWide' in f]
+        assert len(files) == 1
+
+        # Run the program in one step
+        exp_base = self.test_dir + 'testSR'
+
+        cmd = f"inStrain compare -i {self.IS1} {self.IS2} -o {exp_base} -s {self.stb} --store_mismatch_locations"
+        print(cmd)
+        #call(cmd, shell=True)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+        # Load output
+        IS = inStrain.SNVprofile.SNVprofile(exp_base)
+        files = glob.glob(IS.get_location('output') + '*')
+        files = [f for f in files if 'genomeWide' in f]
+        assert len(files) == 1
+
+        # Compare
+        assert False
+
+

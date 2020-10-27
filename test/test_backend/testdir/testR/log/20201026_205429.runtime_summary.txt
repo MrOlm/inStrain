@@ -1,0 +1,25 @@
+..:: Overall ::..
+InStrain version 1.4.0 started at 2020-10-26 20:54:29 and ended at 2020-10-26 20:54:29.
+Runtime = <1 second
+Command = /Users/mattolm/miniconda3/bin/inStrain genome_wide -i /Users/mattolm/Programs/inStrain/test/test_backend/testdir/testR -s /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
+
+..:: Checkpoints ::..
+
+..:: Filter reads report ::..
+
+
+..:: Profile report ::..
+
+* Profiling splits *
+
+* Merging splits and profiling genes *
+
+..:: Geneome level report ::..
+
+..:: Plotting ::..
+
+..:: Compare ::..
+
+
+..:: Failures ::..
+No failures

@@ -33,6 +33,7 @@ import inStrain.plottingUtilities
 import inStrain.quickProfile
 import inStrain.SNVprofile
 import inStrain.logUtils
+import inStrain.compare_controller
 
 class Controller():
     '''
@@ -75,7 +76,7 @@ class Controller():
         ProfileController(args).main()
 
     def compare_operation(self, args):
-        inStrain.readComparer.main(args)
+        inStrain.compare_controller.CompareController(args).main()
 
     def filter_reads_operation(self, args):
         inStrain.filter_reads.Controller().main(args)
