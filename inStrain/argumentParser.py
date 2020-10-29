@@ -44,8 +44,8 @@ def printHelp():
     compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
 
   Single operations:
-    profile_genes   -> Calculate gene-level metrics on an inStrain profile [DEPRECATED; USE profile INSTEAD]
-    genome_wide     -> Calculate genome-level metrics on an inStrain profile
+    profile_genes   -> Calculate gene-level metrics on an inStrain profile [DEPRECATED; PROVIDE GENES TO profile]
+    genome_wide     -> Calculate genome-level metrics on an inStrain profile [DEPRECATED; PROVIDE .stb FILES TO profile / compare]
     quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
     filter_reads    -> Commands related to filtering reads from .bam files
     plot            -> Make figures from the results of "profile" or "compare"
@@ -191,16 +191,27 @@ def parse_args(args):
     compare_parser = subparsers.add_parser("compare",formatter_class=SmartFormatter,\
                     parents = [compare_parent, parent_parser, geneomewide_parent, variant_parent], add_help=False)
 
+    # Database mode parameters
+    Dflags = compare_parser.add_argument_group('DATABASE MODE PARAMETERS')
+    Dflags.add_argument('--database_mode', action='store_true', help=
+                        "Using the parameters below, automatically determine which genomes are present in each Profile "
+                        "and only compare scaffolds from those genomes. All profiles must have run Profile with the same .stb")
+    Dflags.add_argument('--breadth', default=0.5, type=float, help='Minimum breadth_minCov required to count a genome present')
+
     # Other Parameters
     Oflags = compare_parser.add_argument_group('OTHER OPTIONS')
-    Oflags.add_argument("-sc", "--scaffolds", action="store", \
+    Oflags.add_argument("-sc", "--scaffolds", action="store",
                         help='Location to a list of scaffolds to compare. You can also make this a .fasta file and it will load the scaffold names')
+    Oflags.add_argument("--genome", action="store",
+                        help='Run scaffolds belonging to this single genome only. Must provide an .stb file')
     Oflags.add_argument('--store_coverage_overlap', action='store_true', default=False,\
         help="Also store coverage overlap on an mm level")
     Oflags.add_argument('--store_mismatch_locations', action='store_true', default=False,\
         help="Store the locations of SNPs")
     Oflags.add_argument('--include_self_comparisons', action='store_true', default=False,\
         help="Also compare IS profiles against themself")
+    Oflags.add_argument('--group_length', default=10000000,
+                        help="How many bp to compare simultaneously (higher will use more RAM and run more quickly)", type=int)
 
     Gflags = compare_parser.add_argument_group('GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]')
     Gflags.add_argument('--greedy_clustering', action='store_true', default=False,\

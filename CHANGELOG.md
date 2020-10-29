@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
 ## [1.4.0] - UNCOMITTED
-- Huge refactor of the code for "inStrain compare"
+- Big refactor of the code for "inStrain compare"
+- Add support for .stb files in inStrain compare
+- Add a "database mode" for inStrain compare
+- Add the option to give inStrain compare a single genome to compare
 
 ## [1.3.11] - 2020-10-21
 - Change the dependencies to specify a bioconda version that has the alphabet thing (https://github.com/MrOlm/inStrain/issues/27)

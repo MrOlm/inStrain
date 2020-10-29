@@ -118,3 +118,31 @@ def subset_SNP_table(db, scaffold):
         db = pd.DataFrame()
 
     return db
+
+def find_relevant_scaffolds(input, bts, kwargs):
+    """
+    Return a list of scaffolds in the input based on the parameters of kwargs
+    """
+    GIdb = inStrain.SNVprofile.SNVprofile(input).get('genome_level_info')
+    if GIdb is None:
+        logging.error(f"Profile {input} does not have genome-level information; needed to run compare in database mode")
+        raise Exception
+    if 'mm' in GIdb:
+        GIdb = GIdb.sort_values('mm', ascending=True).drop_duplicates(subset=['genome'], keep='last')
+
+    min_breadth = kwargs.get('breadth', 0.5)
+    genomes = GIdb[GIdb['breadth_minCov'] >= min_breadth]['genome'].tolist()
+
+    scaffolds = []
+    for genome in genomes:
+        if genome in bts:
+            scaffolds += bts[genome]
+        else:
+            logging.error(f'{genome} is in input {input} but not the provided stb file!')
+            raise Exception(f'{genome} is in input {input} but not the provided stb file!')
+
+    message = f'{input} has {len(genomes)} genomes detected and {len(scaffolds)} scaffolds'
+    print(message)
+    logging.info(message)
+
+    return set(scaffolds)

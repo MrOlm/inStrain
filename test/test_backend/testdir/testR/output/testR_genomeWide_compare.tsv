@@ -1,3 +1,0 @@
-genome	name1	name2	coverage_overlap	compared_bases_count	consensus_SNPs	population_SNPs	popANI	conANI	percent_compared
-fobin.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	0.9847586790855208	1163	4	0	1.0	0.9965606190885641	0.9822635135135135
-maxbin2.maxbin.001.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	0.6461775580888435	61222	161	4	0.9999346640096697	0.9973702263892065	0.23151915775461737

@@ -5,11 +5,96 @@ Methods to help with testing
 import os
 
 import pandas as pd
+import shutil
+import logging
+import importlib
+
+import pytest
+
+class TestingClass():
+    def teardown(self):
+        importlib.reload(logging)
+        if os.path.isdir(self.test_dir):
+            shutil.rmtree(self.test_dir)
+        os.mkdir(self.test_dir)
+        importlib.reload(logging)
+
+@pytest.fixture()
+def BTO():
+    """
+    Basic test object
+
+    This object makes no copies of anything; just has references and does setup / cleanup
+    """
+    # Set up
+    self = TestingClass()
+    dl = load_data_loc()
+
+    self.test_dir = load_random_test_dir()
+
+    self.fasta =  dl + 'N5_271_010G1_scaffold_min1000.fa'
+    self.failure_fasta = dl + 'N5_271_010G1_scaffold_failureScaffold.fa'
+    self.highcov_fasta = dl + 'L3_108_000G1_scaffold_35331.fasta'
+    self.single_scaff = dl + 'N5_271_010G1_scaffold_101.fasta'
+    self.extra_single_scaff = dl + 'N5_271_010G1_scaffold_101_extra.fasta'
+    self.fasta_extra = dl + 'N5_271_010G1_scaffold_min1000_extra.fa'
+    self.small_fasta = dl + 'SmallScaffold.fa'
+    self.bbfasta = dl +  'N5_271_010G1_scaffold_963.fasta'
+
+    self.bam1 = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+    self.bam2 = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam'
+    self.failure_bam = dl + 'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
+    self.highcov_bam = dl + 'NIHL.delta.fasta-vs-L2_019_000G1.L3_108_000G1_scaffold_35331.sorted.bam'
+    self.small_bam = dl + 'SmallScaffold.fa.sorted.bam'
+    self.bbsam = dl + 'bbmap_N5_271_010G1_scaffold_963.fasta.sorted.bam'
+
+    self.IS = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
+    self.IS1 = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS'
+    self.IS2 = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS'
+    self.highcov_IS = dl + 'L3_108_000G1_scaffold_35331.IS'
+    self.old_IS = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.v4.IS'
+    self.IS_nogenes = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.IS.v1.3.0g'
+    self.IS_nogenes2 = dl + 'sars_cov_2_MT039887.1.fasta.bt2-vs-SRR11140750.sam.IS'
+    self.IS_plotting = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.ForPlotting.IS'
+    self.IS_v03 = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.v3.IS.pickle'
+
+    self.RC_Loc = dl + 'readComparer_vCurrent.RC'
+    self.v12_solution = dl + 'readComparer_v1.3.0r.RC'
+
+    self.SIS = dl + 'Ecoli_ani.100.0.subset.sorted.bam.IS'
+    self.SIS2 = dl + 'Ecoli_ani.99.9.subset.sorted.bam.IS'
+    self.SIS3 = dl + 'Ecoli_ani.98.0.subset.sorted.bam.IS'
+
+    self.scafflist = dl + 'scaffList.txt'
+    self.scafflistF = dl + 'scaffList.fasta'
+
+    self.stb = dl + 'N5_271_010G1.maxbin2.stb'
+    self.stb2 = dl + 'GenomeCoverages.stb'
+
+    self.readloc = dl + 'N5_271_010G1.R1.fastq.gz'
+    self.readloc2 = dl + 'N5_271_010G1.R1.reads'
+
+    self.old_genes_script = get_script_loc('deprecated_gene_statistics')
+    self.genes = dl + 'N5_271_010G1_scaffold_min1000.fa.genes.fna'
+    self.genbank = dl + 'sars_cov_2_MT039887.1.gb'
+    self.failure_genes = dl + 'N5_271_010G1_scaffold_failureScaffold.fa.genes.fna.fa'
+
+    self.iRep_test_set = dl + 'test_iRep.p'
+
+    self.cc_solution = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam.CB'
+    self.pp_snp_solution = dl + 'strainProfiler_v0.3_results/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted' \
+                                '.bam_SP_snpLocations.pickle'
+
+    self.sam = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
+
+    self.teardown()
+    yield self
+    self.teardown()
 
 
 def get_script_loc(script):
     """
-    Relies on being run from test_suite.py (not ideal)
+    Relies on being run from test_docker.py (not ideal)
     """
     if script == 'inStrain':
         return os.path.join(str(os.getcwd()),
@@ -36,7 +121,7 @@ def get_script_loc(script):
 
 def load_random_test_dir():
     """
-    Relies on being run from test_suite.py (not ideal)
+    Relies on being run from test_docker.py (not ideal)
     """
     loc = os.path.join(str(os.getcwd()),
                        'test_backend/testdir/')
@@ -45,7 +130,7 @@ def load_random_test_dir():
 
 def load_data_loc():
     """
-    Relies on being run from test_suite.py (not ideal)
+    Relies on being run from test_docker.py (not ideal)
     """
     return os.path.join(str(os.getcwd()),
                         'test_data/')

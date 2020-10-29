@@ -13,6 +13,7 @@ from collections import defaultdict
 
 import inStrain.readComparer
 import inStrain.compare_utils
+import inStrain.genomeUtilities
 
 class CompareController(object):
     '''
@@ -45,6 +46,9 @@ class CompareController(object):
         # Actually do the processing
         self.run_comparisons()
 
+        # Do auxillary processing if needed
+        self.run_auxillary_processing()
+
         # Store the results
         self.store_results()
 
@@ -75,9 +79,42 @@ class CompareController(object):
         # Load the scaffold to bin file
         if args.stb is not None:
             if len(args.stb) > 0:
-                # Load it and integrate with above
-                print(args.stb)
-                assert False, "MATT, YOU NEED TO SUPPORT STB FILES!"
+                # Load it
+                stb = inStrain.genomeUtilities.load_scaff2bin(args.stb)
+                self.stb = stb
+
+                # Only compare scaffolds in the .stb
+                if self.scaffolds_to_compare is not None:
+                    self.scaffolds_to_compare = self.scaffolds_to_compare.union(set(stb.keys()))
+                else:
+                    self.scaffolds_to_compare = set(stb.keys())
+
+        # Load database mode results
+        if self.args.database_mode is True:
+            inStrain.logUtils.log_checkpoint("Compare", "LoadDatabaseMode", "start")
+
+            bin2scaffolds = defaultdict(list)
+            for s, b in stb.items():
+                bin2scaffolds[b].append(s)
+
+            input2scaffolds = {}
+            for input in self.inputs:
+                scaffolds = inStrain.compare_utils.find_relevant_scaffolds(input, bin2scaffolds, self.kwargs)
+                input2scaffolds[input] = scaffolds
+
+            self.input2scaffolds = input2scaffolds
+            inStrain.logUtils.log_checkpoint("Compare", "LoadDatabaseMode", "end")
+
+        # Handle single genome mode
+        if self.args.genome is not None:
+            bin2scaffolds = defaultdict(list)
+            for s, b in stb.items():
+                bin2scaffolds[b].append(s)
+            if self.args.genome in bin2scaffolds:
+                self.scaffolds_to_compare = self.scaffolds_to_compare.intersection(set(bin2scaffolds[self.args.genome]))
+            else:
+                logging.error(f'genome {self.args.genome} is not in the provided .stb file')
+                raise Exception
 
     def create_scaffoldcomparison_objects(self):
         """
@@ -90,12 +127,17 @@ class CompareController(object):
             scaffolds_to_compare = None
 
         # Load ScaffoldComparison objects
-        valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare)
+        if self.args.database_mode is True:
+            valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare,
+                                                                         input2scaffolds=self.input2scaffolds)
+        else:
+            valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare)
+
         self.SC_objects = valid_SCs
         self.scaffold2length = scaffold2length
 
         # Establish ScaffoldComparison groups
-        group_length = 10000000
+        group_length = self.kwargs.get('group_length', 10000000)
 
         #Cdb = calc_scaff_sim_matrix(valid_SCs)
         #SC_groups = establish_SC_groups(valid_SCs, Cdb, group_length)
@@ -162,16 +204,51 @@ class CompareController(object):
         self.mismatch_location_db = Mdb
         self.scaff2pair2mm2overlap = scaff2pair2mm2overlap
 
+    def run_auxillary_processing(self):
+        """
+        Handle .stb files, database mode, and more
+        """
+        # Calculate s2l
+        s2l = {}
+        for SC in self.SC_objects:
+            s2l[SC.scaffold] = SC.length
+        self.s2l = s2l
+
+        # Calculate genome-level results
+        if hasattr(self, 'stb'):
+            # Calculate bin 2 length
+            # Make bin to length
+            b2l = {}
+            for scaffold, bin in self.stb.items():
+                if bin not in b2l:
+                    b2l[bin] = 0
+
+                if scaffold in s2l:
+                    b2l[bin] += s2l[scaffold]
+                else:
+                    logging.debug(
+                        "FAILURE StbError {0} {1} no_length will not be considered as part of the genome".format(
+                            scaffold, bin))
+            self.bin2length = b2l
+
+            gdb = inStrain.genomeUtilities._add_stb(self.comparison_db, self.stb)
+            Gdb = inStrain.genomeUtilities._genome_wide_readComparer(gdb, self.stb, b2l, **self.kwargs)
+            self.genomelevel_compare = Gdb
+
     def store_results(self):
         # Store the results in the RC
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "start")
 
-        s2l = {}
-        for SC in self.SC_objects:
-            s2l[SC.scaffold] = SC.length
-
         self.RCprof.store('comparisonsTable', self.comparison_db, 'pandas', 'Comparisons between the requested IS objects')
-        self.RCprof.store('scaffold2length', s2l, 'dictionary', 'Scaffold to length')
+        self.RCprof.store('scaffold2length', self.s2l, 'dictionary', 'Scaffold to length')
+
+        # Store auxillary things
+        if hasattr(self, 'bin2length'):
+            self.RCprof.store('bin2length', self.bin2length, 'dictionary', 'Dictionary of bin 2 total length')
+        if hasattr(self, 'genomelevel_compare'):
+            # ... this is jankey, but I guess it's what we do
+            out_base = self.RCprof.get_location('output') + os.path.basename(self.RCprof.get('location')) + '_'
+            self.genomelevel_compare.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
 
         # Make the output files
         self.RCprof.generate('comparisonsTable')
@@ -323,7 +400,7 @@ def group_Scaffold_objects(valid_SCs, group_length):
 
     return SC_groups
 
-def make_scaffoldcomparison_objects(inputs, scaffolds_to_compare):
+def make_scaffoldcomparison_objects(inputs, scaffolds_to_compare, input2scaffolds=None):
     inStrain.logUtils.log_checkpoint("Compare", "CreateScaffoldComparisonObjects", "start")
 
     # Get the stuff to return
@@ -343,6 +420,8 @@ def make_scaffoldcomparison_objects(inputs, scaffolds_to_compare):
         scaffolds = list(ISP._get_covt_keys())
         name = os.path.basename(ISP.get('bam_loc'))
 
+        if input2scaffolds is not None:
+            scaffolds = list(set(scaffolds).intersection(input2scaffolds[profile_loc]))
         if scaffolds_to_compare is not None:
             scaffolds = list(set(scaffolds).intersection(scaffolds_to_compare))
 
