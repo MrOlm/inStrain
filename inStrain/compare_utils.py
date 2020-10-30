@@ -9,6 +9,9 @@ from tqdm import tqdm
 import multiprocessing
 import traceback
 from collections import defaultdict
+import numpy as np
+import scipy.spatial.distance
+import drep
 
 import inStrain
 import inStrain.logUtils
@@ -146,3 +149,89 @@ def find_relevant_scaffolds(input, bts, kwargs):
     logging.info(message)
 
     return set(scaffolds)
+
+def add_av_RC(db, v1='popANI', v2='coverage_overlap', n1='av_ani', n2='av_cov'):
+    '''
+    add a column titled 'av_ani' to the passed in dataframe
+    dataframe must have rows reference, querey, and ani
+    Args:
+        db: dataframe
+    '''
+
+    combo2value = defaultdict(lambda: np.nan)
+    combo2value2 = defaultdict(lambda: np.nan)
+    for i, row in db.iterrows():
+        combo2value["{0}-vs-{1}".format(row['name1'], row['name2'])] \
+            = row[v1]
+        combo2value2["{0}-vs-{1}".format(row['name1'], row['name2'])] \
+            = row[v2]
+
+    table = defaultdict(list)
+    samples = set(db['name1'].tolist()).union(set(db['name2'].tolist()))
+    for samp1 in samples:
+        for samp2 in samples:
+            if samp1 == samp2:
+                table['name1'].append(samp1)
+                table['name2'].append(samp2)
+                table[n1].append(1)
+                table[n2].append(1)
+
+            else:
+                table['name1'].append(samp1)
+                table['name2'].append(samp2)
+                table[n1].append(np.nanmean([combo2value["{0}-vs-{1}".format(samp1,samp2)],
+                            combo2value["{0}-vs-{1}".format(samp2,samp1)]]))
+                table[n2].append(np.nanmean([combo2value2["{0}-vs-{1}".format(samp1,samp2)],
+                            combo2value2["{0}-vs-{1}".format(samp2,samp1)]]))
+
+    return pd.DataFrame(table)
+
+def cluster_genome_strains(Mdb, kwargs):
+    """
+    Perform dRep-style clustering on the genomes
+    """
+    cluster_method = kwargs.get('clusterAlg')
+    thresh = 1 - kwargs.get('ani_threshold')
+    cov_thresh = kwargs.get('coverage_treshold')
+
+    cdbs = []
+
+    cluster_num = 1
+    for genome, gdb in Mdb.groupby('genome'):
+        # Average popANI values
+        gdb = add_av_RC(gdb, v2='percent_compared', n2='av_cov')
+        gdb['dist'] = 1 - gdb['av_ani']
+
+        # Remove values with low coverage
+        gdb['dist'] = [1 if c < cov_thresh else d for d, c in zip(gdb['dist'], gdb['av_cov'])]
+
+        # Make squareform
+        db = gdb.pivot("name1", "name2", 'dist')
+        names = db.columns
+        arr = np.asarray(db)
+        arr = scipy.spatial.distance.squareform(arr, checks=True)
+
+        # Cluster
+        linkage = scipy.cluster.hierarchy.linkage(arr, method=cluster_method)
+        fclust = scipy.cluster.hierarchy.fcluster(linkage, thresh,
+                                                  criterion='distance')
+
+        # Get Cdb
+        try:
+            cdb = drep.d_cluster._gen_cdb_from_fclust(fclust, names)
+        except AttributeError:
+            cdb = drep.d_cluster.utils._gen_cdb_from_fclust(fclust, names)
+        cdb = cdb.rename(columns={'genome':'sample'})
+        cdb['genome'] = genome
+
+        # Parse cdb
+        cdb['cluster'] = [f'{cluster_num}_{x}' for x in cdb['cluster']]
+        cluster_num += 1
+
+        # store
+        cdbs.append(cdb)
+
+    return pd.concat(cdbs).reset_index(drop=True)
+
+
+

@@ -210,18 +210,30 @@ def parse_args(args):
         help="Store the locations of SNPs")
     Oflags.add_argument('--include_self_comparisons', action='store_true', default=False,\
         help="Also compare IS profiles against themself")
+    Oflags.add_argument('--skip_plot_generation', action='store_true', default=False, \
+                        help="Dont create plots at the end of the run.")
     Oflags.add_argument('--group_length', default=10000000,
                         help="How many bp to compare simultaneously (higher will use more RAM and run more quickly)", type=int)
 
-    Gflags = compare_parser.add_argument_group('GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]')
-    Gflags.add_argument('--greedy_clustering', action='store_true', default=False,\
-        help="Dont do pair-wise comparisons, do greedy clustering to only find the number of clsuters. If this is set, use the parameters below as well")
-    Gflags.add_argument('--g_ani', action='store', default=0.99, type=float,\
-        help="ANI threshold for greedy clustering- put the fraction not the percentage (e.g. 0.99, not 99)")
-    Gflags.add_argument('--g_cov', action='store', default=0.99, type=float,\
-        help="Alignment coverage for greedy clustering- put the fraction not the percentage (e.g. 0.5, not 10)")
-    Gflags.add_argument('--g_mm', action='store', default=100, type=int,\
-        help="Maximum read mismatch level")
+    Cflags = compare_parser.add_argument_group('GENOME CLUSTERING OPTIONS')
+    Cflags.add_argument('-ani', "--ani_threshold", help='popANI threshold to cluster genomes at. Must provide .stb file to do so',
+                        default=0.99999, type=float)
+    Cflags.add_argument('-cov', "--coverage_treshold", help='Minimum percent_genome_compared for a genome comparison' \
+                        ' to count; if below the popANI will be set to 0.', default=0.1, type=float)
+    Cflags.add_argument("--clusterAlg", help="Algorithm used to cluster genomes (passed\
+                            to scipy.cluster.hierarchy.linkage)", default='average',
+                           choices={'single', 'complete', 'average', 'weighted', 'centroid', 'median', 'ward'})
+
+
+    # Gflags = compare_parser.add_argument_group('GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]')
+    # Gflags.add_argument('--greedy_clustering', action='store_true', default=False,\
+    #     help="Dont do pair-wise comparisons, do greedy clustering to only find the number of clsuters. If this is set, use the parameters below as well")
+    # Gflags.add_argument('--g_ani', action='store', default=0.99, type=float,\
+    #     help="ANI threshold for greedy clustering- put the fraction not the percentage (e.g. 0.99, not 99)")
+    # Gflags.add_argument('--g_cov', action='store', default=0.99, type=float,\
+    #     help="Alignment coverage for greedy clustering- put the fraction not the percentage (e.g. 0.5, not 10)")
+    # Gflags.add_argument('--g_mm', action='store', default=100, type=int,\
+    #     help="Maximum read mismatch level")
 
     '''
     ####### Arguments for profile_genes operation ######

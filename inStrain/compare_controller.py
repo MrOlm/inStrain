@@ -9,11 +9,14 @@ import logging
 import pandas as pd
 from tqdm import tqdm
 import multiprocessing
+import traceback
 from collections import defaultdict
+from tqdm import tqdm
 
 import inStrain.readComparer
 import inStrain.compare_utils
 import inStrain.genomeUtilities
+import inStrain.controller
 
 class CompareController(object):
     '''
@@ -41,16 +44,41 @@ class CompareController(object):
         self.parse_arguments()
 
         # Set up which scaffolds will be compared when
+        message = """\
+***************************************************
+    ..:: inStrain compare Step 1. Load data ::..
+***************************************************
+                """
+        logging.info(message)
         self.create_scaffoldcomparison_objects()
 
         # Actually do the processing
+        message = """\
+***************************************************
+..:: inStrain compare Step 2. Run comparisons ::..
+***************************************************
+                """
+        logging.info(message)
         self.run_comparisons()
 
         # Do auxillary processing if needed
+        message = """\
+***************************************************
+..:: inStrain compare Step 3. Auxiliary processing ::..
+***************************************************
+                """
+        logging.info(message)
         self.run_auxillary_processing()
 
         # Store the results
+        message = """\
+***************************************************
+..:: inStrain compare Step 4. Store results ::..
+***************************************************
+                """
+        logging.info(message)
         self.store_results()
+        self.write_final_message()
 
     def parse_arguments(self):
         """
@@ -156,7 +184,7 @@ class CompareController(object):
 
         groups = len(self.scaffold_comparison_groups)
         for i, SCgroup in enumerate(self.scaffold_comparison_groups):
-            logging.info(f'Running group {i} of {groups}')
+            logging.info(f'Running group {i+1} of {groups}')
             SCgroup.load_cache()
             results = inStrain.compare_utils.run_compare_multiprocessing(SCgroup.cmd_queue, SCgroup.result_queue,
                                                                          self.null_model, num_to_run=len(SCgroup.scaffolds),
@@ -208,7 +236,7 @@ class CompareController(object):
         """
         Handle .stb files, database mode, and more
         """
-        # Calculate s2l
+        # Calculate s2l (scaffold 2 length)
         s2l = {}
         for SC in self.SC_objects:
             s2l[SC.scaffold] = SC.length
@@ -235,6 +263,10 @@ class CompareController(object):
             Gdb = inStrain.genomeUtilities._genome_wide_readComparer(gdb, self.stb, b2l, **self.kwargs)
             self.genomelevel_compare = Gdb
 
+        # Cluster genomes
+        if hasattr(self, 'genomelevel_compare'):
+            self.run_genome_clustering()
+
     def store_results(self):
         # Store the results in the RC
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "start")
@@ -249,6 +281,12 @@ class CompareController(object):
             # ... this is jankey, but I guess it's what we do
             out_base = self.RCprof.get_location('output') + os.path.basename(self.RCprof.get('location')) + '_'
             self.genomelevel_compare.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
+        if hasattr(self, 'Cdb'):
+            # ... this is jankey, but I guess it's what we do
+            out_base = self.RCprof.get_location('output') + os.path.basename(self.RCprof.get('location')) + '_'
+            self.Cdb.to_csv(out_base + 'strain_clusters.tsv', index=False, sep='\t')
+        if hasattr(self, 'stb'):
+            self.RCprof.store('scaffold2bin', self.stb, 'dictionary', 'Dictionary of scaffold 2 bin')
 
         # Make the output files
         self.RCprof.generate('comparisonsTable')
@@ -265,6 +303,61 @@ class CompareController(object):
                          'A dictionary of scaffold -> IS pair -> mm level -> positions with coverage overlap')
 
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "end")
+
+        # Make plots
+        if hasattr(self, 'genomelevel_compare'):
+            self.make_plots()
+
+    def make_plots(self):
+        '''
+        Call plotting function from "profile" module
+        '''
+        args = self.args
+        args.IS = self.RCprof.location
+
+        if not args.skip_plot_generation:
+            inStrain.logUtils.log_checkpoint("Compare", "making_plots", "start")
+            args.plots = ['10']
+            inStrain.controller.Controller().plot_operation(args)
+            inStrain.logUtils.log_checkpoint("Compare", "making_plots", "end")
+        else:
+            logging.info('Nevermind! You chose to skip making plots')
+
+    def write_final_message(self):
+        Sprofile = self.RCprof
+        message = """\
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+..:: inStrain compare finished ::..
+
+Output tables........ {0}
+Figures.............. {1}
+Logging.............. {2}
+
+See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        """.format(Sprofile.get_location('output'), \
+                   Sprofile.get_location('figures'),
+                   Sprofile.get_location('log'))
+        logging.info(message)
+
+    def run_genome_clustering(self):
+        """
+        Cluster genomes dRep style
+        """
+        kwargs = self.kwargs
+        Mdb = self.genomelevel_compare
+        Mdb = Mdb.sort_values(['genome', 'name1', 'name2'])
+        if len(Mdb) == 0:
+            return
+
+        try:
+            Cdb = inStrain.compare_utils.cluster_genome_strains(Mdb, kwargs)
+            self.Cdb = Cdb
+        except:
+            logging.error('Could not cluster genomes; heres a traceback:')
+            traceback.print_exc()
 
 class ScaffoldComparison(object):
     """
@@ -410,12 +503,12 @@ def make_scaffoldcomparison_objects(inputs, scaffolds_to_compare, input2scaffold
     scaffold2length = {}
 
     # Go through the profiles
-    for profile_loc in inputs:
+    for profile_loc in tqdm(inputs, desc='Loading Profiles into RAM'):
         if not os.path.exists(profile_loc):
             logging.error("IS {0} does not exist! Skipping".format(profile_loc))
             continue
 
-        logging.info("Loading {0}".format(profile_loc))
+        logging.debug("Loading {0}".format(profile_loc))
         ISP = inStrain.SNVprofile.SNVprofile(profile_loc)
         scaffolds = list(ISP._get_covt_keys())
         name = os.path.basename(ISP.get('bam_loc'))

@@ -4,11 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.4.0] - UNCOMITTED
+## [1.4.0] - 2020-10-30
 - Big refactor of the code for "inStrain compare"
 - Add support for .stb files in inStrain compare
 - Add a "database mode" for inStrain compare
 - Add the option to give inStrain compare a single genome to compare
+- Completely refactor testing to work with pytest
+- "compare" now clusters genomes when an .stb is provided
+- gene_info.tsv no longer reports genes with coverage == 0
+- Refactor testing of Docker images as well
+- Adjust the 
 
 ## [1.3.11] - 2020-10-21
 - Change the dependencies to specify a bioconda version that has the alphabet thing (https://github.com/MrOlm/inStrain/issues/27)

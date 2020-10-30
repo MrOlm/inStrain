@@ -245,6 +245,7 @@ class SNVprofile:
                     del db[c]
 
             db = reorder_columns(db, column_order)
+            db = db[db['coverage'] > 0]
 
         elif name == 'genome_info':
             column_order = ['genome', 'coverage', 'breadth', 'nucl_diversity',

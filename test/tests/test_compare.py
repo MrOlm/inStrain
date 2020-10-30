@@ -1053,6 +1053,10 @@ def test_compare_16(BTO):
     # Compare
     assert test_utils.compare_dfs2(e, s, verbose=True)
 
+    # See if figures were made
+    figs = glob.glob(IS.get_location('figures') + '*')
+    assert len(figs) > 0
+
 def test_compare_17(BTO):
     """
     Test database mode
@@ -1068,32 +1072,106 @@ def test_compare_17(BTO):
 
     # Make sure it raises an exception if the profiles don't have genome level info
     try:
-        cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb} --database_mode"
+        cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb2} --database_mode"
         print(cmd)
         inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
         assert False
     except:
         pass
 
-    call(f"inStrain genome_wide -i {location1} -s {BTO.stb}", shell=True)
-    call(f"inStrain genome_wide -i {location2} -s {BTO.stb}", shell=True)
+    call(f"inStrain genome_wide -i {location1} -s {BTO.stb2}", shell=True)
+    call(f"inStrain genome_wide -i {location2} -s {BTO.stb2}", shell=True)
 
-    cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb} --database_mode"
+    cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb2} --database_mode"
     print(cmd)
     inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
     # Load output
     IS = inStrain.SNVprofile.SNVprofile(exp_base)
 
-    # Make sure the only things compared were those in the .stb
-    print(IS)
-    cdb = IS.get('comparisonsTable')
+    # Make sure the only genomes compared were those with sufficient coverage
+    gdb1 = inStrain.SNVprofile.SNVprofile(location1).get('genome_level_info')
+    gdb2 = inStrain.SNVprofile.SNVprofile(location1).get('genome_level_info')
+
+    g1s = set(gdb1[gdb1['breadth_minCov'] >= 0.5]['genome'].tolist())
+    g2s = set(gdb2[gdb2['breadth_minCov'] >= 0.5]['genome'].tolist())
+    to_comp = g1s.intersection(g2s)
+
     files = [f for f in glob.glob(IS.get_location('output') + '*') if 'genomeWide' in f]
     assert len(files) == 1
     e = pd.read_csv(files[0], sep='\t')
+    assert to_comp == set(e['genome'].tolist())
 
-    scaffolds_compared = len(cdb['scaffold'].unique())
-    assert scaffolds_compared == 1
+    # Make sure the only things compared were those detected
+    cdb = IS.get('comparisonsTable')
+    scaffolds_compared = set(cdb['scaffold'].tolist())
+
+    scaffs_to_compare = set()
+    stb = inStrain.genomeUtilities.parse_stb(BTO.stb2)
+    for genome in to_comp:
+        scaffs_to_compare = scaffs_to_compare.union([s for s, g in stb.items() if g == genome])
+
+    assert len(scaffolds_compared) > 0
+    assert len(scaffs_to_compare) > 0
+    assert len(scaffolds_compared - scaffs_to_compare) == 0
+
+def test_compare_17_2(BTO):
+    """
+    Test database mode adjusting the minCov
+    """
+    # Set up
+    location1 = os.path.join(BTO.test_dir, os.path.basename(BTO.IS1))
+    shutil.copytree(BTO.IS1, location1)
+    location2 = os.path.join(BTO.test_dir, os.path.basename(BTO.IS2))
+    shutil.copytree(BTO.IS2, location2)
+
+    # Run the program in one step
+    exp_base = BTO.test_dir + 'testSR'
+
+    call(f"inStrain genome_wide -i {location1} -s {BTO.stb2}", shell=True)
+    call(f"inStrain genome_wide -i {location2} -s {BTO.stb2}", shell=True)
+
+    # Make sure it raises an exception if run too stringently
+    try:
+        cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb2} --database_mode --breadth 0.99"
+        print(cmd)
+        inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+        assert False
+    except:
+        pass
+
+    cmd = f"inStrain compare -i {location1} {location2} -o {exp_base} -s {BTO.stb2} --database_mode --breadth 0.01"
+    print(cmd)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    # Load output
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+
+    # Make sure the only genomes compared were those with sufficient coverage
+    gdb1 = inStrain.SNVprofile.SNVprofile(location1).get('genome_level_info')
+    gdb2 = inStrain.SNVprofile.SNVprofile(location1).get('genome_level_info')
+
+    g1s = set(gdb1[gdb1['breadth_minCov'] >= 0.01]['genome'].tolist())
+    g2s = set(gdb2[gdb2['breadth_minCov'] >= 0.01]['genome'].tolist())
+    to_comp = g1s.intersection(g2s)
+
+    files = [f for f in glob.glob(IS.get_location('output') + '*') if 'genomeWide' in f]
+    assert len(files) == 1
+    e = pd.read_csv(files[0], sep='\t')
+    assert to_comp == set(e['genome'].tolist())
+
+    # Make sure the only things compared were those detected
+    cdb = IS.get('comparisonsTable')
+    scaffolds_compared = set(cdb['scaffold'].tolist())
+
+    scaffs_to_compare = set()
+    stb = inStrain.genomeUtilities.parse_stb(BTO.stb2)
+    for genome in to_comp:
+        scaffs_to_compare = scaffs_to_compare.union([s for s, g in stb.items() if g == genome])
+
+    assert len(scaffolds_compared) > 0
+    assert len(scaffs_to_compare) > 0
+    assert len(scaffolds_compared - scaffs_to_compare) == 0
 
 def test_compare_18(BTO):
     """
@@ -1116,3 +1194,107 @@ def test_compare_18(BTO):
     scaffolds_compared = len(cdb['scaffold'].unique())
     assert scaffolds_compared == 1
     assert len(e) == 1
+
+def test_compare_19(BTO):
+    """
+    Ensure that compare can generate clusters
+    """
+    exp_base = BTO.test_dir + 'testSR'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} -s {BTO.stb}"
+    print(cmd)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    # Load output
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+
+    # Run it with default settings
+    files = glob.glob(IS.get_location('output') + '/*')
+    assert len(files) == 3
+
+    for f in files:
+        basename = os.path.basename(f)
+        if basename.endswith('_strain_clusters.tsv'):
+            Scdb = pd.read_csv(f, sep='\t')
+        elif basename.endswith('_genomeWide_compare.tsv'):
+            Sndb = pd.read_csv(f, sep='\t')
+
+    assert len(Scdb['cluster'].unique()) == 3
+
+    # Adjust the ani threshold
+    exp_base = BTO.test_dir + 'testSR2'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} -s {BTO.stb} -ani 0.999"
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+    files = glob.glob(IS.get_location('output') + '/*')
+    assert len(files) == 3
+    for f in files:
+        basename = os.path.basename(f)
+        if basename.endswith('_strain_clusters.tsv'):
+            cdb = pd.read_csv(f, sep='\t')
+        elif basename.endswith('_genomeWide_compare.tsv'):
+            ndb = pd.read_csv(f, sep='\t')
+
+    assert len(cdb['cluster'].unique()) == 2
+    assert test_utils.compare_dfs2(ndb, Sndb)
+
+    # Adjust the coverage threshold
+    exp_base = BTO.test_dir + 'testSR3'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} -s {BTO.stb} -cov 0.9999999999999"
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+    files = glob.glob(IS.get_location('output') + '/*')
+    assert len(files) == 3
+    for f in files:
+        basename = os.path.basename(f)
+        if basename.endswith('_strain_clusters.tsv'):
+            cdb = pd.read_csv(f, sep='\t')
+        elif basename.endswith('_genomeWide_compare.tsv'):
+            ndb = pd.read_csv(f, sep='\t')
+
+    assert len(cdb['cluster'].unique()) == 4
+    assert test_utils.compare_dfs2(ndb, Sndb)
+
+    # Include self
+    exp_base = BTO.test_dir + 'testSR4'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} -s {BTO.stb} --include_self_comparisons"
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+    files = glob.glob(IS.get_location('output') + '/*')
+    assert len(files) == 3
+    for f in files:
+        basename = os.path.basename(f)
+        if basename.endswith('_strain_clusters.tsv'):
+            cdb = pd.read_csv(f, sep='\t')
+        elif basename.endswith('_genomeWide_compare.tsv'):
+            ndb = pd.read_csv(f, sep='\t')
+
+    assert len(cdb['cluster'].unique()) == 3
+    assert not test_utils.compare_dfs2(ndb, Sndb)
+
+def test_compare_20(BTO):
+    """
+    Test the --group_length parameter
+    """
+    importlib.reload(logging)
+    exp_base = BTO.test_dir + 'testSR'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} --group_length 100000"
+    print(cmd)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    # Load log to make sure you did run in multiple groups
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+    log_loc = IS.get_location('log') + 'log.log'
+    got = False
+    with open(log_loc, 'r') as o:
+        for line in o.readlines():
+            if 'Running group 3 of 3' in line.strip():
+                got = True
+                break
+    assert got
+
+    # Make sure results are good
+    cdb = IS.get('comparisonsTable')
+    assert len(cdb['scaffold'].unique()) == 178

@@ -160,7 +160,7 @@ def download_data(args, working_dir, tmp_dir):
             cmd_string += ' {0} '.format(is_dir)
 
     # Download other files
-    for f, name in zip([args.genes, args.stb, args.scaffolds], ['-g', '-s', '-s']):
+    for f, name in zip([args.genes, args.stb, args.scaffolds], ['-g', '-s', '--scaffolds']):
         if f is not None:
             logging.info("{0} is {1}; downloading".format(name, f))
             download_file(f, tmp_dir)

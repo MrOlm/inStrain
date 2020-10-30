@@ -1,7 +1,10 @@
 #!/usr/bin/env python
-'''
+"""
 Run tests
-'''
+
+NOTE: Running these tests are confusing. The best way I currently have of adjusting parameters
+during development is to adjust the parameters inside the DTO object
+"""
 
 import io
 import os
@@ -75,7 +78,7 @@ def gb_to_cost(gb):
     return gb * 0.09
 
 def sync_test_data():
-    cmd = 'aws s3 sync ./s3_test_data/ s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/'
+    cmd = 'aws s3 sync /Users/mattolm/Programs/inStrain/test/docker_tests/s3_test_data/ s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/'
     subprocess.check_call(shlex.split(cmd))
     #print(s3_folder_size('s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/'))
 
@@ -85,7 +88,19 @@ def clear_s3_results():
     bucket.objects.filter(Prefix="Sonnenburg_Lab/Software/docker_testing/s3_results/").delete()
 
 def load_s3_results():
+    """
+    Return a list of the objects created during the run
+    """
     return [f for f in get_matching_s3_keys('czbiohub-microbiome', 'Sonnenburg_Lab/Software/docker_testing/s3_results/')]
+
+def download_s3_results():
+    """
+    Download the results from s3 and return the folder they're at
+    """
+    out_loc = load_random_test_dir()
+    cmd = f'aws s3 sync s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/s3_results/ {out_loc}'
+    subprocess.check_call(shlex.split(cmd))
+    return out_loc
 
 def get_s3_results_folder():
     return 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/s3_results/'
@@ -100,8 +115,9 @@ def get_credentials():
     return loc
 
 def get_accessible_test_data():
-    loc = os.path.join(str(os.getcwd()), \
-        'accessible_test_data/')
+    loc = '/Users/mattolm/Programs/inStrain/test/docker_tests/accessible_test_data/'
+    # loc = os.path.join(str(os.getcwd()), \
+    #     'accessible_test_data/')
     return loc
 
 def read_s3_file(key, bucketname='czbiohub-microbiome'):
@@ -179,6 +195,7 @@ def run_docker(image, cmd, simulate_aegea=True, overwrite_accessible=False):
     cred_loc = get_credentials()
     test_loc = get_accessible_test_data()
     output_loc = load_random_test_dir()
+    program_loc = '/Users/mattolm/Programs/inStrain/'
     mt_loc = os.getcwd() + '/mnt'
 
     if overwrite_accessible:
@@ -195,76 +212,32 @@ def run_docker(image, cmd, simulate_aegea=True, overwrite_accessible=False):
     else:
         quick_junk = ["/bin/bash", "-c", 'for i in "$@"; do eval "$i"; done; cd /', __name__]
         cmd = quick_junk + [cmd]
-        #cmd = [cmd]
-    # FULL_CMD="docker run -v {2}:/root/.aws/credentials -v {3}:/root/accessible_testing_data/ -v {4}:/root/accessible_results/ {0} /bin/bash -c \"{1}\"".format(image, cmd, cred_loc, test_loc, output_loc)
-    # print(FULL_CMD)
-    # call(FULL_CMD, shell=True)
 
-
-    BASE_CMD = shlex.split("docker run -v {2}:/root/.aws/credentials -v {3}:/root/accessible_testing_data/ -v {4}:/root/accessible_results/ {0}".format(image, cmd, cred_loc, test_loc, output_loc, mt_loc))
+    BASE_CMD = shlex.split(f"docker run -v {program_loc}:/root/whole_program/ -v {cred_loc}:/root/.aws/credentials -v {test_loc}:/root/accessible_testing_data/ -v {output_loc}:/root/accessible_results/ {image}")
     FULL_CMD = BASE_CMD + cmd
     print(FULL_CMD)
     print(' '.join(FULL_CMD))
     call(FULL_CMD)
-    #FULL_CMD="docker run -v {2}:/root/.aws/credentials -v {3}:/root/accessible_testing_data/ -v {4}:/root/accessible_results/ {0} {1}".format(image, cmd, cred_loc, test_loc, output_loc)
 
-# class test_instrain():
-#     def setUp(self):
-#         self.test_dir = load_random_test_dir()
-#         self.IMAGE = "mattolm/instrain:latest"
-#         self.BAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
-#         self.SAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
-#         self.GENES_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna'
-#         self.STB_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1.maxbin2.stb'
-#         self.FASTA_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa'
-#         self.GENOME_LIST = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/genomelist.txt'
-#         self.IS_1 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS/'
-#         self.IS_2 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/'
-#         self.IS_FIF = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/is_locs.txt'
-#         self.scafflist = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/scaffList.txt'
-#
-#         self.tearDown()
-#
-#     def tearDown(self):
-#         if os.path.isdir(self.test_dir):
-#             shutil.rmtree(self.test_dir)
-#         os.mkdir(self.test_dir)
-#         clear_s3_results()
-#
-#     def run(self):
-#         self.setUp()
-#         self.test0()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test1()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test2()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test3()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test4()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test5()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test6()
-#         self.tearDown()
-#
-#         self.setUp()
-#         self.test7()
-#         self.tearDown()
 
 class TestingClass():
+    def __init__(self):
+        self.IMAGE = "mattolm/instrain:latest"
+        self.BAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
+        self.SAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
+        self.GENES_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna'
+        self.STB_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1.maxbin2.stb'
+        self.FASTA_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa'
+        self.GENOME_LIST = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/genomelist.txt'
+        self.IS_1 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS/'
+        self.IS_2 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/'
+        self.IS_FIF = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/is_locs.txt'
+        self.scafflist = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/scaffList.txt'
+
+        self.setup_cmd = ''
+
+        self.test_dir = load_random_test_dir()
+
     def teardown(self):
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
@@ -281,35 +254,33 @@ def DTO():
     """
     # Set up
     self = TestingClass()
-    self.test_dir = load_random_test_dir()
-    self.IMAGE = "mattolm/instrain:latest"
-    self.BAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
-    self.SAM_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
-    self.GENES_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna'
-    self.STB_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1.maxbin2.stb'
-    self.FASTA_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa'
-    self.GENOME_LIST = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/genomelist.txt'
-    self.IS_1 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS/'
-    self.IS_2 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/'
-    self.IS_FIF = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/is_locs.txt'
-    self.scafflist = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/scaffList.txt'
+
+    # ADJUST THIS IF YOU ARE DEVELOPING
+    self.setup_cmd = "./prepare.sh; conda activate work;"
+
+    self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
+    self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/; ./prepare.sh; conda activate work; pushd /root/whole_program/; pip install . --upgrade; popd;"
+    self.aegea_simulation = True
+
+    if self.setup_cmd != "./prepare.sh; conda activate work;":
+        print("WANRING! YOURE RUNNING TESTS IN DEVELOPMENT MODE!")
 
     self.teardown()
     yield self
     self.teardown()
 
-@pytest.mark.skip(reason="This test often fails during development")
+#@pytest.mark.skip(reason="This test often fails during development")
 def test_docker_0(DTO):
     '''
     make sure dependencies are working; make sure the right version of inStrain is in there
     '''
     # Set up command
-
-    CMD = "./prepare.sh; conda activate work; inStrain profile --version > version.txt; aws s3 cp version.txt {0}/"\
+    CMD = "inStrain profile --version > version.txt; aws s3 cp version.txt {0}/"\
             .format(get_s3_results_folder())
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=True)
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Upload results
     output_files = load_s3_results()
@@ -327,11 +298,10 @@ def test_docker_1(DTO):
     # Set up command
 
     CMD = "./prepare.sh; conda activate work; pip install inStrain --upgrade; time ./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --cmd_args='--skip_plot_generation'".format(DTO.BAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test')
-    # SETUP_CMD = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
-    # CMD = SETUP_CMD + CMD
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=True)
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Set up intended output
     OUTPUT = ['docker_log.log', 'log.log', 'test_genome_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
@@ -353,11 +323,10 @@ def test_docker_2(DTO):
     # Set up command
 
     CMD = "./prepare.sh; conda activate work; ls; ./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --cmd_args='--skip_plot_generation' --genes {4} --stb {5}".format(DTO.SAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test', DTO.GENES_S3, DTO.STB_S3)
-    # SETUP_CMD = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
-    # CMD = SETUP_CMD + CMD
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=True)
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Set up intended output
     OUTPUT = ['docker_log.log', 'log.log', 'test_gene_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
@@ -378,12 +347,11 @@ def test_docker_3(DTO):
     '''
     # Set up command
 
-    CMD = "./prepare.sh; conda activate work; ls; time ./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --timeout 5 --cmd_args='--skip_plot_generation'".format(DTO.BAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test')
-    # SETUP_CMD = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
-    # CMD = SETUP_CMD + CMD
+    CMD = "./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --timeout 5 --cmd_args='--skip_plot_generation'".format(DTO.BAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test')
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=True)
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Set up intended output
     OUTPUT = ['docker_log.log', 'log.log']#, 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
@@ -407,12 +375,11 @@ def test_docker_4(DTO):
     '''
     Test quick_profile
     '''
-    CMD = "./prepare.sh; conda activate work;  pip install instrain --upgrade --pre; inStrain -h; time ./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --command quick_profile".format(DTO.BAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test')
-    #SETUP_CMD = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
-    #CMD = SETUP_CMD + CMD
+    CMD = "./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --command quick_profile".format(DTO.BAM_S3, DTO.FASTA_S3, get_s3_results_folder(), 'test')
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea='semi')
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Set up intended output
     OUTPUT = ['docker_log.log', 'coverm_raw.tsv']#, 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
@@ -437,27 +404,26 @@ def test_docker_5(DTO):
     Test beta version installation
     '''
     # Set up command
-
     CMD = "./prepare.sh; conda activate work; mkdir inStrain; git clone git://github.com/MrOlm/inStrain.git; cd inStrain; git checkout v1.3.0; pip install . --upgrade; cd ../; inStrain -h".format(get_s3_results_folder())
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=True)
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Estimate cost
     estimate_cost(None, get_s3_results_folder())
 
 def test_docker_6(DTO):
     '''
-    Test compare
+    Test compare with --scaffolds
     '''
     # Set up command
-    # CMD = "./prepare.sh; conda activate work; cp /root/accessible_testing_data/run_instrain.py ./; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
-    #     DTO.IS_1, DTO.IS_2, get_s3_results_folder(), 'testRC', DTO.scafflist)
-    CMD = "./prepare.sh; conda activate work; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
+    CMD = "./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
         DTO.IS_1, DTO.IS_2, get_s3_results_folder(), 'testRC', DTO.scafflist)
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea='semi')
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Estimate cost
     estimate_cost(None, get_s3_results_folder())
@@ -472,19 +438,33 @@ def test_docker_6(DTO):
     for o in OUTPUT:
         have = o in basenames
         assert have, [o, basenames]
+
+    # Check the results
+    out = download_s3_results()
+    print(out)
+    for resultfile in glob.glob(out + 'testRC/output/*'):
+        if resultfile.endswith('_comparisonsTable.tsv'):
+            rdb = pd.read_csv(resultfile, sep='\t')
+
+    # Make sure only those scaffolds
+    scaffolds = []
+    scafflist_location = DTO.scafflist.replace('s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/', '/Users/mattolm/Programs/inStrain/test/docker_tests/s3_test_data/')
+    with open(scafflist_location, 'r') as o:
+        for line in o.readlines():
+            scaffolds.append(line.strip())
+    assert set(scaffolds) == set(rdb['scaffold'].tolist())
 
 def test_docker_7(DTO):
     '''
-    Test compare using FOF (file of file
+    Test compare using FOF (file of files)
     '''
     # Set up command
-    # CMD = "./prepare.sh; conda activate work; cp /root/accessible_testing_data/* ./; ./run_instrain.py --IS {0} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
-    #     DTO.IS_FIF, None, get_s3_results_folder(), 'testRC', DTO.scafflist)
-    CMD = "./prepare.sh; conda activate work; ./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
+    CMD = "./run_instrain.py --IS {0} {1} --results_directory {2} --wd_name {3} --command compare --cmd_args='--store_mismatch_locations' --scaffolds {4}".format(
         DTO.IS_1, DTO.IS_2, get_s3_results_folder(), 'testRC', DTO.scafflist)
+    CMD = DTO.setup_cmd + CMD
 
     # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea='semi')
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Estimate cost
     estimate_cost(None, get_s3_results_folder())
@@ -500,9 +480,5 @@ def test_docker_7(DTO):
         have = o in basenames
         assert have, [o, basenames]
 
-
 if __name__ == '__main__':
     sync_test_data()
-
-    #test_instrain().run()
-    #print('everything is working swimmingly!')
