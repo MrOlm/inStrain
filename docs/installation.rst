@@ -4,7 +4,7 @@ Installation
 Installation
 -------------------
 
-InStrain is written in python. There are a number of ways that is can be installed.
+InStrain is written in python. There are a number of ways that it can be installed.
 
 pip
 +++++++++++++++++
@@ -50,6 +50,15 @@ package dependencies, but those should install automatically when inStrain is in
 * `coverM <https://github.com/wwood/CoverM>`_ This is needed for the quick_profile operation
 
 * `Prodigal <https://github.com/hyattpd/Prodigal>`_ This is needed to profile on a gene by gene level
+
+Pre-built genome database
+--------------------------
+
+An established set of public genomes can be downloaded for your inStrain analysis at the `following link - https://doi.org/10.5281/zenodo.4441269 <https://doi.org/10.5281/zenodo.4441269>`_. See Tutorial #2 in :doc:`tutorial` for usage instructions.
+
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.4441269.svg
+
+   :target: https://doi.org/10.5281/zenodo.4441269
 
 Docker image
 -------------------

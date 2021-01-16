@@ -24,30 +24,32 @@ This strategy involves assembling genomes from the metagenomic samples that you'
 
 3. Dereplicate the entire set of genomes that you would like to profile (all genomes from all environments) at 97-99% identity, and filter out low quality genomes. Recommended software: dRep, checkM.
 
-4. Create a bowtie2 index of the representative genomes from this dereplicated set and map reads to this set from each sample: Recommended software: Bowtie2
+4. Create a :term:`scaffold-to-bin file` from the genome set. Recommended software: `parse_stb.py <https://github.com/MrOlm/drep/blob/master/helper_scripts/parse_stb.py>`_
 
-5. Profile the resulting mapping *.bam* files using inStrain.
+5. Create a bowtie2 index of the representative genomes from this dereplicated set and map reads to this set from each sample: Recommended software: Bowtie2
 
-6. Use *inStrain genome_wide* to calculate genome-level microdiveristy metrics for each originally binned genome.
+6. Profile the resulting mapping *.bam* files using inStrain to calculate genome-level :term:`microdiveristy` metrics for each originally binned genome.
 
-An important aspect of this workflow is to **map to many genomes at once**. Mapping to just one genome at a time is highly discouraged, because this encourages :term:`mismapped reads<mismapped read>` from other genomes to be recruited by this genome. By including many (dereplicated) genomes in your bowtie2 index, you will be able to far more accurately filter out :term:`mismapped reads<mismapped read>` and reduce false positive SNPs.
+An important aspect of this workflow is to **map to many genomes at once**. Mapping to just one genome at a time is highly discouraged, because this encourages :term:`mismapped reads<mismapped read>` from other genomes to be recruited by this genome. By including many (dereplicated) genomes in your bowtie2 index, you will be able to far more accurately filter out :term:`mismapped reads<mismapped read>` and reduce false positive SNPs. See :doc:`important_concepts` for more info.
+
+For instructions on merging your genomes with a public database, see Tutorial #3 of :doc:`tutorial`.
 
 Using a single genome .fasta file
 ``````````````````````````````````````
-If your .fasta file is a single genome, the main consideration is that it should be a good representative genome for some organism in your sample. Ideally, it was assembled directly from that sample, isolated from that sample, or you have some other evidence that this genome is highly representation of a species in that sample. Regardless, you should check your `inStrain plot` output and `scaffold_info.tsv` output file to be sure that your inStrain run had decent coverage and breadth of coverage of the genome that you use before attempting to interpret the results.
+If your .fasta file is a single genome, the main consideration is that it should be a good representative genome for some organism in your sample. Ideally, it was assembled directly from that sample, isolated from that sample, or you have some other evidence that this genome is highly representative of a species in that sample. Regardless, you should check your `inStrain plot` output and `scaffold_info.tsv` output file to be sure that your inStrain run had decent coverage and breadth of coverage of the genome that you use before attempting to interpret the results.
 
 Remember, your .fasta file can be a subset of the .fasta file that was used to create the .bam file. You can create a .bam with all dereplicated genomes from your environment, but then just pass a .fasta file for only the genomes of particular interest. This approach is recommended as opposed to creating a :term:`bam file` for just each genome, as it reduces :term:`mismapped reads<mismapped read>`
 
 Using a metagenomic assembly
 `````````````````````````````````
-You can also pass inStrain an entire metagenomic assembly from a sample, including both binned and unbinned contigs. In this case, the output inStrain profile will include population information for each contig in the set. To  break it down by microbial genome / species, you can include a scaffold to bin file to generate results by genome.
+You can also pass inStrain an entire metagenomic assembly from a sample, including both binned and unbinned contigs. In this case, the output inStrain profile will include population information for each contig in the set. To  break it down by microbial genome / species, you can include a :term:`scaffold-to-bin file` to generate results by genome.
 
 Preparing the .bam file
 ++++++++++++++++++++++++++
 
 InStrain is designed primarily for paired-end Illumina read sequencing, though un-paired reads can also be used by adjusting the run-time parameters. We recommend using the program Bowtie2 to map your reads to your genome.
 
-Bowtie2 default parameters are what we use for mapping, but it may be worth playing around with them to see how different settings perform on your data. It is important to note that the ``-X`` flag (capital X) is the expected insert length and is by default ``500``. In many cases (e.g., 2x250 bp or simply datasets with longer inserts) it may be worthwhile to increase this value up to ``-X 1000`` for passing to Bowtie2. By default, if a read maps equally well to multiple genomes, Bowtie2 will pick one of the positions randomly and give the read a MAPQ score of 1. Thus, if you'd like to remove :term:`multi-mapped reads<multi-mapped read>`, you can set you minimum mapQ score to 2.
+Bowtie2 default parameters are what we use for mapping, but it may be worth playing around with them to see how different settings perform on your data. It is important to note that the ``-X`` flag (capital X) is the expected insert length and is by default ``500``. In many cases (e.g., 2x250 bp or simply datasets with longer inserts) it may be worthwhile to increase this value up to ``-X 1000`` for passing to Bowtie2. By default, if a read maps equally well to multiple genomes, Bowtie2 will pick one of the positions randomly and give the read a MAPQ score of 1. Thus, if you'd like to remove :term:`multi-mapped reads<multi-mapped read>`, you can set the minimum mapQ score to 2.
 
 Other mapping software can also be used to generate .bam files for inStrain. However, some software (e.g. BBmap and SNAP) use the fasta file scaffold descriptions when generating the .bam files, which causes problems for inStrain. If using mapping software that does this, include the flag ``--use_full_fasta_header`` to let inStrain account for this.
 
@@ -68,7 +70,7 @@ Preparing a scaffold-to-bin file
 
 After running ``inStrain profile``, most results are presented on a scaffold-by-scaffold basis. There are a number of ways of telling *inStrain* which scaffold belongs to which genome, so that results can be analyzed on a genome-by-gene level as well.
 
-1. Individual .fasta files. As recommended above, if you want to run *inStrain* on multiple genomes in the same sample, you should first concatenate all of the individual genomes into a single *.fasta* file and map to that. To view the results of the individual genomes used to create the concatenated .fasta file, you can pass a list of the individual .fasta files the ``-s`` arguement.
+1. Individual .fasta files. As recommended above, if you want to run *inStrain* on multiple genomes in the same sample, you should first concatenate all of the individual genomes into a single *.fasta* file and map to that. To view the results of the individual genomes used to create the concatenated .fasta file, you can pass a list of the individual .fasta files the ``-s`` argument.
 
 2. Scaffold-to-bin file. This is a text file consists of two columns, with one column listing the scaffold name, and the second column listing the genome bin name. Columns should be separated by tabs. The script `parse_stb.py <https://github.com/MrOlm/drep/blob/master/helper_scripts/parse_stb.py>`_  can help you create a scaffold-to-bin file from a list of individual .fasta files, or to split a concatenated .fasta file into individual genomes. The script comes packaged with the program `dRep <https://github.com/MrOlm/drep>`_, and can be installed with the command ``pip install drep``.
 
@@ -108,7 +110,7 @@ profile
 Module description
 ````````````````````
 
-The most complex part of inStrain, and must be run before any other modules can be. The input is a :term:`fasta file` and a :term:`bam file`, and the output is an :term:`IS_profile<inStrain profile>`. The functionality of ``inStrain profile`` is broken into several steps.
+The heart of inStrain. The input is a :term:`fasta file` and a :term:`bam file`, and the output is an :term:`IS_profile<inStrain profile>`. The functionality of ``inStrain profile`` is broken into several steps.
 
 First, all reads in the .bam file are filtered to only keep those that map with sufficient quality. All non-paired reads will be filtered out by default, and an additional set of filters are applied to each read pair (not the individual reads). Command line parameters can be adjusted to change the specifics, but in general:
 
@@ -118,7 +120,7 @@ First, all reads in the .bam file are filtered to only keep those that map with 
 
 * Pairs must be above some minimum nucleotide identity (ANI) value. For example if reads in a pair are 100bp each, and each read has a single mismatch, the ANI of that pair would be 0.99
 
-Next, using only read pairs that pass filters, a number of microdiveristy metrics are calculated on a scaffold-by-scaffold basis. This includes:
+Next, using only read pairs that pass filters, a number of :term:`microdiversity` metrics are calculated on a scaffold-by-scaffold basis. This includes:
 
 * Calculate the coverage at each position along the scaffold
 
@@ -287,26 +289,29 @@ Compare provides the ability to compare multiple :term:`inStrain profiles<inStra
 .. note::
   *inStrain* can only compare :term:`inStrain profiles<inStrain profile>`that have been mapped to the same .fasta file
 
-``inStrain compare`` does pair-wise comparisons between each input :term:`inStrain profile<inStrain profile>`. For each pair, a series of steps are undertaken.
+``inStrain compare`` does pairwise comparisons between each input :term:`inStrain profile<inStrain profile>`. For each pair, a series of steps are undertaken.
 
 1. All positions in which both IS_profile objects have at least *min_cov* coverage (5x by default) are identified. This information can be stored in the output by using the flag *--store_coverage_overlap*, but due to it's size, it's not stored by default
 
-2. Each position identified in step 1 is compared to calculate both :term:`conANI` and :term:`popANI`. The way that it compares positions is by testing whether the consensus base in sample 1 is detected at all in sample 2 and vice-verse. Detection of an allele in a sample is based on that allele being above the set *-min_freq* and *-fdr*. All detected differences between each pair of samples can be reported if the flag *--store_mismatch_locations* is set.
+2. Each position identified in step 1 is compared to calculate both :term:`conANI` and :term:`popANI`. The way that it compares positions is by testing whether the consensus base in sample 1 is detected at all in sample 2 and vice-versa. Detection of an allele in a sample is based on that allele being above the set *-min_freq* and *-fdr*. All detected differences between each pair of samples can be reported if the flag *--store_mismatch_locations* is set.
 
-3. The coverage overlap and the average nucleotide identify for each scaffold is reported. For details on how this is done, see :doc:`example_output`
+3. The coverage overlap and the average nucleotide identity for each scaffold is reported. For details on how this is done, see :doc:`example_output`
 
 Module parameters
 ````````````````````
 To see the command-line options, check the help::
 
-
     $ inStrain compare -h
     usage: inStrain compare -i [INPUT [INPUT ...]] [-o OUTPUT] [-p PROCESSES] [-d]
-                            [-h] [--version] [-c MIN_COV] [-f MIN_FREQ] [-fdr FDR]
-                            [-s SCAFFOLDS] [--store_coverage_overlap]
+                            [-h] [--version] [-s [STB [STB ...]]] [-c MIN_COV]
+                            [-f MIN_FREQ] [-fdr FDR] [--database_mode]
+                            [--breadth BREADTH] [-sc SCAFFOLDS] [--genome GENOME]
+                            [--store_coverage_overlap]
                             [--store_mismatch_locations]
-                            [--include_self_comparisons] [--greedy_clustering]
-                            [--g_ani G_ANI] [--g_cov G_COV] [--g_mm G_MM]
+                            [--include_self_comparisons] [--skip_plot_generation]
+                            [--group_length GROUP_LENGTH] [-ani ANI_THRESHOLD]
+                            [-cov COVERAGE_TRESHOLD]
+                            [--clusterAlg {single,ward,complete,centroid,weighted,average,median}]
 
     REQUIRED:
       -i [INPUT [INPUT ...]], --input [INPUT [INPUT ...]]
@@ -322,6 +327,15 @@ To see the command-line options, check the help::
       -h, --help            show this help message and exit
       --version             show program's version number and exit
 
+    GENOME WIDE OPTIONS:
+      -s [STB [STB ...]], --stb [STB [STB ...]]
+                            Scaffold to bin. This can be a file with each line
+                            listing a scaffold and a bin name, tab-seperated. This
+                            can also be a space-seperated list of .fasta files,
+                            with one genome per .fasta file. If nothing is
+                            provided, all scaffolds will be treated as belonging
+                            to the same genome (default: [])
+
     VARIANT CALLING OPTIONS:
       -c MIN_COV, --min_cov MIN_COV
                             Minimum coverage to call an variant (default: 5)
@@ -332,11 +346,22 @@ To see the command-line options, check the help::
       -fdr FDR, --fdr FDR   SNP false discovery rate- based on simulation data
                             with a 0.1 percent error rate (Q30) (default: 1e-06)
 
+    DATABASE MODE PARAMETERS:
+      --database_mode       Using the parameters below, automatically determine
+                            which genomes are present in each Profile and only
+                            compare scaffolds from those genomes. All profiles
+                            must have run Profile with the same .stb (default:
+                            False)
+      --breadth BREADTH     Minimum breadth_minCov required to count a genome
+                            present (default: 0.5)
+
     OTHER OPTIONS:
-      -s SCAFFOLDS, --scaffolds SCAFFOLDS
+      -sc SCAFFOLDS, --scaffolds SCAFFOLDS
                             Location to a list of scaffolds to compare. You can
                             also make this a .fasta file and it will load the
                             scaffold names (default: None)
+      --genome GENOME       Run scaffolds belonging to this single genome only.
+                            Must provide an .stb file (default: None)
       --store_coverage_overlap
                             Also store coverage overlap on an mm level (default:
                             False)
@@ -345,96 +370,33 @@ To see the command-line options, check the help::
       --include_self_comparisons
                             Also compare IS profiles against themself (default:
                             False)
+      --skip_plot_generation
+                            Dont create plots at the end of the run. (default:
+                            False)
+      --group_length GROUP_LENGTH
+                            How many bp to compare simultaneously (higher will use
+                            more RAM and run more quickly) (default: 10000000)
 
-    GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]:
-      --greedy_clustering   Dont do pair-wise comparisons, do greedy clustering to
-                            only find the number of clsuters. If this is set, use
-                            the parameters below as well (default: False)
-      --g_ani G_ANI         ANI threshold for greedy clustering- put the fraction
-                            not the percentage (e.g. 0.99, not 99) (default: 0.99)
-      --g_cov G_COV         Alignment coverage for greedy clustering- put the
-                            fraction not the percentage (e.g. 0.5, not 10)
-                            (default: 0.99)
-      --g_mm G_MM           Maximum read mismatch level (default: 100)
+    GENOME CLUSTERING OPTIONS:
+      -ani ANI_THRESHOLD, --ani_threshold ANI_THRESHOLD
+                            popANI threshold to cluster genomes at. Must provide
+                            .stb file to do so (default: 0.99999)
+      -cov COVERAGE_TRESHOLD, --coverage_treshold COVERAGE_TRESHOLD
+                            Minimum percent_genome_compared for a genome
+                            comparison to count; if below the popANI will be set
+                            to 0. (default: 0.1)
+      --clusterAlg {single,ward,complete,centroid,weighted,average,median}
+                            Algorithm used to cluster genomes (passed to
+                            scipy.cluster.hierarchy.linkage) (default: average)
 
 Other modules
 ++++++++++++++
 
-The other modules are not commonly used, and mainly provide auxiliary functions or allow you run certain steps of ``profile`` after the fact. It is recommended to provide a genes file and/or a scaffold-to-bin file during ``inStrain profile`` rather than using ``profile_genes`` or ``genome_wide``, as it is more computationally efficient to do things that way.
-
-profile_genes
-````````````````````
-After running *inStrain profile* on a sample, you can providing a file of gene calls to calculate gene-level metrics after the fact. This is less computationally efficient than providing the genes file to ``profile`` in the first place, however. See above for information about creating the input file.
-
-To see the command-line options, check the help::
-
-    $ inStrain profile_genes -h
-    usage: inStrain profile_genes [-g GENE_FILE] -i IS [--store_everything]
-                                  [-p PROCESSES] [-d] [-h] [--version]
-
-    GENE PROFILING OPTIONS:
-      -g GENE_FILE, --gene_file GENE_FILE
-                            Path to prodigal .fna genes file. If file ends in .gb
-                            or .gbk, will treat as a genbank file (EXPERIMENTAL;
-                            the name of the gene must be in the gene qualifier)
-                            (default: None)
-
-    INPUT / OUTPUT:
-      -i IS, --IS IS        an inStrain profile object (default: None)
-      --store_everything    Store gene sequences in the IS object (default: False)
-
-    SYSTEM PARAMETERS:
-      -p PROCESSES, --processes PROCESSES
-                            Number of processes to use (default: 6)
-      -d, --debug           Make extra debugging output (default: False)
-      -h, --help            show this help message and exit
-      --version             show program's version number and exit
-
-genome_wide
-````````````````````
-After running *inStrain profile* on a sample, you can provide information to analyze things on the genome level after the fact. This is less computationally efficient than providing the stb file to ``profile`` in the first place, however. See above for information about creating the input file.
-
-To see the command-line options, check the help::
-
-    $ inStrain genome_wide -h
-    usage: inStrain genome_wide [-s [STB [STB ...]]] -i IS [--store_everything]
-                                [--mm_level] [--skip_mm_profiling] [-p PROCESSES]
-                                [-d] [-h] [--version]
-
-    GENOME WIDE OPTIONS:
-      -s [STB [STB ...]], --stb [STB [STB ...]]
-                            Scaffold to bin. This can be a file with each line
-                            listing a scaffold and a bin name, tab-seperated. This
-                            can also be a space-seperated list of .fasta files,
-                            with one genome per .fasta file. If nothing is
-                            provided, all scaffolds will be treated as belonging
-                            to the same genome (default: [])
-
-    INPUT / OUTPUT:
-      -i IS, --IS IS        an inStrain profile object (default: None)
-      --store_everything    Store gene sequences in the IS object (default: False)
-
-    READ ANI OPTIONS:
-      --mm_level            Create output files on the mm level (see documentation
-                            for info) (default: False)
-      --skip_mm_profiling   Dont perform analysis on an mm level; saves RAM and
-                            time; impacts plots and raw_data (default: False)
-
-    SYSTEM PARAMETERS:
-      -p PROCESSES, --processes PROCESSES
-                            Number of processes to use (default: 6)
-      -d, --debug           Make extra debugging output (default: False)
-      -h, --help            show this help message and exit
-      --version             show program's version number and exit
+The other modules are not commonly used, and mainly provide auxiliary functions or allow you to run certain steps of ``profile`` after the fact. It is recommended to provide a genes file and/or a scaffold-to-bin file during ``inStrain profile`` rather than using ``profile_genes`` or ``genome_wide``, as it is more computationally efficient to do things that way.
 
 quick_profile
 ````````````````````
-
-This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth.
-
-To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). The *stringent_breadth_cutoff* removed scaffolds entirely which have less breath than this (used to make the program run faster and produce smaller output). All scaffolds from genomes with at least the *breadth_cutoff* are then written to a file. In this way, you can then choose to run inStrain profile only on scaffolds from genomes that known to be of sufficient breadth, speeding up the run and reducing RAM usage (though not by much).
-
-On the backend, this module is really just calling the program coverM `coverM<https://github.com/wwood/CoverM>`_
+This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program coverM `coverM<https://github.com/wwood/CoverM>`_
 
 To see the command-line options, check the help::
 
@@ -513,19 +475,24 @@ To see the command-line options, check the help::
 other
 ````````````````````
 
-This module holds odds and ends functionalities. As of version 1.3.1, all it can do is convert old *IS_profile* objects (>v0.3.0) to newer versions (v0.8.0). As the code base around *inStrain* matures, we expect more functionalities to be included here.
+This module holds odds and ends functionalities. As of version 1.4, all it can do is convert old *IS_profile* objects (>v0.3.0) to newer versions (v0.8.0) and create runtime summaries of complete inStrain runs. As the code base around *inStrain* matures, we expect more functionalities to be included here.
 
 To see the command-line options, check the help::
 
-  $ inStrain other -h
-  usage: inStrain other [-p PROCESSES] [-d] [-h] [--old_IS OLD_IS]
+    $  inStrain other -h
+    usage: inStrain other [-p PROCESSES] [-d] [-h] [--version] [--old_IS OLD_IS]
+                          [--run_statistics RUN_STATISTICS]
 
-  SYSTEM PARAMETERS:
-    -p PROCESSES, --processes PROCESSES
-                          Number of processes to use (default: 6)
-    -d, --debug           Make extra debugging output (default: False)
-    -h, --help            show this help message and exit
+    SYSTEM PARAMETERS:
+      -p PROCESSES, --processes PROCESSES
+                            Number of processes to use (default: 6)
+      -d, --debug           Make extra debugging output (default: False)
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
 
-  OTHER OPTIONS:
-    --old_IS OLD_IS       Convert an old inStrain version object to the newer
-                          version. (default: None)
+    OTHER OPTIONS:
+      --old_IS OLD_IS       Convert an old inStrain version object to the newer
+                            version. (default: None)
+      --run_statistics RUN_STATISTICS
+                            Generate runtime reports for an inStrain run.
+                            (default: None)

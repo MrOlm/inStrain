@@ -6,8 +6,7 @@
 InStrain
 ====================================
 
-InStrain is a tool for  analysis of co-occurring genome populations from metagenomes that allows
-highly accurate genome comparisons, analysis of coverage, microdiversity, and linkage,
+InStrain is a tool for  analysis of co-occurring genome populations from metagenomes that allows highly accurate genome comparisons, analysis of coverage, microdiversity, and linkage,
 and sensitive SNP detection with gene localization and synonymous non-synonymous identification
 
 Source code is `available on GitHub
@@ -31,8 +30,10 @@ Contents
 
    installation
    overview
+   important_concepts
    tutorial
    user_manual
    example_output
    advanced_use
+   benchmarks
    acknowledgements

@@ -256,10 +256,10 @@ def DTO():
     self = TestingClass()
 
     # ADJUST THIS IF YOU ARE DEVELOPING
-    self.setup_cmd = "./prepare.sh; conda activate work;"
-
-    self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
-    self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/; ./prepare.sh; conda activate work; pushd /root/whole_program/; pip install . --upgrade; popd;"
+    #self.setup_cmd = "./prepare.sh; conda activate work;"
+    #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
+    #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/; ./prepare.sh; conda activate work; pushd /root/whole_program/; pip install . --upgrade; popd;"
+    self.setup_cmd = "./prepare.sh; conda activate work; pip install instrain --upgrade;"
     self.aegea_simulation = True
 
     if self.setup_cmd != "./prepare.sh; conda activate work;":

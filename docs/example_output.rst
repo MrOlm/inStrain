@@ -1,4 +1,4 @@
-Example output
+Expected output
 ===================
 
 InStrain produces a variety of output in the IS folder depending on which operations are run. Generally, output that is meant for human eyes to be easily interpretable is located in the ``output`` folder.
@@ -34,7 +34,7 @@ breadth
   The percentage of bases in the scaffold that are covered by at least a single read. A breadth of 1 means that all bases in the scaffold have at least one read covering them
 
 nucl_diversity
-  The mean :term:`nucleotide diversity` of all bases in the scaffold that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meats the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
+  The mean :term:`nucleotide diversity` of all bases in the scaffold that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meets the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
 
 coverage_median
   The median depth of coverage value of all bases in the scaffold, included bases with 0 coverage
@@ -49,7 +49,7 @@ breadth_minCov
   The percentage of bases in the scaffold that have at least min_cov coverage (e.g. the percentage of bases that have a nucl_diversity value and meet the minimum sequencing depth to call SNVs)
 
 breadth_expected
-  This tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, prophage, etc.)
+  :term:`expected breadth`; this tells you the breadth that you should expect if reads are evenly distributed along the genome, given the reported coverage value. Based on the function breadth = -1.000 * e^(0.883 * coverage) + 1.000. This is useful to establish whether or not the scaffold is actually in the reads, or just a fraction of the scaffold. If your coverage is 10x, the expected breadth will be ~1. If your actual breadth is significantly lower then the expected breadth, this means that reads are mapping only to a specific region of your scaffold (transposon, prophage, etc.)
 
 nucl_diversity_median
   The median :term:`nucleotide diversity` value of all bases in the scaffold that have a :term:`nucleotide diversity` value calculated
@@ -91,10 +91,22 @@ This provides an overview of the number of reads that map to each scaffold, and 
 
 .. csv-table:: mapping_info.tsv
 
-    scaffold,pass_pairing_filter,filtered_pairs,unfiltered_priority_reads,filtered_priority_reads,pass_min_mapq,mean_insert_distance,median_insert,unfiltered_pairs,pass_min_read_ani,unfiltered_reads,mean_pair_length,mean_mapq_score,pass_max_insert,unfiltered_singletons,pass_min_insert,mean_PID,mean_mistmaches,filtered_singletons
-    all_scaffolds,19293,7179,0,0,19293.0,307.724044990411,303.28290053387235,19293,7257.060551,253.4114963976572,15.254807443114085,19230.0,21965,19201.0,0.9388488368388499,15.244959311667445,0
-    N5_271_010G1_scaffold_0,162,138,0,0,162.0,353.45061728395063,363.5,162,138.0,364,278.34567901234567,35.481481481481474,162.0,40,162.0,0.9829159042607164,4.697530864197532,0
-    N5_271_010G1_scaffold_5,140,121,0,0,140.0,339.3142857142857,357.0,140,121.0,346,257.9214285714286,37.785714285714285,140.0,66,140.0,0.980420305410384,4.85,0
+    scaffold,pass_pairing_filter,filtered_pairs,median_insert,mean_PID,pass_min_insert,unfiltered_reads,unfiltered_pairs,pass_min_read_ani,filtered_priority_reads,unfiltered_singletons,mean_insert_distance,pass_min_mapq,mean_mistmaches,mean_mapq_score,unfiltered_priority_reads,pass_max_insert,filtered_singletons,mean_pair_length
+    all_scaffolds,22886,9435,318.75998426985933,0.942328296264744,22804.0,71399,22886,9499.0,0,25627,322.1849602376999,22886.0,14.325963471117715,17.16896792799091,0,22828.0,0,255.52
+    407585423404
+    N5_271_010G1_scaffold_1,432,346,373.0,0.9719013034762376,432.0,959,432,346.0,0,95,373.72222222222223,432.0,7.643518518518517,33.030092592592595,0,432.0,0,274.7106481481
+    481
+    N5_271_010G1_scaffold_0,741,460,389.0,0.9643004762700924,740.0,1841,741,461.0,0,359,387.94466936572195,741.0,10.2361673414305,26.537112010796218,0,741.0,0,285.5033738191
+    633
+    N5_271_010G1_scaffold_2,348,252,369.5,0.965446218901576,347.0,865,348,253.0,0,169,349.0172413793104,348.0,8.227011494252874,31.557471264367813,0,347.0,0,243.3103448275
+    8625
+    N5_271_010G1_scaffold_3,301,205,367.0,0.9639376512009891,301.0,1088,301,205.0,0,486,327.81395348837214,301.0,8.70764119601329,29.089700996677745,0,300.0,0,251.2624584717
+    6082
+    N5_271_010G1_scaffold_4,213,153,389.0,0.9649427929020106,213.0,502,213,153.0,0,76,372.3896713615024,213.0,9.27699530516432,30.70422535211268,0,213.0,0,269.2300469483
+    568
+    N5_271_010G1_scaffold_5,134,114,366.0,0.977820509122326,134.0,349,134,116.0,0,81,376.4552238805969,134.0,5.164179104477612,37.61194029850746,0,132.0,0,246.8059701492
+    5374
+    N5_271_010G1_scaffold_6,140,130,384.5,0.9813174696928879,140.0,316,140,130.0,0,36,372.45,140.0,4.864285714285714,38.43571428571428,0,140.0,0,261.3071428571429
 
 scaffold
   The name of the :term:`scaffold` in the input .fasta file. For the top row this will read ``all_scaffolds``, and it has the sum of all rows.
@@ -105,20 +117,17 @@ pass_pairing_filter
 filtered_pairs
   The number of pairs of reads that pass all cutoffs
 
-unfiltered_priority_reads
-  The number of reads that pass the pairing filter because they were part of the ``priority_reads`` input file (will only be non-0 if a priority reads input file is provided).
-
-filtered_priority_reads
-  The number of priority reads that pass the rest of the filters (will only be non-0 if a priority reads input file is provided).
-
-pass_min_mapq
-  The number of pairs of reads mapping to this scaffold that pass the minimum mapQ score cutoff
-
-mean_insert_distance
-  Among all pairs of reads mapping to this scaffold, the mean insert distance. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
-
 median_insert
   Among all pairs of reads mapping to this scaffold, the median insert distance.
+
+mean_PID
+  Among all pairs of reads mapping to this scaffold, the average percentage ID of both reads in the pair to the reference .fasta file
+
+pass_min_insert
+  The number of pairs of reads mapping to this scaffold that pass the minimum insert size cutoff
+
+unfiltered_reads
+  The raw number of reads that map to this scaffold
 
 unfiltered_pairs
   The raw number of pairs of reads that map to this scaffold. Only paired reads are used by inStrain
@@ -126,32 +135,36 @@ unfiltered_pairs
 pass_min_read_ani
   The number of pairs of reads mapping to this scaffold that pass the min_read_ani cutoff
 
-unfiltered_reads
-  The raw number of reads that map to this scaffold
-
-mean_pair_length
-  Among all pairs of reads mapping to this scaffold, the average length of both reads in the pair summed together
-
-mean_mapq_score
-  Among all pairs of reads mapping to this scaffold, the average mapQ score
-
-pass_max_insert
-  The number of pairs of reads mapping to this scaffold that pass the maximum insert size cutoff- that is, their insert size is less than 3x the median insert size of all_scaffolds. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
+filtered_priority_reads
+  The number of priority reads that pass the rest of the filters (will only be non-0 if a priority reads input file is provided)
 
 unfiltered_singletons
-  The number of reads detected in which only one read of the pair is mapped.
+  The number of reads detected in which only one read of the pair is mapped
 
-pass_min_insert
-  The number of pairs of reads mapping to this scaffold that pass the minimum insert size cutoff
+mean_insert_distance
+  Among all pairs of reads mapping to this scaffold, the mean insert distance. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
 
-mean_PID
-  Among all pairs of reads mapping to this scaffold, the average percentage ID of both reads in the pair to the reference .fasta file
+pass_min_mapq
+  The number of pairs of reads mapping to this scaffold that pass the minimum mapQ score cutoff
 
 mean_mistmaches
   Among all pairs of reads mapping to this scaffold, the mean number of mismatches
 
+mean_mapq_score
+  Among all pairs of reads mapping to this scaffold, the average mapQ score
+
+unfiltered_priority_reads
+  The number of reads that pass the pairing filter because they were part of the ``priority_reads`` input file (will only be non-0 if a priority reads input file is provided).
+
+pass_max_insert
+  The number of pairs of reads mapping to this scaffold that pass the maximum insert size cutoff- that is, their insert size is less than 3x the median insert size of all_scaffolds. Note that the insert size is measured from the start of the first read to the end of the second read (2 perfectly overlapping 50bp reads will have an insert size of 50bp)
+
 filtered_singletons
-  The number of reads detected in which only one read of the pair is mapped AND which make it through to be considered. This will only be non-0 if the filtering settings allows non-paired reads.
+  The number of reads detected in which only one read of the pair is mapped AND which make it through to be considered. This will only be non-0 if the filtering settings allows non-paired reads
+
+mean_pair_length
+  Among all pairs of reads mapping to this scaffold, the average length of both reads in the pair summed together
+
 
 SNVs.tsv
 +++++++++++++++++
@@ -239,7 +252,7 @@ This describes the :term:`linkage` between pairs of SNPs in the mapping that are
     N5_271_010G1_scaffold_93,59,70,11,0.010869565217391413,1.0,0.02777777777777779,1.0,G,A,T,A,0,2,3,21,26
     N5_271_010G1_scaffold_93,59,80,21,0.6410256410256397,1.0,1.0,1.0,G,A,G,A,2,0,1,25,28
 
-Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP as two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
+Linkage is used primarily to determine if organisms are undergoing horizontal gene transfer or not. It's calculated for pairs of SNPs that can be connected by at least ``min_snp`` reads. It's based on the assumption that each SNP has two alleles (for example, a A and b B). This all gets a bit confusing and has a large amount of literature around each of these terms, but I'll do my best to briefly explain what's going on
 
 scaffold
   The scaffold that both SNPs are on
@@ -392,7 +405,7 @@ breadth_minCov
   The number of bases in the gene that have at least min_cov coverage
 
 nucl_diversity
-  The mean :term:`nucleotide diversity` of all bases in the gene that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meats the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
+  The mean :term:`nucleotide diversity` of all bases in the gene that have a nucleotide diversity value calculated. So if only 1 base on the scaffold meets the minimum coverage to calculate nucleotide diversity, the nucl_diversity of the scaffold will be the nucleotide diversity of that base. Will be blank if no positions have a base over the minimum coverage.
 
 start
   Start of the gene (position on scaffold; 0-indexed)
@@ -440,8 +453,13 @@ Describes many of the above metrics on a genome-by-genome level, rather than a s
 
 .. csv-table:: genome_info.tsv
 
-    genome,coverage,breadth,nucl_diversity,length,true_scaffolds,detected_scaffolds,coverage_median,coverage_std,coverage_SEM,breadth_minCov,breadth_expected,nucl_diversity_rarefied,conANI_reference,popANI_reference,iRep,iRep_GC_corrected,linked_SNV_count,SNV_distance_mean,r2_mean,d_prime_mean,consensus_divergent_sites,population_divergent_sites,SNS_count,SNV_count,filtered_read_pair_count,reads_unfiltered_pairs,reads_mean_PID,reads_unfiltered_reads,divergent_site_count
-    all_scaffolds,5.443497717712342,0.9638091828515172,0.012999760411488584,279325,178,178,4,13.042121218437627,0.02641794817118796,0.3605549091560011,0.9918244597989267,0.0017126380217433116,0.9968126936214156,0.999344665978235,,False,3000.0,92.27933333333333,0.1035315133374686,0.9402437184830787,321,66,63,1745,7179,19293,0.9802826482449184,60551,1808
+  genome,coverage,breadth,nucl_diversity,length,true_scaffolds,detected_scaffolds,coverage_median,coverage_std,coverage_SEM,breadth_minCov,breadth_expected,nucl_diversity_rarefied,conANI_reference,popANI_reference,iRep,iRep_GC_corrected,linked_SNV_count,SNV_distance_mean,r2_mean,d_prime_mean,consensus_divergent_sites,population_divergent_sites,SNS_count,SNV_count,filtered_read_pair_cou
+    nt,reads_unfiltered_pairs,reads_mean_PID,reads_unfiltered_reads,divergent_site_count
+  fobin.fasta,132.07770270270268,0.9974662162162162,0.035799449026225894,1184,1,1,113,114.96590198492832,3.6668428018497408,0.9822635135135136,1.0,0.034319907739082,0.979363714531
+    3844,0.9939810834049873,False,1064.0,120.48214285714286,0.07781470898619759,0.8710788695476385,24,7,7,97,926,5991,0.9239440924157436,19260,104
+  maxbin2.maxbin.001.fasta,6.5637243038012985,0.8940915760335204,0.007116301715134402,264436,166,166,5,9.475490303923918,0.019704930458769948,0.5080246259964604,0.99695960719657,0.0002
+    8497234066195295,0.997201131457496,0.9990248622897128,False,777.0,80.73101673101674,0.2979679685064011,0.9518999449773424,376,131,127,1246,7368,9309,0.9783316024248924,2
+    5281,1373
 
 genome
   The name of the genome being profiled. If all scaffolds were a single genome, this will read "all_scaffolds"
@@ -465,7 +483,7 @@ detected_scaffolds
   The number of scaffolds with at least a single read-pair mapping to them
 
 coverage_median
-  The median :term:`coverage` amoung all bases in the genome
+  The median :term:`coverage` among all bases in the genome
 
 coverage_std
   The standard deviation of all coverage values
@@ -592,7 +610,7 @@ population_SNPs
 pairwise_SNP_locations.tsv
 +++++++++++++++++++++++++++
 
-Lists the locations of all differences between profiles
+Lists the locations of all differences between profiles. Because it's a big file, this will only be created is you include the flag ``--store_mismatch_locations`` in your inStrain compare command.
 
 .. csv-table:: pairwise_SNP_locations.tsv
 
@@ -687,6 +705,28 @@ population_SNPs
 
 :term:`conNI`
   The average nucleotide identity among compared bases between the two scaffolds, based on consensus_SNPs. Calculated using the formula conANI = (compared_bases_count - consensus_SNPs) / compared_bases_count
+
+strain_clusters.tsv
++++++++++++++++++++++++++++
+
+The result of clustering the pairwise comparison data provided in ``genomeWide_compare.tsv`` to generate strain-level clusters. Performed using hierarchical clustering in the same manner as the program ``dRep``; `see the dRep documentation for some info on the oddities of hierarchical clustering <https://drep.readthedocs.io/en/latest/choosing_parameters.html#oddities-of-hierarchical-clustering>`_
+
+.. csv-table:: genomeWide_compare.tsv
+
+    cluster,sample,genome
+    1_1,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,fobin.fasta
+    1_1,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,fobin.fasta
+    2_1,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,maxbin2.maxbin.001.fasta
+    2_2,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,maxbin2.maxbin.001.fasta
+
+cluster
+  The strain identity of this genome in this sample. Each "strain" assigned by the hierarchical clustering algorithm will have a unique cluster. In the example table above strains of the genome ``fobin.fasta`` are the same in both samples (they have the same "cluster" identities), but strains of the genome ``maxbin2.maxbin.001.fasta`` are different in the two samples (they have different "cluster" identities).
+
+sample
+  The sample that the genome was detected in.
+
+genome
+  The genome that the cluster is referring to.
 
 inStrain plot
 ----------------
