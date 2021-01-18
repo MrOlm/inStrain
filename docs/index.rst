@@ -12,15 +12,15 @@ and sensitive SNP detection with gene localization and synonymous non-synonymous
 Source code is `available on GitHub
 <https://github.com/MrOlm/instrain>`_.
 
-Publication is available on `bioRxiv <https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1>`_
+Publication is available in `Nature Biotechnology <https://doi.org/10.1038/s41587-020-00797-0>`_ and on `bioRxiv <https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1>`_
 
 See links to the left for :doc:`installation` instructions
 
-Comments and suggestions can be sent to `Matt Olm <mattolm@berkeley.edu>`_ and/or
-`Alex Crits-Christoph <crits-christoph@berkeley.edu>`_
-
 Bugs reports and feature requests can be submitted through `GitHub
 <https://github.com/MrOlm/instrain/issues>`_.
+
+InStrain was developed by `Matt Olm <mattolm@stanford.edu>`_ and
+`Alex Crits-Christoph <crits-christoph@berkeley.edu>`_ in the `Banfield Lab <https://geomicrobiology.berkeley.edu/>`_ at the University of California, Berkeley.
 
 Contents
 --------

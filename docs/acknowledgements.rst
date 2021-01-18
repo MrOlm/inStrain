@@ -21,8 +21,8 @@ While not a direct dependency, the open-source program `anvi’o <http://merenla
 Citation
 +++++++++++++++++++++++++
 
-The manuscript describing inStrain is available on `bioRxiv <https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1>`_
+The manuscript describing inStrain is available in `Nature Biotechnology <https://doi.org/10.1038/s41587-020-00797-0>`_ and on `bioRxiv <https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1>`_
 and can be cited as follows::
 
-    Olm, M.R., Crits-Christoph, A., Bouma-Gregson, K., Firek, B., Morowitz, M., Banfield, J., 2020. InStrain enables population genomic analysis from metagenomic data and rigorous detection of identical microbial strains. BioRxiv. https://doi.org/10.1101/2020.01.22.915579
+    Olm, M.R., Crits-Christoph, A., Bouma-Gregson, K., Firek, B.A., Morowitz, M.J., Banfield, J.F., 2021. inStrain profiles population microdiversity from metagenomic data and sensitively detects shared microbial strains. Nature Biotechnology. https://doi.org/10.1038/s41587-020-00797-0
 

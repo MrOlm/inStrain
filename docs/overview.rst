@@ -18,14 +18,14 @@ Glossary of terms used in inStrain
     popANI
       Population ANI - a new term to describe a unique type of ANI calculation performed by inStrain that considers both major and minor alleles. If two populations share any alleles at a loci, including minor alleles, it does not count as a difference when calculating popANI. It's easiest to describe with an example: consider a genomic position where the reference sequence is 'A' and 100 reads are mapped to the position. Of the 100 mapped reads, 60 have a 'C' and 40 have an 'A' at this position. In this example the reads share a minor allele with the reference genome at the position, but the consensus allele (most common allele) is different. Thus, this position **would** count as a difference in conANI calculations (because the consensus alleles are different) and **would not** count as a difference in popANI calculations (because the reference sequence is present as an allele in the reads). See :doc:`important_concepts` for examples.
 
-    Representative genome
+
       Representative genomes (RGs) are genomes that are used to represent some taxa. For example you could have a series of representative genomes to represent each clade of E. coli (one genome for each clade), or you could have one representative genome for the entire species of E. coli (in that case it would be a Species Representative Genome (SRG)). The base unit of inStrain-based analysis is the representative genome, and they are usually generated using the program `dRep <https://drep.readthedocs.io/en/latest/>`_
 
     Species representative genome
       A Species Representative Genome (SRG) is a :term:`representative genome` that is used to represent an entire single microbial species.
 
     Genome database
-      A collection of :term:`representative genome`s that are mapped to simultaneously (competitive mapping).
+      A collection of :term:`representative genomes<Representative genome>` that are mapped to simultaneously (competitive mapping).
 
     nucleotide diversity
       A measurement of genetic diversity in a population (microdiversity). We measure nucleotide diversity using the method from Nei and Li 1979 (often referred to as 'pi' π in the population genetics world). InStrain calculates nucleotide diversity at every position along the genome, based on all reads, and averages values across genes / genomes. This metric is influenced by sequencing error, but within study error rates should be consistent and this effect is often minor compared to the extent of biological variation observed within samples. This metric is nice because it is not affected by coverage. The formula for calculating nucleotide diversity is the sum of the frequency of each base squared: 1 - [(frequency of A)^2 + (frequency of C)^2 + (frequency of G)^2 + (frequency of T)^2 ].
@@ -134,12 +134,10 @@ Another common use-case is detailed strain comparisons that involve comparing th
 .. seealso::
   :doc:`installation`
     To get started using the program
-  :doc:`module_descriptions`
-    For descriptions of what the modules can do
   :doc:`example_output`
     To view example output
   :doc:`user_manual`
-    For information on how to prepare data for inStrain
+    For information on how to prepare data for inStrain and run inStrain
   :doc:`important_concepts`
     For detailed information on how to make sure inStrain is running correctly
 
@@ -175,7 +173,7 @@ To characterize intra-population genetic diversity, it stands to reason that you
 What are inStrain's computational requirements?
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-The two computational resources to consider when running inStrain are the number of processes given (``-p``) and the amount of RAM on the computer (usually not adjustable unless using cloud-based computing). Using inStrain v1.3.3, running inStrain on a .bam file of moderate size (1 Gbp of less) will generally take less than an hour with 6 cores, and use about 8Gb of RAM. InStrain is designed to handle large .bam files as well. Running a huge .bam file (30 Gbp) with 32 cores, for example, will take ~2 hours and use about 128Gb of RAM. The more processes you give inStrain the longer it will run, but also the more RAM it will use. See :doc:'important_concepts` for information on reducing compute requirements.
+The two computational resources to consider when running inStrain are the number of processes given (``-p``) and the amount of RAM on the computer (usually not adjustable unless using cloud-based computing). Using inStrain v1.3.3, running inStrain on a .bam file of moderate size (1 Gbp of less) will generally take less than an hour with 6 cores, and use about 8Gb of RAM. InStrain is designed to handle large .bam files as well. Running a huge .bam file (30 Gbp) with 32 cores, for example, will take ~2 hours and use about 128Gb of RAM. The more processes you give inStrain the longer it will run, but also the more RAM it will use. See :doc:`important_concepts` for information on reducing compute requirements.
 
 What mapping software can be used to generate .bam files for inStrain?
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

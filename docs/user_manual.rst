@@ -26,7 +26,7 @@ This strategy involves assembling genomes from the metagenomic samples that you'
 
 4. Create a :term:`scaffold-to-bin file` from the genome set. Recommended software: `parse_stb.py <https://github.com/MrOlm/drep/blob/master/helper_scripts/parse_stb.py>`_
 
-5. Create a bowtie2 index of the representative genomes from this dereplicated set and map reads to this set from each sample: Recommended software: Bowtie2
+5. Create a bowtie2 index of the representative genomes from this dereplicated set and map reads to this set from each sample. Recommended software: Bowtie2
 
 6. Profile the resulting mapping *.bam* files using inStrain to calculate genome-level :term:`microdiveristy` metrics for each originally binned genome.
 
@@ -287,7 +287,7 @@ Module description
 Compare provides the ability to compare multiple :term:`inStrain profiles<inStrain profile>` (created by running ``inStrain profile``).
 
 .. note::
-  *inStrain* can only compare :term:`inStrain profiles<inStrain profile>`that have been mapped to the same .fasta file
+  *inStrain* can only compare inStrain profiles that have been mapped to the same .fasta file
 
 ``inStrain compare`` does pairwise comparisons between each input :term:`inStrain profile<inStrain profile>`. For each pair, a series of steps are undertaken.
 
@@ -396,7 +396,7 @@ The other modules are not commonly used, and mainly provide auxiliary functions 
 
 quick_profile
 ````````````````````
-This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program coverM `coverM<https://github.com/wwood/CoverM>`_
+This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program `coverM<https://github.com/wwood/CoverM>`_ .
 
 To see the command-line options, check the help::
 

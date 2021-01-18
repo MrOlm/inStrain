@@ -12,17 +12,26 @@ Quick Start
 
 The two main operations of inStrain are ``compare`` and ``profile``.
 
-``InStrain profile`` takes as input a :term:`fasta file` and a :term:`bam file` and runs a series of steps to characterize the :term:`nucleotide diversity`, :term:`SNS`s and :term:`SNV`s, :term:`linkage`, etc.. If one provides a :term:`scaffold-to-bin file` it will calculate genome-level metrics, and if one provides a :term:`genes file` it will calculate gene level metrics.
+Profile
+++++++++++
+
+``InStrain profile`` takes as input a :term:`fasta file` and a :term:`bam file` and runs a series of steps to characterize the :term:`nucleotide diversity`, :term:`SNSs<SNS>` and :term:`SNVs<SNV>`, :term:`linkage`, etc.. If one provides a :term:`scaffold-to-bin file` it will calculate genome-level metrics, and if one provides a :term:`genes file` it will calculate gene level metrics.
 
 The most basic ``inStrain profile`` command has this form::
 
  $ inStrain profile .bam_file .fasta_file -o IS_output_name
+
+Compare
+++++++++++
 
 ``InStrain compare`` takes as input multiple ``inStrain profile`` objects (generated using the command above) and performs strain-level comparisons. Each ``inStrain profile`` object used by ``InStrain compare`` must be made from reads mapped to the same :term:`fasta file`.
 
 The most basic inStrain compare command looks like this::
 
  $ inStrain compare -i IS_output_1 IS_output_2 IS_output_3
+
+Other
+++++++++++
 
 There are a number of other operations that inStrain can perform as well, although these generally perform more niche tasks. Check the program help (``inStrain -h``) to see a full list of the available operations ::
 
@@ -89,7 +98,7 @@ The following tutorials give step-by-step instructions on how to run inStrain a 
 
 **Tutorial #2** describes how to run inStrain using an existing, public genome database. This way of running inStrain avoids the need for metagenomic assembly and genome binning.
 
-**Tutorial #3** describes how to combine custom genomes with an existing genome database. This allows users to include both sample-specific :term:`Representative genome`s and an existing genome database, and allows for comprehensive, accurate analysis.
+**Tutorial #3** describes how to combine custom genomes with an existing genome database. This allows users to include both sample-specific :term:`representative genomes<Representative genome>` and an existing genome database, and allows for comprehensive, accurate analysis.
 
 Tutorial #1) Running inStrain on provided test data
 -------------------------------------------------------
@@ -109,7 +118,7 @@ When this mapping is performed it is important that you map to all genomes simul
 When we do this we also need to generate a file to let inStrain know which scaffolds came from which genomes. We can do this by giving inStrain a list of the .fasta files that went into making the concatenated .fasta file, or we can make a :term:`scaffold-to-bin file` file, which lists the genome assignment of each scaffold in a tab-delimited file. This is how to do the later method using the `parse_stb.py script <https://github.com/MrOlm/drep/blob/master/helper_scripts/parse_stb.py>`_ that comes with the program ``dRep`` (Installed with the command ``pip install drep --upgrade``) ::
 
   $ parse_stb.py --reverse -f raw_data/S2_002_005G1_phage_Clostridioides_difficile.fasta  raw_data/S2_018_020G1_bacteria_Clostridioides_difficile.fasta  -o genomes.stb
-Next we must map our reads to this :term:`fasta file` to create :term:`bam file`s. In this tutorial we will use the mapping program Bowtie 2 ::
+Next we must map our reads to this :term:`fasta file` to create :term:`bam files<bam file>`. In this tutorial we will use the mapping program Bowtie 2 ::
 
  $ mkdir bt2
 
@@ -320,8 +329,7 @@ Preparing a genome database
 
 .. note::
 
-  The genome database created in this section is available for direct download at the following link - `https://doi.org/10.5281/zenodo.4441269
- <https://doi.org/10.5281/zenodo.4441269>`_. You can download those files directly and skip this section if you would like. **This genome set is based on UHGG version 1 and was created on Jan 14, 2021**.
+  The genome database created in this section is available for direct download at the following link - `https://doi.org/10.5281/zenodo.4441269<https://doi.org/10.5281/zenodo.4441269>`_. You can download those files directly and skip this section if you would like. **This genome set is based on UHGG version 1 and was created on Jan 14, 2021**.
 
 In order to create a genome database we need to download the genomes, create a :term:`scaffold-to-bin file`, create a :term:`genes file`, and merge all genomes into a single :term:`fasta file` that we can make a bowtie2 mapping index out of. All genomes in a genome need to database need to be distinct from one another, but not too distinct. See section "Establishing and evaluating genome databases" in :doc:`important_concepts` for more info.
 
@@ -406,7 +414,7 @@ The inStrain profile command we'll use now is ::
 
   $ inStrain profile UHGG_reps.fasta-vs-N5_216_039G1.sam /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.fasta -o UHGG_reps.fasta-vs-N5_216_039G1.IS -p 10 -g /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.genes.fna -s /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.stb --database_mode
 
-This took just over an hour to run on my computer. We have now successfully generated an inStrain profile! For help interpreting the output files, see :doc:`example_output`. To link the genomes in the UHGG database with their taxonomy, use the file ``genomes-nr_metadata.tsv`` which we downloaded above and is part of the overall download as well. To subset to just the :term:`Species representative genome`s (SRGs) that make up this database, subset this table to only include rows where the column "Genome" is equal to the column "Species_rep".
+This took just over an hour to run on my computer. We have now successfully generated an inStrain profile! For help interpreting the output files, see :doc:`example_output`. To link the genomes in the UHGG database with their taxonomy, use the file ``genomes-nr_metadata.tsv`` which we downloaded above and is part of the overall download as well. To subset to just the :term:`species representative genomes<Species representative genome>`s (SRGs) that make up this database, subset this table to only include rows where the column "Genome" is equal to the column "Species_rep".
 
 Running inStrain compare
 +++++++++++++++++++++++++
