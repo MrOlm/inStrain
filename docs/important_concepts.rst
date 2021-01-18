@@ -81,7 +81,7 @@ a) Ensure that genomes are distinct from one another.
 
 .. note::
 
-  When genomes share stretches of identical sequence, read mapping software cannot reliably determine which genome a read should map to. The exact level of how distinct genomes need to be depends on the read length and the heterogeneity of differences across the genome, but **having a maximum of 98% ANI between all genomes in the :term:`Genome database` is a good rule of thumb.**
+  When genomes share stretches of identical sequence, read mapping software cannot reliably determine which genome a read should map to. The exact level of how distinct genomes need to be depends on the read length and the heterogeneity of differences across the genome, but **having a maximum of 98% ANI between all genomes in the genome database is a good rule of thumb.**
 
 When mapping to a :term:`Genome database`, if bowtie2 finds a read that maps equally well to multiple different positions in your :term:`fasta file` it will randomly choose one of the two positions to place the read at. This is the best thing it could do, as you don't want reads "duplicated" and mapped to multiple positions, but it also means that you really don't want to have multiple positions in your .fasta file that are identical. The reason we go through the hassle of dereplication to generate a :term:`Genome database` is to limit the number of positions in which the alignment algorithm cannot tell where the read should actually map to, and this is why we can't just map to all possible genomes.
 

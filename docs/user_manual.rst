@@ -396,7 +396,7 @@ The other modules are not commonly used, and mainly provide auxiliary functions 
 
 quick_profile
 ````````````````````
-This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program `coverM<https://github.com/wwood/CoverM>`_ .
+This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program `coverM <https://github.com/wwood/CoverM>`_
 
 To see the command-line options, check the help::
 

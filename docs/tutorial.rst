@@ -329,7 +329,7 @@ Preparing a genome database
 
 .. note::
 
-  The genome database created in this section is available for direct download at the following link - `https://doi.org/10.5281/zenodo.4441269<https://doi.org/10.5281/zenodo.4441269>`_. You can download those files directly and skip this section if you would like. **This genome set is based on UHGG version 1 and was created on Jan 14, 2021**.
+  The genome database created in this section is available for direct download at the following link - https://doi.org/10.5281/zenodo.4441269 . You can download those files directly and skip this section if you would like. **This genome set is based on UHGG version 1 and was created on Jan 14, 2021**.
 
 In order to create a genome database we need to download the genomes, create a :term:`scaffold-to-bin file`, create a :term:`genes file`, and merge all genomes into a single :term:`fasta file` that we can make a bowtie2 mapping index out of. All genomes in a genome need to database need to be distinct from one another, but not too distinct. See section "Establishing and evaluating genome databases" in :doc:`important_concepts` for more info.
 
@@ -414,7 +414,7 @@ The inStrain profile command we'll use now is ::
 
   $ inStrain profile UHGG_reps.fasta-vs-N5_216_039G1.sam /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.fasta -o UHGG_reps.fasta-vs-N5_216_039G1.IS -p 10 -g /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.genes.fna -s /groups/banfield/projects/human/data8/ExternalData/UHGG/UHGG_reps.stb --database_mode
 
-This took just over an hour to run on my computer. We have now successfully generated an inStrain profile! For help interpreting the output files, see :doc:`example_output`. To link the genomes in the UHGG database with their taxonomy, use the file ``genomes-nr_metadata.tsv`` which we downloaded above and is part of the overall download as well. To subset to just the :term:`species representative genomes<Species representative genome>`s (SRGs) that make up this database, subset this table to only include rows where the column "Genome" is equal to the column "Species_rep".
+This took just over an hour to run on my computer. We have now successfully generated an inStrain profile! For help interpreting the output files, see :doc:`example_output`. To link the genomes in the UHGG database with their taxonomy, use the file ``genomes-nr_metadata.tsv`` which we downloaded above and is part of the overall download as well. To subset to just the :term:`species representative genomes<Species representative genome>` (SRGs) that make up this database, subset this table to only include rows where the column "Genome" is equal to the column "Species_rep".
 
 Running inStrain compare
 +++++++++++++++++++++++++
