@@ -9,7 +9,7 @@ InStrain was developed by `Matt Olm <mattolm@berkeley.edu>`_ and
 
 Special thanks to all those who have provided `feedback on GitHub <https://github.com/MrOlm/inStrain/issues>`_ and otherwise, especially early adopters Keith Bouma-Gregson, Ben Siranosian, Yue "Clare" Lou, Naïma Madi, and Antônio Pedro Camargo.
 
-Many of the ideas in :doc:`important_concepts` were honed over many years during countless discussions with members of the `Banfield Lab <https://geomicrobiology.berkeley.edu/>`_ and the `Sonnenburg Lab <https://sonnenburglab.stanford.edu/>`_. Special thanks to Christopher Brown, Keith Bouma-Gregson, Yue "Clare" Lou, Spencer Diamond, Alex Thomas, Alex Jaffe, Bryan Merrill, Matt Carter, and Dylan Dahan.
+Many of the ideas in :doc:`important_concepts` were honed over many years during countless discussions with members of the `Banfield Lab <https://geomicrobiology.berkeley.edu/>`_ and the `Sonnenburg Lab <https://sonnenburglab.stanford.edu/>`_. Special thanks to Christopher Brown, Keith Bouma-Gregson, Yue "Clare" Lou, Spencer Diamond, Alex Thomas, Patrick West, Alex Jaffe, Bryan Merrill, Matt Carter, and Dylan Dahan.
 
 Software
 +++++++++++++++++++++++++
