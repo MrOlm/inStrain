@@ -4,7 +4,7 @@ inStrain is python program for  analysis of co-occurring genome populations from
 
 Manual, installation instructions, and expected output are at available at [ReadTheDocs](https://instrain.readthedocs.io/en/latest/)
 
-Preprint publication is available on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1)
+Publication is available in [Nature Biotechnology](https://doi.org/10.1038/s41587-020-00797-0) and on [bioRxiv](https://www.biorxiv.org/content/10.1101/2020.01.22.915579v1)
 
 ## Installation options
 
