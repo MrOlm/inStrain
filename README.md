@@ -15,7 +15,7 @@ $ pip install instrain
 
 ### bioconda
 ```
-$ conda config --add channels bioconda; conda install instrain
+$ conda install -c conda-forge -c bioconda -c defaults instrain
 ```
 
 ### Docker
