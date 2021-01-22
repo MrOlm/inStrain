@@ -36,6 +36,13 @@ class Controller(object):
         self.args = args
         self.ori_args = copy.deepcopy(args)
 
+        # handle s3 aspects
+        self.handle_s3_download()
+
+        # Establish output directory and log
+        OD = Outdir(self.args.output)
+        self.OD = OD
+
     def main(self):
         """
         The main method when run from the command line
@@ -49,14 +56,48 @@ class Controller(object):
         # run the actual rarefaction steps
         self.run_rarefaction()
 
+        # handle s3 aspects
+        self.handle_s3_upload()
+
+    def handle_s3_download(self):
+        """
+        Download s3 objects locally and reset the "args"
+        """
+        if self.args.s3_upload:
+            from job_utils import generate_working_dir, delete_working_dir  # , setup_logger
+            from s3_utils import download_file, upload_file, download_folder, upload_folder, read_s3_file
+
+            tmp_dir = generate_working_dir('/mnt/temp')
+
+            logging.info("Downloading to {0}".format(tmp_dir))
+
+            download_file(self.args.bam, tmp_dir)
+            self.args.bam = os.path.join(tmp_dir, os.path.basename(self.args.bam))
+
+            download_file(self.args.fasta, tmp_dir)
+            self.args.fasta = os.path.join(tmp_dir, os.path.basename(self.args.fasta))
+
+            download_file(self.args.stb, tmp_dir)
+            self.args.stb = os.path.join(tmp_dir, os.path.basename(self.args.stb))
+
+            outdir = generate_working_dir('/mnt/scratch')
+            self.args.output = os.path.join(outdir, os.path.basename(self.args.output))
+
+    def handle_s3_upload(self):
+        """
+        Download s3 objects locally and reset the "args"
+        """
+        if self.args.s3_upload:
+            from job_utils import generate_working_dir, delete_working_dir  # , setup_logger
+            from s3_utils import download_file, upload_file, download_folder, upload_folder, read_s3_file
+
+            upload_folder(self.args.s3_upload, self.args.output)
+
+
     def validate_arguments(self):
         """
         Do some parsing, set up a logger
         """
-        # Establish output directory and log
-        OD = Outdir(self.args.output)
-        self.OD = OD
-
         # Make sure the bam file and stb file exist
         for f in [self.args.bam]:
             if not os.path.isfile(f):
@@ -77,6 +118,7 @@ class Controller(object):
 
         # Calculate genome2length
         self.genome2length, self.stb = calc_genome2length(self.args.fasta, self.args.stb)
+        logging.info(f"Total Gbp in file is {(self.read_length * self.total_reads)/1e9:.2f}")
 
     def calc_rarefication_steps(self):
         """
@@ -134,7 +176,9 @@ class Controller(object):
             current_reads += step
             step_count += 1
 
+
         Tdb = pd.DataFrame(table)
+        logging.info(f"Will create {len(Tdb)} different rarefication steps")
         self.rare_steps = Tdb
         self.OD.store('subset_table', Tdb)
 
@@ -290,7 +334,7 @@ def calc_genome2length(fasta, stb):
     del scaff2sequence
 
     # Set up the stb
-    stb_loc = inStrain.genomeUtilities.load_scaff2bin(stb)
+    stb_loc = inStrain.genomeUtilities.load_scaff2bin([stb])
 
     if stb_loc == {}:
         stb_loc = {s: 'all_scaffolds' for s, l in s2l.items()}
@@ -314,8 +358,8 @@ if __name__ == "__main__":
     # Required arguments
     parser.add_argument("-b", "--bam", help="bam file")
     parser.add_argument("-f", "--fasta", help="fasta file")
-    parser.add_argument("-s", "--stb", help="scaffold-to-bin file", nargs='*', default=[])
-    parser.add_argument("-o", "--output", help="output folder location")
+    parser.add_argument("-s", "--stb", help="scaffold-to-bin file")
+    parser.add_argument("-o", "--output", help="output folder location or name")
     parser.add_argument("-t", "--total_reads",
                         help="The total number of reads in the sample. If 0, will assume all reads are in the .bam file.",
                         type=int,
@@ -334,6 +378,12 @@ if __name__ == "__main__":
                         default=10)
     parser.add_argument("--Gbp_level", help='Perform rarefaction based on Gbp instead of # reads. Will reset default steps to 1Gbp min with 1Gbp steps if defaults unchanged.',
                         default=False, action='store_true')
+
+    # s3 stuff
+    parser.add_argument("--s3_upload",
+                        help='Upload results to s3, and download files from s3. Provide s3 location for upload',
+                        default=False)
+
 
 
     args = parser.parse_args()
