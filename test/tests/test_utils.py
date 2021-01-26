@@ -118,6 +118,14 @@ def get_script_loc(script):
         return os.path.join(str(os.getcwd()),
                             '../inStrain/GeneProfile.py')
 
+def get_aux_script_loc(script):
+    """
+    Relies on being run from within inStrain/test (not ideal)
+    """
+    if script == 'rarefaction_curve':
+        return os.path.join(str(os.getcwd()),
+                            '../auxiliary_scripts/rarefaction_curve.py')
+
 
 def load_random_test_dir():
     """
