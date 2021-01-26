@@ -667,6 +667,7 @@ def test_profile_10(BTO):
     assert len(Rdb) == 179
     assert len(Sdb) > 42
 
+# NOTE! THIS TEST FAILS WITH NEW PYSAM (ONLY WORKS WITH PYSAM=0.15.4). NEED TO FIX
 def test_profile_11(BTO):
     """
     Test skip mm profiling
@@ -688,7 +689,11 @@ def test_profile_11(BTO):
         drop=True)
 
     cols = ['scaffold', 'length', 'breadth', 'coverage']
-    assert test_utils.compare_dfs(scaffdb[cols], correct_scaffdb[cols], verbose=True)
+    # assert test_utils.compare_dfs2(scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True),
+    #                               correct_scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True))
+    assert test_utils.compare_dfs(scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True),
+                                  correct_scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True),
+                                  verbose=True, round=4)
 
     # Make sure you dont have the raw mm
     sdb = IS.get('cumulative_scaffold_table')

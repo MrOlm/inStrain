@@ -1,5 +1,5 @@
 # Base Image
-FROM continuumio/miniconda3
+FROM continuumio/miniconda3:4.8.2
 
 # Not sure why, but errors out without
 USER root:root
@@ -7,8 +7,8 @@ RUN mkdir -p /mnt
 WORKDIR /mnt
 
 RUN conda config --add channels bioconda && conda config --add channels conda-forge
-
-RUN conda create -n work -y numba lmfit instrain awscli samtools coverm && conda clean -afy
+#RUN conda install mamba
+RUN conda create -n work -y instrain awscli samtools coverm && conda clean -afy
 
 RUN /bin/bash -c "source activate work && \
     pip install boto3 && pip install instrain --upgrade"

@@ -98,8 +98,9 @@ def download_s3_results():
     Download the results from s3 and return the folder they're at
     """
     out_loc = load_random_test_dir()
-    cmd = f'aws s3 sync s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/s3_results/ {out_loc}'
-    subprocess.check_call(shlex.split(cmd))
+    cmd = f'/Users/mattolm/miniconda3/envs/python3.7/bin/aws s3 sync s3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/s3_results/ {out_loc}'
+    subprocess.call(cmd, shell=True)
+    #subprocess.check_call(shlex.split(cmd))
     return out_loc
 
 def get_s3_results_folder():
@@ -256,10 +257,12 @@ def DTO():
     self = TestingClass()
 
     # ADJUST THIS IF YOU ARE DEVELOPING
-    #self.setup_cmd = "./prepare.sh; conda activate work;"
+    self.setup_cmd = "./prepare.sh; conda activate work;"
     #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
     #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/; ./prepare.sh; conda activate work; pushd /root/whole_program/; pip install . --upgrade; popd;"
-    self.setup_cmd = "./prepare.sh; conda activate work; pip install instrain --upgrade;"
+    #self.setup_cmd = "./prepare.sh; conda activate work; pip install instrain --upgrade;"
+    #self.setup_cmd = "./prepare.sh; conda activate work; echo \"hello\";"
+
     self.aegea_simulation = True
 
     if self.setup_cmd != "./prepare.sh; conda activate work;":

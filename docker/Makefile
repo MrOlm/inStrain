@@ -9,8 +9,8 @@ REGISTRY=mattolm/$(NAME)
 all: build push run
 
 build:
-	docker image build --no-cache -t $(NAME):$(VERSION) -t $(NAME):latest -f Dockerfile .
-	# yes | cp -a ../common_utils/ ./
+	#yes | cp -a ../common_utils/ ./
+	#docker image build --no-cache -t $(NAME):$(VERSION) -t $(NAME):latest -f Dockerfile .
 
 	docker image build -t $(NAME):$(VERSION) -t $(NAME):latest -f Dockerfile .
 	docker image tag $(NAME):latest $(REGISTRY):latest

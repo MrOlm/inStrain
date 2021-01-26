@@ -316,6 +316,14 @@ def compare_dfs(db1, db2, round=4, verbose=False):
         print("db2: ", db2)
         print("df_gpby: ", str(df_gpby))
 
+    for x, y in zip(db1.iterrows(), db2.iterrows()):
+        i, row1 = x
+        i, row2 = y
+
+        for col in df.columns:
+            if row1[col] != row2[col]:
+                print(f"1 has {row1}, 2 has {row2}")
+
     return identicle
 
 
