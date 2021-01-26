@@ -1,0 +1,42 @@
+..:: Overall ::..
+InStrain version 1.4.1 started at 2021-01-25 17:03:47 and ended at 2021-01-25 17:04:00.
+Runtime = 13 seconds
+Command = /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
+
+..:: Checkpoints ::..
+
+..:: Filter reads report ::..
+
+
+..:: Profile report ::..
+
+* Profiling splits *
+
+* Merging splits and profiling genes *
+
+..:: Geneome level report ::..
+
+..:: Plotting ::..
+
+..:: Compare ::..
+CreateScaffoldComparisonObjects took <1 second       ( 0.0% of overall)	RAM went from 165.21 MB to 167.39 MB (increased by 2.17 MB)
+multiprocessing      took 10.0 seconds    (76.9% of overall)	RAM went from 243.05 MB to 331.70 MB (increased by 88.64 MB)
+SaveResults          took <1 second       ( 0.0% of overall)	RAM went from 331.91 MB to 335.18 MB (increased by 3.27 MB)
+
+Wall time                     	8 seconds
+Total processes used          	6
+Average number processes used 	5.8
+Paralellization efficiency    	96.5%
+Units profiled                	178
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	1.0 second
+Longest running unit          	N5_271_010G1_scaffold_0
+Per-process efficiency        	['94.9', '94.9', '95.1', '97.4', '98.5', '99.2']
+unit per-process strating RAM      	['175.09 MB', '187.16 MB', '189.66 MB', '183.03 MB', '173.84 MB', '179.20 MB']
+unit per-process final RAM         	['182.05 MB', '177.41 MB', '217.04 MB', '175.26 MB', '183.19 MB', '165.95 MB']
+unit per-process minimum RAM       	['168.84 MB', '165.68 MB', '164.73 MB', '166.89 MB', '167.94 MB', '165.95 MB']
+unit per-process maximum RAM       	['182.52 MB', '216.91 MB', '217.04 MB', '183.92 MB', '185.34 MB', '186.04 MB']
+
+..:: Failures ::..
+No failures

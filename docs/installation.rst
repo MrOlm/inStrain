@@ -22,7 +22,7 @@ bioconda
 
 To inStrain inStrain from `bioconda <https://anaconda.org/bioconda/instrain>`_, run ::
 
-$ conda config --add channels bioconda; conda install instrain
+$ conda install -c conda-forge -c bioconda -c defaults instrain
 
 From source
 +++++++++++++++++

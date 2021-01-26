@@ -55,7 +55,7 @@ The above figure shows a visual representation of k-mer based metagenomic analys
 
 A collection of :term:`representative genomes<Representative genome>` is referred to as a :term:`Genome database`. :term:`Genome databases<Genome database>` can be downloaded from public repositories, generated via de novo sequence assembly and binning, or a combination of the two. It is important to ensure that each genome in the :term:`Genome database` is distinct enough from other genomes in the database to avoid mapping confusion, and by mapping to all genomes in a :term:`Genome database` simultaneously (competitively) one can significantly reduce the number of mis-mapped reads overall.
 
-.. figure:: OverviewFigure2_v1.1.png
+.. figure:: images/OverviewFigure2_v1.1.png
   :width: 400px
   :align: center
 
@@ -96,7 +96,7 @@ Each dot represents a genome in the full :term:`Genome database`, the position o
 
 .. math::
 
-  Probability of identical 190bp fragment = (genome ANI) ^ 190.
+  \textrm{Probability of 190bp fragment} = (\textrm{genome ANI}) ^ {190}
 
 This simple formula was used to generate the black dotted line in the figure above. The line fits observed trend remarkably well, providing pretty compelling evidence that simple genome-ANI-based read stealing explains the phenomena. To be sure though, we can did final check based on :term:`mapQ score`. Reads that map equally well to multiple different locations in a :term:`fasta file` always get a MapQ score of 0-2. Thus, by filtering out reads with MapQ scores < 2, we can see reads that map uniquely to one genome only. Below we will re-generate the above figure while only including reads with :term:`mapQ scores<mapQ score>` above 2.
 
@@ -199,6 +199,11 @@ This figure allows us to visually see the relationship between coverage and brea
     breadth = 1 - e ^{-0.883  *  coverage}
 
 Applying this formula allows inStrain to calculate and report :term:`expected breadth` for a given coverage value. **Effective use of expected breadth can allow users to lower their breadth thresholds and still have confidence in determining presence/absence**. Imagine that you detect an organism at 10x coverage and 85% breadth. The :term:`expected breadth` at 10x coverage is 100%, but you only have 85% breadth. This means that 15% of your genome is likely not in the reads set, and that your representative genome has genome content that is 15% different from the organism in your sample. Now imagine that you detect an organism at 3x coverage with 85% breadth. The :term:`expected breadth` and actual breadth are approximately the same now, meaning that reads and randomly aligning to all parts of the genome and you likely have a very dialed in representative genome. Now imagine you detect organism A with 10% breadth and 0.1x coverage, and organism B with 10% breadth and 10x coverage. Both organisms have the same breadth, but organism A is much more likely to be actually present in your sample. That's because while few reads overall are mapping, they're mapping all across the genome in a random way (you know this because breadth is about equal to expected breadth), which is indicative of a true low abundance population. Organism B, however, should be abundant enough for reads to map all over the genome (expected breadth is 100%), but reads are only mapping to 10% of it. This indicates that no matter how deeply you sequence you will not see the rest of organism B's genome, and the 10% of it that you are seeing is likely due to mis-mapping.
+
+.. note::
+
+  Theoretical models have determined breadth to be: 1 - exp(-coverage) `(Lander and Waterman (1988)) <https://doi.org/10.1016/0888-7543(88)90007-9>`_, slightly different from the empirical derivation presented here and used in inStrain. More information on this subject can be found `at this technical note from Illumina <https://www.illumina.com/documents/products/technotes/technote_coverage_calculation.pdf>`_.
+
 
 7. Strain-level comparisons and popANI.
 +++++++++++++++++++++++++++++++++++++++++++++++++
