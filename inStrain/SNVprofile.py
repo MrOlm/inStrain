@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 import Bio.Seq
 
+from functools import lru_cache
+
 if __name__ != '__main__':
     from ._version import __version__
     #import inStrain.profileUtilities

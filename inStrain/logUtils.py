@@ -770,7 +770,11 @@ def _gen_plotting_report(Ldb):
     if len(ldb) > 0:
         ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
         ldb = ldb.sort_values('time').reset_index(drop=True)
-        for i, row in ldb.iterrows():
+
+        for i, (index, row) in enumerate(ldb.iterrows()):
+            if i == len(ldb) - 1:
+                break
+
             if row['plot'] == 'finished':
                 break
 

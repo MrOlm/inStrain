@@ -11,7 +11,6 @@ import traceback
 from collections import defaultdict
 import numpy as np
 import scipy.spatial.distance
-import drep
 
 import inStrain
 import inStrain.logUtils
@@ -217,10 +216,7 @@ def cluster_genome_strains(Mdb, kwargs):
                                                   criterion='distance')
 
         # Get Cdb
-        try:
-            cdb = drep.d_cluster._gen_cdb_from_fclust(fclust, names)
-        except AttributeError:
-            cdb = drep.d_cluster.utils._gen_cdb_from_fclust(fclust, names)
+        cdb = _gen_cdb_from_fclust(fclust, names)
         cdb = cdb.rename(columns={'genome':'sample'})
         cdb['genome'] = genome
 
@@ -233,5 +229,19 @@ def cluster_genome_strains(Mdb, kwargs):
 
     return pd.concat(cdbs).reset_index(drop=True)
 
+def _gen_cdb_from_fclust(fclust,names):
+    '''
+    Make Cdb from the result of scipy.cluster.hierarchy.fcluster
+    Args:
+        fclust: result of scipy.cluster.hierarchy.fcluster
+        names: list(db.columns) of the input dataframe
+    Returns:
+        DataFrame: Cdb
+    '''
+    Table={'cluster':[],'genome':[]}
+    for i, c in enumerate(fclust):
+        Table['cluster'].append(c)
+        Table['genome'].append(names[i])
 
+    return pd.DataFrame(Table)
 

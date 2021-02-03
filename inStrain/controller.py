@@ -16,7 +16,6 @@ import logging
 import struct
 import sys
 
-
 from subprocess import call
 from datetime import datetime
 from collections import defaultdict
@@ -25,11 +24,13 @@ from collections import defaultdict
 import inStrain.profile
 import inStrain.profile.samtools_ops
 
+import inStrain.plotting
+import inStrain.plotting.plotting_controller
+
 import inStrain.filter_reads
 import inStrain.readComparer
 import inStrain.GeneProfile
 import inStrain.genomeUtilities
-import inStrain.plottingUtilities
 import inStrain.quickProfile
 import inStrain.SNVprofile
 import inStrain.logUtils
@@ -91,7 +92,8 @@ class Controller():
         inStrain.quickProfile.main(args)
 
     def plot_operation(self, args):
-        inStrain.plottingUtilities.main(args)
+        inStrain.plotting.plotting_controller.PlottingController(args).main()
+        #inStrain.plottingUtilities.main(args)
 
     def other_operation(self, args):
         # Check if you should convert IS profile

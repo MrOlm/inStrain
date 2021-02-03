@@ -29,7 +29,6 @@ setup(name='inStrain',
           'networkx',
           'h5py',
           'psutil',
-          'drep',
           'lmfit',
           'numba'
       ],

@@ -667,10 +667,11 @@ def test_profile_10(BTO):
     assert len(Rdb) == 179
     assert len(Sdb) > 42
 
-# NOTE! THIS TEST FAILS WITH NEW PYSAM (ONLY WORKS WITH PYSAM=0.15.4). NEED TO FIX
 def test_profile_11(BTO):
     """
     Test skip mm profiling
+
+    # NOTE! THIS TEST FAILS WITH NEW PYSAM (ONLY WORKS WITH PYSAM=0.15.4). NEED TO FIX
     """
     # Set up
     base = BTO.test_dir + 'test'

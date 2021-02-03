@@ -366,7 +366,7 @@ Finally we need to concatenate all genomes together into a single :term:`fasta f
 
   $ cat UHGG_reps/* > UHGG_reps.fasta
 
-  $ bowtie2-build UHGG_all.fasta.gz UHGG_reps.fasta.bt2 --large-index --threads 20
+  $ bowtie2-build UHGG_reps.fasta UHGG_reps.fasta.bt2 --large-index --threads 20
 
 Mapping to the Genome Database
 +++++++++++++++++++++++++++++++

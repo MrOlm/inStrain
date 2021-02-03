@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.0] - 2021-02-01
+- Updated internals for plotting
+- Removed dRep as a dependency
+
 ## [1.4.1] - 2021-01-25
 - Add the auxillary script "rarefaction_curve.py"
 - Update the Docker to work again
