@@ -166,7 +166,7 @@ def prepare_read_ani_dist_plot(IS):
     db = pd.DataFrame(table)
     stb = IS.get('scaffold2bin')
     b2l = IS.get('bin2length')
-    gdb = inStrain.genomeUtilities._add_stb(db, stb)
+    gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
 
     table = defaultdict(list)
     for mm, Odb in gdb.groupby('mm'):
@@ -226,7 +226,7 @@ def read_filtering_plot(db, title=''):
     v2c['Total filtered pairs'] = 'green'
 
     db = db.sort_values(['value', 'variable'], ascending=False)
-    ax = sns.barplot(db['value'], db['variable'], palette=v2c)
+    ax = sns.barplot(x=db['value'], y=db['variable'], palette=v2c)
     plt.xlabel("Number of read pairs")
     plt.ylabel("")
 

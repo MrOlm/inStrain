@@ -33,23 +33,24 @@ def printHelp():
     print('')
     print('                ...::: inStrain v' + __version__ + ' :::...''')
     print('')
-    print('  Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley. 2019''')
+    print('  Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley. 2021''')
     print('''\
 
   Choose one of the operations below for more detailed help. See https://instrain.readthedocs.io for documentation.
   Example: inStrain profile -h
 
-  Workflows:
-    profile         -> Create an inStrain profile (microdiversity analysis) from a mapping.
+  Main operations:
+    profile         -> Create an inStrain profile (microdiversity analysis) from a mapping file
     compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
 
-  Single operations:
-    profile_genes   -> Calculate gene-level metrics on an inStrain profile [DEPRECATED; PROVIDE GENES TO profile]
-    genome_wide     -> Calculate genome-level metrics on an inStrain profile [DEPRECATED; PROVIDE .stb FILES TO profile / compare]
+  Auxiliary operations:
+    check_deps      -> Print a list of dependencies, versions, and whether they're working
     quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
     filter_reads    -> Commands related to filtering reads from .bam files
     plot            -> Make figures from the results of "profile" or "compare"
     other           -> Other miscellaneous operations
+    profile_genes   -> [DEPRECATED; functionality within PROFILE] Calculate gene-level metrics on an inStrain profile
+    genome_wide     -> [DEPRECATED; functionality within PROFILE / COMPARE] Calculate genome-level metrics
     ''')
 
 def parse_args(args):
@@ -342,6 +343,9 @@ def parse_args(args):
     Oflags = other_parser.add_argument_group('OTHER OPTIONS')
     Oflags.add_argument('--old_IS', help="Convert an old inStrain version object to the newer version.")
     Oflags.add_argument('--run_statistics', help='Generate runtime reports for an inStrain run.')
+
+    # Dependency checker
+    dep_parser = subparsers.add_parser("check_deps", formatter_class=SmartFormatter)
 
     '''
     ####### PARSE THE ARGUMENTS ######

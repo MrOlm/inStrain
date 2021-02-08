@@ -28,6 +28,7 @@ import inStrain.plotting
 import inStrain.plotting.plotting_controller
 
 import inStrain.filter_reads
+import inStrain.utils
 import inStrain.readComparer
 import inStrain.GeneProfile
 import inStrain.genomeUtilities
@@ -71,6 +72,9 @@ class Controller():
         if args.operation == "other":
             self.other_operation(args)
 
+        if args.operation == "check_deps":
+            self.checkdep_operation(args)
+
         self.shutdown(args)
 
     def profile_operation(self, args):
@@ -101,6 +105,10 @@ class Controller():
             inStrain.SNVprofile.convert_SNVprofile(args.old_IS)
         if args.run_statistics != None:
             inStrain.logUtils.process_logs(args.run_statistics)
+
+    def checkdep_operation(self, args):
+        message = inStrain.utils.gen_dependency_report()
+        print(message)
 
     def shutdown(self, args):
         try:
@@ -426,6 +434,11 @@ def setup_logger(loc):
     logging.debug("Command to run inStrain was: {0}\n".format(' '.join(sys.argv)))
     logging.debug("inStrain version {0} was run \n".format(__version__))
     logging.debug("!"*80 + '\n')
+
+    try:
+        logging.debug(inStrain.utils.gen_dependency_report())
+    except:
+        logging.warning('Failed to log dependencies')
 
 
 def patch_mp_connection_bpo_17560():

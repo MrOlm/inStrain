@@ -26,7 +26,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
         # Prepare
         db = inStrain.GeneProfile.get_gene_info(IS)
         stb = IS.get('scaffold2bin')
-        Gdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         if 'clonality' in Gdb.columns:
             Gdb['nucl_diversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0

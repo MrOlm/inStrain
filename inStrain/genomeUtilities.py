@@ -414,7 +414,7 @@ def makeGenomeWide(thing, db, stb, b2l=None, **kwargs):
     elif thing == 'readComparer':
         return _genome_wide_readComparer(gdb, stb, b2l, **kwargs)
 
-def _add_stb(db, stb):
+def _add_stb(db, stb, verbose=True):
     gdb = db.copy()
 
     if len(gdb) == 0:
@@ -429,8 +429,9 @@ def _add_stb(db, stb):
         return
 
     if len(gdb[gdb['genome'].isna()]) > 0:
-        logging.info("{0:.2f}% of scaffolds have a genome".format((len(gdb[~gdb['genome'].isna()])/\
-                                                      len(gdb))*100))
+        if verbose:
+            logging.info("{0:.2f}% of scaffolds have a genome".format((len(gdb[~gdb['genome'].isna()])/\
+                                                          len(gdb))*100))
     return gdb
 
 def _validate_b2l(gdb, b2l):

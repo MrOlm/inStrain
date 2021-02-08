@@ -28,7 +28,7 @@ def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
                     .sort_index().drop(columns=['mm'])
 
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 5 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -64,7 +64,7 @@ def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
         db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position_A', 'position_B'], keep='last')\
                     .sort_index().drop(columns=['mm'])
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
 
         SNdb = IS.get('SNP_mutation_types')
         assert SNdb is not None
@@ -109,7 +109,8 @@ def linkage_decay_plot(db, chunkSize=5, min_vals=5, title=''):
     max_d = db['distance'].max()
     table = defaultdict(list)
     numberChunks = max_d // chunkSize + 1
-    db['distance'] = db['distance'].astype(int)
+    #db['distance'] = db['distance'].astype(int)
+    db = db.astype({'distance': int})
     for i in range(numberChunks):
         d = db[(db['distance'] >= int(i*chunkSize)) & (db['distance'] < int((i+1)*chunkSize))]
 
@@ -127,7 +128,7 @@ def linkage_decay_plot(db, chunkSize=5, min_vals=5, title=''):
         df[col] = [c if v >= min_vals else np.nan for c, v in zip(df[col], df[col + '_values'])]
 
     for col in COLS:
-        sns.lineplot(df['distance'], df[col], label=col, marker='o')
+        sns.lineplot(x=df['distance'], y=df[col], label=col, marker='o')
 
     plt.title(title)
     plt.xlabel('Distance between SNPs (bp)\nAveraged over {0}bp windows; plotting windows with at least {1} values'.format(
@@ -161,7 +162,8 @@ def linkage_decay_type(Odb, chunkSize=5, min_vals=2, title=''):
         else:
             db = Odb[Odb['link_type'] == lt]
 
-        db['distance'] = db['distance'].astype(int)
+        #db['distance'] = db['distance'].astype(int)
+        db = db.astype({'distance':int})
         for i in range(numberChunks):
             d = db[(db['distance'] >= int(i*chunkSize)) & (db['distance'] < int((i+1)*chunkSize))]
 

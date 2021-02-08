@@ -78,6 +78,8 @@ def test_special_1(BTO):
 def test_special_2(BTO):
     """
     Make sure it works with Ns in the input
+
+    Also make sure it logs dependencies
     """
     # Run base
     base = BTO.test_dir + 'testNs'
@@ -87,7 +89,14 @@ def test_special_2(BTO):
     print(cmd)
     call(cmd, shell=True)
 
-    # Load the object
+    # Load the log and make sure dependency report is there
+    log_loc = os.path.join(base, 'log/log.log')
+    got = False
+    with open(log_loc, 'r') as o:
+        for line in o.readlines():
+            if "$ DEPENDENCY REPORT $" in line:
+                got = True
+    assert got
 
 def test_special_3(BTO):
     """

@@ -665,7 +665,7 @@ def prepare_read_ani_dist_plot(IS):
     db = pd.DataFrame(table)
     stb = IS.get('scaffold2bin')
     b2l = IS.get('bin2length')
-    gdb = inStrain.genomeUtilities._add_stb(db, stb)
+    gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
 
     table = defaultdict(list)
     for mm, Odb in gdb.groupby('mm'):
@@ -1452,7 +1452,7 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
             db = db[db['morphia'] >= 2]
 
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 4 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1488,7 +1488,7 @@ def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
                     .sort_index().drop(columns=['mm'])
 
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 5 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -1638,7 +1638,7 @@ def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
         db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position_A', 'position_B'], keep='last')\
                     .sort_index().drop(columns=['mm'])
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
 
         SNdb = IS.get('SNP_mutation_types')
         assert SNdb is not None
@@ -1682,7 +1682,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
         # Prepare
         db = inStrain.GeneProfile.get_gene_info(IS)
         stb = IS.get('scaffold2bin')
-        Gdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         if 'clonality' in Gdb.columns:
             Gdb['nucl_diversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0
@@ -1719,7 +1719,7 @@ def dendrograms_from_RC(IS, plot_dir=False, **kwargs):
         db = IS.get('comparisonsTable')
         stb = IS.get('scaffold2bin')
         b2l = IS.get('bin2length')
-        gdb = inStrain.genomeUtilities._add_stb(db, stb)
+        gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         Mdb = inStrain.genomeUtilities._genome_wide_readComparer(gdb, stb, b2l, mm_level=False)
 
         Mdb['name1'] = [_shorten_name(x) for x in Mdb['name1']]

@@ -402,19 +402,19 @@ def test_docker_4(DTO):
         have = o in basenames
         assert not have, o
 
-def test_docker_5(DTO):
-    '''
-    Test beta version installation
-    '''
-    # Set up command
-    CMD = "./prepare.sh; conda activate work; mkdir inStrain; git clone git://github.com/MrOlm/inStrain.git; cd inStrain; git checkout v1.3.0; pip install . --upgrade; cd ../; inStrain -h".format(get_s3_results_folder())
-    CMD = DTO.setup_cmd + CMD
-
-    # Run command
-    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
-
-    # Estimate cost
-    estimate_cost(None, get_s3_results_folder())
+# def test_docker_5(DTO):
+#     '''
+#     Test beta version installation
+#     '''
+#     # Set up command
+#     CMD = "./prepare.sh; conda activate work; mkdir inStrain; git clone git://github.com/MrOlm/inStrain.git; cd inStrain; git checkout v1.3.0; pip install . --upgrade; cd ../; inStrain -h".format(get_s3_results_folder())
+#     CMD = DTO.setup_cmd + CMD
+#
+#     # Run command
+#     run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
+#
+#     # Estimate cost
+#     estimate_cost(None, get_s3_results_folder())
 
 def test_docker_6(DTO):
     '''

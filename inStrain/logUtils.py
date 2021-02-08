@@ -492,8 +492,8 @@ def parse_multiprocessing(Odb):
             table['command'].append(cmd)
 
     db = pd.DataFrame(table)
-    db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
-    db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+    db.loc[:, 'runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+    db.loc[:, 'RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
     WorkerDB = db
 
     table = defaultdict(list)
@@ -528,8 +528,8 @@ def parse_multiprocessing(Odb):
                 table['command'].append(cmd)
 
         db = pd.DataFrame(table)
-        db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
-        db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+        db.loc[:, 'runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+        db.loc[:, 'RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
         GroupDB = db
     else:
         GroupDB = pd.DataFrame()
@@ -598,7 +598,8 @@ def gen_checkpoint_report(ldb, overall_runtime=None, log_class=None):
     ldb = ldb[ldb['log_type'] == 'checkpoint']
     if len(ldb) > 0:
         for i in ['name', 'class', 'status', 'RAM']:
-            ldb[i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+            ldb.loc[:, i] = [parse_parsable_string(pstring)[i] for pstring in ldb['parsable_string']]
+
     else:
         return ''
 
@@ -707,7 +708,7 @@ def _gen_failures_report(Ldb):
     report = ''
     ldb = Ldb[Ldb['log_type'] == 'Failure']
     if len(ldb) > 0:
-        ldb['failure_type'] = [parse_parsable_string(p)['type'] for p in ldb['parsable_string']]
+        ldb.loc[:, 'failure_type'] = [parse_parsable_string(p)['type'] for p in ldb['parsable_string']]
 
         for t, db in ldb.groupby('failure_type'):
             table = defaultdict(list)
@@ -768,7 +769,8 @@ def _gen_plotting_report(Ldb):
     report = ''
     ldb = Ldb[Ldb['log_type'] == 'Plotting']
     if len(ldb) > 0:
-        ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
+        #ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
+        ldb.loc[:, 'plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
         ldb = ldb.sort_values('time').reset_index(drop=True)
 
         for i, (index, row) in enumerate(ldb.iterrows()):
@@ -813,7 +815,7 @@ def _load_genes_logtable(ldb):
             table['command'].append(cmd)
 
     db = pd.DataFrame(table)
-    db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
+    db.loc[:, 'runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
 
     return db
 

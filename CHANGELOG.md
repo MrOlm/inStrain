@@ -7,6 +7,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 ## [1.5.0] - 2021-02-01
 - Updated internals for plotting
 - Removed dRep as a dependency
+- Include depenency check option, and automatically log dependencies to log
 
 ## [1.4.1] - 2021-01-25
 - Add the auxillary script "rarefaction_curve.py"

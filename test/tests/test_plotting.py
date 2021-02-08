@@ -203,17 +203,6 @@ def test_BreadthCurve_plot_1(BTO, view=False):
         assert len([f for f in figs if F in f]) == 1, F
     for fig in figs:
         assert os.path.getsize(fig) > 1000, fig
-    #
-    # # Make sure logging works
-    # rr = [f for f in glob.glob(location + '/log/*') if 'runtime' in f][0]
-    # got = False
-    # with open(rr, 'r') as o:
-    #     for line in o.readlines():
-    #         line = line.strip()
-    #         if 'Plot' in line:
-    #             got += 1
-    #         # print(line)
-    # assert got == 11, got  # Its in there twice for random reasons
 
     view = False
     if view:

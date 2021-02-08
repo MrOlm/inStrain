@@ -35,7 +35,7 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
             db = db[db['morphia'] >= 2]
 
         stb = IS.get('scaffold2bin')
-        Mdb = inStrain.genomeUtilities._add_stb(db, stb)
+        Mdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 4 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -65,7 +65,7 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
 
 def major_allele_freq_plot(db, title=''):
     db['major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
-    sns.distplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False)
+    sns.histplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False)
 
     plt.xlim(0.5, 1)
     plt.title(title)
