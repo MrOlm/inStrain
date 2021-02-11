@@ -175,6 +175,46 @@ def test_plotting_4(BTO):
     for fig in figs:
         assert os.path.getsize(fig) > 1000
 
+# THIS WORKS ON MO's DEV MACHINE ONLY
+def test_plotting_5(BTO):
+    """
+    Test the genome name
+    """
+    # Run the IS plots
+    FIGS = ['genomeWide_microdiveristy_metrics.pdf',
+            'MajorAllele_frequency_plot.pdf',
+            'LinkageDecay_plot.pdf', 'ScaffoldInspection_plot.pdf',
+            'ReadFiltering_plot.pdf', 'LinkageDecay_types_plot.pdf',
+            'GeneHistogram_plot.pdf']
+
+    if not os.path.isdir(BTO.LOCALONLY_IS_plotting):
+        print("THIS TEST ONLY WORKS ON MO'S DEVELOPMENT MACHINE")
+        return
+
+    location = BTO.LOCALONLY_IS_plotting
+    for f in glob.glob(location + '/log/*'):
+        os.remove(f)
+    for f in glob.glob(location + '/figures/*'):
+        os.remove(f)
+
+    # Pick a range of genomes
+    g = "GUT_GENOME000001.fna GUT_GENOME057980.fna GUT_GENOME143760.fna GUT_GENOME265791.fna"
+
+    cmd = f"inStrain plot -d -i {location} -g {g}"
+    # cmd = "inStrain plot -i {0} -g poop".format(location)
+    print(cmd)
+    call(cmd, shell=True)
+
+    # Load output
+    IS = inStrain.SNVprofile.SNVprofile(location)
+    figs = glob.glob(IS.get_location('figures') + '*')
+
+    # assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
+    for F in FIGS:
+        assert len([f for f in figs if F in f]) == 1, F
+    for fig in figs:
+        assert os.path.getsize(fig) > 1000
+
 def test_BreadthCurve_plot_1(BTO, view=False):
     """
     Make sure plot1 is made from command line

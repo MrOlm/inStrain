@@ -11,6 +11,7 @@ import pysam
 import logging
 import argparse
 import pandas as pd
+pd.set_option('mode.chained_assignment',None)
 import functools
 import logging
 import struct

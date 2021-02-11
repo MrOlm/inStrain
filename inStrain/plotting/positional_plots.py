@@ -58,6 +58,9 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
                                 covTs=covTs, clonTs=clonTs,
                                 raw_linkage_table=raw_linkage_table,
                                 cumulative_snv_table=cumulative_snv_table)
+        if len(Wdb) == 0:
+            logging.debug(f"{genome} could not have windowed metrics loaded")
+            continue
         genomeWide_microdiveristy_metrics_plot(Wdb, breaks, title=genome)
         fig = plt.gcf()
         fig.set_size_inches(8, 5)
@@ -110,6 +113,9 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
                                 covTs=covTs, clonTs=clonTs,
                                 raw_linkage_table=raw_linkage_table,
                                 cumulative_snv_table=cumulative_snv_table)
+        if len(Wdb) == 0:
+            logging.debug(f"{genome} could not have windowed metrics loaded")
+            continue
         scaffold_inspection_plot(Wdb, breaks, midpoints, title=genome)
         fig = plt.gcf()
         fig.tight_layout()

@@ -113,8 +113,8 @@ def _filter_genome_coverage(FAdb, s2l, s2p, rl, min_genome_coverage, stb_loc):
     stb_loc should be a list, direct from argument parser
     '''
     cdb = FAdb.drop_duplicates(subset=['scaffold'])
-    cdb['read_pairs'] = cdb['scaffold'].map(s2p)
-    cdb['length'] = cdb['scaffold'].map(s2l)
+    cdb.loc[:, 'read_pairs'] = cdb['scaffold'].map(s2p)
+    cdb.loc[:, 'length'] = cdb['scaffold'].map(s2l)
 
     stb = inStrain.genomeUtilities.load_scaff2bin(stb_loc)
     cdb = inStrain.genomeUtilities._add_stb(cdb, stb)

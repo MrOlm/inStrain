@@ -583,10 +583,10 @@ def calc_gene_snp_counts(gdb, ldb, sdb, gene2sequence, scaffold=None):
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts_geneCalc end {2}".format(scaffold, pid, time.time())
 
     # Calculate dn/ds
-    GGdb['dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+    GGdb.loc[:, 'dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
                                 GGdb['SNS_N_count'], GGdb['N_sites'],
                                 GGdb['SNS_S_count'], GGdb['S_sites'])]
-    GGdb['pNpS_variants'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+    GGdb.loc[:, 'pNpS_variants'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
                                     GGdb['SNV_N_count'], GGdb['N_sites'],
                                     GGdb['SNV_S_count'], GGdb['S_sites'])]
     # GGdb['SNPs_per_bp'] = [x/y if y > 0 else np.nan for x, y in \
@@ -613,7 +613,7 @@ def Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence):
     # Get a non-nonredundant list of SNPs
     Sdb = Ldb.drop_duplicates(subset=['scaffold', 'position'], keep='last')\
                 .sort_index().drop(columns=['mm'])
-    Sdb['position'] = Sdb['position'].astype(int)
+    Sdb.loc[:, 'position'] = Sdb['position'].astype(int)
 
     # Filter out SNPs that shouldn't be profiled like this
     Sdb = Sdb[Sdb['cryptic'] == False]

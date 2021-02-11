@@ -23,6 +23,9 @@ from inStrain.plotting.utilities import estimate_breadth
 def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
+        if not hasattr(sns, 'histplot') and callable(getattr(sns, 'histplot')):
+            raise Exception("Cannot make plot 4 because your seaborn is out of date- need v0.11+")
+
         db = IS.get('cumulative_snv_table')
         if len(db) == 0:
             return
@@ -64,8 +67,8 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
     plt.close('all')
 
 def major_allele_freq_plot(db, title=''):
-    db['major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
-    sns.histplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False)
+    db.loc[:, 'major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
+    sns.histplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False, binwidth=0.005)
 
     plt.xlim(0.5, 1)
     plt.title(title)

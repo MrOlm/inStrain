@@ -345,7 +345,7 @@ def genomeLevel_coverage_info(covT, bin2scaffolds, relevant_genomes, s2l,
 
         gdb = pd.DataFrame(table)
         gdb['iRep'] = iRep
-        gdb['iRep_GC_corrected'] = iRep_accessory['iRep_GC_corrected']
+        gdb.loc[:,'iRep_GC_corrected'] = iRep_accessory['iRep_GC_corrected']
         dbs.append(gdb)
 
     adb = pd.concat(dbs).reset_index(drop=True)
@@ -421,7 +421,7 @@ def _add_stb(db, stb, verbose=True):
         logging.error('Error- no scaffolds detected.')
         return
 
-    gdb['genome'] = gdb['scaffold'].map(stb)
+    gdb.loc[:,'genome'] = gdb['scaffold'].map(stb)
 
     if len(gdb['genome'].dropna().unique()) == 0:
         logging.error('Error- no genomes detected. Example: stb has scaffold {0}, database has scaffold {1}'.format(
@@ -480,7 +480,7 @@ def _genome_wide_si_2(gdb, stb, b2l, **kwargs):
                 table[col].append(sum([x * y for x, y in zip(df[col].fillna(0), df['length'])]) / b2l[genome])
 
             # Weighted average (over detected scaffold length)
-            df['considered_length'] = [x*y for x,y in zip(df['breadth_minCov'], df['length'])]
+            df.loc[:,'considered_length'] = [x*y for x,y in zip(df['breadth_minCov'], df['length'])]
             considered_leng = float(df['considered_length'].sum())
 
             # To maintain backwards compatibility

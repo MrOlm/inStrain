@@ -255,8 +255,8 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_
             Mdb = pd.merge(s1_all, s2_all, on='position', suffixes=('_1', '_2'), how='outer', copy=False)
 
         if Mdb is not None:
-            Mdb['consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
-            Mdb['population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
+            Mdb.loc[:,'consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
+            Mdb.loc[:,'population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
 
             Mdb['mm'] = mm
             Mdb = Mdb[OUT_COLUMNS]

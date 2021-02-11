@@ -27,11 +27,14 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         Mdb = kwargs.get('GWdb', False)
         assert len(Mdb) > 0
 
+        if 'mm' not in Mdb:
+            raise Exception('Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling')
+
         # Add the number of read-pairs
         readLen = int(IS.get_read_length())
         Mdb['read_length'] = readLen
         Mdb['mm'] = Mdb['mm'].astype(int)
-        Mdb['ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
+        Mdb.loc[:,'ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
     except:
         logging.error(
             "Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -90,6 +93,8 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         Mdb = prepare_read_ani_dist_plot(IS)
+        if len(Mdb['ANI_level'].unique()) == 1:
+            raise Exception('Plot 3 cannot be created when run with --database_mode or --skip_mm_profiling')
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 3 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -184,8 +189,8 @@ def prepare_read_ani_dist_plot(IS):
     readLen = int(IS.get_read_length())
     db['read_length'] = readLen
     db['mm'] = db['mm'].astype(int)
-    db['read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
-    db['ANI_level'] = [(readLen - mm)/readLen for mm in db['mm']]
+    db.loc[:,'read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
+    db.loc[:,'ANI_level'] = [(readLen - mm)/readLen for mm in db['mm']]
 
     return db
 
@@ -217,8 +222,8 @@ def read_filtering_plot(db, title=''):
           'pass_min_insert':'Pairs passing min insert size threshold',
           'pass_filter_cutoff':'Pairs passing ANI threshold',
           'filtered_pairs':'Total filtered pairs'}
-    db['variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
-    db['value'] = [int(x/2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
+    db.loc[:,'variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
+    db.loc[:,'value'] = [int(x/2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
                 db['value'], db['variable'])]
 
     # Set up colors
@@ -241,5 +246,9 @@ def read_filtering_plot(db, title=''):
             plt.text(offset + p.get_width(), p.get_y()+0.55*p.get_height(),
                      '{:1.0f}%'.format((width/total)*100),
                      ha='center', va='center')
+
+    # Remove top and right axes
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
 
     plt.title(title)

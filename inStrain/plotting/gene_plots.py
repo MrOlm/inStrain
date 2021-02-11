@@ -28,7 +28,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
         stb = IS.get('scaffold2bin')
         Gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         if 'clonality' in Gdb.columns:
-            Gdb['nucl_diversity'] = 1 - Gdb['clonality']
+            Gdb.loc[:,'nucl_diversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0
     except:
         logging.error("Skipping plot 9 - you don't have all required information. You need to run inStrain profile_genes first")
@@ -59,6 +59,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
 
 def gene_histogram_plot(db, title=''):
     COLS = ['coverage', 'nucl_diversity', 'SNPs_per_bp']
+    sns.set_style('white')
 
      # Get set up for multiple rows
     i = len(set(db.columns).intersection(set(COLS)))
@@ -74,10 +75,13 @@ def gene_histogram_plot(db, title=''):
             continue
 
         df = db[[metric]].sort_values(metric, ascending=False).reset_index(drop=True).reset_index()
+        ax[i].axvline(0, c='black')
+        ax[i].axhline(0, c='black')
         ax[i].plot(df['index'], df[metric], marker='o', ms=1)
         ax[i].set_ylabel("{0}".format(metric))
         i += 1
 
     plt.xlabel('gene index')
     plt.suptitle(title, y=0.999)
+    plt.axvline(0)
     #plt.xlim(-1, df['index'].max())

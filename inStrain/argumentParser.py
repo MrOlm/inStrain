@@ -282,7 +282,7 @@ def parse_args(args):
                         nargs='*', default='a')
 
     POflags = plot_parent.add_argument_group('OPTIONAL FIGURE ADJUSTMENTS')
-    POflags.add_argument("-mb", "--minimum_breadth", default=0, type=float,
+    POflags.add_argument("-mb", "--minimum_breadth", default=0.5, type=float,
                     help= "Minimum breadth of coverage for genome to make it into plot (from 0-1).")
     POflags.add_argument("-g", "--genomes", nargs='*',
                     help= "Only plot genomes with the names provided in this argument")

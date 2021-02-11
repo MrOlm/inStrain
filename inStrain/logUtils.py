@@ -463,8 +463,8 @@ def parse_multiprocessing(Odb):
     """
     table = defaultdict(list)
     Ldb = Odb[Odb['multi_log_type'] == 'WorkerLog']
-    Ldb['time'] = Ldb['time'].astype(float)
-    Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
+    Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
+    Ldb.loc[:, 'process_RAM'] = Ldb['process_RAM'].astype(float)
     first_time = Ldb['time'].min()
 
     # Generate this on a per-unit level
@@ -499,8 +499,8 @@ def parse_multiprocessing(Odb):
     table = defaultdict(list)
     Ldb = Odb[Odb['multi_log_type'] == 'GroupLog']
     if len(Ldb) > 0:
-        Ldb['time'] = Ldb['time'].astype(float)
-        Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
+        Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
+        Ldb.loc[:, 'process_RAM'] = Ldb['process_RAM'].astype(float)
         first_time = Ldb['time'].min()
 
         # Generate this on a per-unit level
@@ -798,7 +798,7 @@ def _load_genes_logtable(ldb):
         return Ldb
 
     table = defaultdict(list)
-    Ldb['time'] = Ldb['time'].astype(float)
+    Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
     first_time = Ldb['time'].min()
     for scaffold, ddb in Ldb.groupby('scaffold'):
         for cmd, db in ddb.groupby('what'):

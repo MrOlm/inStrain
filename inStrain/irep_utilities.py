@@ -52,7 +52,7 @@ def calculate_iRep_from_coverage_array(rcov, num_contigs, gc_windows=None):
     FilterChriteria['kept_windows'] = len(Idb) / len(oIdb)
 
     # Get raw iRep values
-    Idb['coverage_OLT'] = _iRep_log_transform(Idb['coverage'])
+    Idb.loc[:,'coverage_OLT'] = _iRep_log_transform(Idb['coverage'])
     iRep = _calc_iRep(Idb, length, on='coverage_OLT', FilterChriteria=FilterChriteria)
     FilterChriteria['unfiltered_raw_iRep'] = iRep
 
@@ -60,13 +60,13 @@ def calculate_iRep_from_coverage_array(rcov, num_contigs, gc_windows=None):
     FilterChriteria['iRep_GC_corrected'] = False
     if gc_windows is not None:
         Idb = _iRep_gc_bias(Idb)
-        Idb['coverage_LT'] = _iRep_log_transform(Idb['corrected_coverage'])
+        Idb.loc[:,'coverage_LT'] = _iRep_log_transform(Idb['corrected_coverage'])
         iRep = _calc_iRep(Idb, length, on='coverage_LT')
         FilterChriteria['unfiltered_iRep'] = iRep
         FilterChriteria['iRep_GC_corrected'] = True
 
     # Get raw iRep values
-    Idb['coverage_OLT'] = _iRep_log_transform(Idb['coverage'])
+    Idb.loc[:,'coverage_OLT'] = _iRep_log_transform(Idb['coverage'])
     iRep = _calc_iRep(Idb, length, on='coverage_OLT', FilterChriteria=FilterChriteria)
     FilterChriteria['unfiltered_raw_iRep'] = iRep
 
@@ -273,7 +273,7 @@ def _iRep_gc_bias(Idb, correction_threshold=0.0):
     m, b, fit, r2, l = fit_coverage((Idb['GC_content'].tolist(), Idb['coverage'].tolist(), False, True))
 
     # remove outliers
-    Idb['error'] = [abs(cov - (m * gc + b)) for gc, cov in zip(Idb['GC_content'], Idb['coverage'])]
+    Idb.loc[:,'error'] = [abs(cov - (m * gc + b)) for gc, cov in zip(Idb['GC_content'], Idb['coverage'])]
     try:
         cutoff = sorted(Idb['error'].tolist(), reverse = True)[int(len(Idb['error'])*0.01)]
     except:

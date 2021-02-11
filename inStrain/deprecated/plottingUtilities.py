@@ -196,7 +196,7 @@ def load_windowed_metrics(scaffolds, s2l, rLen, metrics=None, window_len=None, A
     bdb = pd.DataFrame(table)
     Wdb = pd.concat([Wdb, bdb], sort=False)
     if len(Wdb) > 0:
-        Wdb['midpoint'] = [np.mean([x, y]) for x, y in zip(Wdb['adjusted_start'], Wdb['adjusted_end'])]
+        Wdb.loc[:,'midpoint'] = [np.mean([x, y]) for x, y in zip(Wdb['adjusted_start'], Wdb['adjusted_end'])]
         Wdb = Wdb.sort_values(['metric', 'mm', 'midpoint', 'scaffold'])
 
     if report_midpoints:
@@ -245,14 +245,14 @@ def load_windowed_coverage_or_clonality(thing, covTs, scaffolds, window_len, mms
                 if len(cov) == 0:
                     continue
                 db = _gen_windowed_cov(cov, window_len, sLen=s2l[scaffold], full_len=False)
-                db['avg_cov'] = [1 - x if x == x else x for x in db['avg_cov']]
+                db.loc[:,'avg_cov'] = [1 - x if x == x else x for x in db['avg_cov']]
 
             db['scaffold'] = scaffold
             db['mm'] = mm
             db['ANI'] = ani
 
-            db['adjusted_start'] = db['start'] + tally
-            db['adjusted_end'] = db['end'] + tally
+            db.loc[:,'adjusted_start'] = db['start'] + tally
+            db.loc[:,'adjusted_end'] = db['end'] + tally
 
             dbs.append(db)
         tally += s2l[scaffold]

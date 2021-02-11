@@ -304,6 +304,7 @@ def test_docker_1(DTO):
     CMD = DTO.setup_cmd + CMD
 
     # Run command
+    print(CMD)
     run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
 
     # Set up intended output

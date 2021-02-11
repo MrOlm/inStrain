@@ -104,7 +104,7 @@ def parse_coverm(Cdb, genome2length, args):
     assert type(stb) == type({})
 
     # Apply it
-    Cdb['genome'] = Cdb['Contig'].map(stb)
+    Cdb.loc[:,'genome'] = Cdb['Contig'].map(stb)
 
     # Print results
     inS = len(Cdb[~Cdb['genome'].isna()]['Contig'].unique())

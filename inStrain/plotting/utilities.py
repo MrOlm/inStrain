@@ -14,6 +14,14 @@ def plot_genome(genome, IS, **kwargs):
     '''
     GWdb = kwargs.get('GWdb', False)
 
+    # FILTER BY GENOME LIST
+    genomes = kwargs.get('genomes', None)
+    if genomes is not None:
+        if genome not in genomes:
+            return False
+        else:
+            return True
+
     # FILTER BY BREADTH
     mb = float(kwargs.get('minimum_breadth', 0))
     if mb > 0:
@@ -26,12 +34,6 @@ def plot_genome(genome, IS, **kwargs):
         except:
             breadth = 0
         if float(breadth) < mb:
-            return False
-
-    # FILTER BY GENOME LIST
-    genomes = kwargs.get('genomes', None)
-    if genomes is not None:
-        if genome not in genomes:
             return False
 
     return True
