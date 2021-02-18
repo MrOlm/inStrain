@@ -215,6 +215,30 @@ def test_plotting_5(BTO):
     for fig in figs:
         assert os.path.getsize(fig) > 1000
 
+def test_plot_10_squareform(BTO):
+    """
+    Test the ability of plot 10 to handle empty comparisons
+    """
+    # Run the IS plots
+    FIGS = ['inStrainCompare_dendrograms.pdf']
+
+    location = os.path.join(BTO.test_dir, os.path.basename(BTO.plot10_tester))
+    shutil.copytree(BTO.plot10_tester, location)
+
+    cmd = "inStrain plot -i {0} -d -pl 10".format(location)
+    print(cmd)
+    call(cmd, shell=True)
+
+    # Load output
+    IS = inStrain.SNVprofile.SNVprofile(location)
+    figs = glob.glob(IS.get_location('figures') + '*')
+
+    for F in FIGS:
+        assert len([f for f in figs if F in f]) == 1, F
+    for fig in figs:
+        assert os.path.getsize(fig) > 2000
+
+
 def test_BreadthCurve_plot_1(BTO, view=False):
     """
     Make sure plot1 is made from command line

@@ -616,8 +616,8 @@ def Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence):
     Sdb.loc[:, 'position'] = Sdb['position'].astype(int)
 
     # Filter out SNPs that shouldn't be profiled like this
-    Sdb = Sdb[Sdb['cryptic'] == False]
-    Sdb = Sdb.drop(columns="cryptic")
+    # Sdb = Sdb[Sdb['cryptic'] == False]
+    # Sdb = Sdb.drop(columns="cryptic")
 
     if 'morphia' in Sdb.columns:
         col = 'morphia'

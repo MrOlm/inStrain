@@ -175,6 +175,18 @@ What are inStrain's computational requirements?
 
 The two computational resources to consider when running inStrain are the number of processes given (``-p``) and the amount of RAM on the computer (usually not adjustable unless using cloud-based computing). Using inStrain v1.3.3, running inStrain on a .bam file of moderate size (1 Gbp of less) will generally take less than an hour with 6 cores, and use about 8Gb of RAM. InStrain is designed to handle large .bam files as well. Running a huge .bam file (30 Gbp) with 32 cores, for example, will take ~2 hours and use about 128Gb of RAM. The more processes you give inStrain the longer it will run, but also the more RAM it will use. See :doc:`important_concepts` for information on reducing compute requirements.
 
+How can I infer the relative abundance of each strain cluster within the metagenomes?
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+At the moment you can only compare the relative abundance of the populations between samples. Say strain A, based on genome X, is in samples 1 and 2. You now know that genome X is the same strain in both samples, so you could compare the relative abundance of genome X in samples 1 and 2. But if multiple strains are present within genome X, there’s no way to phase them out.
+
+InStrain compare isn’t really phasing out multiple strains in a sample, it’s just seeing if there is micro-diversity overlap between samples. Conceptually inStrain operates on the idea of “strain clouds” more than distinct strains. InStrain isn’t able to tell the number of strains that are shared between two samples either, just that there is population-level overlap for some particular genome. Doing haplotype phasing is something we’ve considered and may add in the future, but the feature won’t be coming any time in the near future.
+
+How can I determine the relative abundance of detected populations?
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Relative abundance can be calculated a number of different ways, but the way I like to do it "percentage of reads". So if your sample has 100 reads, and 15 reads map to genome X, the relative abundance of genome X is 15%. Because inStrain does not know the number of reads per sample, it cannot calculate this metric for you. You have to calculate it yourself by dividing the total reads in the sample by the value filtered_read_pair_count reported in the inStrain `genome_wide` output.
+
 What mapping software can be used to generate .bam files for inStrain?
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

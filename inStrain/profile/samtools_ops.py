@@ -20,7 +20,7 @@ def prepare_bam_fie(bam, processes=6):
     if bam[-4:] == '.sam':
         logging.info("You gave me a sam- I'm going to make it a .bam now")
 
-        bam = _sam_to_bam(bam)
+        bam = _sam_to_bam(bam, processes=processes)
         bam = _sort_index_bam(bam, processes=processes)
 
     elif bam[-4:] == '.bam':
@@ -55,7 +55,7 @@ def prepare_bam_fie(bam, processes=6):
     return bam
 
 
-def _sam_to_bam(sam):
+def _sam_to_bam(sam, processes=6):
     """
     From the location of a .sam file, convert it to a bam file and return the location
     """
@@ -65,7 +65,7 @@ def _sam_to_bam(sam):
 
     bam = sam[:-4] + '.bam'
     logging.info("Converting {0} to {1}".format(sam, bam))
-    cmd = ['samtools', 'view', '-S', '-b', sam, '>', bam]
+    cmd = ['samtools', 'view', '-S',  '-@', str(processes), '-b', sam, '>', bam]
     print(' '.join(cmd))
     call(' '.join(cmd), shell=True)
 

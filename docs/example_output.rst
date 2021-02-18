@@ -171,6 +171,10 @@ SNVs.tsv
 
 This describes the :term:`SNVs<SNV>` and :term:`SNSs<SNS>` that are detected in this mapping. While we should refer to these mutations as :term:`divergent sites<divergent site>`, sometimes SNV is used to refer to both SNVs and SNSs
 
+.. warning::
+  inStrain reports 0-based values for "position". The first base in a scaffold will be position "0", second based position "1", etc.
+
+
 .. csv-table:: SNVs.tsv
 
     scaffold,position,position_coverage,allele_count,ref_base,con_base,var_base,ref_freq,con_freq,var_freq,A,C,T,G,gene,mutation,mutation_type,cryptic,class
@@ -238,6 +242,9 @@ linkage.tsv
 +++++++++++++++++
 
 This describes the :term:`linkage` between pairs of SNPs in the mapping that are found on the same read pair at least min_snp times.
+
+.. warning::
+  inStrain reports 0-based values for "position". The first base in a scaffold will be position "0", second based position "1", etc.
 
 .. csv-table:: linkage.tsv
 
@@ -375,6 +382,9 @@ gene_info.tsv
 +++++++++++++++++
 
 This describes some basic information about the genes being profiled
+
+.. warning::
+  inStrain reports 0-based values for "position", including the "start" and "stop" in this table. The first base in a scaffold will be position "0", second based position "1", etc.
 
 .. csv-table:: gene_info.tsv
 
@@ -609,6 +619,9 @@ population_SNPs
 
 pairwise_SNP_locations.tsv
 +++++++++++++++++++++++++++
+
+.. warning::
+  inStrain reports 0-based values for "position". The first base in a scaffold will be position "0", second based position "1", etc.
 
 Lists the locations of all differences between profiles. Because it's a big file, this will only be created is you include the flag ``--store_mismatch_locations`` in your inStrain compare command.
 

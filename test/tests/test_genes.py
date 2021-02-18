@@ -102,11 +102,11 @@ def test_genes_1(BTO):
     # Get the mutations in this IS
     Sdb = inStrain.SNVprofile.SNVprofile(location).get_nonredundant_snv_table()
     Sdb['allele_count'] = Sdb['allele_count'].astype(int)
-    Sdb = Sdb[Sdb['cryptic'] == False]
+    #Sdb = Sdb[Sdb['cryptic'] == False]
     if 'allele_count' in Sdb.columns:
         Sdb = Sdb[Sdb['allele_count'].isin([1, 2])]
         Sdb = Sdb.drop(columns="allele_count")
-    Sdb = Sdb.drop(columns="cryptic")
+    #Sdb = Sdb.drop(columns="cryptic")
     Sdb['position'] = Sdb['position'].astype(int)
     SNdb = Sdb
     SNdb['mut_key'] = ["{0}:{1}".format(x, y) for x, y in zip(SNdb['scaffold'], SNdb['position'])]

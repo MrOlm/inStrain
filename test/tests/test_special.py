@@ -7,6 +7,8 @@ import os
 import shutil
 from subprocess import call, run, PIPE
 import numpy as np
+import pandas as pd
+import json
 
 import inStrain
 import inStrain.SNVprofile
@@ -16,7 +18,10 @@ import inStrain.irep_utilities
 import inStrain.profile.fasta
 import tests.test_utils as test_utils
 import inStrain.logUtils
+import inStrain.plotting
 
+import scipy
+import scipy.spatial.distance as ssd
 from test_utils import BTO
 
 # class test_special:
@@ -180,16 +185,10 @@ def test_special_6(BTO):
     assert len(logs) == 4, logs
 
 
-    # cmd = "inStrain profile {0} {1} -o {2} -s {3} -g {4}".format(
-    #     BTO.small_bam, BTO.small_fasta, location, BTO.stb, BTO.genes)
-    # print(cmd)
-    # result = run(cmd, shell=True, stdout=PIPE)
-    #
-    # # Make sure the code is right
-    # assert result.returncode == 0
+def _load_dictionary(location):
+    '''
+    Load a dictionary using json
+    '''
+    with open(location, 'r') as fp:
+        return(json.load(fp))
 
-    # Load a log file
-    # loc = glob.glob(location + '/log/*runtime*')[0]
-    # with open(loc) as l:
-    #     for line in l.readlines():
-    #         print(line.strip())

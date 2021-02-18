@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.1] - 2021-02-18
+- Minor updates to docs; include warnings about 0-based indexing and some more FAQs
+- Sam to bam conversion now uses the correct number of processes
+- Automatically compress big dataframes on storage
+- Do gene profiling of cryptic SNPs as well
+- Test whether genome distance matricies contain blanks before clustering
+
 ## [1.5.0] - 2021-02-11
 - Updated internals for plotting
 - Removed dRep as a dependency

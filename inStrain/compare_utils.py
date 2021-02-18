@@ -197,6 +197,10 @@ def cluster_genome_strains(Mdb, kwargs):
 
     cluster_num = 1
     for genome, gdb in Mdb.groupby('genome'):
+
+        if not evalute_genome_dist_matrix(gdb, genome):
+            continue
+
         # Average popANI values
         gdb = add_av_RC(gdb, v2='percent_compared', n2='av_cov')
         gdb['dist'] = 1 - gdb['av_ani']
@@ -228,6 +232,19 @@ def cluster_genome_strains(Mdb, kwargs):
         cdbs.append(cdb)
 
     return pd.concat(cdbs).reset_index(drop=True)
+
+def evalute_genome_dist_matrix(mdb, genome):
+    """
+    Check whether the distance matrix is OK. Return True if OK
+    """
+    edb = mdb[mdb['compared_bases_count'] == 0]
+    if len(edb) > 0:
+        logging.error(f"Cannot cluster genome {genome}; {len(edb)} of {len(mdb)} comaprisons involve no genomic overlap at all: see log for more")
+        for i, row in edb.iterrows():
+            logging.debug(f"clustering failure {genome} \t {row['name1']} vs {row['name2']}")
+        return False
+    else:
+        return True
 
 def _gen_cdb_from_fclust(fclust,names):
     '''

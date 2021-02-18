@@ -51,6 +51,11 @@ def dendrograms_from_RC(IS, plot_dir=False, **kwargs):
     for genome, mdb in Mdb.groupby('genome'):
         # if not plot_genome(genome, IS, **kwargs):
         #     continue
+
+        # Evaluate
+        if not inStrain.compare_utils.evalute_genome_dist_matrix(mdb, genome):
+            continue
+
         plot_readComparerer_dendrograms(mdb, genome, cluster_method='average')
         fig = plt.gcf()
         #fig.tight_layout()

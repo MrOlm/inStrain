@@ -60,6 +60,7 @@ def BTO():
 
     self.RC_Loc = dl + 'readComparer_vCurrent.RC'
     self.v12_solution = dl + 'readComparer_v1.3.0r.RC'
+    self.plot10_tester = dl + 'plot10bugtester.RC'
 
     self.SIS = dl + 'Ecoli_ani.100.0.subset.sorted.bam.IS'
     self.SIS2 = dl + 'Ecoli_ani.99.9.subset.sorted.bam.IS'
@@ -91,7 +92,7 @@ def BTO():
 
     self.teardown()
     yield self
-    self.teardown()
+    #self.teardown()
 
 
 def get_script_loc(script):

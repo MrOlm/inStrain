@@ -169,6 +169,7 @@ class SNVprofile:
         '''
 
         report_mm_level = kwargs.get('mm_level', False)
+        report_mm_level = kwargs.get('mm_level', False)
         if name == 'SNVs':
             column_order = ['scaffold', 'position', 'position_coverage', 'allele_count',
                             'ref_base', 'con_base', 'var_base',
@@ -333,7 +334,13 @@ class SNVprofile:
 
         if store:
             out_base = self.get_output_base()
-            db.to_csv(out_base + name + '.tsv', index=False, sep='\t')
+            ft = '.tsv'
+
+            # If this file is going to be huge, compress it
+            if len(db) > 1e6:
+                ft = '.tsv.gz'
+
+            db.to_csv(out_base + name + ft, index=False, sep='\t')
 
         if return_table:
             return db

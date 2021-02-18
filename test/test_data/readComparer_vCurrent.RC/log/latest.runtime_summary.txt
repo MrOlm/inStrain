@@ -1,6 +1,6 @@
 ..:: Overall ::..
-InStrain version 1.5.0a started at 2021-02-11 14:00:56 and ended at 2021-02-11 14:01:11.
-Runtime = 15 seconds
+InStrain version 1.5.1 started at 2021-02-18 11:12:05 and ended at 2021-02-18 11:12:19.
+Runtime = 14 seconds
 Command = /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations
 
 ..:: Checkpoints ::..
@@ -19,24 +19,24 @@ Command = /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain compare -i /User
 ..:: Plotting ::..
 
 ..:: Compare ::..
-CreateScaffoldComparisonObjects took <1 second       ( 0.0% of overall)	RAM went from 155.81 MB to 158.51 MB (increased by 2.70 MB)
-multiprocessing      took 12.0 seconds    (80.0% of overall)	RAM went from 229.01 MB to 315.60 MB (increased by 86.59 MB)
-SaveResults          took <1 second       ( 0.0% of overall)	RAM went from 315.77 MB to 321.02 MB (increased by 5.25 MB)
+CreateScaffoldComparisonObjects took <1 second       ( 0.0% of overall)	RAM went from 155.01 MB to 157.46 MB (increased by 2.45 MB)
+multiprocessing      took 12.0 seconds    (85.7% of overall)	RAM went from 227.56 MB to 309.12 MB (increased by 81.56 MB)
+SaveResults          took <1 second       ( 0.0% of overall)	RAM went from 309.20 MB to 314.99 MB (increased by 5.79 MB)
 
-Wall time                     	10 seconds
+Wall time                     	9 seconds
 Total processes used          	6
-Average number processes used 	5.7
-Paralellization efficiency    	95.5%
+Average number processes used 	5.8
+Paralellization efficiency    	97.0%
 Units profiled                	178
 Average time per unit         	<1 second
 Median time per unit          	<1 second
 Maximum unit time             	1.0 second
 Longest running unit          	N5_271_010G1_scaffold_1
-Per-process efficiency        	['93.7', '94.6', '94.8', '95.2', '97.2', '99.2']
-unit per-process strating RAM      	['171.40 MB', '182.45 MB', '177.47 MB', '185.08 MB', '178.16 MB', '162.40 MB']
-unit per-process final RAM         	['156.87 MB', '175.58 MB', '172.16 MB', '166.51 MB', '178.16 MB', '164.84 MB']
-unit per-process minimum RAM       	['155.62 MB', '155.79 MB', '156.09 MB', '156.59 MB', '158.28 MB', '156.36 MB']
-unit per-process maximum RAM       	['196.33 MB', '182.45 MB', '197.43 MB', '185.09 MB', '178.17 MB', '171.71 MB']
+Per-process efficiency        	['95.5', '96.0', '97.0', '97.4', '98.6', '99.0']
+unit per-process strating RAM      	['162.96 MB', '214.06 MB', '176.43 MB', '162.57 MB', '167.19 MB', '163.04 MB']
+unit per-process final RAM         	['174.52 MB', '165.36 MB', '161.77 MB', '167.40 MB', '164.26 MB', '183.78 MB']
+unit per-process minimum RAM       	['156.96 MB', '157.21 MB', '157.02 MB', '156.85 MB', '155.24 MB', '155.90 MB']
+unit per-process maximum RAM       	['175.43 MB', '218.56 MB', '176.96 MB', '172.79 MB', '174.58 MB', '185.57 MB']
 
 ..:: Failures ::..
 No failures
