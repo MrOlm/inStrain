@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.2] - 2021-03-02
+- BugFix when calling mutation effects (N, S, etc.) that impacted mutations with no reads supporting anything but the consensus variant
+- Added a note about the weird way that positions are calculated in the "mutation" column of SNVs.tsv
+
 ## [1.5.1] - 2021-02-18
 - Minor updates to docs; include warnings about 0-based indexing and some more FAQs
 - Sam to bam conversion now uses the correct number of processes

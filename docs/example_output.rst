@@ -227,7 +227,7 @@ gene
   If a gene file was included, this column will be present listing if the SNV is in the coding sequence of a gene
 
 mutation
-  Short-hand code for the amino acid switch. If synonymous, this will be S: + the position. If nonsynonymous, this will be N: + the old amino acid + the position + the new amino acid.
+  Short-hand code for the amino acid switch. If synonymous, this will be S: + the position. If nonsynonymous, this will be N: + the old amino acid + the position + the new amino acid. **NOTE** - the position of the amino acid is always calculated from left to right on the genome file, whether or not it's the forward or reverse strand. Codons are calculated correctly (considering strandedness), this only impacts the reported "position" in this column. I know this is weird behavior and it will change in future inStrain versions.
 
 mutation_type
   What type of mutation this is. N = nonsynonymous, S = synonymous, I = intergenic, M = there are multiple genes with this base so you cant tell

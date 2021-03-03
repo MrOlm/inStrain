@@ -666,9 +666,9 @@ def characterize_SNPs(gdb, Sdb, gene2sequence):
             # Make the new sequence
             snp_start = row['position'] - db['start'].tolist()[0]
             new_sequence = original_sequence.tomutable()
-            new_sequence[snp_start] = row['var_base']
+            new_sequence[snp_start] = row['con_base']
             if new_sequence[snp_start] == original_sequence[snp_start]:
-                new_sequence[snp_start] = row['con_base']
+                new_sequence[snp_start] = row['var_base']
             new_sequence = new_sequence.toseq()
 
             # Translate

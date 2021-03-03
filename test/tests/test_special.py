@@ -184,6 +184,20 @@ def test_special_6(BTO):
     logs = glob.glob(location + '/log/*')
     assert len(logs) == 4, logs
 
+def test_special_7(BTO):
+    """
+    Test inStrain other --create
+    """
+    # Copy over
+    location = os.path.join(BTO.test_dir, os.path.basename(BTO.IS1))
+    shutil.copytree(BTO.IS1, location)
+
+    cmd = "inStrain other --run_statistics {0} --debug".format(location)
+    print(cmd)
+    call(cmd, shell=True)
+    logs = glob.glob(location + '/log/*')
+    assert len(logs) == 4, logs
+
 
 def _load_dictionary(location):
     '''
