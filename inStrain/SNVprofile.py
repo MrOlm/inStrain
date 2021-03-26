@@ -169,7 +169,8 @@ class SNVprofile:
         '''
 
         report_mm_level = kwargs.get('mm_level', False)
-        report_mm_level = kwargs.get('mm_level', False)
+        force_compress = kwargs.get('force_compress', False)
+
         if name == 'SNVs':
             column_order = ['scaffold', 'position', 'position_coverage', 'allele_count',
                             'ref_base', 'con_base', 'var_base',
@@ -178,7 +179,10 @@ class SNVprofile:
                             'gene', 'mutation', 'mutation_type', 'cryptic']
 
             # Get the base table
-            db = self.get_nonredundant_snv_table()
+            try:
+                db = self.get_nonredundant_snv_table()
+            except:
+                db = pd.DataFrame()
 
             # Do you have the mutation types? If so, merge in
             mdb = self.get('SNP_mutation_types')
@@ -186,9 +190,6 @@ class SNVprofile:
                 if len(mdb) > 0:
                     mdb = mdb[['scaffold', 'position', 'mutation_type', 'mutation', 'gene']]
                     db = pd.merge(db, mdb, how='left', on=['scaffold', 'position'])
-
-            # Do you have information about coverage? If so, merge in
-            pass
 
             db = reorder_columns(db, column_order)
 
@@ -248,7 +249,9 @@ class SNVprofile:
                     del db[c]
 
             db = reorder_columns(db, column_order)
-            db = db[db['coverage'] > 0]
+            if db is not None:
+                if len(db) > 0:
+                    db = db[db['coverage'] > 0]
 
         elif name == 'genome_info':
             column_order = ['genome', 'coverage', 'breadth', 'nucl_diversity',
@@ -269,20 +272,21 @@ class SNVprofile:
             db = self.get('genome_level_info')
             db = reorder_columns(db, column_order)
 
-            # Get rid of some of those dumb columns
-            read_columns = [r for r in db.columns if r.startswith('reads_')]
-            keep_columns = [r for r in read_columns if r in ['reads_unfiltered_reads',
-                            'reads_unfiltered_pairs', 'reads_mean_PID']]
-            for col in set(read_columns) - set(keep_columns):
-                if col in db:
-                    del db[col]
+            if db is not None:
+                # Get rid of some of those dumb columns
+                read_columns = [r for r in db.columns if r.startswith('reads_')]
+                keep_columns = [r for r in read_columns if r in ['reads_unfiltered_reads',
+                                'reads_unfiltered_pairs', 'reads_mean_PID']]
+                for col in set(read_columns) - set(keep_columns):
+                    if col in db:
+                        del db[col]
 
-            if not report_mm_level:
-                if 'mm' in db.columns:
-                    db = db.sort_values('mm').drop_duplicates(
-                            subset=['genome'], keep='last')\
-                            .sort_values('genome')
-                    del db['mm']
+                if not report_mm_level:
+                    if 'mm' in db.columns:
+                        db = db.sort_values('mm').drop_duplicates(
+                                subset=['genome'], keep='last')\
+                                .sort_values('genome')
+                        del db['mm']
 
         elif name == 'mapping_info':
             column_order = ['scaffold', 'pass_pairing_filter', 'filtered_pairs']
@@ -290,9 +294,15 @@ class SNVprofile:
             db = self.get('mapping_info')
             values = inStrain.filter_reads.write_mapping_info(db, None, **kwargs)
 
-            if store:
+            if store & (db is not None):
                 base = self.get_output_base()
-                location = base + name + '.tsv'
+
+                ft = '.tsv'
+                if force_compress:
+                    ft = '.tsv.gz'
+
+                location = base + name + ft
+
                 os.remove(location) if os.path.exists(location) else None
                 f = open(location, 'a')
                 f.write("# {0}\n".format(' '.join(["{0}:{1}".format(k, v) for k, v in values.items()])))
@@ -332,12 +342,16 @@ class SNVprofile:
             logging.error("Do not know how to store {0}! Crashing now".format(name))
             assert False
 
+        if db is None:
+            logging.info(f"Could not create {name}")
+            return None
+
         if store:
             out_base = self.get_output_base()
             ft = '.tsv'
 
             # If this file is going to be huge, compress it
-            if len(db) > 1e6:
+            if (len(db) > 1e6) | force_compress:
                 ft = '.tsv.gz'
 
             db.to_csv(out_base + name + ft, index=False, sep='\t')
@@ -1052,9 +1066,15 @@ def reorder_columns(db, column_order):
 
     Any column not in the column_order will be added to the end
     '''
-    columns = set(db.columns)
-    return db[[c for c in column_order if c in columns] \
-                + list(columns - set(column_order))]
+    if db is None:
+        return db
+
+    if len(db) > 0:
+        columns = set(db.columns)
+        return db[[c for c in column_order if c in columns] \
+                    + list(columns - set(column_order))]
+    else:
+        return db
 
 # if __name__ == '__main__':
 #     parser = argparse.ArgumentParser(description= """

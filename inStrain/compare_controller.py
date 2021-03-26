@@ -274,28 +274,36 @@ class CompareController(object):
         self.RCprof.store('comparisonsTable', self.comparison_db, 'pandas', 'Comparisons between the requested IS objects')
         self.RCprof.store('scaffold2length', self.s2l, 'dictionary', 'Scaffold to length')
 
+        force_compress = vars(self.args).get('force_compress', False)
+
         # Store auxillary things
         if hasattr(self, 'bin2length'):
             self.RCprof.store('bin2length', self.bin2length, 'dictionary', 'Dictionary of bin 2 total length')
         if hasattr(self, 'genomelevel_compare'):
             # ... this is jankey, but I guess it's what we do
             out_base = self.RCprof.get_location('output') + os.path.basename(self.RCprof.get('location')) + '_'
-            self.genomelevel_compare.to_csv(out_base + 'genomeWide_compare.tsv', index=False, sep='\t')
+            name = out_base + 'genomeWide_compare.tsv'
+            if force_compress:
+                name += '.gz'
+            self.genomelevel_compare.to_csv(name, index=False, sep='\t')
         if hasattr(self, 'Cdb'):
             # ... this is jankey, but I guess it's what we do
             out_base = self.RCprof.get_location('output') + os.path.basename(self.RCprof.get('location')) + '_'
-            self.Cdb.to_csv(out_base + 'strain_clusters.tsv', index=False, sep='\t')
+            name = out_base + 'strain_clusters.tsv'
+            if force_compress:
+                name += '.gz'
+            self.Cdb.to_csv(name, index=False, sep='\t')
         if hasattr(self, 'stb'):
             self.RCprof.store('scaffold2bin', self.stb, 'dictionary', 'Dictionary of scaffold 2 bin')
 
         # Make the output files
-        self.RCprof.generate('comparisonsTable')
+        self.RCprof.generate('comparisonsTable', **vars(self.args))
 
         # Store scaff2pair2mm2SNPs
         if self.args.store_mismatch_locations:
             self.RCprof.store('pairwise_SNP_locations', self.mismatch_location_db, 'pandas',
                          'A dataframe of scaffold, IS pair, mm level, SNP locations')
-            self.RCprof.generate('pairwise_SNP_locations')
+            self.RCprof.generate('pairwise_SNP_locations', **vars(self.args))
 
         # Store scaff2pair2mm2cov
         if self.args.store_coverage_overlap:

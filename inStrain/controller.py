@@ -328,7 +328,7 @@ class ProfileController(object):
         logging.debug("Writing output files now")
 
         for t in ['SNVs', 'scaffold_info', 'SNVs', 'linkage', 'gene_info']:
-            self.ISP.generate(t)
+            self.ISP.generate(t, **self.kwargs)
         self.ISP.generate('mapping_info', **self.kwargs)
 
     def profile_profile_genes(self):

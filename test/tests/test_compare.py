@@ -1298,3 +1298,20 @@ def test_compare_20(BTO):
     # Make sure results are good
     cdb = IS.get('comparisonsTable')
     assert len(cdb['scaffold'].unique()) == 178
+
+def test_compare_21(BTO):
+    """
+    Test force compress
+    """
+    exp_base = BTO.test_dir + 'testSR'
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {exp_base} -s {BTO.stb} --force_compress"
+    print(cmd)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    # Load output
+    IS = inStrain.SNVprofile.SNVprofile(exp_base)
+
+    # Run it with default settings
+    files = glob.glob(IS.get_location('output') + '/*.gz')
+    print(glob.glob(IS.get_location('output') + '/*'))
+    assert len(files) == 3

@@ -65,8 +65,8 @@ class Controller():
             IS.store('scaff2gene2sequence', scaff2gene2sequence, 'pickle', 'Dicitonary of scaff -> gene -> nucleotide sequence')
 
         # Store the output
-        IS.generate('gene_info')
-        IS.generate("SNVs")
+        IS.generate('gene_info', **vargs)
+        IS.generate("SNVs", **vargs)
 
     def validate_input(self, args):
         '''

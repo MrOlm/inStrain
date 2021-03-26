@@ -4,9 +4,11 @@ Run tests on inStrain SNV profile
 
 import importlib
 import logging
+import glob
 import os
 import shutil
 from subprocess import call
+import pandas as pd
 import numpy as np
 
 import inStrain
@@ -102,3 +104,45 @@ def test_SNV_profile_1(BTO):
         else:
             print("Cant compare {0}".format(name))
             # assert nIS.get(name) == getattr(oIS, name), name
+
+def test_SNV_generate(BTO):
+    """
+    Test that SNV generate crashes gracefully
+    """
+    # Make a copy of this file
+    location = os.path.join(BTO.test_dir, os.path.basename(BTO.IS_plotting))
+    shutil.copytree(BTO.IS_plotting, location)
+
+    # Delete all output
+    out_loc = os.path.join(location, 'output')
+    for f in glob.glob(out_loc + '/*'):
+        os.remove(f)
+    assert len(glob.glob(out_loc + '/*')) == 0
+
+    # Make all output from the raw data and make sure it all works
+    IS = inStrain.SNVprofile.SNVprofile(location)
+    THINGS = ['SNVs', 'scaffold_info', 'linkage', 'gene_info', 'genome_info', 'mapping_info']
+    for name in THINGS:
+        IS.generate(name)
+
+    assert len(glob.glob(out_loc + '/*')) == len(THINGS)
+
+    # Delete some key raw_data
+    raw_loc = os.path.join(location, 'raw_data')
+    for f in glob.glob(raw_loc + '/*') + glob.glob(out_loc + '/*'):
+        os.remove(f)
+
+    table = {'value': [], 'type': [], 'description': []}
+    Adb = pd.DataFrame(table)
+    IS._store_attributes_file(Adb)
+    # Store the version
+    IS.store('version', '1.2.0', 'value', 'Version of inStrain')
+
+    # Try again
+    IS = inStrain.SNVprofile.SNVprofile(location)
+    for name in THINGS:
+        print(name)
+        IS.generate(name)
+
+    assert True
+

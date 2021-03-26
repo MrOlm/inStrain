@@ -57,7 +57,7 @@ class Controller():
 
             # Store the output
             IS.generate('genome_info', **vargs)
-            IS.generate('SNVs')
+            IS.generate('SNVs', **vargs)
 
         else:
             self.prepare_genome_wide(IS, vargs)

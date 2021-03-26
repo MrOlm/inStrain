@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.3] - 2021-03-26
+- BugFix related to inStrain clustering (https://github.com/MrOlm/inStrain/issues/52)
+- BugFix related to genes problems (https://github.com/MrOlm/inStrain/issues/53)
+- BugFix related to logging problems; caused by having ";" in gene names (https://github.com/MrOlm/inStrain/issues/49) (I actually didn't fix this)
+- Add "force_compress" option (https://github.com/MrOlm/inStrain/issues/54)
+
 ## [1.5.2] - 2021-03-02
 - BugFix when calling mutation effects (N, S, etc.) that impacted mutations with no reads supporting anything but the consensus variant
 - Added a note about the weird way that positions are calculated in the "mutation" column of SNVs.tsv

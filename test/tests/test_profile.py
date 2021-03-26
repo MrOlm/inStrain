@@ -1317,3 +1317,28 @@ def test_profile_19(BTO):
     assert db['true_scaffolds'].iloc[0] == 2
     assert db['length'].iloc[0] == 1348
 
+def test_profile_20(BTO):
+    """
+    Test the "force compress" option
+    """
+    # Set up
+    base = BTO.test_dir + 'test'
+
+    # Run program
+    cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98 --force_compress".format(True, BTO.bam1,
+                                                                  BTO.fasta, base, BTO.genes)
+    print(cmd)
+    call(cmd, shell=True)
+
+    # Make sure it produced output
+    assert os.path.isdir(base)
+    print(glob.glob(base + '/output/*'))
+    assert len(glob.glob(base + '/output/*.gz')) == 6, len(glob.glob(base + '/output/*.gz'))
+    assert len(glob.glob(base + '/log/*')) == 3
+
+    # Make sure the output makes sense
+    S1 = inStrain.SNVprofile.SNVprofile(base)
+    db = S1.get('cumulative_scaffold_table')
+    test_utils._internal_verify_Sdb(db)
+
+

@@ -144,7 +144,9 @@ def parse_args(args):
     Iflags.add_argument("-o", "--output", action="store", default='inStrain', \
         help='Output prefix')
     Iflags.add_argument('--use_full_fasta_header', action='store_true', default=False,
-        help='Instead of using the fasta ID (space in header before space), use the full header. Needed for some mapping tools (including bbMap)')
+                        help='Instead of using the fasta ID (space in header before space), use the full header. Needed for some mapping tools (including bbMap)')
+    Iflags.add_argument('--force_compress', action='store_true', default=False,
+                        help='Force compression of all output files')
 
     profile_parser = subparsers.add_parser("profile",formatter_class=SmartFormatter,\
                     parents = [profile_parent, parent_parser, readfilter_parent, readoutput_parent, variant_parent, genes_parent, geneomewide_parent, mm_parent], add_help=False)
@@ -215,6 +217,8 @@ def parse_args(args):
                         help="Dont create plots at the end of the run.")
     Oflags.add_argument('--group_length', default=10000000,
                         help="How many bp to compare simultaneously (higher will use more RAM and run more quickly)", type=int)
+    Oflags.add_argument('--force_compress', action='store_true', default=False,
+                        help='Force compression of all output files')
 
     Cflags = compare_parser.add_argument_group('GENOME CLUSTERING OPTIONS')
     Cflags.add_argument('-ani', "--ani_threshold", help='popANI threshold to cluster genomes at. Must provide .stb file to do so',

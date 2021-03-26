@@ -875,7 +875,10 @@ def parse_parsable_string(pstring):
     linewords = pstring.split(';')
     for word in linewords:
         ws = word.split('=')
-        object2string[ws[0].strip()] = ws[1].strip()
+        try:
+            object2string[ws[0].strip()] = ws[1].strip()
+        except:
+            return {}
     return object2string
 
 def filter_most_recent(Ldb):

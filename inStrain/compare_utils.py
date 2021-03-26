@@ -231,7 +231,11 @@ def cluster_genome_strains(Mdb, kwargs):
         # store
         cdbs.append(cdb)
 
-    return pd.concat(cdbs).reset_index(drop=True)
+    try:
+        df = pd.concat(cdbs).reset_index(drop=True)
+    except ValueError:
+        df = pd.DataFrame()
+    return df
 
 def evalute_genome_dist_matrix(mdb, genome):
     """
