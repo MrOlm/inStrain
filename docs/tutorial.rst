@@ -360,7 +360,7 @@ Next we'll profile the genes for each genome using Prodigal to create a :term:`g
 
   $ cat UHGG_genes/*.gene.fna > UHGG_reps.genes.fna
 
-  $ cat UHGG_genes/*.gene.fna > UHGG_reps.genes.faa
+  $ cat UHGG_genes/*.gene.faa > UHGG_reps.genes.faa
 
 Finally we need to concatenate all genomes together into a single :term:`fasta file` and create a bowtie2 mapping index from it::
 
