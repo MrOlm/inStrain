@@ -229,6 +229,7 @@ class TestingClass():
         self.GENES_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna'
         self.STB_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1.maxbin2.stb'
         self.FASTA_S3 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa'
+        self.FASTA_S3_GZ = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa.gz'
         self.GENOME_LIST = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/genomelist.txt'
         self.IS_1 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS/'
         self.IS_2 = 's3://czbiohub-microbiome/Sonnenburg_Lab/Software/docker_testing/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/'
@@ -258,7 +259,7 @@ def DTO():
 
     # ADJUST THIS IF YOU ARE DEVELOPING
     self.setup_cmd = "./prepare.sh; conda activate work;"
-    #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/;"
+    #self.setup_cmd = "./prepare.sh; conda activate work; cp /root/accessible_testing_data/run_instrain.py /mnt/;"
     #self.setup_cmd = "cp /root/accessible_testing_data/run_instrain.py /mnt/; ./prepare.sh; conda activate work; pushd /root/whole_program/; pip install . --upgrade; popd;"
     #self.setup_cmd = "./prepare.sh; conda activate work; pip install instrain --upgrade;"
     #self.setup_cmd = "./prepare.sh; conda activate work; echo \"hello\";"
@@ -483,6 +484,34 @@ def test_docker_7(DTO):
     for o in OUTPUT:
         have = o in basenames
         assert have, [o, basenames]
+
+def test_docker_8(DTO):
+    '''
+    Test with compressed fasta file
+    '''
+    CMD = "./run_instrain.py --bam {0} --fasta {1} --results_directory {2} --wd_name {3} --command quick_profile".format(DTO.BAM_S3, DTO.FASTA_S3_GZ, get_s3_results_folder(), 'test')
+    CMD = DTO.setup_cmd + CMD
+
+    # Run command
+    run_docker(DTO.IMAGE, CMD, simulate_aegea=DTO.aegea_simulation)
+
+    # Set up intended output
+    OUTPUT = ['docker_log.log', 'coverm_raw.tsv']#, 'test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
+    MISSING_OUT =  ['test_genomeWide_scaffold_info.tsv', 'scaffold_2_mm_2_read_2_snvs.pickle']
+
+    # Estimate cost
+    dls = [DTO.BAM_S3, DTO.FASTA_S3, DTO.BAM_S3 + 'bai']
+    estimate_cost(dls, get_s3_results_folder())
+
+    output_files = load_s3_results()
+    basenames = [os.path.basename(b) for b in output_files]
+    for o in OUTPUT:
+        have = o in basenames
+        assert have, [o, basenames]
+
+    for o in MISSING_OUT:
+        have = o in basenames
+        assert not have, o
 
 if __name__ == '__main__':
     sync_test_data()

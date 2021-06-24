@@ -4,8 +4,12 @@ Self-contained script to generate a rarefaction curve
 """
 
 __author__ = "Matt Olm"
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 __license__ = "MIT"
+
+# Version 0.3.0 uses sambamba instead of samtools for subsetting (saves so much time)
+# Version 0.2.1 adds extra logging to help find the bottleneck
+# Version 0.2.0 corrects the doing the subset on the overall factor; should be done on the bam factor
 
 import logging
 import argparse
@@ -98,6 +102,9 @@ class Controller(object):
         """
         Do some parsing, set up a logger
         """
+        logging.info(f"Running rarefaction_curve.py version {__version__}")
+        print(f"Running rarefaction_curve.py version {__version__}")
+
         # Make sure the bam file and stb file exist
         for f in [self.args.bam]:
             if not os.path.isfile(f):
@@ -163,6 +170,7 @@ class Controller(object):
                 break
 
             overall_factor = subset_reads / total_reads
+            bam_factor = subset_reads / bam_reads
             for i in range(self.args.iterations):
                 table['step_count'].append(step_count)
                 table['total_reads_at_subset'].append(current_reads)
@@ -170,8 +178,9 @@ class Controller(object):
                 table['mapping_factor'].append(mapping_factor)
                 table['subset_reads'].append(subset_reads)
                 table['overall_factor'].append(overall_factor)
+                table['bam_factor'].append(bam_factor)
                 table['seed'].append(i)
-                table['samtools_subset'].append(str(i) + f"{overall_factor:.3f}"[1:])
+                table['samtools_subset'].append(str(i) + f"{bam_factor:.3f}"[1:])
 
             current_reads += step
             step_count += 1
@@ -194,16 +203,19 @@ class Controller(object):
         for i, row in Tdb.iterrows():
             # subset the bam
             new_bamloc = f"{bam_base}.subset.{row['samtools_subset']}.bam"
+            print("Subsetting bam")
             sub_bam = subset_bam(self.bam, row['samtools_subset'], new_bamloc, p=self.args.processes)
             assert os.path.exists(sub_bam), sub_bam
 
             # run coverM
             qp_outloc = f"{bam_base}.subset.{row['samtools_subset']}.qp."
+            print("Running QP")
             Cdb = run_instrain_qp(sub_bam, qp_outloc, self.stb, self.genome2length, p=self.args.processes)
             Cdb['samtools_subset'] = row['samtools_subset']
             dbs.append(Cdb)
 
             # Clean up
+            print("Cleaning up")
             os.remove(sub_bam)
 
         Rdb = pd.concat(dbs).reset_index(drop=True)
@@ -297,7 +309,8 @@ def calc_read_length(bam, num_reads=10000):
     return total_len / total_reads
 
 def subset_bam(ori_bam, substr, new_bam, p=6):
-    cmd = f"samtools view -@ {p} -bs {substr} {ori_bam} > {new_bam}"
+    #cmd = f"samtools view -@ {p} -bs {substr} {ori_bam} > {new_bam}"
+    cmd = f"sambamba view -s {substr} -t {p} -f bam {ori_bam} > {new_bam}"
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
     assert result.returncode == 0
     return new_bam
@@ -320,11 +333,14 @@ def run_instrain_qp(sub_bam, out, stb, genome2length, p=6):
     args = Namespace(bam=sub_bam, processes=p, stringent_breadth_cutoff=0, output=out)
 
     # Run the command
+    print("Running coverM")
     Cdb = inStrain.quickProfile.run_coverm(loc, args)
 
     # Parse results
     args = Namespace(stb=stb)
+    print("Parsing coverM")
     PCdb = inStrain.quickProfile.parse_coverm(Cdb, genome2length, args)
+    print("Done parsing coverM")
     return PCdb
 
 def calc_genome2length(fasta, stb):

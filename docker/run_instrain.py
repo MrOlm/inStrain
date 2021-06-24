@@ -173,6 +173,11 @@ def download_data(args, working_dir, tmp_dir):
             cmd = 'gzip -d {0}'.format(g)
             subprocess.check_call(shlex.split(cmd))
 
+            # Alter the command string to fit the unzip
+            pre = os.path.basename(g)
+            post = pre[:-3]
+            cmd_string = cmd_string.replace(pre, post)
+
     # Get the work directory
     wd_loc = os.path.join(working_dir, args.wd_name)
     cmd_string = cmd_string + ' -o ' + wd_loc
