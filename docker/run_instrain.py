@@ -174,8 +174,8 @@ def download_data(args, working_dir, tmp_dir):
             subprocess.check_call(shlex.split(cmd))
 
             # Alter the command string to fit the unzip
-            pre = os.path.basename(g)
-            post = pre[:-3]
+            pre = os.path.basename(g) + " "
+            post = pre[:-4] + " "
             cmd_string = cmd_string.replace(pre, post)
 
     # Get the work directory

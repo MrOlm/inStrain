@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.5] - 2021-10-11
+- Actual traceback in the log of gene failure exception
+
 ## [1.5.4] - 2021-06-24
 - Improve the speed of auxillary script "rarefaction_curve.py"
 - Fix a bug in the Docker "run_instrain.py" script related to using compressed .fasta files

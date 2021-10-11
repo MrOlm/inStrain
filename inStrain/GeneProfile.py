@@ -109,9 +109,10 @@ def profile_genes_wrapper(cmds):
         try:
             results.append(profile_genes(cmd.scaffold, **cmd.arguments))
         except Exception as e:
-            print(e)
-            traceback.print_exc()
             logging.error("FAILURE GeneException {0}".format(str(cmd.scaffold)))
+            logging.error(str(traceback.format_exc()))
+            logging.error(str(e))
+
             results.append(None)
     return results
 
