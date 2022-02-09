@@ -165,6 +165,9 @@ filtered_singletons
 mean_pair_length
   Among all pairs of reads mapping to this scaffold, the average length of both reads in the pair summed together
 
+.. warning::
+  Adjusting the pairing filter will result in odd values for the "filtered_pairs" column; this column reports the number of pairs AND singletons that pass the filters. To calculate the true number of filtered pairs, use the formula filtered_pairs - filtered_singletons
+
 
 SNVs.tsv
 +++++++++++++++++

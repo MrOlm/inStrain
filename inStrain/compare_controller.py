@@ -398,7 +398,7 @@ class ScaffoldComparison(object):
         """
         Return True if this scaffold has more than 2 profiles in it that can be compared
         """
-        assert len(self.names) == len(set(self.names)), "You're comparing ISP profiles that have the same names. No no."
+        assert len(self.names) == len(set(self.names)), "InStrain profiles that have the same name cannot be compared. See https://github.com/MrOlm/inStrain/issues/79 and https://github.com/MrOlm/inStrain/issues/97"
         return len(self.profiles) > 1
 
     def compare(self, OSC):

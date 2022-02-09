@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.7] - 2022-02-09
+- Make error log more readable - https://github.com/MrOlm/inStrain/issues/79
+- Correct the reporting for the amount of reads removed during filtering to account for different filtering schemes
+- Adjust the docs to account fo adjusting the pairing filter (https://github.com/MrOlm/inStrain/issues/70)
+
 ## [1.5.6] - 2022-02-09
 - Logging handling of broken genes
 - Check for sambamba in rarefaction_curve.py

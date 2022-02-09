@@ -274,11 +274,23 @@ class ProfileController(object):
         # Print status report
         unfiltered_pairs = self.RR['unfiltered_pairs'].iloc[0]
         filterd_pairs = self.RR['filtered_pairs'].iloc[0]
+
+        unfiltered_singletons = self.RR['unfiltered_singletons'].iloc[0]
+        filtered_singletons = self.RR['filtered_singletons'].iloc[0]
+
         pair_length = self.readlength
 
+        # Calculate metrics
+        if unfiltered_singletons > 0:
+            singleton_percent = ((unfiltered_singletons - filtered_singletons) / unfiltered_singletons) * 100
+        else:
+            singleton_percent = 100
+
+        pair_percent = ((unfiltered_pairs - (filterd_pairs - filtered_singletons)) / unfiltered_pairs) * 100
+
         status = ''
-        status += "{0:.1f}% of reads were removed during filtering\n".format(
-                    ((unfiltered_pairs - filterd_pairs) / unfiltered_pairs)*100)
+        status += "{0:.1f}% of pairs and {1:.1f}% of singletons were removed during filtering\n".format(
+                    pair_percent, singleton_percent)
         status += "{0:,} read pairs remain ({1:#.4g} Gbp)".format(
                     filterd_pairs, (filterd_pairs * pair_length)/1e9)
         logging.info(status)
