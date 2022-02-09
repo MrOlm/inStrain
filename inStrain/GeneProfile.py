@@ -667,7 +667,11 @@ def characterize_SNPs(gdb, Sdb, gene2sequence):
             # Make the new sequence
             snp_start = row['position'] - db['start'].tolist()[0]
             new_sequence = original_sequence.tomutable()
-            new_sequence[snp_start] = row['con_base']
+            try:
+                new_sequence[snp_start] = row['con_base']
+            except:
+                print(f'ERROR!! {row} {db["gene"].tolist()[0]} {len(new_sequence)}\n{new_sequence}\n{db}')
+
             if new_sequence[snp_start] == original_sequence[snp_start]:
                 new_sequence[snp_start] = row['var_base']
             new_sequence = new_sequence.toseq()
@@ -783,12 +787,20 @@ def parse_prodigal_genes(gene_fasta):
         table['partial'].append('partial=01' in record.description)
 
         # NOTE: PRODIGAL USES A 1-BASED INDEX AND WE USE 0, SO CONVERT TO 0 HERE
-        table['start'].append(int(record.description.split("#")[1].strip())-1)
-        table['end'].append(int(record.description.split("#")[2].strip())-1)
+        start = int(record.description.split("#")[1].strip())-1
+        end = int(record.description.split("#")[2].strip())-1
+        table['start'].append(start)
+        table['end'].append(end)
 
         if scaff not in scaff2gene2sequence:
             scaff2gene2sequence[scaff] = {}
         scaff2gene2sequence[scaff][gene] = record.seq
+
+        # Ensure the start and ends are parsed correctly
+        if (end - start) + 1 != len(record.seq):
+            logging.error(f"ERROR PARSING GENE {gene}; start={start} end={end} length={len(record.seq)}")
+            logging.error(f"Make sure that you report genes with 1-based indexing and with an INCLUSIVE end")
+
 
     scaffs = list(scaff2geneinfo.keys())
     for scaff in scaffs:

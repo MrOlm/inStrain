@@ -388,9 +388,12 @@ def merge_profile_worker(sprofile_cmd_queue, Sprofile_dict, Sprofiles,
                 if Sprofile.profile_genes:
                     try:
                         Sprofile.run_profile_genes()
-                    except:
+                    except Exception as e:
                         t = time.strftime('%m-%d %H:%M')
                         Sprofile.merge_log += "\n{1} DEBUG FAILURE GeneException {0}".format(str(Sprofile.scaffold), t)
+
+                        error_code = f"\n{str(e)}\n{str(traceback.format_exc())}"
+                        Sprofile.merge_log += error_code
 
             if c == last_c:
                 try:

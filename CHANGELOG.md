@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.5.6] - 2022-02-09
+- Logging handling of broken genes
+- Check for sambamba in rarefaction_curve.py
+
 ## [1.5.5] - 2021-10-11
 - Actual traceback in the log of gene failure exception
 

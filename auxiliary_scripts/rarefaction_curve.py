@@ -30,6 +30,7 @@ import inStrain.controller
 import inStrain.profile
 import inStrain.quickProfile
 import inStrain.genomeUtilities
+import inStrain.utils
 
 class Controller(object):
     def __init__(self, args):
@@ -51,6 +52,12 @@ class Controller(object):
         """
         The main method when run from the command line
         """
+        # Make sure you have sambamba
+        loc, works, version = inStrain.utils.find_program("sambamba")
+        if not works:
+            print("sambamba not installed and required for this to function!")
+            raise Exception()
+
         # parse arguments
         self.validate_arguments()
 
@@ -278,7 +285,7 @@ def calc_number_reads(bam):
 
     # run idxstats
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    assert result.returncode == 0
+    assert result.returncode == 0, result
 
     # sum number of reads
     total_reads = 0
@@ -312,7 +319,7 @@ def subset_bam(ori_bam, substr, new_bam, p=6):
     #cmd = f"samtools view -@ {p} -bs {substr} {ori_bam} > {new_bam}"
     cmd = f"sambamba view -s {substr} -t {p} -f bam {ori_bam} > {new_bam}"
     result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-    assert result.returncode == 0
+    assert result.returncode == 0, result
     return new_bam
 
 def run_instrain_qp(sub_bam, out, stb, genome2length, p=6):
