@@ -1,5 +1,5 @@
 name	value	type	description
-location	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test	value	Location of SNVprofile object
+location	/Users/mattolm/Programs/inStrain/test/test_data/readComparer_vCurrent.RC	value	Location of SNVprofile object
 version	1.5.7	value	Version of inStrain
 comparisonsTable	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/comparisonsTable.csv.gz	pandas	Comparisons between the requested IS objects
 scaffold2length	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/scaffold2length.json	dictionary	Scaffold to length

@@ -24,6 +24,7 @@ import inStrain.logUtils
 import inStrain.profile
 import inStrain.profile.fasta
 import tests.test_utils as test_utils
+import inStrain.polymorpher
 
 from test_utils import BTO
 
@@ -1341,4 +1342,35 @@ def test_profile_20(BTO):
     db = S1.get('cumulative_scaffold_table')
     test_utils._internal_verify_Sdb(db)
 
+# This is from test_compare.py
+def test_UPDATE_COMPARE_TEST_DATA(BTO):
+    """
+    Run inStrain on bam1 and bam2, and store the results where IS1 and IS2 are
+    """
 
+    # Run the first one
+    base1 = BTO.test_dir + os.path.basename(BTO.IS1)
+    cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(BTO.bam1, BTO.fasta,
+                                                                          base1)
+    print(cmd)
+    code = call(cmd, shell=True)
+    assert code == 0, code
+
+    # Copy to new location
+    if os.path.isdir(BTO.IS1):
+        shutil.rmtree(BTO.IS1)
+    shutil.copytree(base1, BTO.IS1)
+    #
+    # # Run the second one
+    # base2 = BTO.test_dir + os.path.basename(BTO.IS2)
+    # cmd = "inStrain profile {0} {1} -o {2} --skip_plot_generation".format(BTO.bam2, BTO.fasta,
+    #                                                                       base2)
+    # print(cmd)
+    # code = call(cmd, shell=True)
+    # assert code == 0, code
+    #
+    # # Copy to new location
+    # if os.path.isdir(BTO.IS2):
+    #     shutil.rmtree(BTO.IS2)
+    # shutil.copytree(base2, BTO.IS2)
+    #

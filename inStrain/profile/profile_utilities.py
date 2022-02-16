@@ -272,10 +272,11 @@ def get_base_counts_mm(pileupcolumn, R2M):
         list with the counts of [A, C, T, G]
     '''
     table = defaultdict(_4zeros)
+    is_set = type(R2M) == type({})
     for pileupread in pileupcolumn.pileups:
         if not pileupread.is_del and not pileupread.is_refskip:
             try:
-                if type(R2M) == type({}):
+                if is_set:
                     table[R2M[pileupread.alignment.query_name]]\
                     [P2C[pileupread.alignment.query_sequence[pileupread.query_position]]] += 1
                 elif pileupread.alignment.query_name in R2M:
