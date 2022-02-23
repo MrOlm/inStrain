@@ -29,6 +29,7 @@ import inStrain.profile.fasta
 import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.logUtils
+import inStrain.polymorpher
 
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'}
 def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **kwargs):
@@ -57,6 +58,11 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
     store_coverage = kwargs.get('store_coverage_overlap', False)
     store_mm_locations = kwargs.get('store_mismatch_locations', False)
     include_self_comparisons = kwargs.get('include_self_comparisons', False)
+
+    # Load pooling arguments
+    run_pooling = kwargs.get('run_pooling', False)
+    name2Rdic = kwargs.get('name2Rdic', {})
+    name2bam_loc = kwargs.get('name2bamloc', {})
 
     # For testing purposes
     if ((scaffold == 'FailureScaffoldHeaderTesting') & (debug)):
@@ -122,7 +128,17 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
     else:
         Mdb = pd.DataFrame()
 
-    results = [Cdb, Mdb, pair2mm2covOverlap, scaffold]
+    # Run pooling analysis
+    if run_pooling:
+        PM = inStrain.polymorpher.PoolController(SNPtables, cur_names, name2Rdic, name2bam_loc, scaffold)
+        PM.main()
+        DSTdb = PM.DDST
+        PMdb = PM.PST
+        results = [Cdb, Mdb, pair2mm2covOverlap, scaffold, DSTdb, PMdb]
+
+    else:
+        results = [Cdb, Mdb, pair2mm2covOverlap, scaffold]
+
     log_message += '\n' + inStrain.logUtils.get_worker_log('Compare', scaffold, 'end')
     return (results, log_message)
 

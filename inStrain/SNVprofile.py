@@ -14,6 +14,7 @@ import pandas as pd
 import Bio.Seq
 
 from functools import lru_cache
+from collections import defaultdict
 
 if __name__ != '__main__':
     from ._version import __version__
@@ -337,6 +338,62 @@ class SNVprofile:
                         .drop_duplicates(subset=['scaffold', 'position',
                                         'name1', 'name2'], keep='last')\
                         .sort_index().drop(columns=['mm'])
+
+        elif name == 'pooled_SNV_info':
+            column_order = ['scaffold', 'position', 'depth', 'A', 'C', 'T', 'G', 'ref_base', 'con_base', 'var_base',
+                            'sample_detections', 'sample_5x_detections',
+                            'DivergentSite_count', 'SNS_count', 'SNV_count', 'con_SNV_count',
+                            'pop_SNV_count']
+            db = self.get('PMdb')
+            db['position'] = db.index
+            db = db.reset_index(drop=True)
+            db = reorder_columns(db, column_order)
+
+        elif name == 'pooled_SNV_data':
+            DSTdb = self.get('DSTdb')
+
+            # Assign keys
+            sa2k = {sample: i for i, sample in enumerate(set(DSTdb.index.get_level_values(0)))}
+            sc2k = {sample: i for i, sample in enumerate(set(DSTdb['scaffold']))}
+
+            # Create new dataframe with keys
+            db = DSTdb.copy()
+            db['sample'] = [sa2k[s] for s in DSTdb.index.get_level_values(0)]
+            db['scaffold'] = db['scaffold'].map(sc2k).astype(int)
+            db['position'] = DSTdb.index.get_level_values(1).astype(int)
+            db = db.reset_index(drop=True)
+
+            # Reorder
+            db = db[['sample', 'scaffold', 'position', 'A', 'C', 'T', 'G']]
+
+            # Make key table
+            table = defaultdict(list)
+            k2sa = {v: k for k, v in sa2k.items()}
+            k2sc = {v: k for k, v in sc2k.items()}
+            for i in sorted(set(k2sa.keys()).union(set(k2sc.keys()))):
+                table['key'].append(i)
+
+                if i in k2sa:
+                    table['sample'].append(k2sa[i])
+                else:
+                    table['sample'].append(np.nan)
+
+                if i in k2sc:
+                    table['scaffold'].append(k2sc[i])
+                else:
+                    table['scaffold'].append(np.nan)
+            Kdb = pd.DataFrame(table)
+
+            # Save key table
+            if store:
+                out_base = self.get_output_base()
+                ft = '.tsv'
+
+                # If this file is going to be huge, compress it
+                if (len(Kdb) > 1e6) | force_compress:
+                    ft = '.tsv.gz'
+
+                Kdb.to_csv(out_base + name + '_keys' + ft, index=False, sep='\t')
 
         else:
             logging.error("Do not know how to store {0}! Crashing now".format(name))

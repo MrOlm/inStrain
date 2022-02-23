@@ -90,9 +90,12 @@ def SC_object_wrapper(SC, null_model, kwargs):
     Take a Scaffold Compare object and profile the scaffold
     '''
     debug = kwargs.get('debug', False)
+
     try:
         results, log = inStrain.readComparer.compare_scaffold(SC.scaffold, SC.names, SC.SNPtables, SC.covTs,
-                                                                      SC.length, null_model, **kwargs)
+                                                                      SC.length, null_model, run_pooling=SC.run_pooling,
+                                                                     name2Rdic=SC.name2Rdic, name2bamloc=SC.name2bamloc,
+                                                                     **kwargs)
 
     except Exception as e:
         if debug:

@@ -229,6 +229,12 @@ def parse_args(args):
                             to scipy.cluster.hierarchy.linkage)", default='average',
                            choices={'single', 'complete', 'average', 'weighted', 'centroid', 'median', 'ward'})
 
+    Bflags = compare_parser.add_argument_group('SNV POOLING OPTIONS')
+    Bflags.add_argument('-bams', "--bams",
+                        help='Location of .bam files used during inStrain profile commands; needed to pull low-frequency SNVs.' \
+                        ' MUST BE IN SAME ORDER AS THE INPUT FILES',
+                        nargs='*')
+
 
     # Gflags = compare_parser.add_argument_group('GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]')
     # Gflags.add_argument('--greedy_clustering', action='store_true', default=False,\

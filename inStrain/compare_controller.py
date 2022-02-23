@@ -144,6 +144,23 @@ class CompareController(object):
                 logging.error(f'genome {self.args.genome} is not in the provided .stb file')
                 raise Exception
 
+        # Load the .bam files
+        self.name2bam = gen_name_2_bam(self.inputs, args.bams)
+
+        i = 0
+        if self.name2bam != {}:
+            self.run_pooling = True
+            for name, bam in self.name2bam.items():
+                input = self.inputs[i]
+                i += 1
+
+                if name != os.path.basename(bam):
+                    logging.error(f"WARNING - .bam file {os.path.basename(bam)} is being used for input {input}"\
+                                  f" even though the .bam used in creation of that input is {name}. Change order of "\
+                                  f"--bams input to fix this if it's not correct")
+        else:
+            self.run_pooling = False
+
     def create_scaffoldcomparison_objects(self):
         """
         Figure out which scaffolds need to be compared
@@ -154,12 +171,15 @@ class CompareController(object):
         else:
             scaffolds_to_compare = None
 
-        # Load ScaffoldComparison objects
+        # Load input2scaffolds
         if self.args.database_mode is True:
-            valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare,
-                                                                         input2scaffolds=self.input2scaffolds)
+            i2s = self.input2scaffolds
         else:
-            valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare)
+            i2s = None
+
+        # Create comparison objects
+        valid_SCs, scaffold2length = make_scaffoldcomparison_objects(self.inputs, scaffolds_to_compare,
+                                                                     input2scaffolds=i2s)
 
         self.SC_objects = valid_SCs
         self.scaffold2length = scaffold2length
@@ -170,6 +190,9 @@ class CompareController(object):
         #Cdb = calc_scaff_sim_matrix(valid_SCs)
         #SC_groups = establish_SC_groups(valid_SCs, Cdb, group_length)
         SC_groups = group_Scaffold_objects(valid_SCs, group_length)
+
+        for s in SC_groups:
+            s.name2bam = self.name2bam
 
         self.scaffold_comparison_groups = SC_groups
 
@@ -182,23 +205,43 @@ class CompareController(object):
         pair2mm2covOverlaps = [] # Store coverage overlap locations
         order = [] # Store order of scaffolds
 
+        if self.run_pooling:
+            DSTdbs = []
+            PMdbs = []
+
         groups = len(self.scaffold_comparison_groups)
         for i, SCgroup in enumerate(self.scaffold_comparison_groups):
             logging.info(f'Running group {i+1} of {groups}')
+
+            # Add .bam files if needed
+            SCgroup.name2bam = self.name2bam
+
             SCgroup.load_cache()
             results = inStrain.compare_utils.run_compare_multiprocessing(SCgroup.cmd_queue, SCgroup.result_queue,
                                                                          self.null_model, num_to_run=len(SCgroup.scaffolds),
                                                                          **self.kwargs)
             for result in results:
                 if result is not None:
-                    Cdb, Mdb, pair2mm2covOverlap, scaffold = result
-                    for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold], [cdbs, mdbs, pair2mm2covOverlaps, order]):
-                        lis.append(item)
+                    # This means you're not doing any pooling
+                    if len(result) == 4:
+                        Cdb, Mdb, pair2mm2covOverlap, scaffold = result
+                        for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold], [cdbs, mdbs, pair2mm2covOverlaps, order]):
+                            lis.append(item)
+
+                    # This means you are doing pooling
+                    if len(result) == 6:
+                        Cdb, Mdb, pair2mm2covOverlap, scaffold, DSTdb, PMdb = result
+                        for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold, DSTdb, PMdb],
+                                             [cdbs, mdbs, pair2mm2covOverlaps, order, DSTdbs, PMdbs]):
+                            lis.append(item)
 
             SCgroup.purge_cache()
 
-        # Process results
+        # Process main results
         self.process_results(cdbs, mdbs, pair2mm2covOverlaps, order)
+
+        if self.run_pooling:
+            self.process_pooling_results(DSTdbs, PMdbs, order)
 
     def process_results(self, cdbs, mdbs, pair2mm2covOverlaps, order):
         """
@@ -231,6 +274,31 @@ class CompareController(object):
         self.comparison_db = pd.concat(cdbs, sort=False)
         self.mismatch_location_db = Mdb
         self.scaff2pair2mm2overlap = scaff2pair2mm2overlap
+
+    def process_pooling_results(self, DSTdbs, PMdbs, order):
+        """
+        Merge and store pooling results
+        """
+        # Create a "scaffold" categorical
+        # https://pandas.pydata.org/pandas-docs/stable/user_guide/categorical.html
+        from pandas.api.types import CategoricalDtype
+        scaff_cat = CategoricalDtype(order)
+
+        # Add this category to all the dataframes
+        for d, s in zip(DSTdbs, order):
+            d['scaffold'] = s
+            d['scaffold'] = d['scaffold'].astype(scaff_cat)
+
+        # Add this category to all the dataframes
+        for d, s in zip(PMdbs, order):
+            d['scaffold'] = s
+            d['scaffold'] = d['scaffold'].astype(scaff_cat)
+
+        self.DSTdb = pd.concat(DSTdbs)
+        self.PMdb = pd.concat(PMdbs).astype(
+                    {'A':int, 'C':int, 'T':int, 'G':int, 'depth':int,
+                     'sample_detections':int, 'DivergentSite_count':int, 'SNS_count':int, 'SNV_count':int,
+                     'con_SNV_count':int, 'pop_SNV_count':int, 'sample_5x_detections':int})
 
     def run_auxillary_processing(self):
         """
@@ -310,6 +378,19 @@ class CompareController(object):
             self.RCprof.store('scaff2pair2mm2cov', self.scaff2pair2mm2overlap, 'special',
                          'A dictionary of scaffold -> IS pair -> mm level -> positions with coverage overlap')
 
+        # Store pooling
+        if hasattr(self, 'DSTdb'):
+            self.RCprof.store('DSTdb', self.DSTdb, 'pickle',
+                             'Dense SNV table (from pooling)')
+
+        if hasattr(self, 'PMdb'):
+            self.RCprof.store('PMdb', self.PMdb, 'pickle',
+                             'Informative SNV table (from pooling)')
+
+        if self.run_pooling:
+            self.RCprof.generate('pooled_SNV_info', **vars(self.args))
+            self.RCprof.generate('pooled_SNV_data', **vars(self.args))
+
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "end")
 
         # Make plots
@@ -387,6 +468,9 @@ class ScaffoldComparison(object):
         self.SNPtables = []
         self.covTs = []
 
+        self.bamlocs = []
+        self.Rdics = []
+
     def add_profile(self, ISP, name):
         """
         Add an ISP object with this scaffold that should be compared
@@ -443,6 +527,8 @@ class ScaffoldCompareGroup(object):
         sProfiles = self.ISPs
         scaffolds_to_compare = set(self.scaffolds)
 
+        self.run_pooling = self.name2bam != {}
+
         # Make sure no duplicates in names
         assert len(names) == len(set(names)), 'Cannot have 2 of the same named IS {0}'.format(names)
 
@@ -450,17 +536,33 @@ class ScaffoldCompareGroup(object):
         name2covT = {}
         name2SNPtable = {}
 
+        name2Rdic = {}
+
         for S, name in zip(sProfiles, names):
             name2covT[name] = S.get('covT', scaffolds=scaffolds_to_compare)
             name2SNPtable[name] = S.get('cumulative_snv_table').rename(
                 columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                          'baseCoverage': 'position_coverage'})
 
+            if self.run_pooling:
+                name2Rdic[name] = S.get("Rdic")
+
+
         # Attach this information to ScaffoldComparison objects
         for SC in self.ScaffoldComparisons:
             for name in SC.names:
                 SC.SNPtables.append(inStrain.compare_utils.subset_SNP_table(name2SNPtable[name], SC.scaffold))
                 SC.covTs.append(name2covT[name][SC.scaffold])
+
+                if self.run_pooling:
+                    SC.run_pooling = self.run_pooling
+                    SC.name2bamloc = self.name2bam
+                    SC.name2Rdic = {n:r[SC.scaffold] for n, r in name2Rdic.items()}
+
+                else:
+                    SC.run_pooling = self.run_pooling
+                    SC.name2bamloc = {}
+                    SC.name2Rdic = {}
 
         # Set up a command and result queue
         ctx = multiprocessing.get_context('spawn')
@@ -572,3 +674,17 @@ def establish_SC_groups(valid_SCs, Cdb, group_length):
     SC_groups = simple_grouping(valid_SCs, group_length)
 
     return SC_groups
+
+def gen_name_2_bam(inputs, bams):
+    name2bam = {}
+
+    # See if you have a list of bam objects
+    if type(bams) == type([]):
+        if len(bams) == len(inputs):
+            for profile_loc, bam in zip(inputs, bams):
+                ISP = inStrain.SNVprofile.SNVprofile(profile_loc)
+                name = os.path.basename(ISP.get('bam_loc'))
+
+                name2bam[name] = bam
+
+    return name2bam

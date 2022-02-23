@@ -34,9 +34,10 @@ def test_compare_S(BTO):
     # Run program
     base = BTO.test_dir + 'RC_test'
 
-    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {base} -sc {BTO.scafflistF} --include_self_comparisons --store_mismatch_locations"
+    cmd = f"inStrain compare -i {BTO.IS1} {BTO.IS2} -o {base} -sc {BTO.scafflistF} --include_self_comparisons --store_mismatch_locations -p 1"
     print(cmd)
-    call(cmd, shell=True)
+    #call(cmd, shell=True)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
 
     # Make sure it produced output
     outfiles = glob.glob(base + '/output/*')
