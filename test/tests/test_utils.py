@@ -92,7 +92,7 @@ def BTO():
 
     self.teardown()
     yield self
-    self.teardown()
+    #self.teardown()
 
 
 def get_script_loc(script):

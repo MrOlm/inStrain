@@ -232,7 +232,7 @@ def test_profile_1(BTO):
     base = BTO.test_dir + 'test'
 
     # Run program
-    cmd = "inStrain profile {1} {2} -o {3} -l 0.98".format(True, BTO.bam1,
+    cmd = "inStrain profile {1} {2} -o {3} -l 0.98 -d".format(True, BTO.bam1,
                                                            BTO.fasta_extra, base)
     print(cmd)
     call(cmd, shell=True)

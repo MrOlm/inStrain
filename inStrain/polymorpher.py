@@ -200,6 +200,7 @@ def genreate_pooled_SNV_table(SNPtables, names, name2position2counts, all_SNVs):
     DDST = pd.concat(dbs, keys=names)
     return DDST
 
+
 def generate_pooled_SNV_summary_table(DDST, SNPtables, names):
     """
     Generate a table with information about all the SNVs in the DDST
@@ -225,26 +226,25 @@ def generate_pooled_SNV_summary_table(DDST, SNPtables, names):
     ccdb = ccdb.set_index('position')
 
     # Make a table of var_base options
-    vdb = cdb.groupby('position')['con_base'].unique().to_frame().rename(columns={'con_base':'sample_con_bases'})
+    vdb = cdb.groupby('position')['con_base'].unique().to_frame().rename(columns={'con_base': 'sample_con_bases'})
     vdb['sample_con_bases'] = vdb['sample_con_bases'].astype(str)
 
     # Make a depth table summarizing depth for all samples
     Ddb = DDST.groupby(level=[1]).sum()
     Ddb['depth'] = Ddb['A'] + Ddb['C'] + Ddb['G'] + Ddb['T']
 
-
     # Make a table with sample detection numbers
-    table = defaultdict(list)
-    for SNV, db in DDST.groupby(level=[1]):
-        table['position'].append(SNV)
-        table['sample_detections'].append(len(db[(db['A'] > 0) | (db['C'] > 0) | (db['T'] > 0) | (db['G'] > 0)]))
-        table['sample_5x_detections'].append(len(db[(db['A'] + db['C'] + db['T'] + db['G']) >= 5]))
-    DEdb = pd.DataFrame(table).set_index('position')
+    xdb = DDST[(DDST['A'] + DDST['C'] + DDST['T'] + DDST['G']) >= 5].groupby(level=[1])['A'].agg('count').to_frame() \
+        .rename(columns={'A': 'sample_5x_detections'})
+    xdb2 = DDST[(DDST['A'] > 0) | (DDST['C'] > 0) | (DDST['T'] > 0) | (DDST['G'] > 0)].groupby(level=[1])['A'].agg(
+        'count').to_frame() \
+        .rename(columns={'A': 'sample_detections'})
+    DEdb = pd.merge(xdb, xdb2, left_index=True, right_index=True)
 
     # Merge
     Mdb = pd.merge(Ddb, Bdb, left_index=True, right_index=True).join(DEdb).join(ccdb).join(vdb).astype(
-                    {'A':int, 'C':int, 'T':int, 'G':int, 'depth':int,
-                     'sample_detections':int}).sort_index()
+        {'A': int, 'C': int, 'T': int, 'G': int, 'depth': int,
+         'sample_detections': int}).sort_index()
 
     # Add more calculations
     Mdb['con_base'] = Mdb.apply(calc_con_base, axis=1)
