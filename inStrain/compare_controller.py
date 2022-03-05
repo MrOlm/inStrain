@@ -4,8 +4,10 @@ This handles the argument parsing and logic for profiling bam files
 
 # Import packages
 import os
+import sys
 import copy
 import logging
+import pickle
 import pandas as pd
 from tqdm import tqdm
 import multiprocessing
@@ -59,7 +61,7 @@ class CompareController(object):
 ***************************************************
                 """
         logging.info(message)
-        self.run_comparisons()
+        self.gather_comparisons()
 
         # Do auxillary processing if needed
         message = """\
@@ -180,19 +182,58 @@ class CompareController(object):
         cdbs = [] # Store scaffold comparison information
         mdbs = [] # Store mismatch locations
         pair2mm2covOverlaps = [] # Store coverage overlap locations
-        order = [] # Store order of scaffolds
-
-        groups = len(self.scaffold_comparison_groups)
-        for i, SCgroup in enumerate(self.scaffold_comparison_groups):
-            logging.info(f'Running group {i+1} of {groups}')
+        order = [] # Store order of scaffolds        
+        # groups
+        groups = self.scaffold_comparison_groups
+        # listing roups
+        if self.args.list_groups:
+            print('--- groups ---')
+            for i,g in enumerate(self.scaffold_comparison_groups):
+                print('Group {}: '.format(i+1), end='')
+                print(g)
+            outfile = os.path.join(self.args.output, 'groups.pkl')
+            with open(outfile, 'wb') as outF:
+                pickle.dump(self.scaffold_comparison_groups, file=outF)
+            logging.info('Groups written to {}; exiting'.format(outfile))
+            exit(0)
+        # selecting one group for analysis (if required)
+        if self.args.group is not None:
+            if self.args.group_pkl is not None:
+                self.scaffold_comparison_groups = pickle.load(open(self.args.group_pkl, 'rb'))
+            else:
+                msg = 'If using --group, you must provide the groups.pkl file via --group-pkl'
+                raise ValueError(msg)
+            logging.info('User provided group number {}'.format(self.args.group))
+            self.scaffold_comparison_groups = [self.scaffold_comparison_groups[self.args.group-1]]
+        # processing groups
+        group_len = len(self.scaffold_comparison_groups)
+        for i,SCgroup in enumerate(self.scaffold_comparison_groups):
+            if self.args.group is not None:
+                logging.info('Running group {}'.format(self.args.group))
+            else:
+                logging.info(f'Running group {i+1} of {group_len}')
             SCgroup.load_cache()
-            results = inStrain.compare_utils.run_compare_multiprocessing(SCgroup.cmd_queue, SCgroup.result_queue,
-                                                                         self.null_model, num_to_run=len(SCgroup.scaffolds),
+            results = inStrain.compare_utils.run_compare_multiprocessing(SCgroup.cmd_queue,
+                                                                         SCgroup.result_queue,
+                                                                         self.null_model,
+                                                                         num_to_run=len(SCgroup.scaffolds),
                                                                          **self.kwargs)
+            if self.args.group is not None:
+                outdir = os.path.join(self.args.output, 'groups')
+                if not os.path.isdir(outdir):
+                    os.makedirs(outdir)
+                outfile = os.path.join(outdir, '{}.pkl'.format(self.args.group))
+                with open(outfile, 'wb') as outF:
+                    pickle.dump(results, file=outF)
+                logging.info('Group result written to {}'.format(outfile))
+                logging.info('exiting')
+                exit(0)
+      
             for result in results:
                 if result is not None:
                     Cdb, Mdb, pair2mm2covOverlap, scaffold = result
-                    for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold], [cdbs, mdbs, pair2mm2covOverlaps, order]):
+                    for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold],
+                                         [cdbs, mdbs, pair2mm2covOverlaps, order]):
                         lis.append(item)
 
             SCgroup.purge_cache()
@@ -200,9 +241,45 @@ class CompareController(object):
         # Process results
         self.process_results(cdbs, mdbs, pair2mm2covOverlaps, order)
 
+    def gather_comparisons(self):
+        """
+        Gather results of previous comparisons
+        """
+        # comparisons provided?
+        ## as a file listing all comparison result pkl files?
+        if self.args.comparisons_list is not None:
+            self.args.comparisons = []
+            with open(self.args.comparisions_list) as inF:
+                for line in inF:
+                    line = line.rstrip()
+                    if line != '':
+                        self.args.comparisons.append(line)
+        ## as a list of files
+        if not isinstance(self.args.comparisons, list):
+            self.args.comparisons = [self.args.comparisons]
+        if self.args.comparisons[0] is None:
+            # run comparisons instead of just gathering/merging them
+            self.run_comparisons()
+            return None
+        # merging individual group-level comparisions 
+        cdbs = [] # Store scaffold comparison information
+        mdbs = [] # Store mismatch locations
+        pair2mm2covOverlaps = [] # Store coverage overlap locations
+        order = [] # Store order of scaffolds
+        for F in self.args.comparisons:
+            results = pickle.load(open(F, 'rb'))
+            for result in results:
+                if result is not None:
+                    Cdb, Mdb, pair2mm2covOverlap, scaffold = result
+                    for item, lis in zip([Cdb, Mdb, pair2mm2covOverlap, scaffold],
+                                         [cdbs, mdbs, pair2mm2covOverlaps, order]):
+                        lis.append(item)
+        # processing results
+        self.process_results(cdbs, mdbs, pair2mm2covOverlaps, order)
+        
     def process_results(self, cdbs, mdbs, pair2mm2covOverlaps, order):
         """
-        Merge and store results
+        Merge and store results for all group comparisons
         """
         if len(pair2mm2covOverlaps) > 0:
             scaff2pair2mm2overlap = {}

@@ -186,13 +186,29 @@ def parse_args(args):
     compare_parent = argparse.ArgumentParser(add_help=False)
     # Required positional arguments
     Rflags = compare_parent.add_argument_group('REQUIRED')
-    Rflags.add_argument('-i', '--input', help="A list of inStrain objects, all mapped to the same .fasta file",
+    Rflags.add_argument('-i', '--input',
+                        help="A list of inStrain objects, all mapped to the same .fasta file",
                         nargs='*', required=True)
     Rflags.add_argument("-o", "--output", action="store", default='instrainComparer', \
                         help='Output prefix')
+    Gflags = compare_parent.add_argument_group('GROUPS')
+    Gflags.add_argument('--list-groups', help="List all groups", action='store_true',
+                        default=False, required=False)
+    Gflags.add_argument('--group-pkl', help="Pickled group object",
+                        default=None, type=str, required=False)
+    Gflags.add_argument('--group', help="Specific group to compare",
+                        default=None, type=int, required=False)
+    Gflags.add_argument('--comparisons',
+                        help="All comparison pkl files (if previously used --group)",
+                        default=None, required=False, nargs='+')
+    Gflags.add_argument('--comparisons-list',
+                        help="A file list all pcomparison pkl files (if previously used --group). One file per line",
+                        default=None, required=False)
 
     compare_parser = subparsers.add_parser("compare",formatter_class=SmartFormatter,\
-                    parents = [compare_parent, parent_parser, geneomewide_parent, variant_parent], add_help=False)
+                                           parents = [compare_parent, parent_parser,
+                                                      geneomewide_parent, variant_parent],
+                                           add_help=False)
 
     # Database mode parameters
     Dflags = compare_parser.add_argument_group('DATABASE MODE PARAMETERS')
@@ -260,7 +276,9 @@ def parse_args(args):
     '''
     # Make a parent for profile to go above the system arguments
     genome_parser = subparsers.add_parser("genome_wide",formatter_class=SmartFormatter,\
-                    parents = [geneomewide_parent, genes_io, mm_parent, parent_parser], add_help=False)
+                                          parents = [geneomewide_parent, genes_io,
+                                                     mm_parent, parent_parser],
+                                          add_help=False)
 
     '''
     ####### Arguments for plot operation ######
