@@ -234,6 +234,8 @@ def parse_args(args):
                         help='Location of .bam files used during inStrain profile commands; needed to pull low-frequency SNVs.' \
                         ' MUST BE IN SAME ORDER AS THE INPUT FILES',
                         nargs='*')
+    Bflags.add_argument('--skip_popANI', action='store_true', default=False,\
+                        help="Only run SNV Pooling; skip other compare operations")
 
 
     # Gflags = compare_parser.add_argument_group('GREEDY CLUSTERING OPTIONS [THIS SECTION IS EXPERIMENTAL!]')

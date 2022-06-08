@@ -197,6 +197,9 @@ class CompareController(object):
         """
         Run each group one at a time, storing the results in the meantime
         """
+        if self.kwargs.get('skip_popANI', False):
+            return
+
         cdbs = [] # Store scaffold comparison information
         mdbs = [] # Store mismatch locations
         pair2mm2covOverlaps = [] # Store coverage overlap locations
@@ -329,8 +332,11 @@ class CompareController(object):
         # Store the results in the RC
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "start")
 
-        self.RCprof.store('comparisonsTable', self.comparison_db, 'pandas', 'Comparisons between the requested IS objects')
-        self.RCprof.store('scaffold2length', self.s2l, 'dictionary', 'Scaffold to length')
+        if hasattr(self, 'comparison_db'):
+            self.RCprof.store('comparisonsTable', self.comparison_db, 'pandas', 'Comparisons between the requested IS objects')
+
+        if hasattr(self, 's2l'):
+            self.RCprof.store('scaffold2length', self.s2l, 'dictionary', 'Scaffold to length')
 
         force_compress = vars(self.args).get('force_compress', False)
 
@@ -355,7 +361,8 @@ class CompareController(object):
             self.RCprof.store('scaffold2bin', self.stb, 'dictionary', 'Dictionary of scaffold 2 bin')
 
         # Make the output files
-        self.RCprof.generate('comparisonsTable', **vars(self.args))
+        if not self.kwargs.get('skip_popANI', False):
+            self.RCprof.generate('comparisonsTable', **vars(self.args))
 
         # Store scaff2pair2mm2SNPs
         if self.args.store_mismatch_locations:
@@ -384,8 +391,9 @@ class CompareController(object):
         inStrain.logUtils.log_checkpoint("Compare", "SaveResults", "end")
 
         # Make plots
-        if hasattr(self, 'genomelevel_compare'):
-            self.make_plots()
+        if not self.kwargs.get('skip_popANI', False):
+            if hasattr(self, 'genomelevel_compare'):
+                self.make_plots()
 
     def make_plots(self):
         '''
