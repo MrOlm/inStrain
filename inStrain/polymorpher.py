@@ -244,6 +244,10 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
             logging.error("scaffold {0} position {2} is not in the .bam file {1}!".format(scaffold, bam_loc, p))
             continue
 
+        except AssertionError:
+            logging.error("scaffold {0} position {2} has a problem in .bam file {1}!".format(scaffold, bam_loc, p))
+            continue
+
         # Process the pileup column
         MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
 

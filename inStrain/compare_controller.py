@@ -17,6 +17,8 @@ import inStrain.readComparer
 import inStrain.compare_utils
 import inStrain.genomeUtilities
 import inStrain.controller
+import inStrain.profile
+import inStrain.profile.samtools_ops
 
 class CompareController(object):
     '''
@@ -145,7 +147,7 @@ class CompareController(object):
                 raise Exception
 
         # Load the .bam files
-        self.name2bam = gen_name_2_bam(self.inputs, args.bams)
+        self.name2bam = gen_name_2_bam(self.inputs, args.bams, self.kwargs.get('processes', 1))
 
         i = 0
         if self.name2bam != {}:
@@ -304,7 +306,7 @@ class CompareController(object):
         self.s2l = s2l
 
         # Calculate genome-level results
-        if hasattr(self, 'stb'):
+        if hasattr(self, 'stb') and not self.kwargs.get('skip_popANI', False):
             # Calculate bin 2 length
             # Make bin to length
             b2l = {}
@@ -325,7 +327,7 @@ class CompareController(object):
             self.genomelevel_compare = Gdb
 
         # Cluster genomes
-        if hasattr(self, 'genomelevel_compare'):
+        if hasattr(self, 'genomelevel_compare') and not self.kwargs.get('skip_popANI', False):
             self.run_genome_clustering()
 
     def store_results(self):
@@ -664,7 +666,7 @@ def establish_SC_groups(valid_SCs, Cdb, group_length):
 
     return SC_groups
 
-def gen_name_2_bam(inputs, bams):
+def gen_name_2_bam(inputs, bams, processes=1):
     name2bam = {}
 
     # See if you have a list of bam objects
@@ -674,6 +676,6 @@ def gen_name_2_bam(inputs, bams):
                 ISP = inStrain.SNVprofile.SNVprofile(profile_loc)
                 name = os.path.basename(ISP.get('bam_loc'))
 
-                name2bam[name] = bam
+                name2bam[name] = inStrain.profile.samtools_ops.prepare_bam_fie(bam, processes)
 
     return name2bam
