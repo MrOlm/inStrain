@@ -1,0 +1,43 @@
+..:: Overall ::..
+InStrain version 1.6.0.dev5 started at 2022-06-08 16:44:33 and ended at 2022-06-08 16:44:46.
+Runtime = 13 seconds
+Command = /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain compare --debug -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --bams /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam
+
+..:: Checkpoints ::..
+
+..:: Filter reads report ::..
+
+
+..:: Profile report ::..
+
+* Profiling splits *
+
+* Merging splits and profiling genes *
+
+..:: Geneome level report ::..
+
+..:: Plotting ::..
+
+..:: Compare ::..
+CreateScaffoldComparisonObjects took <1 second       ( 0.0% of overall)	RAM went from 170.44 MB to 173.03 MB (increased by 2.59 MB)
+multiprocessing      took 5.0 seconds     (38.5% of overall)	RAM went from 173.14 MB to 339.20 MB (increased by 166.05 MB)
+PullSNVsFromBAMs     took 2.0 seconds     (15.4% of overall)	RAM went from 343.55 MB to 350.88 MB (increased by 7.32 MB)
+SaveResults          took <1 second       ( 0.0% of overall)	RAM went from 352.03 MB to 352.56 MB (increased by 544.00 KB)
+
+Wall time                     	2 seconds
+Total processes used          	6
+Average number processes used 	5.6
+Paralellization efficiency    	93.1%
+Units profiled                	178
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	<1 second
+Longest running unit          	N5_271_010G1_scaffold_1
+Per-process efficiency        	['90.7', '91.1', '94.1', '94.3', '95.0', '95.8']
+unit per-process strating RAM      	['183.30 MB', '181.21 MB', '184.59 MB', '168.47 MB', '190.66 MB', '185.29 MB']
+unit per-process final RAM         	['195.07 MB', '174.13 MB', '204.33 MB', '189.94 MB', '194.45 MB', '176.20 MB']
+unit per-process minimum RAM       	['168.24 MB', '168.08 MB', '166.73 MB', '167.39 MB', '167.85 MB', '169.73 MB']
+unit per-process maximum RAM       	['195.16 MB', '186.14 MB', '204.55 MB', '197.35 MB', '194.45 MB', '186.51 MB']
+
+..:: Failures ::..
+No failures

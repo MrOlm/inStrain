@@ -244,7 +244,7 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
             logging.error("scaffold {0} position {2} is not in the .bam file {1}!".format(scaffold, bam_loc, p))
             continue
 
-        except AssertionError:
+        except AttributeError:
             logging.error("scaffold {0} position {2} has a problem in .bam file {1}!".format(scaffold, bam_loc, p))
             continue
 

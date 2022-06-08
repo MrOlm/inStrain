@@ -440,6 +440,21 @@ def test_polymorpher_unit_2(BTO):
     """
     Test DDST and PST generation
     """
+    base = BTO.test_dir + 'RC_test'
+
+    cmd = f"inStrain compare --debug -i {BTO.IS1} {BTO.IS2} -o {base} --bams {BTO.bam1} {BTO.bam2}"
+    print(cmd)
+    call(cmd, shell=True)
+    # inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+
+    # Make sure it produced output
+    outfiles = glob.glob(base + '/output/*')
+    assert len(outfiles) == 4, outfiles
+
+    rawfiles = glob.glob(base + '/raw_data/*')
+    assert len(rawfiles) == 6
+
+    # Load data to compare against
     S1 = inStrain.SNVprofile.SNVprofile(BTO.IS1)
     S2 = inStrain.SNVprofile.SNVprofile(BTO.IS2)
 
@@ -450,33 +465,32 @@ def test_polymorpher_unit_2(BTO):
             columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                      'baseCoverage': 'position_coverage'})]
 
-    tables = [x.sort_values('mm')\
-            .drop_duplicates(subset=['scaffold', 'position'], keep='last')\
-            .sort_index().drop(columns=['mm']) for x in tables]
+    tables = [x.sort_values('mm') \
+                  .drop_duplicates(subset=['scaffold', 'position'], keep='last') \
+                  .sort_index().drop(columns=['mm']) for x in tables]
 
     names = [os.path.basename(S1.get('bam_loc')), os.path.basename(S2.get('bam_loc'))]
     scaffolds = set(tables[0]['scaffold']).intersection(set(tables[1]['scaffold']))
 
-    name2Rdic = {names[0]:S1.get('Rdic'),
-                 names[1]: S2.get('Rdic')}
-    name2bam_loc = {names[0]:BTO.bam1,
-                  names[1]: BTO.bam2}
+    # Check the output files
+    PM = inStrain.SNVprofile.SNVprofile(base)
+
+    DSTdbA = PM.DDST
+    PMdbA = PM.PST
 
     for scaff in scaffolds:
 
         scaff_tables = [x[(x['scaffold'] == scaff) & (x['cryptic'] == False)] for x in tables]
 
-        PM = inStrain.polymorpher.PoolController(scaff_tables, names, name2Rdic, name2bam_loc, scaff)
-        PM.main()
-
-        DSTdb = PM.DDST
+        DSTdb = DSTdbA[DSTdbA['scaffold'] == scaff]
         assert set(DSTdb.index.get_level_values(0)) == set(names)
         assert set(DSTdb.index.get_level_values(1)) == set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))
         assert len(DSTdb) == (len(set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))) * len(names))
 
-        PMdb = PM.PST
+        PMdb = PMdbA[PMdbA['scaffold'] == scaff]
         assert set(PMdb.index) == set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))
         assert len(PMdb) == len(set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position'])))
+
 
 def test_polymorpher_unit_3(BTO):
     """
