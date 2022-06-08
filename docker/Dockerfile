@@ -1,14 +1,16 @@
 # Base Image
-#FROM continuumio/miniconda3:4.8.2
-FROM continuumio/miniconda3
+FROM continuumio/miniconda3:4.6.14
+USER root:root
 
 # Not sure why, but errors out without
 USER root:root
 RUN mkdir -p /mnt
 WORKDIR /mnt
-RUN apt-get --allow-releaseinfo-change update
+#RUN apt-get --allow-releaseinfo-change update
 
-RUN conda config --add channels bioconda && conda config --add channels conda-forge
+# Add channels
+RUN conda config --add channels defaults && conda config --add channels bioconda && conda config --add channels conda-forge
+
 #RUN conda install mamba
 RUN conda create -n work -y instrain awscli samtools coverm && conda clean -afy
 

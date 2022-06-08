@@ -286,13 +286,32 @@ def test_polymorpher_unit_1(BTO):
 
     scaffolds = set(tables[0]['scaffold']).intersection(set(tables[1]['scaffold']))
 
+    name2scaffs = {}
+    name2SNPtables = {}
+
+    for name, table in zip(names, tables):
+        name2SNPtables[name] = table[table['cryptic'] == False]
+        name2scaffs[name] = scaffolds
+
+    name2scaff2locs, scaff2all = inStrain.polymorpher.extract_SNV_positions(name2SNPtables, name2scaffs)
+
     for scaff in scaffolds:
         scaff_tables = [x[(x['scaffold'] == scaff) & (x['cryptic'] == False)] for x in tables]
-        name2locs, all_SNVs = inStrain.polymorpher.extract_SNV_positions(scaff_tables, names)
 
         assert set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position'])) \
                - set(scaff_tables[0]['position']).intersection(set(scaff_tables[1]['position'])) \
-               == set(name2locs[names[0]]).union(set(name2locs[names[1]]))
+               == set(name2scaff2locs[names[0]][scaff]).union(set(name2scaff2locs[names[1]][scaff]))
+
+    #
+    # for scaff in scaffolds:
+    #     scaff_tables = [x[(x['scaffold'] == scaff) & (x['cryptic'] == False)] for x in tables]
+    #
+    #
+    #     name2locs, all_SNVs = inStrain.polymorpher.extract_SNV_positions(scaff_tables, names)
+    #
+    #     assert set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position'])) \
+    #            - set(scaff_tables[0]['position']).intersection(set(scaff_tables[1]['position'])) \
+    #            == set(name2locs[names[0]]).union(set(name2locs[names[1]]))
 
 def test_polymorpher_unit_2(BTO):
     """

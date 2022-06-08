@@ -156,7 +156,8 @@ def download_data(args, working_dir, tmp_dir):
             logging.info("Downloading IS to {0}".format(is_dir))
             #download_folder(is_loc, is_dir)
             download_folder(is_loc, is_dir, exclude=['*'],
-                            include=['*attributes*', '*cumulative_snv_table*', '*scaffold2length*', '*covT*'])
+                            include=['*attributes*', '*cumulative_snv_table*', '*scaffold2length*', '*covT*',
+                                     '*genome_level_info*'])
             cmd_string += ' {0} '.format(is_dir)
 
     # Download other files

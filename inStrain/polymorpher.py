@@ -36,29 +36,40 @@ import inStrain.SNVprofile
 import inStrain.controller
 import inStrain.logUtils
 
-
 class PoolController(object):
     """
     Main controller of the polymorpher pooling commands
     """
 
-    def __init__(self, SNPtables, names, name2Rdic, name2bam_loc, scaffold, **kwargs):
+    def __init__(self, SC_objects, name2bam, **kwargs):
         """
-        Main constructor; to be called from within compare
+        Main constructor; to be called from within compare_controller.run_auxillary_processing
 
         *Right now this is set up for a single scaffold*
         """
-        self.scaffold = scaffold
+        self.name2bam_loc = name2bam
+        self.SC_objects = SC_objects
 
-        # Edit the SNPtables to remove mm
-        self.SNPtables = [x.sort_values('mm')\
-            .drop_duplicates(subset=['scaffold', 'position'], keep='last')\
-            .sort_index().drop(columns=['mm']) if 'mm' in list(x.columns) else x for x in SNPtables]
+        # Load SNPtables
+        name2snpTable = {}
+        name2scaffs = defaultdict(list)
+        name2isp = {}
+        for sc in self.SC_objects:
+            for isp, name in zip(sc.profiles, sc.names):
+                name2scaffs[name].append(sc.scaffold)
+                if name in name2snpTable:
+                    continue
+                db = isp.get('cumulative_snv_table').rename(
+                    columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
+                             'baseCoverage': 'position_coverage'})
+                if 'mm' in list(db.columns):
+                    db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last').sort_index().drop(columns=['mm'])
+                name2snpTable[name] = db
+                name2isp[name] = isp
 
-        self.names = names
-        self.name2Rdic = name2Rdic
-        self.name2bam_loc = name2bam_loc
-
+        self.name2isp = name2isp
+        self.name2snpTable = name2snpTable
+        self.name2scaffs = name2scaffs
         self.verify_input()
 
     def verify_input(self):
@@ -66,7 +77,7 @@ class PoolController(object):
         Check that input is OK
         """
         # 1) Make sure you don't have SNPtables on mm level
-        for t in self.SNPtables:
+        for name, t in self.name2snpTable.items():
             assert(len(t) == len(t.drop_duplicates(subset=['scaffold', 'position'])))
 
     def main(self):
@@ -74,7 +85,7 @@ class PoolController(object):
         The main method
         """
         # Extract a list of SNV sites
-        self.name2locs, self.all_SNVs = extract_SNV_positions(self.SNPtables, self.names)
+        self.name2scaff2locs, self.scaff2all_SNVs = extract_SNV_positions(self.name2snpTable, self.name2scaffs)
 
         # Pull needed SNV sites from .bam files
         self.pull_SNVS_from_bams()
@@ -90,22 +101,112 @@ class PoolController(object):
         """
         Using attributes of this object, pull the needed SNVs from .bam files
         """
-        name2position2counts = {}
-        for name in self.names:
-            name2position2counts[name] = extract_SNVS_from_bam(self.name2bam_loc[name], self.name2Rdic[name], self.name2locs[name], self.scaffold)
-        self.name2position2counts = name2position2counts
+        inStrain.logUtils.log_checkpoint("Compare", "PullSNVsFromBAMs", "start")
+
+        scaff2name2position2counts = {}
+        for name, scaff2locs in tqdm(self.name2scaff2locs.items(), desc='Pulling SNVs from BAMs'):
+
+            # Load .bam-level cache
+            bam_loc = self.name2bam_loc[name]
+            Rdic = self.name2isp[name].get("Rdic")
+
+            for scaff, locs in scaff2locs.items():
+                if scaff not in scaff2name2position2counts:
+                    scaff2name2position2counts[scaff] = {}
+
+                scaff2name2position2counts[scaff][name] = extract_SNVS_from_bam(bam_loc, Rdic, locs, scaff)
+
+            # Delete .bam-level cache
+            del Rdic
+
+        self.scaff2name2position2counts = scaff2name2position2counts
+
+        inStrain.logUtils.log_checkpoint("Compare", "PullSNVsFromBAMs", "end")
 
     def make_pooled_SNV_table(self):
         """
         Using attributes of this object, create an SNV table
         """
-        self.DDST = genreate_pooled_SNV_table(self.SNPtables, self.names, self.name2position2counts, self.all_SNVs)
+        self.DSTdb = genreate_pooled_SNV_table(self.name2snpTable, self.name2scaffs, self.scaff2name2position2counts, self.scaff2all_SNVs)
 
     def make_pooled_SNV_info_table(self):
         """
         Using the pooled SNV table, create a kind of "summary" object
         """
-        self.PST = generate_pooled_SNV_summary_table(self.DDST, self.SNPtables, self.names)
+        self.PMdb = generate_pooled_SNV_summary_table(self.DSTdb, self.name2snpTable, self.name2scaffs)
+
+"""
+Below is the deprecated ".dev2" version of the PoolController
+"""
+# class PoolController(object):
+#     """
+#     Main controller of the polymorpher pooling commands
+#     """
+#
+#     def __init__(self, SNPtables, names, name2Rdic, name2bam_loc, scaffold, **kwargs):
+#         """
+#         Main constructor; to be called from within compare
+#
+#         *Right now this is set up for a single scaffold*
+#         """
+#         self.scaffold = scaffold
+#
+#         # Edit the SNPtables to remove mm
+#         self.SNPtables = [x.sort_values('mm')\
+#             .drop_duplicates(subset=['scaffold', 'position'], keep='last')\
+#             .sort_index().drop(columns=['mm']) if 'mm' in list(x.columns) else x for x in SNPtables]
+#
+#         self.names = names
+#         self.name2Rdic = name2Rdic
+#         self.name2bam_loc = name2bam_loc
+#
+#         self.verify_input()
+#
+#     def verify_input(self):
+#         """
+#         Check that input is OK
+#         """
+#         # 1) Make sure you don't have SNPtables on mm level
+#         for t in self.SNPtables:
+#             assert(len(t) == len(t.drop_duplicates(subset=['scaffold', 'position'])))
+#
+#     def main(self):
+#         """
+#         The main method
+#         """
+#         # Extract a list of SNV sites
+#         self.name2locs, self.all_SNVs = extract_SNV_positions(self.SNPtables, self.names)
+#
+#         # Pull needed SNV sites from .bam files
+#         self.pull_SNVS_from_bams()
+#
+#         # Run processing to create the pooled table
+#         self.make_pooled_SNV_table()
+#
+#         # Run processing to make the SNV info table
+#         self.make_pooled_SNV_info_table()
+#
+#
+#     def pull_SNVS_from_bams(self):
+#         """
+#         Using attributes of this object, pull the needed SNVs from .bam files
+#         """
+#         name2position2counts = {}
+#         for name in self.names:
+#             name2position2counts[name] = extract_SNVS_from_bam(self.name2bam_loc[name], self.name2Rdic[name], self.name2locs[name], self.scaffold)
+#         self.name2position2counts = name2position2counts
+#
+#     def make_pooled_SNV_table(self):
+#         """
+#         Using attributes of this object, create an SNV table
+#         """
+#         self.DDST = genreate_pooled_SNV_table(self.SNPtables, self.names, self.name2position2counts, self.all_SNVs)
+#
+#     def make_pooled_SNV_info_table(self):
+#         """
+#         Using the pooled SNV table, create a kind of "summary" object
+#         """
+#         self.PST = generate_pooled_SNV_summary_table(self.DDST, self.SNPtables, self.names)
 
 
 def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
@@ -152,105 +253,217 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
 
     return position2counts
 
-def extract_SNV_positions(SNPtables, names):
+def extract_SNV_positions(name2SNPtables, name2scaffs):
     """
     From a list of tables and names, figure out how many SNVs need to be extracted from .bam files
     """
-    name2locs = {}
-    ALL_SNPS = set()
-
     # Loop once to get all locations
-    for sdb in SNPtables:
-        if len(sdb) == 0:
+    scaff2all = {}
+    for name, ssdb in name2SNPtables.items():
+        if len(ssdb) == 0:
             continue
 
-        assert len(sdb['scaffold'].unique()) == 1
-        ALL_SNPS = ALL_SNPS.union(set(sdb['position']))
+        for scaff, sdb in ssdb.groupby('scaffold'):
+            if scaff not in name2scaffs[name]:
+                continue
 
-    # Loop once to get all needed locations
-    for sdb, name in zip(SNPtables, names):
-        if len(sdb) > 0:
-            name2locs[name] = ALL_SNPS - set(sdb['position'])
-        else:
-            name2locs[name] = ALL_SNPS
+            if scaff in scaff2all:
+                scaff2all[scaff] = scaff2all[scaff].union(set(sdb['position']))
+            else:
+                scaff2all[scaff] = set(sdb['position'])
 
-    return name2locs, ALL_SNPS
+    # Loop again to get all needed locations
+    name2scaff2locs = {}
+    for name, ssdb in name2SNPtables.items():
 
-def genreate_pooled_SNV_table(SNPtables, names, name2position2counts, all_SNVs):
+        if len(ssdb) == 0:
+            continue
+
+        #for scaff, sdb in ssdb.groupby('scaffold'):
+        for scaff in name2scaffs[name]:
+            sdb = ssdb[ssdb['scaffold'] == scaff]
+
+            if scaff not in name2scaffs[name]:
+                continue
+
+            if name not in name2scaff2locs:
+                name2scaff2locs[name] = {}
+
+            if len(sdb) > 0:
+                name2scaff2locs[name][scaff] = scaff2all[scaff] - set(sdb['position'])
+            elif scaff in scaff2all:
+                name2scaff2locs[name][scaff] = scaff2all[scaff]
+            else: # This means you're comparing the scaffold, but it has no SNVs in any sample
+                pass
+
+    return name2scaff2locs, scaff2all
+    #
+    # name2locs = {}
+    # ALL_SNPS = set()
+    #
+    # # Loop once to get all locations
+    # for sdb in SNPtables:
+    #     if len(sdb) == 0:
+    #         continue
+    #
+    #     assert len(sdb['scaffold'].unique()) == 1
+    #     ALL_SNPS = ALL_SNPS.union(set(sdb['position']))
+    #
+    # # Loop once to get all needed locations
+    # for sdb, name in zip(SNPtables, names):
+    #     if len(sdb) > 0:
+    #         name2locs[name] = ALL_SNPS - set(sdb['position'])
+    #     else:
+    #         name2locs[name] = ALL_SNPS
+    #
+    # return name2locs, ALL_SNPS
+
+def genreate_pooled_SNV_table(name2snpTable, name2scaffs, scaff2name2position2counts, scaff2all_SNVs):
+    #def genreate_pooled_SNV_table(SNPtables, names, name2position2counts, all_SNVs):
     """
     Generate the "DDST" (data-dense SNV table) and "Info table" that can be used for further analysis
     """
+    DDSTs = []
+    order = []
+    for scaff, name2position2counts in scaff2name2position2counts.items():
+        dbs = []
+        names = []
+        order.append(scaff)
+        for name, ori_table in name2snpTable.items():
+            if scaff not in name2scaffs[name]:
+                continue
 
-    dbs = []
-    for name, ori_table in zip(names, SNPtables):
-        # Make a table for this sample from pulled SNVs
-        position2counts = name2position2counts[name]
-        db = pd.DataFrame.from_dict(position2counts, orient='index', columns=['A', 'C', 'T', 'G'])
+            # Make a table for this sample from pulled SNVs
+            if name in name2position2counts:
+                position2counts = name2position2counts[name]
+                db = pd.DataFrame.from_dict(position2counts, orient='index', columns=['A', 'C', 'T', 'G'])
+            else:
+                msg = f"{name} had no SNVs pulled for {scaff}. Has {len(ori_table[ori_table['scaffold'] == scaff])} ori, of {len(set(scaff2all_SNVs[scaff]))} expected"
+                logging.debug(msg)
+                db = pd.DataFrame()
 
-        # Merge with existing table
-        if len(ori_table) > 0:
-            sdb = pd.concat([db, ori_table[['position', 'A', 'C', 'T', 'G']].set_index('position')]).sort_index()
-        else:
-            sdb = db.sort_index()
+            ori_table = ori_table[ori_table['scaffold'] == scaff]
 
-        # Verify
-        assert set(sdb.index) == set(all_SNVs)
-        dbs.append(sdb)
+            # Merge with existing table
+            if len(ori_table) > 0:
+                sdb = pd.concat([db, ori_table[['position', 'A', 'C', 'T', 'G']].set_index('position')]).sort_index()
+            else:
+                sdb = db.sort_index()
 
-    DDST = pd.concat(dbs, keys=names)
-    return DDST
+            # Verify
+            assert set(sdb.index) == set(scaff2all_SNVs[scaff])
+            dbs.append(sdb)
+            names.append(name)
+
+        DDST = pd.concat(dbs, keys=names)
+        DDSTs.append(DDST)
+
+    # Merge DDSTs into one table
+    from pandas.api.types import CategoricalDtype
+    scaff_cat = CategoricalDtype(order)
+
+    # Add this category to all the dataframes
+    for d, s in zip(DDSTs, order):
+        d['scaffold'] = s
+        d['scaffold'] = d['scaffold'].astype(scaff_cat)
+
+    DSTdb = pd.concat(DDSTs)
+
+    return DSTdb
 
 
-def generate_pooled_SNV_summary_table(DDST, SNPtables, names):
+    # dbs = []
+    # for name, ori_table in zip(names, SNPtables):
+    #     # Make a table for this sample from pulled SNVs
+    #     position2counts = name2position2counts[name]
+    #     db = pd.DataFrame.from_dict(position2counts, orient='index', columns=['A', 'C', 'T', 'G'])
+    #
+    #     # Merge with existing table
+    #     if len(ori_table) > 0:
+    #         sdb = pd.concat([db, ori_table[['position', 'A', 'C', 'T', 'G']].set_index('position')]).sort_index()
+    #     else:
+    #         sdb = db.sort_index()
+    #
+    #     # Verify
+    #     assert set(sdb.index) == set(all_SNVs)
+    #     dbs.append(sdb)
+    #
+    # DDST = pd.concat(dbs, keys=names)
+    # return DDST
+
+
+def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
     """
     Generate a table with information about all the SNVs in the DDST
     """
-    if len(DDST) == 0:
+    # def generate_pooled_SNV_summary_table(DDST, SNPtables, names):
+    if len(DSTdb) == 0:
         return pd.DataFrame()
 
-    cdb = pd.concat(SNPtables)
+    Mdbs = []
+    order = []
+    for scaff, DDST in DSTdb.groupby('scaffold'):
+        order.append(scaff)
 
-    # Make a base table with information from the SNP tables
-    Bdb = cdb[['position', 'ref_base']].drop_duplicates().set_index('position').sort_index()
+        # Get the base table
+        cdb = pd.concat([snptable[snptable['scaffold'] == scaff] for name, snptable in name2snpTable.items() if scaff in name2scaffs[name]])
 
-    # Make a table of class counts
-    class_options = ['DivergentSite', 'SNS', 'SNV', 'con_SNV', 'pop_SNV']
-    ccdb = cdb.groupby('position')['class'].value_counts().to_frame().rename(
-        columns={'class': 'count'}).reset_index().pivot('position', 'class', 'count').fillna(0).reset_index()
-    for c in class_options:
-        if c not in ccdb.columns:
-            ccdb[c] = 0
-    ccdb = ccdb[['position'] + class_options]
-    ccdb = ccdb.astype({c: int for c in class_options})
-    ccdb = ccdb.rename(columns={c: c + '_count' for c in class_options})
-    ccdb = ccdb.set_index('position')
+        # Make a base table with information from the SNP tables
+        Bdb = cdb[['position', 'ref_base']].drop_duplicates().set_index('position').sort_index()
 
-    # Make a table of var_base options
-    vdb = cdb.groupby('position')['con_base'].unique().to_frame().rename(columns={'con_base': 'sample_con_bases'})
-    vdb['sample_con_bases'] = vdb['sample_con_bases'].astype(str)
+        # Make a table of class counts
+        class_options = ['DivergentSite', 'SNS', 'SNV', 'con_SNV', 'pop_SNV']
+        ccdb = cdb.groupby('position')['class'].value_counts().to_frame().rename(
+            columns={'class': 'count'}).reset_index().pivot('position', 'class', 'count').fillna(0).reset_index()
+        for c in class_options:
+            if c not in ccdb.columns:
+                ccdb[c] = 0
+        ccdb = ccdb[['position'] + class_options]
+        ccdb = ccdb.astype({c: int for c in class_options})
+        ccdb = ccdb.rename(columns={c: c + '_count' for c in class_options})
+        ccdb = ccdb.set_index('position')
 
-    # Make a depth table summarizing depth for all samples
-    Ddb = DDST.groupby(level=[1]).sum()
-    Ddb['depth'] = Ddb['A'] + Ddb['C'] + Ddb['G'] + Ddb['T']
+        # Make a table of var_base options
+        vdb = cdb.groupby('position')['con_base'].unique().to_frame().rename(columns={'con_base': 'sample_con_bases'})
+        vdb['sample_con_bases'] = vdb['sample_con_bases'].astype(str)
 
-    # Make a table with sample detection numbers
-    xdb = DDST[(DDST['A'] + DDST['C'] + DDST['T'] + DDST['G']) >= 5].groupby(level=[1])['A'].agg('count').to_frame() \
-        .rename(columns={'A': 'sample_5x_detections'})
-    xdb2 = DDST[(DDST['A'] > 0) | (DDST['C'] > 0) | (DDST['T'] > 0) | (DDST['G'] > 0)].groupby(level=[1])['A'].agg(
-        'count').to_frame() \
-        .rename(columns={'A': 'sample_detections'})
-    DEdb = pd.merge(xdb, xdb2, left_index=True, right_index=True)
+        # Make a depth table summarizing depth for all samples
+        Ddb = DDST.groupby(level=[1]).sum()
+        Ddb['depth'] = Ddb['A'] + Ddb['C'] + Ddb['G'] + Ddb['T']
 
-    # Merge
-    Mdb = pd.merge(Ddb, Bdb, left_index=True, right_index=True).join(DEdb).join(ccdb).join(vdb).astype(
+        # Make a table with sample detection numbers
+        xdb = DDST[(DDST['A'] + DDST['C'] + DDST['T'] + DDST['G']) >= 5].groupby(level=[1])['A'].agg('count').to_frame() \
+            .rename(columns={'A': 'sample_5x_detections'})
+        xdb2 = DDST[(DDST['A'] > 0) | (DDST['C'] > 0) | (DDST['T'] > 0) | (DDST['G'] > 0)].groupby(level=[1])['A'].agg(
+            'count').to_frame() \
+            .rename(columns={'A': 'sample_detections'})
+        DEdb = pd.merge(xdb, xdb2, left_index=True, right_index=True)
+
+        # Merge
+        Mdb = pd.merge(Ddb, Bdb, left_index=True, right_index=True).join(DEdb).join(ccdb).join(vdb).astype(
+            {'A': int, 'C': int, 'T': int, 'G': int, 'depth': int,
+             'sample_detections': int}).sort_index()
+
+        # Add more calculations
+        Mdb['con_base'] = Mdb.apply(calc_con_base, axis=1)
+        Mdb['var_base'] = Mdb.apply(calc_var_base, axis=1)
+
+        Mdbs.append(Mdb)
+
+    # Parse
+    from pandas.api.types import CategoricalDtype
+    scaff_cat = CategoricalDtype(order)
+
+    # Add this category to all the dataframes
+    for d, s in zip(Mdbs, order):
+        d['scaffold'] = s
+        d['scaffold'] = d['scaffold'].astype(scaff_cat)
+
+    PMdb = pd.concat(Mdbs).astype(
         {'A': int, 'C': int, 'T': int, 'G': int, 'depth': int,
-         'sample_detections': int}).sort_index()
-
-    # Add more calculations
-    Mdb['con_base'] = Mdb.apply(calc_con_base, axis=1)
-    Mdb['var_base'] = Mdb.apply(calc_var_base, axis=1)
-
-    return Mdb
+         'sample_detections': int, 'DivergentSite_count': int, 'SNS_count': int, 'SNV_count': int,
+         'con_SNV_count': int, 'pop_SNV_count': int, 'sample_5x_detections': int})
+    return PMdb
 
 P2C = {'A': 0, 'C': 1, 'T': 2, 'G': 3}  # base -> position
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'} # position -> base

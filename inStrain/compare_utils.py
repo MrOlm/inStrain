@@ -93,9 +93,7 @@ def SC_object_wrapper(SC, null_model, kwargs):
 
     try:
         results, log = inStrain.readComparer.compare_scaffold(SC.scaffold, SC.names, SC.SNPtables, SC.covTs,
-                                                                      SC.length, null_model, run_pooling=SC.run_pooling,
-                                                                     name2Rdic=SC.name2Rdic, name2bamloc=SC.name2bamloc,
-                                                                     **kwargs)
+                                                                      SC.length, null_model, **kwargs)
 
     except Exception as e:
         if debug:
