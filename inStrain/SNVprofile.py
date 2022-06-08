@@ -566,7 +566,7 @@ class SNVprofile:
             Adb = self._get_attributes_file()
 
             if not same_versions(Adb.loc['version', 'value'], __version__):
-                error_message = "Warning! Your inStrain folder is from version {0}, while the installed version is {1}.\nIf you experience weird behavior, this might be why".format(
+                error_message = "Warning! Your inStrain folder is from version {0}, while the installed version is {1}. If you experience weird behavior, this might be why".format(
                         Adb.loc['version', 'value'], __version__)
 
                 # This is needed because otherwise will make a logger in error!

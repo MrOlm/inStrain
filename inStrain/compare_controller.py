@@ -203,6 +203,8 @@ class CompareController(object):
         order = [] # Store order of scaffolds
 
         groups = len(self.scaffold_comparison_groups)
+
+        inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "start")
         for i, SCgroup in enumerate(self.scaffold_comparison_groups):
             logging.info(f'Running group {i+1} of {groups}')
 
@@ -221,6 +223,7 @@ class CompareController(object):
             SCgroup.purge_cache()
 
         # Process main results
+        inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "end")
         self.process_results(cdbs, mdbs, pair2mm2covOverlaps, order)
 
     def process_results(self, cdbs, mdbs, pair2mm2covOverlaps, order):

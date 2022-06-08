@@ -29,7 +29,6 @@ def run_compare_multiprocessing(SC_queue, result_queue, null_model, num_to_run, 
 
     # Launch the multiprocessing
     processes = []
-    inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "start")
     if p > 1:
         ctx = multiprocessing.get_context('spawn')
         for i in range(0, p):
@@ -55,7 +54,6 @@ def run_compare_multiprocessing(SC_queue, result_queue, null_model, num_to_run, 
 
     # Close progress bar
     pbar.close()
-    inStrain.logUtils.log_checkpoint("Compare", "multiprocessing", "end")
 
     return results
 
