@@ -235,7 +235,7 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
             iter = bam_init.pileup(scaffold, truncate=True, max_depth=100000,
                                   stepper='nofilter', compute_baq=True,
                                   ignore_orphans=True, ignore_overlaps=True,
-                                  min_base_quality=30, start=p - 1, stop=p + 1)
+                                  min_base_quality=30, start=max(p - 1, 0), stop=p + 1)
             for x in iter:
                 if x.pos == pos:
                     pileupcolumn = x
