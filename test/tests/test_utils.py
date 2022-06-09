@@ -87,6 +87,7 @@ def BTO():
                                 '.bam_SP_snpLocations.pickle'
 
     self.sam = dl + 'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
+    self.special_bam = dl + 'SP_sam.bam'
 
     self.LOCALONLY_IS_plotting = '/Users/mattolm/Programs/testing_house/UHGG_reps.fasta-vs-N5_216_039G1.a.IS'
 

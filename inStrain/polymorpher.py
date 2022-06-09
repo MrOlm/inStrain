@@ -62,6 +62,7 @@ class PoolController(object):
                 db = isp.get('cumulative_snv_table').rename(
                     columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                              'baseCoverage': 'position_coverage'})
+                db = db[db['cryptic'] == False]
                 if 'mm' in list(db.columns):
                     db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last').sort_index().drop(columns=['mm'])
                 name2snpTable[name] = db
@@ -215,6 +216,7 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
 
     MY GOD IS PYSAM A PAIN - the reason I have the "start" and "stop" so weird on that iterator is because without it, this fails
     """
+
     logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
 
     # Initilize .bam
@@ -238,21 +240,28 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
                 if x.pos == pos:
                     pileupcolumn = x
                     break
-            assert p == pileupcolumn.pos, pileupcolumn
 
+            # This means there aren't any reads mapping here, but pysam doesn't return it for whatever reason
+            if pileupcolumn is None:
+                broken = True
+            else:
+                assert p == pileupcolumn.pos, pileupcolumn
+                broken = False
+
+        # This is an error thrown by pysam
         except ValueError:
             logging.error("scaffold {0} position {2} is not in the .bam file {1}!".format(scaffold, bam_loc, p))
             continue
 
-        except AttributeError:
-            logging.error("scaffold {0} position {2} has a problem in .bam file {1}!".format(scaffold, bam_loc, p))
-            continue
+        if broken:
+            counts = np.zeros(4, dtype=int)
+            logging.debug("scaffold {0} position {2} had a funny pysam bug {1}. Should be OK, but just wanted to let you know".format(scaffold, bam_loc, p))
 
-        # Process the pileup column
-        MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
+        else:
+            # Process the pileup column
+            MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
+            counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts)
 
-
-        counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts)
         position2counts[pos] = counts
 
     return position2counts

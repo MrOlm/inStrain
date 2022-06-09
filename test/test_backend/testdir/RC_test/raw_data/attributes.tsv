@@ -1,7 +1,0 @@
-name	value	type	description
-location	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test	value	Location of SNVprofile object
-version	1.6.0.dev5	value	Version of inStrain
-comparisonsTable	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/comparisonsTable.csv.gz	pandas	Comparisons between the requested IS objects
-scaffold2length	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/scaffold2length.json	dictionary	Scaffold to length
-DSTdb	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/DSTdb.pickle	pickle	Dense SNV table (from pooling)
-PMdb	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/raw_data/PMdb.pickle	pickle	Informative SNV table (from pooling)

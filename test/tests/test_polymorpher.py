@@ -77,6 +77,7 @@ def test_polymorpher_integrated_0(BTO):
         columns=['mm'])
 
     cdb = pd.concat([sdb1, sdb2])
+    cdb = cdb[cdb['cryptic'] == False]
 
     # Subset to the scaffolds that are profiled
     cdb = cdb[cdb['scaffold'].isin(kdb['scaffold'])]
@@ -163,6 +164,7 @@ def test_polymorpher_integrated_1(BTO):
         columns=['mm'])
 
     cdb = pd.concat([sdb1, sdb2])
+    cdb = cdb[cdb['cryptic'] == False]
 
     # Subset to the scaffolds that are profiled
     cdb = cdb[cdb['scaffold'].isin(kdb['scaffold'])]
@@ -249,6 +251,7 @@ def test_polymorpher_integrated_2(BTO):
         columns=['mm'])
 
     cdb = pd.concat([sdb1, sdb2])
+    cdb = cdb[cdb['cryptic'] == False]
 
     # Subset to the scaffolds that are profiled
     cdb = cdb[cdb['scaffold'].isin(kdb['scaffold'])]
@@ -475,14 +478,30 @@ def test_polymorpher_unit_2(BTO):
     # Check the output files
     PM = inStrain.SNVprofile.SNVprofile(base)
 
-    DSTdbA = PM.DDST
-    PMdbA = PM.PST
+    DSTdbA = PM.get('DSTdb')
+    PMdbA = PM.get('PMdb')
 
     for scaff in scaffolds:
-
         scaff_tables = [x[(x['scaffold'] == scaff) & (x['cryptic'] == False)] for x in tables]
 
         DSTdb = DSTdbA[DSTdbA['scaffold'] == scaff]
+
+        #print(scaff)
+        # if set(DSTdb.index.get_level_values(1)) == set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position'])):
+        #     print(f"{scaff} is good")
+        #     print([len(x[(x['scaffold'] == scaff) & (x['cryptic'] == True)]) for x in tables])
+        #     pass
+        #
+        # else:
+        #     print(f"{scaff} is bad")
+        #     print([len(x[(x['scaffold'] == scaff) & (x['cryptic'] == True)]) for x in tables])
+        #     continue
+        #     print(len(DSTdb))
+        #     print(len(set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))))
+        #
+        #     print(DSTdb.head())
+
+
         assert set(DSTdb.index.get_level_values(0)) == set(names)
         assert set(DSTdb.index.get_level_values(1)) == set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))
         assert len(DSTdb) == (len(set(scaff_tables[0]['position']).union(set(scaff_tables[1]['position']))) * len(names))
@@ -521,3 +540,27 @@ def test_polymorpher_unit_3(BTO):
         'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam': '/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam'}
 
     #print(args)
+
+def test_polymorpher_unit_4(BTO):
+    """
+    Test handling of weird pysam functionality
+    """
+    base = BTO.test_dir + 'RC_test'
+
+    # Normal return
+    Rdic = {'NODE_8318_length_9960_cov_75.779217':{'A00953:496:HFTHLDSX3:3:2365:6207:4507', 'A00953:496:HFTHLDSX3:3:2321:14217:6637', 'A00953:496:HFTHLDSX3:3:2303:29062:35477', 'A00953:496:HFTHLDSX3:3:2555:21495:29512'}}
+    out = inStrain.polymorpher.extract_SNVS_from_bam(BTO.special_bam, Rdic, [50], 'NODE_8318_length_9960_cov_75.779217')
+    assert set(out.keys()) == {50}
+
+    # Broken return (wrong scaffold name or something)
+    try:
+        out = inStrain.polymorpher.extract_SNVS_from_bam(BTO.special_bam, Rdic, [50],
+                                                         'bizare_name')
+        assert False
+    except:
+        pass
+
+    # Weird broken return- scaffold is in there, but pysam doesn't return the 0s
+    out = inStrain.polymorpher.extract_SNVS_from_bam(BTO.special_bam, Rdic, [2], 'NODE_8318_length_9960_cov_75.779217')
+    assert set(out.keys()) == {2}
+
