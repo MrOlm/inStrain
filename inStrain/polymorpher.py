@@ -292,9 +292,11 @@ def extract_SNV_positions(name2SNPtables, name2scaffs):
         if len(ssdb) == 0:
             continue
 
-        #for scaff, sdb in ssdb.groupby('scaffold'):
-        for scaff in name2scaffs[name]:
-            sdb = ssdb[ssdb['scaffold'] == scaff]
+        # Do an initial loop with "groupby"
+        got_scaffs = []
+        for scaff, sdb in ssdb.groupby('scaffold'):
+        #for scaff in name2scaffs[name]:
+            #sdb = ssdb[ssdb['scaffold'] == scaff]
 
             if scaff not in name2scaffs[name]:
                 continue
@@ -308,6 +310,18 @@ def extract_SNV_positions(name2SNPtables, name2scaffs):
                 name2scaff2locs[name][scaff] = scaff2all[scaff]
             else: # This means you're comparing the scaffold, but it has no SNVs in any sample
                 pass
+            got_scaffs.append(scaff)
+
+        # Do a second loop to catch stragglers
+        for scaff in set(name2scaffs[name]) - set(got_scaffs):
+
+            if name not in name2scaff2locs:
+                name2scaff2locs[name] = {}
+
+            if scaff not in scaff2all:
+                continue
+
+            name2scaff2locs[name][scaff] = scaff2all[scaff]
 
     return name2scaff2locs, scaff2all
     #
