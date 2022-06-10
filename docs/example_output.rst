@@ -812,6 +812,7 @@ sample_con_bases
   The number of different consensus bases at this position across all analyzed samples
 
 .. csv-table:: pooled_SNV_data.tsv
+
     sample,scaffold,position,A,C,T,G
     0,0,3,2,0,5,1
     0,0,20,0,21,2,0
@@ -838,6 +839,7 @@ A,C,T,G
   The number of reads with this base in this sample in this scaffold at this position
 
 .. csv-table:: pooled_SNV_data_keys.tsv
+
     key,sample,scaffold
     0,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam,N5_271_010G1_scaffold_114
     1,N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam,N5_271_010G1_scaffold_63
