@@ -160,8 +160,8 @@ def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
     #     scaffold, name1, name2 = debug
 
     mms = sorted(list(set(covT1.keys()).union(set(covT2.keys()))))
-    cov1 = pd.Series()
-    cov2 = pd.Series()
+    cov1 = pd.Series(dtype='float64')
+    cov2 = pd.Series(dtype='float64')
     for mm in mms:
         if mm in covT1:
             cov1 = cov1.add(covT1[mm], fill_value=0)

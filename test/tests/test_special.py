@@ -182,7 +182,7 @@ def test_special_6(BTO):
     print(cmd)
     call(cmd, shell=True)
     logs = glob.glob(location + '/log/*')
-    assert len(logs) == 4, logs
+    assert len(logs) == 3, logs
 #
 # def test_special_7(BTO):
 #     """

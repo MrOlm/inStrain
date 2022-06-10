@@ -467,11 +467,16 @@ class SNVprofile:
                     .drop_duplicates(subset=['scaffold'], keep='last')\
                     .sort_index().drop(columns=['mm'])
 
-    def get_nonredundant_snv_table(self):
+    def get_nonredundant_snv_table(self, cryptic=False):
         '''
         Get a SNP table with just one line per scaffold
         '''
         scdb = self.get('cumulative_snv_table')
+
+        # v1.6; remove cryptic SNVs
+        if ('cryptic' in scdb) & (cryptic == False):
+            scdb = scdb[scdb['cryptic'] == False]
+
         if (scdb is None) or (len(scdb) == 0):
             return pd.DataFrame()
         else:

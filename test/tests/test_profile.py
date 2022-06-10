@@ -152,7 +152,7 @@ def test_profile_0(BTO):
     CPdb = CPdb.sort_values(['scaff', 'loc'])
 
     # Load Matts beautiful object
-    MPdb = Matt_object.get_nonredundant_snv_table()
+    MPdb = Matt_object.get_nonredundant_snv_table(cryptic=True)
 
     # Allowing for cryptic SNPs, make sure Matt calls everything CC does
     MS = set(["{0}-{1}".format(x, y) for x, y in zip(MPdb['scaffold'], MPdb['position'])])
@@ -161,7 +161,7 @@ def test_profile_0(BTO):
     assert len(CS - MS) == 0, CS - MS
 
     # Not allowing for cyptic SNPs, make sure CC calls everything Matt does
-    MPdb = MPdb[MPdb['cryptic'] == False]
+    MPdb = Matt_object.get_nonredundant_snv_table(cryptic=False)
     MPdb = MPdb[MPdb['allele_count'] >= 2]
     MS = set(["{0}-{1}".format(x, y) for x, y in zip(MPdb['scaffold'], MPdb['position'])])
     CS = set(["{0}-{1}".format(x, y) for x, y in zip(CPdb['scaff'], CPdb['loc'])])
@@ -190,7 +190,7 @@ def test_profile_0(BTO):
 
     MLdb = Matt_object.get_nonredundant_linkage_table()
     # Mark cryptic SNPs
-    MPdb = Matt_object.get_nonredundant_snv_table()
+    MPdb = Matt_object.get_nonredundant_snv_table(cryptic=True)
     dbs = []
     for scaff, db in MPdb.groupby('scaffold'):
         p2c = db.set_index('position')['cryptic'].to_dict()
@@ -757,7 +757,7 @@ def test_profile_14(BTO):
     base = BTO.test_dir + 'test'
 
     # Run program
-    cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98".format(True, BTO.bam1,
+    cmd = "inStrain profile {1} {2} -o {3} -g {4} -l 0.98 -d".format(True, BTO.bam1,
                                                                   BTO.fasta, base, BTO.genes)
     print(cmd)
     call(cmd, shell=True)
@@ -1335,7 +1335,7 @@ def test_profile_20(BTO):
     assert os.path.isdir(base)
     print(glob.glob(base + '/output/*'))
     assert len(glob.glob(base + '/output/*.gz')) == 6, len(glob.glob(base + '/output/*.gz'))
-    assert len(glob.glob(base + '/log/*')) == 3
+    assert len(glob.glob(base + '/log/*')) == 1
 
     # Make sure the output makes sense
     S1 = inStrain.SNVprofile.SNVprofile(base)

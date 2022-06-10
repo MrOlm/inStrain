@@ -210,61 +210,105 @@ Below is the deprecated ".dev2" version of the PoolController
 #         self.PST = generate_pooled_SNV_summary_table(self.DDST, self.SNPtables, self.names)
 
 
+# def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
+#     """
+#     From a .bam file and a list of SNV locations, extract and return counts
+#
+#     MY GOD IS PYSAM A PAIN - the reason I have the "start" and "stop" so weird on that iterator is because without it, this fails
+#     """
+#
+#     logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
+#
+#     # Initilize .bam
+#     bam_init = pysam.AlignmentFile(bam_loc)
+#
+#     # Initialize the object to return
+#     position2counts = {}
+#
+#     # Iterate positions
+#     for pos in positions:
+#         pileupcolumn = None
+#         p = pos
+#
+#         # Get the pileup for this position
+#         try:
+#             iter = bam_init.pileup(scaffold, truncate=True, max_depth=100000,
+#                                   stepper='nofilter', compute_baq=True,
+#                                   ignore_orphans=True, ignore_overlaps=True,
+#                                   min_base_quality=30, start=max(p - 1, 0), stop=p + 1)
+#             for x in iter:
+#                 if x.pos == pos:
+#                     pileupcolumn = x
+#                     break
+#
+#             # This means there aren't any reads mapping here, but pysam doesn't return it for whatever reason
+#             if pileupcolumn is None:
+#                 broken = True
+#             else:
+#                 assert p == pileupcolumn.pos, pileupcolumn
+#                 broken = False
+#
+#         # This is an error thrown by pysam
+#         except ValueError:
+#             logging.error("scaffold {0} position {2} is not in the .bam file {1}!".format(scaffold, bam_loc, p))
+#             continue
+#
+#         if broken:
+#             counts = np.zeros(4, dtype=int)
+#             logging.debug("scaffold {0} position {2} had a funny pysam bug {1}. Should be OK, but just wanted to let you know".format(scaffold, bam_loc, p))
+#
+#         else:
+#             # Process the pileup column
+#             MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
+#             counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts)
+#
+#         position2counts[pos] = counts
+#
+#     return position2counts
+
+
 def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
     """
     From a .bam file and a list of SNV locations, extract and return counts
 
-    MY GOD IS PYSAM A PAIN - the reason I have the "start" and "stop" so weird on that iterator is because without it, this fails
+    Setting up a single iterator like this really improves speed
     """
+    # logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
 
-    logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
+    if len(positions) == 0:
+        return {}
 
     # Initilize .bam
     bam_init = pysam.AlignmentFile(bam_loc)
+
+    # Initiize iterator
+    biter = bam_init.pileup(scaffold, truncate=True, max_depth=100000,
+                            stepper='nofilter', compute_baq=True,
+                            ignore_orphans=True, ignore_overlaps=True,
+                            min_base_quality=30, start=max(min(positions) - 1, 0), stop=max(positions) + 1)
 
     # Initialize the object to return
     position2counts = {}
 
     # Iterate positions
-    for pos in positions:
-        pileupcolumn = None
-        p = pos
+    pset = set(positions)
+    for pilecol in biter:
 
-        # Get the pileup for this position
-        try:
-            iter = bam_init.pileup(scaffold, truncate=True, max_depth=100000,
-                                  stepper='nofilter', compute_baq=True,
-                                  ignore_orphans=True, ignore_overlaps=True,
-                                  min_base_quality=30, start=max(p - 1, 0), stop=p + 1)
-            for x in iter:
-                if x.pos == pos:
-                    pileupcolumn = x
-                    break
+        # You have it
+        if pilecol.pos in pset:
+            position2counts[pilecol.pos] = get_pooling_counts(pilecol, R2M)
 
-            # This means there aren't any reads mapping here, but pysam doesn't return it for whatever reason
-            if pileupcolumn is None:
-                broken = True
-            else:
-                assert p == pileupcolumn.pos, pileupcolumn
-                broken = False
-
-        # This is an error thrown by pysam
-        except ValueError:
-            logging.error("scaffold {0} position {2} is not in the .bam file {1}!".format(scaffold, bam_loc, p))
-            continue
-
-        if broken:
-            counts = np.zeros(4, dtype=int)
-            logging.debug("scaffold {0} position {2} had a funny pysam bug {1}. Should be OK, but just wanted to let you know".format(scaffold, bam_loc, p))
-
-        else:
-            # Process the pileup column
-            MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
-            counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts)
-
-        position2counts[pos] = counts
+    # Fill in blanks
+    for p in pset - set(position2counts.keys()):
+        position2counts[p] = np.zeros(4, dtype=int)
 
     return position2counts
+
+
+def get_pooling_counts(pileupcolumn, R2M):
+    MMcounts = inStrain.profile.profile_utilities.get_base_counts_mm(pileupcolumn, R2M)
+    counts = inStrain.profile.profile_utilities.mm_counts_to_counts(MMcounts)
+    return counts
 
 def extract_SNV_positions(name2SNPtables, name2scaffs):
     """

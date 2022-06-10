@@ -116,9 +116,10 @@ class Controller():
             logloc = logging.getLoggerClass().root.handlers[0].baseFilename
         except:
             return
-        logging.debug("inStrain complete; shutting down logger and printing run stats (log location = {0})".format(logloc))
+        logging.debug("inStrain complete; shutting down logger and printing run stats if in debug mode (log location = {0})".format(logloc))
         logging.shutdown()
-        inStrain.logUtils.report_run_stats(logloc, most_recent=True, printToo=args.debug, debug=args.debug)
+        if args.debug:
+            inStrain.logUtils.report_run_stats(logloc, most_recent=True, printToo=args.debug, debug=args.debug)
 
 class ProfileController(object):
     '''

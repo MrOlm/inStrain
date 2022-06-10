@@ -121,6 +121,7 @@ def test_genes_1(BTO):
     Rdb = Rdb[Rdb['scaffold'].isin(list(gdb['scaffold'].unique()))]
 
     # Make sure you characterized all SNPs
+    print(RNdb.head())
     assert len(RNdb) == len(SNdb), (len(RNdb), len(SNdb))
 
     # Filter to only those mutations in both lists
@@ -309,7 +310,7 @@ def test_genes_4(BTO):
     # Run program
     base = BTO.test_dir + 'testN'
 
-    cmd = "inStrain profile_genes -i {1} -g {3}".format(True, location,
+    cmd = "inStrain profile_genes -i {1} -g {3} -d".format(True, location,
                                                         base, BTO.genbank)
     print(cmd)
     call(cmd, shell=True)
