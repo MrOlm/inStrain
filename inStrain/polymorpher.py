@@ -273,7 +273,7 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
 
     Setting up a single iterator like this really improves speed
     """
-    # logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
+    logging.debug(f"Extracting {len(positions)} SNVs from {scaffold} {bam_loc}")
 
     if len(positions) == 0:
         return {}
