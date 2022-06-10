@@ -568,4 +568,4 @@ def estimate_timing(name2scaff2locs):
     # Convert to minutes
     time = scaffs / 60
 
-    logging.info(f"Pulling {SNVs} SNVs from {scaffs} scaffolds- should take ~ {2:.1f} min in total")
+    logging.info(f"Pulling {SNVs} SNVs from {scaffs} scaffolds- should take ~ {time:.1f} min in total")
