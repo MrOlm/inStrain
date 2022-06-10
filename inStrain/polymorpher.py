@@ -105,6 +105,7 @@ class PoolController(object):
         inStrain.logUtils.log_checkpoint("Compare", "PullSNVsFromBAMs", "start")
 
         scaff2name2position2counts = {}
+        estimate_timing(self.name2scaff2locs)
         for name, scaff2locs in tqdm(self.name2scaff2locs.items(), desc='Pulling SNVs from BAMs'):
 
             # Load .bam-level cache
@@ -555,3 +556,16 @@ def calc_con_base(row):
     """
     counts = [row['A'], row['C'], row['T'], row['G']]
     return C2P[np.argmax(counts)]
+
+def estimate_timing(name2scaff2locs):
+    scaffs = 0
+    SNVs = 0
+    for name, scaff2locs in name2scaff2locs.items():
+        for scaff, locs in scaff2locs.items():
+            scaffs += 1
+            SNVs += len(locs)
+
+    # Convert to minutes
+    time = scaffs / 60
+
+    logging.info(f"Pulling {SNVs} SNVs from {scaffs} scaffolds- should take ~ {2:.1f} min in total")
