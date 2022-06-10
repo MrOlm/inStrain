@@ -113,6 +113,7 @@ def test_genes_1(BTO):
 
     IS = inStrain.SNVprofile.SNVprofile(location)
     RNdb = IS.get('SNP_mutation_types')
+    RNdb = RNdb[RNdb['cryptic'] == False]
     RNdb['mut_key'] = ["{0}:{1}".format(x, y) for x, y in zip(RNdb['scaffold'], RNdb['position'])]
 
     # Filter out the mutaitons from scaffolds without and genes

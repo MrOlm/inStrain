@@ -106,7 +106,7 @@ class PoolController(object):
 
         scaff2name2position2counts = {}
         num_to_run = estimate_timing(self.name2scaff2locs)
-        pbar = tqdm(desc='Pulling SNVs from BAMs:', total=num_to_run)
+        pbar = tqdm(desc='Pulling SNVs from BAMs', total=num_to_run)
         for name, scaff2locs in self.name2scaff2locs.items():
 
             # Load .bam-level cache

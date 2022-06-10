@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
-## [1.6.0] - Under development
+## [1.6.0] - 2022-06-10
 - Include SNV pooling options (big update with lots of changes)
 - Include "cov1 = pd.Series(dtype='float64')" in readComparer.py to suppress a future warning
 - Remove cryptic SNVs from the nonredundant_snv_table (https://github.com/MrOlm/inStrain/issues/102)
 - Only produce the run report when run in debug mode
+- Various minor stylistic tweaks in runtime reporting
 
 ## [1.5.7] - 2022-02-09
 - Make error log more readable - https://github.com/MrOlm/inStrain/issues/79

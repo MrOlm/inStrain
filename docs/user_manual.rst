@@ -297,21 +297,24 @@ Compare provides the ability to compare multiple :term:`inStrain profiles<inStra
 
 3. The coverage overlap and the average nucleotide identity for each scaffold is reported. For details on how this is done, see :doc:`example_output`
 
+4. **New in v1.6** Tables that list the coverage and base-frequencies of each SNV in all samples can be generated using the `--bams` parameter within inStrain compare. For each inStrain profile provided with the `-i` parameter, the corresponding bam file must be provided with the `--bams` parameter. The same read filtering parameters used in the original profile command will be used when running this analysis. See section `SNV POOLING OPTIONS:` in the help below for full information about this option, and see :doc:`example_output` for the tables it creates.
+
 Module parameters
 ````````````````````
 To see the command-line options, check the help::
 
     $ inStrain compare -h
     usage: inStrain compare -i [INPUT [INPUT ...]] [-o OUTPUT] [-p PROCESSES] [-d]
-                            [-h] [--version] [-s [STB [STB ...]]] [-c MIN_COV]
-                            [-f MIN_FREQ] [-fdr FDR] [--database_mode]
-                            [--breadth BREADTH] [-sc SCAFFOLDS] [--genome GENOME]
-                            [--store_coverage_overlap]
-                            [--store_mismatch_locations]
-                            [--include_self_comparisons] [--skip_plot_generation]
-                            [--group_length GROUP_LENGTH] [-ani ANI_THRESHOLD]
-                            [-cov COVERAGE_TRESHOLD]
-                            [--clusterAlg {single,ward,complete,centroid,weighted,average,median}]
+                        [-h] [--version] [-s [STB [STB ...]]] [-c MIN_COV]
+                        [-f MIN_FREQ] [-fdr FDR] [--database_mode]
+                        [--breadth BREADTH] [-sc SCAFFOLDS] [--genome GENOME]
+                        [--store_coverage_overlap]
+                        [--store_mismatch_locations]
+                        [--include_self_comparisons] [--skip_plot_generation]
+                        [--group_length GROUP_LENGTH] [--force_compress]
+                        [-ani ANI_THRESHOLD] [-cov COVERAGE_TRESHOLD]
+                        [--clusterAlg {centroid,weighted,ward,single,complete,average,median}]
+                        [-bams [BAMS [BAMS ...]]] [--skip_popANI]
 
     REQUIRED:
       -i [INPUT [INPUT ...]], --input [INPUT [INPUT ...]]
@@ -376,6 +379,7 @@ To see the command-line options, check the help::
       --group_length GROUP_LENGTH
                             How many bp to compare simultaneously (higher will use
                             more RAM and run more quickly) (default: 10000000)
+      --force_compress      Force compression of all output files (default: False)
 
     GENOME CLUSTERING OPTIONS:
       -ani ANI_THRESHOLD, --ani_threshold ANI_THRESHOLD
@@ -385,9 +389,17 @@ To see the command-line options, check the help::
                             Minimum percent_genome_compared for a genome
                             comparison to count; if below the popANI will be set
                             to 0. (default: 0.1)
-      --clusterAlg {single,ward,complete,centroid,weighted,average,median}
+      --clusterAlg {centroid,weighted,ward,single,complete,average,median}
                             Algorithm used to cluster genomes (passed to
                             scipy.cluster.hierarchy.linkage) (default: average)
+
+    SNV POOLING OPTIONS:
+      -bams [BAMS [BAMS ...]], --bams [BAMS [BAMS ...]]
+                            Location of .bam files used during inStrain profile
+                            commands; needed to pull low-frequency SNVs. MUST BE
+                            IN SAME ORDER AS THE INPUT FILES (default: None)
+      --skip_popANI         Only run SNV Pooling; skip other compare operations
+                            (default: False)
 
 Other modules
 ++++++++++++++
