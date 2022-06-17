@@ -107,7 +107,7 @@ class SNVprofile:
 
         # Add the value if not
         else:
-            Adb = Adb.append(adb)
+            Adb = pd.concat([Adb, adb])
 
         self._store_attributes_file(Adb)
 

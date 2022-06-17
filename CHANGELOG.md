@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.6.1] - 2022-06-16
+- Change a pandas "append" statement that was making a lot of noise
+- Fix a bug when scaffold names are numbere
+
 ## [1.6.0] - 2022-06-10
 - Include SNV pooling options (big update with lots of changes)
 - Include "cov1 = pd.Series(dtype='float64')" in readComparer.py to suppress a future warning

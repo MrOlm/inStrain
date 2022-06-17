@@ -165,6 +165,7 @@ def genomeLevel_from_IS(IS, **kwargs):
 
     # Calculate averaing and summing metrics from the scaffold table
     db = IS.get('cumulative_scaffold_table')
+    db['scaffold'] = db['scaffold'].astype(str)
     gdb = _add_stb(db, stb)
 
     # Handle mm level

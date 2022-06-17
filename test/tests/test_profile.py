@@ -1342,6 +1342,33 @@ def test_profile_20(BTO):
     db = S1.get('cumulative_scaffold_table')
     test_utils._internal_verify_Sdb(db)
 
+def test_profile_21(BTO):
+    """
+    Test working with scaffolds with numbers for names
+    """
+    # Set up
+    base = BTO.test_dir + 'test'
+
+    # Run program
+    cmd = f"inStrain profile {BTO.numbam} {BTO.numfasta} -o {base} -d"
+    print(cmd)
+    call(cmd, shell=True)
+
+    # Make sure it produced output
+    assert os.path.isdir(base)
+    assert len(glob.glob(base + '/output/*')) == 5, glob.glob(base + '/output/*')
+
+    # Make sure the output makes sense
+    S1 = inStrain.SNVprofile.SNVprofile(base)
+    db = S1.get('cumulative_scaffold_table')
+    assert len(db) > 0
+    test_utils._internal_verify_Sdb(db)
+
+    # Make sure it doesn't mess up at the lower-case bases (I put a lower-case in scaffold N5_271_010G1_scaffold_0 at a c; make sure it's not there)
+    sdb = S1.get('raw_snp_table')
+    assert len(sdb) > 0
+    assert len(sdb[sdb['ref_base'] == 'c']) == 0
+
 # This is from test_compare.py
 def test_UPDATE_COMPARE_TEST_DATA(BTO):
     """

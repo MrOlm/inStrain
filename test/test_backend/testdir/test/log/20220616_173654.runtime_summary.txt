@@ -1,0 +1,95 @@
+..:: Overall ::..
+InStrain version 1.6.1 started at 2022-06-16 17:36:54 and ended at 2022-06-16 17:37:03.
+Runtime = 9 seconds
+Command = /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain profile /Users/mattolm/Programs/inStrain/test/test_data/liver.bam /Users/mattolm/Programs/inStrain/test/test_data/transcriptome_chopped.fa -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test -d
+
+..:: Checkpoints ::..
+filter_reads         took 2.0 seconds     (22.2% of overall)	RAM went from 168.95 MB to 254.39 MB (increased by 85.45 MB)
+profile_scaffolds    took 5.0 seconds     (55.6% of overall)	RAM went from 254.39 MB to 266.47 MB (increased by 12.08 MB)
+genome_wide          took <1 second       (11.1% of overall)	RAM went from 266.48 MB to 323.58 MB (increased by 57.10 MB)
+making_plots         took <1 second       (11.1% of overall)	RAM went from 323.58 MB to 342.90 MB (increased by 19.32 MB)
+
+..:: Filter reads report ::..
+load_fasta           took <1 second       ( 0.0% of overall)	RAM went from 169.46 MB to 169.86 MB (increased by 400.00 KB)
+get_paired_reads_multi took <1 second       (50.0% of overall)	RAM went from 169.86 MB to 238.10 MB (increased by 68.25 MB)
+multiprocessing      took <1 second       (50.0% of overall)	RAM went from 172.07 MB to 237.51 MB (increased by 65.43 MB)
+paired_reads         took <1 second       ( 0.0% of overall)	RAM went from 238.10 MB to 238.12 MB (increased by 24.00 KB)
+filter_reads         took <1 second       (50.0% of overall)	RAM went from 238.12 MB to 253.66 MB (increased by 15.54 MB)
+parse_results        took <1 second       ( 0.0% of overall)	RAM went from 254.18 MB to 254.39 MB (increased by 220.00 KB)
+
+Wall time                     	<1 second
+Total processes used          	2
+Average number processes used 	1.1
+Paralellization efficiency    	53.2%
+Units profiled                	4
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	<1 second
+Longest running unit          	4
+Per-process efficiency        	['7.1', '99.2']
+unit per-process strating RAM      	['169.04 MB', '168.23 MB']
+unit per-process final RAM         	['168.99 MB', '168.29 MB']
+unit per-process minimum RAM       	['168.99 MB', '168.23 MB']
+unit per-process maximum RAM       	['169.04 MB', '168.29 MB']
+
+..:: Profile report ::..
+initialize_multiprocessing took <1 second       (20.0% of overall)	RAM went from 256.92 MB to 424.38 MB (increased by 167.46 MB)
+SpawningSplitWorkers took <1 second       ( 0.0% of overall)	RAM went from 424.94 MB to 473.08 MB (increased by 48.14 MB)
+TerminatingSplitWorkers took <1 second       ( 0.0% of overall)	RAM went from 1.43 GB to 427.22 MB (decreased by 1.01 GB)
+store_output         took <1 second       ( 0.0% of overall)	RAM went from 266.03 MB to 266.47 MB (increased by 456.00 KB)
+
+* Profiling splits *
+Wall time                     	<1 second
+Total processes used          	5
+Average number processes used 	2.2
+Paralellization efficiency    	43.1%
+Units profiled                	17
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	<1 second
+Longest running unit          	4.2
+Per-process efficiency        	['100.0', '18.1', '18.6', '25.7', '57.4']
+unit per-process strating RAM      	['170.16 MB', '168.91 MB', '171.36 MB', '168.49 MB', '171.57 MB']
+unit per-process final RAM         	['171.67 MB', '171.12 MB', '169.55 MB', '168.49 MB', '168.68 MB']
+unit per-process minimum RAM       	['169.20 MB', '168.91 MB', '169.55 MB', '168.49 MB', '168.68 MB']
+unit per-process maximum RAM       	['171.67 MB', '171.12 MB', '171.36 MB', '168.49 MB', '171.57 MB']
+Number of groups              	5
+Average time per group        	<1 second
+Median time per group         	<1 second
+
+* Merging splits and profiling genes *
+Wall time                     	<1 second
+Total processes used          	3
+Average number processes used 	1.5
+Paralellization efficiency    	50.7%
+Units profiled                	3
+Average time per unit         	<1 second
+Median time per unit          	<1 second
+Maximum unit time             	<1 second
+Longest running unit          	4
+Per-process efficiency        	['10.4', '100.0', '60.9']
+unit per-process strating RAM      	['169.42 MB', '168.49 MB', '174.09 MB']
+unit per-process final RAM         	['169.42 MB', '168.49 MB', '174.09 MB']
+unit per-process minimum RAM       	['169.42 MB', '168.49 MB', '174.09 MB']
+unit per-process maximum RAM       	['169.42 MB', '168.49 MB', '174.09 MB']
+Number of groups              	3
+Average time per group        	<1 second
+Median time per group         	<1 second
+
+..:: Geneome level report ::..
+genomeLevel_from_IS  took <1 second       (100.0% of overall)	RAM went from 266.53 MB to 323.57 MB (increased by 57.04 MB)
+scaffold_info        took <1 second       ( 0.0% of overall)	RAM went from 266.58 MB to 266.70 MB (increased by 116.00 KB)
+coverage_info        took <1 second       ( 0.0% of overall)	RAM went from 268.14 MB to 323.26 MB (increased by 55.12 MB)
+mapping_info         took <1 second       ( 0.0% of overall)	RAM went from 323.30 MB to 323.32 MB (increased by 12.00 KB)
+
+..:: Plotting ::..
+Plot 1 took <1 second
+Plot 2 took <1 second
+Plot 3 took <1 second
+Plot 6 took <1 second
+
+..:: Compare ::..
+
+
+..:: Failures ::..
+No failures

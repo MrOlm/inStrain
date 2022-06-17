@@ -1,0 +1,795 @@
+22-06-16 17:36:54 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+22-06-16 17:36:54 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/log/log.log***
+22-06-16 17:36:54 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain profile /Users/mattolm/Programs/inStrain/test/test_data/liver.bam /Users/mattolm/Programs/inStrain/test/test_data/transcriptome_chopped.fa -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test -d
+
+22-06-16 17:36:54 DEBUG    inStrain version 1.6.1 was run 
+
+22-06-16 17:36:54 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+22-06-16 17:36:54 DEBUG    $$$$$$$$$$ DEPENDENCY REPORT $$$$$$$$$$
+PYTHON
+Running python v3.7.8 | packaged by conda-forge | (default, Jul 31 2020, 02:37:09) 
+[Clang 10.0.1 ]
+
+PROGRAM DEPENDENCIES
+samtools...................... all good   (version=samtools 1.9) (location = /Users/mattolm/miniconda3/envs/python3.7/bin/samtools)
+coverm........................ all good   (version=coverm 0.6.0) (location = /Users/mattolm/.cargo/bin/coverm)
+
+PYTHON DEPENDENCIES
+matplotlib.................... all good   (version=3.2.2) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/matplotlib/__init__.py)
+seaborn....................... all good   (version=0.11.1) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/seaborn/__init__.py)
+numpy......................... all good   (version=1.19.5) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/numpy/__init__.py)
+Bio........................... all good   (version=1.74) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/Bio/__init__.py)
+pysam......................... all good   (version=0.15.3) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/pysam/__init__.py)
+pandas........................ all good   (version=1.0.1) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/pandas/__init__.py)
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+22-06-16 17:36:54 INFO     ***************************************************
+    ..:: inStrain profile Step 1. Filter reads ::..
+***************************************************
+        
+22-06-16 17:36:54 DEBUG    Checkpoint main_profile filter_reads start 177152000
+22-06-16 17:36:54 DEBUG    Checkpoint FilterReads load_fasta start 177696768
+22-06-16 17:36:54 DEBUG    Checkpoint FilterReads load_fasta end 178106368
+22-06-16 17:36:54 DEBUG    Checkpoint FilterReads get_paired_reads_multi start 178106368
+22-06-16 17:36:54 DEBUG    Checkpoint FilterReads multiprocessing start 180432896
+22-06-16 17:36:54 DEBUG    Establishing processes
+22-06-16 17:36:55 DEBUG    
+WorkerLog GetPairedReads 1 start 177254400 1655426215.7753768 11458
+WorkerLog GetPairedReads 1 end 177360896 1655426215.7754729 11458
+22-06-16 17:36:55 DEBUG    
+WorkerLog GetPairedReads 2 start 176406528 1655426215.775397 11459
+WorkerLog GetPairedReads 2 end 176627712 1655426215.776777 11459
+22-06-16 17:36:55 DEBUG    
+WorkerLog GetPairedReads 3 start 177201152 1655426215.7757618 11458
+WorkerLog GetPairedReads 3 end 177324032 1655426215.779364 11458
+22-06-16 17:36:55 DEBUG    
+WorkerLog GetPairedReads 4 start 176463872 1655426215.77718 11459
+WorkerLog GetPairedReads 4 end 176795648 1655426215.827133 11459
+22-06-16 17:36:55 DEBUG    Checkpoint FilterReads multiprocessing end 249044992
+22-06-16 17:36:55 DEBUG    Checkpoint FilterReads get_paired_reads_multi end 249667584
+22-06-16 17:36:55 DEBUG    Checkpoint FilterReads paired_reads start 249663488
+22-06-16 17:36:55 DEBUG    Checkpoint FilterReads paired_reads end 249688064
+22-06-16 17:36:55 DEBUG    Checkpoint FilterReads filter_reads start 249688064
+22-06-16 17:36:55 DEBUG    bytecode dump:
+>          0	NOP(arg=None, lineno=393)
+           2	LOAD_CONST(arg=1, lineno=393)
+           4	LOAD_GLOBAL(arg=0, lineno=393)
+           6	LOAD_FAST(arg=0, lineno=393)
+           8	LOAD_CONST(arg=2, lineno=393)
+          10	BINARY_SUBSCR(arg=None, lineno=393)
+          12	CALL_FUNCTION(arg=1, lineno=393)
+          14	LOAD_GLOBAL(arg=0, lineno=393)
+          16	LOAD_FAST(arg=0, lineno=393)
+          18	LOAD_CONST(arg=3, lineno=393)
+          20	BINARY_SUBSCR(arg=None, lineno=393)
+          22	CALL_FUNCTION(arg=1, lineno=393)
+          24	BINARY_TRUE_DIVIDE(arg=None, lineno=393)
+          26	BINARY_SUBTRACT(arg=None, lineno=393)
+          28	STORE_FAST(arg=6, lineno=393)
+          30	LOAD_FAST(arg=6, lineno=394)
+          32	LOAD_FAST(arg=2, lineno=394)
+          34	COMPARE_OP(arg=4, lineno=394)
+          36	POP_JUMP_IF_FALSE(arg=46, lineno=394)
+          38	LOAD_CONST(arg=1, lineno=395)
+          40	LOAD_FAST(arg=1, lineno=395)
+          42	LOAD_CONST(arg=2, lineno=395)
+          44	STORE_SUBSCR(arg=None, lineno=395)
+>         46	LOAD_FAST(arg=0, lineno=398)
+          48	LOAD_CONST(arg=4, lineno=398)
+          50	BINARY_SUBSCR(arg=None, lineno=398)
+          52	LOAD_FAST(arg=3, lineno=398)
+          54	COMPARE_OP(arg=4, lineno=398)
+          56	POP_JUMP_IF_FALSE(arg=66, lineno=398)
+          58	LOAD_CONST(arg=1, lineno=399)
+          60	LOAD_FAST(arg=1, lineno=399)
+          62	LOAD_CONST(arg=3, lineno=399)
+          64	STORE_SUBSCR(arg=None, lineno=399)
+>         66	LOAD_FAST(arg=0, lineno=402)
+          68	LOAD_CONST(arg=5, lineno=402)
+          70	BINARY_SUBSCR(arg=None, lineno=402)
+          72	LOAD_CONST(arg=4, lineno=402)
+          74	COMPARE_OP(arg=2, lineno=402)
+          76	LOAD_FAST(arg=0, lineno=402)
+          78	LOAD_CONST(arg=1, lineno=402)
+          80	BINARY_SUBSCR(arg=None, lineno=402)
+          82	LOAD_CONST(arg=6, lineno=402)
+          84	COMPARE_OP(arg=3, lineno=402)
+          86	BINARY_AND(arg=None, lineno=402)
+          88	POP_JUMP_IF_FALSE(arg=132, lineno=402)
+          90	LOAD_FAST(arg=0, lineno=403)
+          92	LOAD_CONST(arg=1, lineno=403)
+          94	BINARY_SUBSCR(arg=None, lineno=403)
+          96	LOAD_FAST(arg=4, lineno=403)
+          98	COMPARE_OP(arg=4, lineno=403)
+         100	POP_JUMP_IF_FALSE(arg=110, lineno=403)
+         102	LOAD_CONST(arg=1, lineno=404)
+         104	LOAD_FAST(arg=1, lineno=404)
+         106	LOAD_CONST(arg=4, lineno=404)
+         108	STORE_SUBSCR(arg=None, lineno=404)
+>        110	LOAD_FAST(arg=0, lineno=405)
+         112	LOAD_CONST(arg=1, lineno=405)
+         114	BINARY_SUBSCR(arg=None, lineno=405)
+         116	LOAD_FAST(arg=5, lineno=405)
+         118	COMPARE_OP(arg=0, lineno=405)
+         120	POP_JUMP_IF_FALSE(arg=148, lineno=405)
+         122	LOAD_CONST(arg=1, lineno=406)
+         124	LOAD_FAST(arg=1, lineno=406)
+         126	LOAD_CONST(arg=1, lineno=406)
+         128	STORE_SUBSCR(arg=None, lineno=406)
+         130	JUMP_FORWARD(arg=16, lineno=406)
+>        132	LOAD_CONST(arg=1, lineno=410)
+         134	LOAD_FAST(arg=1, lineno=410)
+         136	LOAD_CONST(arg=1, lineno=410)
+         138	STORE_SUBSCR(arg=None, lineno=410)
+         140	LOAD_CONST(arg=1, lineno=411)
+         142	LOAD_FAST(arg=1, lineno=411)
+         144	LOAD_CONST(arg=4, lineno=411)
+         146	STORE_SUBSCR(arg=None, lineno=411)
+>        148	LOAD_FAST(arg=1, lineno=413)
+         150	RETURN_VALUE(arg=None, lineno=413)
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=0 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=0, inst=NOP(arg=None, lineno=393)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=2, inst=LOAD_CONST(arg=1, lineno=393)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=4, inst=LOAD_GLOBAL(arg=0, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=6, inst=LOAD_FAST(arg=0, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$4load_global.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=8, inst=LOAD_CONST(arg=2, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$4load_global.1', '$info6.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=10, inst=BINARY_SUBSCR(arg=None, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$4load_global.1', '$info6.2', '$const8.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=12, inst=CALL_FUNCTION(arg=1, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$4load_global.1', '$10binary_subscr.4']
+22-06-16 17:36:55 DEBUG    dispatch pc=14, inst=LOAD_GLOBAL(arg=0, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5']
+22-06-16 17:36:55 DEBUG    dispatch pc=16, inst=LOAD_FAST(arg=0, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5', '$14load_global.6']
+22-06-16 17:36:55 DEBUG    dispatch pc=18, inst=LOAD_CONST(arg=3, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5', '$14load_global.6', '$info16.7']
+22-06-16 17:36:55 DEBUG    dispatch pc=20, inst=BINARY_SUBSCR(arg=None, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5', '$14load_global.6', '$info16.7', '$const18.8']
+22-06-16 17:36:55 DEBUG    dispatch pc=22, inst=CALL_FUNCTION(arg=1, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5', '$14load_global.6', '$20binary_subscr.9']
+22-06-16 17:36:55 DEBUG    dispatch pc=24, inst=BINARY_TRUE_DIVIDE(arg=None, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$12call_function.5', '$22call_function.10']
+22-06-16 17:36:55 DEBUG    dispatch pc=26, inst=BINARY_SUBTRACT(arg=None, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$const2.0', '$24binary_true_divide.11']
+22-06-16 17:36:55 DEBUG    dispatch pc=28, inst=STORE_FAST(arg=6, lineno=393)
+22-06-16 17:36:55 DEBUG    stack ['$26binary_subtract.12']
+22-06-16 17:36:55 DEBUG    dispatch pc=30, inst=LOAD_FAST(arg=6, lineno=394)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=32, inst=LOAD_FAST(arg=2, lineno=394)
+22-06-16 17:36:55 DEBUG    stack ['$PID30.13']
+22-06-16 17:36:55 DEBUG    dispatch pc=34, inst=COMPARE_OP(arg=4, lineno=394)
+22-06-16 17:36:55 DEBUG    stack ['$PID30.13', '$min_read_ani32.14']
+22-06-16 17:36:55 DEBUG    dispatch pc=36, inst=POP_JUMP_IF_FALSE(arg=46, lineno=394)
+22-06-16 17:36:55 DEBUG    stack ['$34compare_op.15']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=38, stack=(), blockstack=(), npush=0), Edge(pc=46, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=38 nstack_initial=0), State(pc_initial=46 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=38, inst=LOAD_CONST(arg=1, lineno=395)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=40, inst=LOAD_FAST(arg=1, lineno=395)
+22-06-16 17:36:55 DEBUG    stack ['$const38.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=42, inst=LOAD_CONST(arg=2, lineno=395)
+22-06-16 17:36:55 DEBUG    stack ['$const38.0', '$f_results40.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=44, inst=STORE_SUBSCR(arg=None, lineno=395)
+22-06-16 17:36:55 DEBUG    stack ['$const38.0', '$f_results40.1', '$const42.2']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=46, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=46 nstack_initial=0), State(pc_initial=46 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=46, inst=LOAD_FAST(arg=0, lineno=398)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=48, inst=LOAD_CONST(arg=4, lineno=398)
+22-06-16 17:36:55 DEBUG    stack ['$info46.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=50, inst=BINARY_SUBSCR(arg=None, lineno=398)
+22-06-16 17:36:55 DEBUG    stack ['$info46.0', '$const48.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=52, inst=LOAD_FAST(arg=3, lineno=398)
+22-06-16 17:36:55 DEBUG    stack ['$50binary_subscr.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=54, inst=COMPARE_OP(arg=4, lineno=398)
+22-06-16 17:36:55 DEBUG    stack ['$50binary_subscr.2', '$min_mapq52.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=56, inst=POP_JUMP_IF_FALSE(arg=66, lineno=398)
+22-06-16 17:36:55 DEBUG    stack ['$54compare_op.4']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=58, stack=(), blockstack=(), npush=0), Edge(pc=66, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=46 nstack_initial=0), State(pc_initial=58 nstack_initial=0), State(pc_initial=66 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=58 nstack_initial=0), State(pc_initial=66 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=58, inst=LOAD_CONST(arg=1, lineno=399)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=60, inst=LOAD_FAST(arg=1, lineno=399)
+22-06-16 17:36:55 DEBUG    stack ['$const58.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=62, inst=LOAD_CONST(arg=3, lineno=399)
+22-06-16 17:36:55 DEBUG    stack ['$const58.0', '$f_results60.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=64, inst=STORE_SUBSCR(arg=None, lineno=399)
+22-06-16 17:36:55 DEBUG    stack ['$const58.0', '$f_results60.1', '$const62.2']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=66, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=66 nstack_initial=0), State(pc_initial=66 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=66, inst=LOAD_FAST(arg=0, lineno=402)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=68, inst=LOAD_CONST(arg=5, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$info66.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=70, inst=BINARY_SUBSCR(arg=None, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$info66.0', '$const68.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=72, inst=LOAD_CONST(arg=4, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$70binary_subscr.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=74, inst=COMPARE_OP(arg=2, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$70binary_subscr.2', '$const72.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=76, inst=LOAD_FAST(arg=0, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4']
+22-06-16 17:36:55 DEBUG    dispatch pc=78, inst=LOAD_CONST(arg=1, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4', '$info76.5']
+22-06-16 17:36:55 DEBUG    dispatch pc=80, inst=BINARY_SUBSCR(arg=None, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4', '$info76.5', '$const78.6']
+22-06-16 17:36:55 DEBUG    dispatch pc=82, inst=LOAD_CONST(arg=6, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4', '$80binary_subscr.7']
+22-06-16 17:36:55 DEBUG    dispatch pc=84, inst=COMPARE_OP(arg=3, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4', '$80binary_subscr.7', '$const82.8']
+22-06-16 17:36:55 DEBUG    dispatch pc=86, inst=BINARY_AND(arg=None, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$74compare_op.4', '$84compare_op.9']
+22-06-16 17:36:55 DEBUG    dispatch pc=88, inst=POP_JUMP_IF_FALSE(arg=132, lineno=402)
+22-06-16 17:36:55 DEBUG    stack ['$86binary_and.10']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=90, stack=(), blockstack=(), npush=0), Edge(pc=132, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=66 nstack_initial=0), State(pc_initial=90 nstack_initial=0), State(pc_initial=132 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=90 nstack_initial=0), State(pc_initial=132 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=90, inst=LOAD_FAST(arg=0, lineno=403)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=92, inst=LOAD_CONST(arg=1, lineno=403)
+22-06-16 17:36:55 DEBUG    stack ['$info90.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=94, inst=BINARY_SUBSCR(arg=None, lineno=403)
+22-06-16 17:36:55 DEBUG    stack ['$info90.0', '$const92.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=96, inst=LOAD_FAST(arg=4, lineno=403)
+22-06-16 17:36:55 DEBUG    stack ['$94binary_subscr.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=98, inst=COMPARE_OP(arg=4, lineno=403)
+22-06-16 17:36:55 DEBUG    stack ['$94binary_subscr.2', '$min_insert96.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=100, inst=POP_JUMP_IF_FALSE(arg=110, lineno=403)
+22-06-16 17:36:55 DEBUG    stack ['$98compare_op.4']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=102, stack=(), blockstack=(), npush=0), Edge(pc=110, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=132 nstack_initial=0), State(pc_initial=102 nstack_initial=0), State(pc_initial=110 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=132, inst=LOAD_CONST(arg=1, lineno=410)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=134, inst=LOAD_FAST(arg=1, lineno=410)
+22-06-16 17:36:55 DEBUG    stack ['$const132.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=136, inst=LOAD_CONST(arg=1, lineno=410)
+22-06-16 17:36:55 DEBUG    stack ['$const132.0', '$f_results134.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=138, inst=STORE_SUBSCR(arg=None, lineno=410)
+22-06-16 17:36:55 DEBUG    stack ['$const132.0', '$f_results134.1', '$const136.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=140, inst=LOAD_CONST(arg=1, lineno=411)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=142, inst=LOAD_FAST(arg=1, lineno=411)
+22-06-16 17:36:55 DEBUG    stack ['$const140.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=144, inst=LOAD_CONST(arg=4, lineno=411)
+22-06-16 17:36:55 DEBUG    stack ['$const140.3', '$f_results142.4']
+22-06-16 17:36:55 DEBUG    dispatch pc=146, inst=STORE_SUBSCR(arg=None, lineno=411)
+22-06-16 17:36:55 DEBUG    stack ['$const140.3', '$f_results142.4', '$const144.5']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=148, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=102 nstack_initial=0), State(pc_initial=110 nstack_initial=0), State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=102, inst=LOAD_CONST(arg=1, lineno=404)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=104, inst=LOAD_FAST(arg=1, lineno=404)
+22-06-16 17:36:55 DEBUG    stack ['$const102.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=106, inst=LOAD_CONST(arg=4, lineno=404)
+22-06-16 17:36:55 DEBUG    stack ['$const102.0', '$f_results104.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=108, inst=STORE_SUBSCR(arg=None, lineno=404)
+22-06-16 17:36:55 DEBUG    stack ['$const102.0', '$f_results104.1', '$const106.2']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=110, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=110 nstack_initial=0), State(pc_initial=148 nstack_initial=0), State(pc_initial=110 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=110, inst=LOAD_FAST(arg=0, lineno=405)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=112, inst=LOAD_CONST(arg=1, lineno=405)
+22-06-16 17:36:55 DEBUG    stack ['$info110.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=114, inst=BINARY_SUBSCR(arg=None, lineno=405)
+22-06-16 17:36:55 DEBUG    stack ['$info110.0', '$const112.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=116, inst=LOAD_FAST(arg=5, lineno=405)
+22-06-16 17:36:55 DEBUG    stack ['$114binary_subscr.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=118, inst=COMPARE_OP(arg=0, lineno=405)
+22-06-16 17:36:55 DEBUG    stack ['$114binary_subscr.2', '$max_insert116.3']
+22-06-16 17:36:55 DEBUG    dispatch pc=120, inst=POP_JUMP_IF_FALSE(arg=148, lineno=405)
+22-06-16 17:36:55 DEBUG    stack ['$118compare_op.4']
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=122, stack=(), blockstack=(), npush=0), Edge(pc=148, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=148 nstack_initial=0), State(pc_initial=110 nstack_initial=0), State(pc_initial=122 nstack_initial=0), State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=148, inst=LOAD_FAST(arg=1, lineno=413)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=150, inst=RETURN_VALUE(arg=None, lineno=413)
+22-06-16 17:36:55 DEBUG    stack ['$f_results148.0']
+22-06-16 17:36:55 DEBUG    end state. edges=[]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=110 nstack_initial=0), State(pc_initial=122 nstack_initial=0), State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=122 nstack_initial=0), State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    stack: []
+22-06-16 17:36:55 DEBUG    dispatch pc=122, inst=LOAD_CONST(arg=1, lineno=406)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    dispatch pc=124, inst=LOAD_FAST(arg=1, lineno=406)
+22-06-16 17:36:55 DEBUG    stack ['$const122.0']
+22-06-16 17:36:55 DEBUG    dispatch pc=126, inst=LOAD_CONST(arg=1, lineno=406)
+22-06-16 17:36:55 DEBUG    stack ['$const122.0', '$f_results124.1']
+22-06-16 17:36:55 DEBUG    dispatch pc=128, inst=STORE_SUBSCR(arg=None, lineno=406)
+22-06-16 17:36:55 DEBUG    stack ['$const122.0', '$f_results124.1', '$const126.2']
+22-06-16 17:36:55 DEBUG    dispatch pc=130, inst=JUMP_FORWARD(arg=16, lineno=406)
+22-06-16 17:36:55 DEBUG    stack []
+22-06-16 17:36:55 DEBUG    end state. edges=[Edge(pc=148, stack=(), blockstack=(), npush=0)]
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=148 nstack_initial=0), State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    pending: deque([State(pc_initial=148 nstack_initial=0)])
+22-06-16 17:36:55 DEBUG    -------------------------Prune PHIs-------------------------
+22-06-16 17:36:55 DEBUG    Used_phis: defaultdict(<class 'set'>,
+            {State(pc_initial=0 nstack_initial=0): set(),
+             State(pc_initial=38 nstack_initial=0): set(),
+             State(pc_initial=46 nstack_initial=0): set(),
+             State(pc_initial=58 nstack_initial=0): set(),
+             State(pc_initial=66 nstack_initial=0): set(),
+             State(pc_initial=90 nstack_initial=0): set(),
+             State(pc_initial=102 nstack_initial=0): set(),
+             State(pc_initial=110 nstack_initial=0): set(),
+             State(pc_initial=122 nstack_initial=0): set(),
+             State(pc_initial=132 nstack_initial=0): set(),
+             State(pc_initial=148 nstack_initial=0): set()})
+22-06-16 17:36:55 DEBUG    defmap: {}
+22-06-16 17:36:55 DEBUG    phismap: defaultdict(<class 'set'>, {})
+22-06-16 17:36:55 DEBUG    changing phismap: defaultdict(<class 'set'>, {})
+22-06-16 17:36:55 DEBUG    keep phismap: {}
+22-06-16 17:36:55 DEBUG    new_out: defaultdict(<class 'dict'>, {})
+22-06-16 17:36:55 DEBUG    ----------------------DONE Prune PHIs-----------------------
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=0 nstack_initial=0):
+AdaptBlockInfo(insts=((0, {}), (2, {'res': '$const2.0'}), (4, {'res': '$4load_global.1'}), (6, {'res': '$info6.2'}), (8, {'res': '$const8.3'}), (10, {'index': '$const8.3', 'target': '$info6.2', 'res': '$10binary_subscr.4'}), (12, {'func': '$4load_global.1', 'args': ['$10binary_subscr.4'], 'res': '$12call_function.5'}), (14, {'res': '$14load_global.6'}), (16, {'res': '$info16.7'}), (18, {'res': '$const18.8'}), (20, {'index': '$const18.8', 'target': '$info16.7', 'res': '$20binary_subscr.9'}), (22, {'func': '$14load_global.6', 'args': ['$20binary_subscr.9'], 'res': '$22call_function.10'}), (24, {'lhs': '$12call_function.5', 'rhs': '$22call_function.10', 'res': '$24binary_true_divide.11'}), (26, {'lhs': '$const2.0', 'rhs': '$24binary_true_divide.11', 'res': '$26binary_subtract.12'}), (28, {'value': '$26binary_subtract.12'}), (30, {'res': '$PID30.13'}), (32, {'res': '$min_read_ani32.14'}), (34, {'lhs': '$PID30.13', 'rhs': '$min_read_ani32.14', 'res': '$34compare_op.15'}), (36, {'pred': '$34compare_op.15'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={38: (), 46: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=38 nstack_initial=0):
+AdaptBlockInfo(insts=((38, {'res': '$const38.0'}), (40, {'res': '$f_results40.1'}), (42, {'res': '$const42.2'}), (44, {'target': '$f_results40.1', 'index': '$const42.2', 'value': '$const38.0'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={46: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=46 nstack_initial=0):
+AdaptBlockInfo(insts=((46, {'res': '$info46.0'}), (48, {'res': '$const48.1'}), (50, {'index': '$const48.1', 'target': '$info46.0', 'res': '$50binary_subscr.2'}), (52, {'res': '$min_mapq52.3'}), (54, {'lhs': '$50binary_subscr.2', 'rhs': '$min_mapq52.3', 'res': '$54compare_op.4'}), (56, {'pred': '$54compare_op.4'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={58: (), 66: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=58 nstack_initial=0):
+AdaptBlockInfo(insts=((58, {'res': '$const58.0'}), (60, {'res': '$f_results60.1'}), (62, {'res': '$const62.2'}), (64, {'target': '$f_results60.1', 'index': '$const62.2', 'value': '$const58.0'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={66: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=66 nstack_initial=0):
+AdaptBlockInfo(insts=((66, {'res': '$info66.0'}), (68, {'res': '$const68.1'}), (70, {'index': '$const68.1', 'target': '$info66.0', 'res': '$70binary_subscr.2'}), (72, {'res': '$const72.3'}), (74, {'lhs': '$70binary_subscr.2', 'rhs': '$const72.3', 'res': '$74compare_op.4'}), (76, {'res': '$info76.5'}), (78, {'res': '$const78.6'}), (80, {'index': '$const78.6', 'target': '$info76.5', 'res': '$80binary_subscr.7'}), (82, {'res': '$const82.8'}), (84, {'lhs': '$80binary_subscr.7', 'rhs': '$const82.8', 'res': '$84compare_op.9'}), (86, {'lhs': '$74compare_op.4', 'rhs': '$84compare_op.9', 'res': '$86binary_and.10'}), (88, {'pred': '$86binary_and.10'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={90: (), 132: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=90 nstack_initial=0):
+AdaptBlockInfo(insts=((90, {'res': '$info90.0'}), (92, {'res': '$const92.1'}), (94, {'index': '$const92.1', 'target': '$info90.0', 'res': '$94binary_subscr.2'}), (96, {'res': '$min_insert96.3'}), (98, {'lhs': '$94binary_subscr.2', 'rhs': '$min_insert96.3', 'res': '$98compare_op.4'}), (100, {'pred': '$98compare_op.4'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={102: (), 110: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=102 nstack_initial=0):
+AdaptBlockInfo(insts=((102, {'res': '$const102.0'}), (104, {'res': '$f_results104.1'}), (106, {'res': '$const106.2'}), (108, {'target': '$f_results104.1', 'index': '$const106.2', 'value': '$const102.0'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={110: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=110 nstack_initial=0):
+AdaptBlockInfo(insts=((110, {'res': '$info110.0'}), (112, {'res': '$const112.1'}), (114, {'index': '$const112.1', 'target': '$info110.0', 'res': '$114binary_subscr.2'}), (116, {'res': '$max_insert116.3'}), (118, {'lhs': '$114binary_subscr.2', 'rhs': '$max_insert116.3', 'res': '$118compare_op.4'}), (120, {'pred': '$118compare_op.4'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={122: (), 148: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=122 nstack_initial=0):
+AdaptBlockInfo(insts=((122, {'res': '$const122.0'}), (124, {'res': '$f_results124.1'}), (126, {'res': '$const126.2'}), (128, {'target': '$f_results124.1', 'index': '$const126.2', 'value': '$const122.0'}), (130, {})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={148: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=132 nstack_initial=0):
+AdaptBlockInfo(insts=((132, {'res': '$const132.0'}), (134, {'res': '$f_results134.1'}), (136, {'res': '$const136.2'}), (138, {'target': '$f_results134.1', 'index': '$const136.2', 'value': '$const132.0'}), (140, {'res': '$const140.3'}), (142, {'res': '$f_results142.4'}), (144, {'res': '$const144.5'}), (146, {'target': '$f_results142.4', 'index': '$const144.5', 'value': '$const140.3'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={148: ()})
+22-06-16 17:36:55 DEBUG    block_infos State(pc_initial=148 nstack_initial=0):
+AdaptBlockInfo(insts=((148, {'res': '$f_results148.0'}), (150, {'retval': '$f_results148.0', 'castval': '$150return_value.1'})), outgoing_phis={}, blockstack=(), active_try_block=None, outgoing_edgepushed={})
+22-06-16 17:36:55 DEBUG    label 0:
+    info = arg(0, name=info)                 ['info']
+    f_results = arg(1, name=f_results)       ['f_results']
+    min_read_ani = arg(2, name=min_read_ani) ['min_read_ani']
+    min_mapq = arg(3, name=min_mapq)         ['min_mapq']
+    min_insert = arg(4, name=min_insert)     ['min_insert']
+    max_insert = arg(5, name=max_insert)     ['max_insert']
+    $const2.0 = const(int, 1)                ['$const2.0']
+    $4load_global.1 = global(float: <class 'float'>) ['$4load_global.1']
+    $const8.3 = const(int, 0)                ['$const8.3']
+    $10binary_subscr.4 = getitem(value=info, index=$const8.3, fn=<built-in function getitem>) ['$10binary_subscr.4', '$const8.3', 'info']
+    $12call_function.5 = call $4load_global.1($10binary_subscr.4, func=$4load_global.1, args=[Var($10binary_subscr.4, filter_reads.py:393)], kws=(), vararg=None) ['$10binary_subscr.4', '$12call_function.5', '$4load_global.1']
+    $14load_global.6 = global(float: <class 'float'>) ['$14load_global.6']
+    $const18.8 = const(int, 3)               ['$const18.8']
+    $20binary_subscr.9 = getitem(value=info, index=$const18.8, fn=<built-in function getitem>) ['$20binary_subscr.9', '$const18.8', 'info']
+    $22call_function.10 = call $14load_global.6($20binary_subscr.9, func=$14load_global.6, args=[Var($20binary_subscr.9, filter_reads.py:393)], kws=(), vararg=None) ['$14load_global.6', '$20binary_subscr.9', '$22call_function.10']
+    $24binary_true_divide.11 = $12call_function.5 / $22call_function.10 ['$12call_function.5', '$22call_function.10', '$24binary_true_divide.11']
+    $26binary_subtract.12 = $const2.0 - $24binary_true_divide.11 ['$24binary_true_divide.11', '$26binary_subtract.12', '$const2.0']
+    PID = $26binary_subtract.12              ['$26binary_subtract.12', 'PID']
+    $34compare_op.15 = PID > min_read_ani    ['$34compare_op.15', 'PID', 'min_read_ani']
+    bool36 = global(bool: <class 'bool'>)    ['bool36']
+    $36pred = call bool36($34compare_op.15, func=bool36, args=(Var($34compare_op.15, filter_reads.py:394),), kws=(), vararg=None) ['$34compare_op.15', '$36pred', 'bool36']
+    branch $36pred, 38, 46                   ['$36pred']
+label 38:
+    $const38.0 = const(int, 1)               ['$const38.0']
+    $const42.2 = const(int, 0)               ['$const42.2']
+    f_results[$const42.2] = $const38.0       ['$const38.0', '$const42.2', 'f_results']
+    jump 46                                  []
+label 46:
+    $const48.1 = const(int, 2)               ['$const48.1']
+    $50binary_subscr.2 = getitem(value=info, index=$const48.1, fn=<built-in function getitem>) ['$50binary_subscr.2', '$const48.1', 'info']
+    $54compare_op.4 = $50binary_subscr.2 > min_mapq ['$50binary_subscr.2', '$54compare_op.4', 'min_mapq']
+    bool56 = global(bool: <class 'bool'>)    ['bool56']
+    $56pred = call bool56($54compare_op.4, func=bool56, args=(Var($54compare_op.4, filter_reads.py:398),), kws=(), vararg=None) ['$54compare_op.4', '$56pred', 'bool56']
+    branch $56pred, 58, 66                   ['$56pred']
+label 58:
+    $const58.0 = const(int, 1)               ['$const58.0']
+    $const62.2 = const(int, 3)               ['$const62.2']
+    f_results[$const62.2] = $const58.0       ['$const58.0', '$const62.2', 'f_results']
+    jump 66                                  []
+label 66:
+    $const68.1 = const(int, 4)               ['$const68.1']
+    $70binary_subscr.2 = getitem(value=info, index=$const68.1, fn=<built-in function getitem>) ['$70binary_subscr.2', '$const68.1', 'info']
+    $const72.3 = const(int, 2)               ['$const72.3']
+    $74compare_op.4 = $70binary_subscr.2 == $const72.3 ['$70binary_subscr.2', '$74compare_op.4', '$const72.3']
+    $const78.6 = const(int, 1)               ['$const78.6']
+    $80binary_subscr.7 = getitem(value=info, index=$const78.6, fn=<built-in function getitem>) ['$80binary_subscr.7', '$const78.6', 'info']
+    $const82.8 = const(int, -1)              ['$const82.8']
+    $84compare_op.9 = $80binary_subscr.7 != $const82.8 ['$80binary_subscr.7', '$84compare_op.9', '$const82.8']
+    $86binary_and.10 = $74compare_op.4 & $84compare_op.9 ['$74compare_op.4', '$84compare_op.9', '$86binary_and.10']
+    bool88 = global(bool: <class 'bool'>)    ['bool88']
+    $88pred = call bool88($86binary_and.10, func=bool88, args=(Var($86binary_and.10, filter_reads.py:402),), kws=(), vararg=None) ['$86binary_and.10', '$88pred', 'bool88']
+    branch $88pred, 90, 132                  ['$88pred']
+label 90:
+    $const92.1 = const(int, 1)               ['$const92.1']
+    $94binary_subscr.2 = getitem(value=info, index=$const92.1, fn=<built-in function getitem>) ['$94binary_subscr.2', '$const92.1', 'info']
+    $98compare_op.4 = $94binary_subscr.2 > min_insert ['$94binary_subscr.2', '$98compare_op.4', 'min_insert']
+    bool100 = global(bool: <class 'bool'>)   ['bool100']
+    $100pred = call bool100($98compare_op.4, func=bool100, args=(Var($98compare_op.4, filter_reads.py:403),), kws=(), vararg=None) ['$100pred', '$98compare_op.4', 'bool100']
+    branch $100pred, 102, 110                ['$100pred']
+label 102:
+    $const102.0 = const(int, 1)              ['$const102.0']
+    $const106.2 = const(int, 2)              ['$const106.2']
+    f_results[$const106.2] = $const102.0     ['$const102.0', '$const106.2', 'f_results']
+    jump 110                                 []
+label 110:
+    $const112.1 = const(int, 1)              ['$const112.1']
+    $114binary_subscr.2 = getitem(value=info, index=$const112.1, fn=<built-in function getitem>) ['$114binary_subscr.2', '$const112.1', 'info']
+    $118compare_op.4 = $114binary_subscr.2 < max_insert ['$114binary_subscr.2', '$118compare_op.4', 'max_insert']
+    bool120 = global(bool: <class 'bool'>)   ['bool120']
+    $120pred = call bool120($118compare_op.4, func=bool120, args=(Var($118compare_op.4, filter_reads.py:405),), kws=(), vararg=None) ['$118compare_op.4', '$120pred', 'bool120']
+    branch $120pred, 122, 148                ['$120pred']
+label 122:
+    $const122.0 = const(int, 1)              ['$const122.0']
+    $const126.2 = const(int, 1)              ['$const126.2']
+    f_results[$const126.2] = $const122.0     ['$const122.0', '$const126.2', 'f_results']
+    jump 148                                 []
+label 132:
+    $const132.0 = const(int, 1)              ['$const132.0']
+    $const136.2 = const(int, 1)              ['$const136.2']
+    f_results[$const136.2] = $const132.0     ['$const132.0', '$const136.2', 'f_results']
+    $const140.3 = const(int, 1)              ['$const140.3']
+    $const144.5 = const(int, 2)              ['$const144.5']
+    f_results[$const144.5] = $const140.3     ['$const140.3', '$const144.5', 'f_results']
+    jump 148                                 []
+label 148:
+    $150return_value.1 = cast(value=f_results) ['$150return_value.1', 'f_results']
+    return $150return_value.1                ['$150return_value.1']
+
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 0
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: info = arg(0, name=info)
+22-06-16 17:36:55 DEBUG    on stmt: f_results = arg(1, name=f_results)
+22-06-16 17:36:55 DEBUG    on stmt: min_read_ani = arg(2, name=min_read_ani)
+22-06-16 17:36:55 DEBUG    on stmt: min_mapq = arg(3, name=min_mapq)
+22-06-16 17:36:55 DEBUG    on stmt: min_insert = arg(4, name=min_insert)
+22-06-16 17:36:55 DEBUG    on stmt: max_insert = arg(5, name=max_insert)
+22-06-16 17:36:55 DEBUG    on stmt: $const2.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $4load_global.1 = global(float: <class 'float'>)
+22-06-16 17:36:55 DEBUG    on stmt: $const8.3 = const(int, 0)
+22-06-16 17:36:55 DEBUG    on stmt: $10binary_subscr.4 = static_getitem(value=info, index=0, index_var=$const8.3, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $12call_function.5 = call $4load_global.1($10binary_subscr.4, func=$4load_global.1, args=[Var($10binary_subscr.4, filter_reads.py:393)], kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: $14load_global.6 = global(float: <class 'float'>)
+22-06-16 17:36:55 DEBUG    on stmt: $const18.8 = const(int, 3)
+22-06-16 17:36:55 DEBUG    on stmt: $20binary_subscr.9 = static_getitem(value=info, index=3, index_var=$const18.8, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $22call_function.10 = call $14load_global.6($20binary_subscr.9, func=$14load_global.6, args=[Var($20binary_subscr.9, filter_reads.py:393)], kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: $24binary_true_divide.11 = $12call_function.5 / $22call_function.10
+22-06-16 17:36:55 DEBUG    on stmt: $26binary_subtract.12 = $const2.0 - $24binary_true_divide.11
+22-06-16 17:36:55 DEBUG    on stmt: PID = $26binary_subtract.12
+22-06-16 17:36:55 DEBUG    on stmt: $34compare_op.15 = PID > min_read_ani
+22-06-16 17:36:55 DEBUG    on stmt: bool36 = global(bool: <class 'bool'>)
+22-06-16 17:36:55 DEBUG    on stmt: $36pred = call bool36($34compare_op.15, func=bool36, args=(Var($34compare_op.15, filter_reads.py:394),), kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: branch $36pred, 38, 46
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 38
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const38.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const42.2 = const(int, 0)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[0] = $const38.0
+22-06-16 17:36:55 DEBUG    on stmt: jump 46
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 46
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const48.1 = const(int, 2)
+22-06-16 17:36:55 DEBUG    on stmt: $50binary_subscr.2 = static_getitem(value=info, index=2, index_var=$const48.1, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $54compare_op.4 = $50binary_subscr.2 > min_mapq
+22-06-16 17:36:55 DEBUG    on stmt: bool56 = global(bool: <class 'bool'>)
+22-06-16 17:36:55 DEBUG    on stmt: $56pred = call bool56($54compare_op.4, func=bool56, args=(Var($54compare_op.4, filter_reads.py:398),), kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: branch $56pred, 58, 66
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 58
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const58.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const62.2 = const(int, 3)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[3] = $const58.0
+22-06-16 17:36:55 DEBUG    on stmt: jump 66
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 66
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const68.1 = const(int, 4)
+22-06-16 17:36:55 DEBUG    on stmt: $70binary_subscr.2 = static_getitem(value=info, index=4, index_var=$const68.1, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $const72.3 = const(int, 2)
+22-06-16 17:36:55 DEBUG    on stmt: $74compare_op.4 = $70binary_subscr.2 == $const72.3
+22-06-16 17:36:55 DEBUG    on stmt: $const78.6 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $80binary_subscr.7 = static_getitem(value=info, index=1, index_var=$const78.6, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $const82.8 = const(int, -1)
+22-06-16 17:36:55 DEBUG    on stmt: $84compare_op.9 = $80binary_subscr.7 != $const82.8
+22-06-16 17:36:55 DEBUG    on stmt: $86binary_and.10 = $74compare_op.4 & $84compare_op.9
+22-06-16 17:36:55 DEBUG    on stmt: bool88 = global(bool: <class 'bool'>)
+22-06-16 17:36:55 DEBUG    on stmt: $88pred = call bool88($86binary_and.10, func=bool88, args=(Var($86binary_and.10, filter_reads.py:402),), kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: branch $88pred, 90, 132
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 90
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const92.1 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $94binary_subscr.2 = static_getitem(value=info, index=1, index_var=$const92.1, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $98compare_op.4 = $94binary_subscr.2 > min_insert
+22-06-16 17:36:55 DEBUG    on stmt: bool100 = global(bool: <class 'bool'>)
+22-06-16 17:36:55 DEBUG    on stmt: $100pred = call bool100($98compare_op.4, func=bool100, args=(Var($98compare_op.4, filter_reads.py:403),), kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: branch $100pred, 102, 110
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 102
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const102.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const106.2 = const(int, 2)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[2] = $const102.0
+22-06-16 17:36:55 DEBUG    on stmt: jump 110
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 110
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const112.1 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $114binary_subscr.2 = static_getitem(value=info, index=1, index_var=$const112.1, fn=<built-in function getitem>)
+22-06-16 17:36:55 DEBUG    on stmt: $118compare_op.4 = $114binary_subscr.2 < max_insert
+22-06-16 17:36:55 DEBUG    on stmt: bool120 = global(bool: <class 'bool'>)
+22-06-16 17:36:55 DEBUG    on stmt: $120pred = call bool120($118compare_op.4, func=bool120, args=(Var($118compare_op.4, filter_reads.py:405),), kws=(), vararg=None)
+22-06-16 17:36:55 DEBUG    on stmt: branch $120pred, 122, 148
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 122
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const122.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const126.2 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[1] = $const122.0
+22-06-16 17:36:55 DEBUG    on stmt: jump 148
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 132
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $const132.0 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const136.2 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[1] = $const132.0
+22-06-16 17:36:55 DEBUG    on stmt: $const140.3 = const(int, 1)
+22-06-16 17:36:55 DEBUG    on stmt: $const144.5 = const(int, 2)
+22-06-16 17:36:55 DEBUG    on stmt: f_results[2] = $const140.3
+22-06-16 17:36:55 DEBUG    on stmt: jump 148
+22-06-16 17:36:55 DEBUG    ==== SSA block analysis pass on 148
+22-06-16 17:36:55 DEBUG    Running <numba.core.ssa._GatherDefsHandler object at 0x7fce833b6950>
+22-06-16 17:36:55 DEBUG    on stmt: $150return_value.1 = cast(value=f_results)
+22-06-16 17:36:55 DEBUG    on stmt: return $150return_value.1
+22-06-16 17:36:55 DEBUG    defs defaultdict(<class 'list'>,
+            {'$100pred': [<numba.core.ir.Assign object at 0x7fce833f7350>],
+             '$10binary_subscr.4': [<numba.core.ir.Assign object at 0x7fce833fbad0>],
+             '$114binary_subscr.2': [<numba.core.ir.Assign object at 0x7fce833cb750>],
+             '$118compare_op.4': [<numba.core.ir.Assign object at 0x7fce833f7bd0>],
+             '$120pred': [<numba.core.ir.Assign object at 0x7fce833f7e50>],
+             '$12call_function.5': [<numba.core.ir.Assign object at 0x7fce833ea310>],
+             '$14load_global.6': [<numba.core.ir.Assign object at 0x7fce833ea3d0>],
+             '$150return_value.1': [<numba.core.ir.Assign object at 0x7fce833fbc10>],
+             '$20binary_subscr.9': [<numba.core.ir.Assign object at 0x7fce833fbed0>],
+             '$22call_function.10': [<numba.core.ir.Assign object at 0x7fce833ea7d0>],
+             '$24binary_true_divide.11': [<numba.core.ir.Assign object at 0x7fce833ea890>],
+             '$26binary_subtract.12': [<numba.core.ir.Assign object at 0x7fce833ea990>],
+             '$34compare_op.15': [<numba.core.ir.Assign object at 0x7fce833ead50>],
+             '$36pred': [<numba.core.ir.Assign object at 0x7fce833eaf90>],
+             '$4load_global.1': [<numba.core.ir.Assign object at 0x7fce833b62d0>],
+             '$50binary_subscr.2': [<numba.core.ir.Assign object at 0x7fce833fbf10>],
+             '$54compare_op.4': [<numba.core.ir.Assign object at 0x7fce833f1810>],
+             '$56pred': [<numba.core.ir.Assign object at 0x7fce833f1a90>],
+             '$70binary_subscr.2': [<numba.core.ir.Assign object at 0x7fce833fbe10>],
+             '$74compare_op.4': [<numba.core.ir.Assign object at 0x7fce833f4390>],
+             '$80binary_subscr.7': [<numba.core.ir.Assign object at 0x7fce833fbdd0>],
+             '$84compare_op.9': [<numba.core.ir.Assign object at 0x7fce833f4850>],
+             '$86binary_and.10': [<numba.core.ir.Assign object at 0x7fce833f4990>],
+             '$88pred': [<numba.core.ir.Assign object at 0x7fce833f4bd0>],
+             '$94binary_subscr.2': [<numba.core.ir.Assign object at 0x7fce833fbd90>],
+             '$98compare_op.4': [<numba.core.ir.Assign object at 0x7fce833f70d0>],
+             '$const102.0': [<numba.core.ir.Assign object at 0x7fce833f7490>],
+             '$const106.2': [<numba.core.ir.Assign object at 0x7fce833f7650>],
+             '$const112.1': [<numba.core.ir.Assign object at 0x7fce833f7910>],
+             '$const122.0': [<numba.core.ir.Assign object at 0x7fce833f7f90>],
+             '$const126.2': [<numba.core.ir.Assign object at 0x7fce833fb190>],
+             '$const132.0': [<numba.core.ir.Assign object at 0x7fce833fb410>],
+             '$const136.2': [<numba.core.ir.Assign object at 0x7fce833fb5d0>],
+             '$const140.3': [<numba.core.ir.Assign object at 0x7fce833fb750>],
+             '$const144.5': [<numba.core.ir.Assign object at 0x7fce833fb950>],
+             '$const18.8': [<numba.core.ir.Assign object at 0x7fce833ea590>],
+             '$const2.0': [<numba.core.ir.Assign object at 0x7fce833b6750>],
+             '$const38.0': [<numba.core.ir.Assign object at 0x7fce833f1090>],
+             '$const42.2': [<numba.core.ir.Assign object at 0x7fce833f1250>],
+             '$const48.1': [<numba.core.ir.Assign object at 0x7fce833f1550>],
+             '$const58.0': [<numba.core.ir.Assign object at 0x7fce833f1bd0>],
+             '$const62.2': [<numba.core.ir.Assign object at 0x7fce833f1d90>],
+             '$const68.1': [<numba.core.ir.Assign object at 0x7fce833f4090>],
+             '$const72.3': [<numba.core.ir.Assign object at 0x7fce833f4290>],
+             '$const78.6': [<numba.core.ir.Assign object at 0x7fce833f4590>],
+             '$const8.3': [<numba.core.ir.Assign object at 0x7fce833ea0d0>],
+             '$const82.8': [<numba.core.ir.Assign object at 0x7fce833f4790>],
+             '$const92.1': [<numba.core.ir.Assign object at 0x7fce833f4dd0>],
+             'PID': [<numba.core.ir.Assign object at 0x7fce833eaa90>],
+             'bool100': [<numba.core.ir.Assign object at 0x7fce833f7250>],
+             'bool120': [<numba.core.ir.Assign object at 0x7fce833f7d50>],
+             'bool36': [<numba.core.ir.Assign object at 0x7fce833eae90>],
+             'bool56': [<numba.core.ir.Assign object at 0x7fce833f1990>],
+             'bool88': [<numba.core.ir.Assign object at 0x7fce833f4ad0>],
+             'f_results': [<numba.core.ir.Assign object at 0x7fce833cbed0>],
+             'info': [<numba.core.ir.Assign object at 0x7fce833cbf10>],
+             'max_insert': [<numba.core.ir.Assign object at 0x7fce833a8f90>],
+             'min_insert': [<numba.core.ir.Assign object at 0x7fce833a8d90>],
+             'min_mapq': [<numba.core.ir.Assign object at 0x7fce833a8f10>],
+             'min_read_ani': [<numba.core.ir.Assign object at 0x7fce833a8b90>]})
+22-06-16 17:36:55 DEBUG    SSA violators set()
+22-06-16 17:36:56 DEBUG    Checkpoint FilterReads filter_reads end 265986048
+22-06-16 17:36:56 DEBUG    Checkpoint FilterReads parse_results start 266522624
+22-06-16 17:36:56 INFO     24.0% of pairs and 100.0% of singletons were removed during filtering
+1,454 read pairs remain (0.0003053 Gbp)
+22-06-16 17:36:56 DEBUG    Checkpoint FilterReads parse_results end 266747904
+22-06-16 17:36:56 DEBUG    Checkpoint main_profile filter_reads end 266747904
+22-06-16 17:36:56 INFO     ***************************************************
+.:: inStrain profile Step 2. Profile scaffolds ::..
+***************************************************
+        
+22-06-16 17:36:56 DEBUG    Checkpoint main_profile profile_scaffolds start 266747904
+22-06-16 17:36:56 DEBUG    Creating commands
+22-06-16 17:36:56 DEBUG    There are 5 cmd groups
+22-06-16 17:36:56 DEBUG    Checkpoint Profile initialize_multiprocessing start 269398016
+22-06-16 17:36:57 DEBUG    Submitting split tasks to queue
+22-06-16 17:36:57 DEBUG    Submitting merge tasks to queue
+22-06-16 17:36:57 DEBUG    Checkpoint Profile initialize_multiprocessing end 444993536
+22-06-16 17:36:57 DEBUG    Checkpoint Profile SpawningSplitWorkers start 445579264
+22-06-16 17:36:57 DEBUG    Checkpoint Profile SpawningSplitWorkers end 496062464
+22-06-16 17:36:58 DEBUG    
+WorkerLog SplitProfile 2.1 start 177414144 1655426218.405379 11487
+WorkerLog SplitProfile 2.1 end 178147328 1655426218.410432 11487
+
+WorkerLog SplitProfile 2.2 start 178155520 1655426218.4104981 11487
+WorkerLog SplitProfile 2.2 end 178421760 1655426218.421845 11487
+
+WorkerLog SplitProfile 2.0 start 178425856 1655426218.421901 11487
+WorkerLog SplitProfile 2.0 end 178913280 1655426218.442793 11487
+
+WorkerLog SplitProfile 3.5 start 178913280 1655426218.442843 11487
+WorkerLog SplitProfile 3.5 end 179003392 1655426218.449471 11487
+
+WorkerLog SplitProfile 3.4 start 179003392 1655426218.449514 11487
+WorkerLog SplitProfile 3.4 end 179011584 1655426218.457845 11487
+
+WorkerLog SplitProfile 3.3 start 179011584 1655426218.4578822 11487
+WorkerLog SplitProfile 3.3 end 179027968 1655426218.464072 11487
+
+WorkerLog SplitProfile 3.2 start 179027968 1655426218.4641101 11487
+WorkerLog SplitProfile 3.2 end 179875840 1655426218.570546 11487
+
+WorkerLog SplitProfile 3.1 start 179875840 1655426218.5706072 11487
+WorkerLog SplitProfile 3.1 end 180011008 1655426218.608641 11487
+
+WorkerLog SplitProfile 3.0 start 180011008 1655426218.608703 11487
+WorkerLog SplitProfile 3.0 end 180011008 1655426218.61976 11487
+
+WorkerLog SplitProfile 4.7 start 180011008 1655426218.619819 11487
+WorkerLog SplitProfile 4.7 end 180023296 1655426218.622344 11487
+
+GroupLog SplitProfile 11487_1 start 176824320 1655426218.4045289 11487 overall
+GroupLog SplitProfile 11487_1 end 180383744 1655426218.6394382 11487 overall
+
+22-06-16 17:36:58 DEBUG    
+WorkerLog SplitProfile 4.1 start 176676864 1655426218.444 11491
+WorkerLog SplitProfile 4.1 end 179417088 1655426218.647968 11491
+
+GroupLog SplitProfile 11491_1 start 176259072 1655426218.4400342 11491 overall
+GroupLog SplitProfile 11491_1 end 179961856 1655426218.653623 11491 overall
+
+22-06-16 17:36:58 DEBUG    
+WorkerLog SplitProfile 4.5 start 177790976 1655426218.416254 11489
+WorkerLog SplitProfile 4.5 end 179666944 1655426218.611994 11489
+
+WorkerLog SplitProfile 4.4 start 179679232 1655426218.6120949 11489
+WorkerLog SplitProfile 4.4 end 179929088 1655426218.713375 11489
+
+GroupLog SplitProfile 11489_1 start 177364992 1655426218.415468 11489 overall
+GroupLog SplitProfile 11489_1 end 180801536 1655426218.7234821 11489 overall
+
+22-06-16 17:36:59 DEBUG    
+WorkerLog SplitProfile 4.0 start 177115136 1655426218.409285 11488
+WorkerLog SplitProfile 4.0 end 179421184 1655426218.4730759 11488
+
+WorkerLog SplitProfile 4.6 start 179429376 1655426218.473164 11488
+WorkerLog SplitProfile 4.6 end 180977664 1655426219.075093 11488
+
+GroupLog SplitProfile 11488_1 start 176672768 1655426218.405519 11488 overall
+GroupLog SplitProfile 11488_1 end 182362112 1655426219.083967 11488 overall
+
+22-06-16 17:36:59 DEBUG    
+WorkerLog SplitProfile 4.3 start 176877568 1655426218.440759 11493
+WorkerLog SplitProfile 4.3 end 179896320 1655426218.797029 11493
+
+WorkerLog SplitProfile 4.2 start 179904512 1655426218.7971241 11493
+WorkerLog SplitProfile 4.2 end 181235712 1655426219.5698402 11493
+
+GroupLog SplitProfile 11493_1 start 176619520 1655426218.4400089 11493 overall
+GroupLog SplitProfile 11493_1 end 184991744 1655426219.581953 11493 overall
+
+22-06-16 17:36:59 DEBUG    Checkpoint Profile TerminatingSplitWorkers start 1534693376
+22-06-16 17:36:59 DEBUG    Checkpoint Profile TerminatingSplitWorkers end 447971328
+22-06-16 17:36:59 DEBUG    Establishing processes for merging
+22-06-16 17:37:00 DEBUG    
+WorkerLog MergeProfile 2 start 177647616 1655426220.763814 11512
+WorkerLog MergeProfile 2 end 191463424 1655426220.8032892 11512
+
+GroupLog MergeProfile 11512_1 start 177324032 1655426220.757896 11512 overall
+GroupLog MergeProfile 11512_1 end 191463424 1655426220.8033202 11512 overall
+22-06-16 17:37:01 DEBUG    
+WorkerLog MergeProfile 3 start 176676864 1655426220.796381 11513
+WorkerLog MergeProfile 3 end 217767936 1655426221.006892 11513
+
+GroupLog MergeProfile 11513_1 start 176197632 1655426220.779765 11513 overall
+GroupLog MergeProfile 11513_1 end 217767936 1655426221.006926 11513 overall
+22-06-16 17:37:01 DEBUG    
+WorkerLog MergeProfile 4 start 182546432 1655426220.816913 11515
+WorkerLog MergeProfile 4 end 242393088 1655426221.1420958 11515
+
+GroupLog MergeProfile 11515_1 start 177393664 1655426220.7821991 11515 overall
+GroupLog MergeProfile 11515_1 end 242393088 1655426221.142126 11515 overall
+22-06-16 17:37:01 DEBUG    Checkpoint Profile store_output start 278949888
+22-06-16 17:37:01 DEBUG    Writing output files now
+22-06-16 17:37:01 INFO     Cannot generate genes_table, no genes were profiled
+22-06-16 17:37:01 DEBUG    Checkpoint Profile store_output end 279416832
+22-06-16 17:37:01 DEBUG    Checkpoint main_profile profile_scaffolds end 279416832
+22-06-16 17:37:01 INFO     ***************************************************
+.:: inStrain profile Step 4. Make genome-wide ::..
+***************************************************
+        
+22-06-16 17:37:01 DEBUG    Checkpoint main_profile genome_wide start 279425024
+22-06-16 17:37:01 DEBUG    Loading scaffold to bin
+22-06-16 17:37:01 INFO     Scaffold to bin will consider all scaffolds the same genome
+22-06-16 17:37:01 DEBUG    Checkpoint GenomeLevel genomeLevel_from_IS start 279478272
+22-06-16 17:37:01 DEBUG    Checkpoint GenomeLevel scaffold_info start 279531520
+22-06-16 17:37:01 DEBUG    Checkpoint GenomeLevel scaffold_info end 279650304
+22-06-16 17:37:01 DEBUG    Checkpoint GenomeLevel coverage_info start 281161728
+22-06-16 17:37:01 DEBUG    iRep all_scaffolds 1 {'kept_windows': 0.4470659407138536, 'avg_cov': 0.7900364862721135, 'r2': 0.9804274876141538, 'fragMbp': 23.501624549797008, 'unfiltered_raw_iRep': 27.5337108990172, 'iRep_GC_corrected': False}
+22-06-16 17:37:01 DEBUG    Checkpoint GenomeLevel coverage_info end 338960384
+22-06-16 17:37:02 DEBUG    Checkpoint GenomeLevel mapping_info start 339009536
+22-06-16 17:37:02 DEBUG    Checkpoint GenomeLevel mapping_info end 339021824
+22-06-16 17:37:02 ERROR    Error- no genomes detected. Example: stb has scaffold 1, database has scaffold 4
+22-06-16 17:37:02 DEBUG    Checkpoint GenomeLevel genomeLevel_from_IS end 339288064
+22-06-16 17:37:02 DEBUG    Checkpoint main_profile genome_wide end 339296256
+22-06-16 17:37:02 INFO     ***************************************************
+ .:: inStrain profile Step 5. Generate plots ::..
+***************************************************
+        
+22-06-16 17:37:02 DEBUG    Checkpoint main_profile making_plots start 339296256
+22-06-16 17:37:02 INFO     making plots 1, 2, 3, 4, 5, 6, 7, 8, 9
+22-06-16 17:37:02 INFO     Plotting plot 1
+22-06-16 17:37:02 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
+22-06-16 17:37:02 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+22-06-16 17:37:02 DEBUG    Writing TrueType font.
+22-06-16 17:37:02 INFO     Plotting plot 2
+22-06-16 17:37:02 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
+22-06-16 17:37:02 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+22-06-16 17:37:02 DEBUG    Writing TrueType font.
+22-06-16 17:37:02 INFO     Plotting plot 3
+22-06-16 17:37:02 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
+22-06-16 17:37:02 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+22-06-16 17:37:02 DEBUG    Writing TrueType font.
+22-06-16 17:37:02 ERROR    Error- no genomes detected. Example: stb has scaffold 1, database has scaffold 3
+22-06-16 17:37:02 ERROR    Skipping plot 4 - you don't have all required information. You need to run inStrain genome_wide first
+22-06-16 17:37:02 ERROR    Error- no genomes detected. Example: stb has scaffold 1, database has scaffold 4
+22-06-16 17:37:02 ERROR    Skipping plot 5 - you don't have all required information. You need to run inStrain genome_wide first
+22-06-16 17:37:02 INFO     Plotting plot 6
+22-06-16 17:37:02 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
+22-06-16 17:37:02 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+22-06-16 17:37:02 DEBUG    Writing TrueType font.
+22-06-16 17:37:02 INFO     Plotting plot 7
+22-06-16 17:37:03 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
+22-06-16 17:37:03 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+22-06-16 17:37:03 DEBUG    Writing TrueType font.
+22-06-16 17:37:03 ERROR    Error- no genomes detected. Example: stb has scaffold 1, database has scaffold 4
+22-06-16 17:37:03 ERROR    Skipping plot 8 - you don't have all required information. You need to run inStrain profile_genes first
+22-06-16 17:37:03 DEBUG    Skipping genes_coverage gene calculation; you have none
+22-06-16 17:37:03 DEBUG    Skipping genes_clonality gene calculation; you have none
+22-06-16 17:37:03 DEBUG    Skipping genes_SNP_count gene calculation; you have none
+22-06-16 17:37:03 ERROR    Skipping plot 9 - you don't have all required information. You need to run inStrain profile_genes first
+22-06-16 17:37:03 DEBUG    Checkpoint main_profile making_plots end 359555072
+22-06-16 17:37:03 INFO     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+..:: inStrain profile finished ::..
+
+Output tables........ /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/output/
+Figures.............. /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/figures/
+Logging.............. /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/log/
+
+See documentation for output descriptions - https://instrain.readthedocs.io/en/latest/
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        
+22-06-16 17:37:03 DEBUG    inStrain complete; shutting down logger and printing run stats if in debug mode (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/test/log/log.log)
