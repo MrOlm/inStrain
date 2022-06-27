@@ -445,7 +445,7 @@ def _get_basewise_clons3(clonT, MM, fill_zeros=False):
         inds.append(ind)
         vals.append(p2c[ind])
 
-    counts = pd.Series(data = vals, index = np.array(inds).astype('int'))
+    counts = pd.Series(data = vals, index = np.array(inds).astype('int'), dtype='float64')
 
     if fill_zeros:
         counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))

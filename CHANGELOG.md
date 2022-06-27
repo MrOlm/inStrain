@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.6.2] - 2022-06-27
+- Add "dtype='float64'" to all pd.Series() calls to supress warnings
+
 ## [1.6.1] - 2022-06-16
 - Change a pandas "append" statement that was making a lot of noise
 - Fix a bug when scaffold names are numbere

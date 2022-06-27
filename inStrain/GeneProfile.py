@@ -381,10 +381,10 @@ def iterate_clonT_mms(clonT):
             inds.append(ind)
             vals.append(p2c[ind])
 
-        yield mm, pd.Series(data = vals, index = np.array(inds).astype('int'))
+        yield mm, pd.Series(data = vals, index = np.array(inds).astype('int'), dtype='float64')
 
 def iterate_covT_mms(clonT):
-    counts = pd.Series()
+    counts = pd.Series(dtype='float64')
     mms = sorted([int(mm) for mm in list(clonT.keys())])
     for mm in mms:
         count = clonT[mm]

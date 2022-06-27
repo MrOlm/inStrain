@@ -520,9 +520,9 @@ def mm_counts_to_counts_shrunk(MMcounts, maxMM=100, fill_zeros=False):
 
     '''
     if fill_zeros:
-        counts = pd.Series(index=np.arange(fill_zeros))
+        counts = pd.Series(index=np.arange(fill_zeros), dtype='float64')
     else:
-        counts = pd.Series()
+        counts = pd.Series(dtype='float64')
 
     for mm, count in [(mm, count) for mm, count in MMcounts.items() if mm <= maxMM]:
         counts = counts.add(count, fill_value=0)
