@@ -505,13 +505,13 @@ def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
 
         # Make a depth table summarizing depth for all samples
         Ddb_list = []
-	index_list = []
-	for myindex, indexDF in DDST.groupby(level=[1]):
-	    Ddb_list.append(indexDF[['A','C','T','G']].sum(axis=0))
-	    index_list.append(myindex)
-	Ddb = pd.DataFrame(Ddb_list)
-	Ddb = Ddb.set_index(pd.Index(index_list))
-	Ddb['scaffold'] = scaff
+        index_list = []
+        for myindex, indexDF in DDST.groupby(level=[1]):
+            Ddb_list.append(indexDF[['A','C','T','G']].sum(axis=0))
+            index_list.append(myindex)
+        Ddb = pd.DataFrame(Ddb_list)
+        Ddb = Ddb.set_index(pd.Index(index_list))
+        Ddb['scaffold'] = scaff
         Ddb['depth'] = Ddb['A'] + Ddb['C'] + Ddb['G'] + Ddb['T']
 
         # Make a table with sample detection numbers
@@ -532,7 +532,7 @@ def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
         Mdb['var_base'] = Mdb.apply(calc_var_base, axis=1)
 
         Mdbs.append(Mdb)
-	pbar.update(1)
+        pbar.update(1)
     pbar.close()
     # Parse
     from pandas.api.types import CategoricalDtype
