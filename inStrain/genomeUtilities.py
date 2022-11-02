@@ -945,7 +945,7 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
         if scaff in covT:
             cov = inStrain.profile.profile_utilities.mm_counts_to_counts_shrunk(covT[scaff], maxMM=maxMM, fill_zeros=slen)
         else:
-            cov = pd.Series(index=np.arange(slen))
+            cov = pd.Series(index=np.arange(slen), dtype="float64")
 
 
         if mask_edges:
