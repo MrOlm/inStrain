@@ -17,7 +17,7 @@ setup(name='inStrain',
       scripts=['bin/inStrain'],
       python_requires='>=3.4.0',
       install_requires=[
-          'numpy',
+          'numpy<=1.21', # Required for numba (1/6/2023)
           'pandas>=0.25,!=1.1.3',
           'seaborn',
           'matplotlib',

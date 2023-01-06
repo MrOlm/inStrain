@@ -18,7 +18,6 @@ import concurrent.futures
 from subprocess import call
 from concurrent import futures
 from collections import defaultdict
-from numba import jit
 
 import inStrain.profile.linkage
 import inStrain.SNVprofile

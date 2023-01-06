@@ -444,6 +444,6 @@ Using a combination of sample-specific genomes for accuracy and public genome da
 
   dRep dereplicate MergedGenomeSet -g FullListOfGenomes.txt --S_algorithm fastANI --multiround_primary_clustering --clusterAlg greedy -ms 10000 -pa 0.9 -sa 0.95 -nc 0.30 -cm larger -p 16
 
-This command will result in a species-level dereplicated set of genomes that include both your custom genomes and the database genomes. More details on genome dereplication can be found `here <https://drep.readthedocs.io/en/latest/choosing_parameters.html#>`_. Crucially, this above command will not prioritize your custom genomes over the database genomes, which is something that you may want to do. The author of inStrain and dRep (Matt Olm) is working on a dRep `update` that will make this process easier (stay tuned). Feel free to `email <mattolm@berkeley.edu>`_  for advice if this is something you'd like to do.
+This command will result in a species-level dereplicated set of genomes that include both your custom genomes and the database genomes. More details on genome dereplication can be found `here <https://drep.readthedocs.io/en/latest/choosing_parameters.html#>`_. To prioritize your custom genomes over the database genomes, use the flag `extra_weight_table` within dRep.
 
 4) Create a genome database out of the genomes in the `dereplicated_genomes` folder produced in the step above. This can be done following the instructions at the top of Tutorial #2.

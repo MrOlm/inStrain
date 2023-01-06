@@ -63,7 +63,7 @@ You can run prodigal on your :term:`fasta file` to generate an .fna file with th
 
 Example::
 
- $ prodigal -i assembly.fasta -d genes.fna
+ $ prodigal -i assembly.fasta -d genes.fna -a genes.faa
 
 Preparing a scaffold-to-bin file
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -508,3 +508,158 @@ To see the command-line options, check the help::
       --run_statistics RUN_STATISTICS
                             Generate runtime reports for an inStrain run.
                             (default: None)
+
+Other related operations
+----------------------------
+
+The goal of this section is to describe how to perform other operations that are commonly part of an inStrain-based workflow.
+
+Gene Annotation
++++++++++++++++++
+
+Below are some potential ways of annotating genes for follow-up inStrain analysis. The input to all operations is an amino acid fasta file (`.faa`), which should match the `.fna` file you passed to inStrain (see :doc:`user_manual.rst#preparing-the-genes-file` for an example command)
+
+**If you have some other annotation you like to use, please add to to this list by submitting a pull request on GitHub!** (https://github.com/MrOlm/inStrain/blob/master/docs/user_manual.rst)
+
+KEGG Orthologies (KOs)
+`````````````````````````
+KOs can be annotated using KofamScan / KofamKOALA (https://www.genome.jp/tools/kofamkoala/)::
+
+    # Download the database and executables
+    wget https://www.genome.jp/ftp/tools/kofam_scan/kofam_scan-1.3.0.tar.gz
+    wget https://www.genome.jp/ftp/db/kofam/ko_list.gz
+    wget https://www.genome.jp/ftp/db/kofam/profiles.tar.gz
+
+    # Unzip and untar
+    gzip -d ko_list.gz
+    tar xf profiles.tar.gz
+    tar xf kofam_scan-1.3.0.tar.gz
+
+    # Run kofamscan
+    exec_annotation -p profiles -k ko_list --cpu 10 --tmp-dir ./tmp -o genes.faa.kofamscan genes.faa
+
+The following python code parses the resulting table
+
+.. code-block:: python
+
+    import pandas as pd
+    from collections import defaultdict
+
+    def parse_kofamscan(floc):
+        """
+        Parse kofamscan results. Only save results where KO score > threshold
+        
+        Returns:
+            Adb: DataFrame with KOfam results
+            kdb: DataFrame listing KO index -> KO identity
+            gdb: DataFrame listing KO index -> KO identity
+        """
+        table = defaultdict(list)
+        
+        with open(floc, 'r') as o:
+            
+            # This blockis for RAM efficiency
+            while True:
+                line = o.readline()
+                if not line:
+                    break
+        
+                line = line.strip()
+                if line[0] == '#':
+                    continue
+                    
+                lw = line.split()
+                if lw[0] == '*':
+                    del lw[0]
+                    
+                if lw[2] == '-':
+                    lw[2] = 0
+                    
+                try:
+                    if float(lw[3]) >= float(lw[2]):
+                        g = lw[0]
+                        k = lw[1]
+                        
+                        table['gene'].append(g)
+                        table['KO'].append(k)
+                        table['thrshld'].append(float(lw[2]))
+                        table['score'].append(float(lw[3]))
+                        table['e_value'].append(float(lw[4]))
+                        table['KO_definition'].append(' '.join(lw[4:]))
+                except:
+                    print(line)
+                    assert False   
+        o.close()
+        
+        Adb = pd.DataFrame(table)
+        return Adb
+
+    floc = "genes.faa.kofamscan genes.faa"
+    Adb = parse_kofamscan(floc)
+
+Where Adb is a pandas DataFrame that looks like:
+
+.. csv-table:: Adb
+
+    gene,KO,thrshld,score,e_value,KO_definition
+    AP010889.1_1,K02313,130.13,593.2,1.200000e-178,chromosomal replication initiator protein
+    AP010889.1_2,K02338,52.73,345.9,1.300000e-103,DNA polymerase III subunit beta [EC:2.7.7.7]
+    AP010889.1_2,K22359,0.00,12.5,3.000000e-02,alkene monooxygenase gamma subunit [EC:1.14.13...
+    AP010889.1_3,K03629,115.43,397.5,1.600000e-119,DNA replication and repair protein RecF
+    AP010889.1_5,K02470,946.10,986.6,1.500000e-297,DNA gyrase subunit B [EC:5.6.2.2]
+
+Carbohydrate-Active enZYmes (CAZymes)
+``````````````````````````````````````
+CAZymes can be profiled using the HMMs provided by dbCAN, which are based on CAZyDB (http://www.cazy.org/)
+
+```
+# Download the HMMs and executables
+wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/dbCAN-HMMdb-V11.txt
+wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/hmmscan-parser.sh
+
+# Prepare HMMs
+hmmpress dbCAN-HMMdb-V11.txt
+
+# Run (based on readme here - https://bcb.unl.edu/dbCAN2/download/Databases/V11/readme.txt)
+hmmscan --domtblout genes.faa_vs_dbCAN_v11.dm dbCAN-HMMdb-V11.txt genes.faa > /dev/null ; sh /hmmscan-parser.sh genes.faa_vs_dbCAN_v11.dm > genes.faa_vs_dbCAN_v11.dm.ps ; cat genes.faa_vs_dbCAN_v11.dm.ps | awk '$5<1e-15&&$10>0.35' > genes.faa_vs_dbCAN_v11.dm.ps.stringent
+```
+
+Antibiotic Resistance Genes
+``````````````````````````````````````
+There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download).
+
+```
+# Download and unzip database
+wget https://card.mcmaster.ca/download/0/broadstreet-v3.2.5.tar.bz2
+tar -xvjf broadstreet-v3.2.5.tar.bz2
+
+# Make a diamond database out of it
+diamond makedb --in protein_fasta_protein_homolog_model.fasta -d protein_fasta_protein_homolog_model.dmd --threads 6
+
+# Run
+diamond blastp -q genes.faa -d protein_fasta_protein_homolog_model.dmd -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_CARD.dm
+```
+
+Human milk oligosaccharide (HMO) Utilization genes
+````````````````````````````````````````````````````
+This is pretty niche, but it's something I (Matt Olm) am interested in. So here is how it can be done!
+
+```
+# Download the Supplemental Table S4 from here: https://data.mendeley.com/datasets/gc4d9h4x67/2
+
+wget https://data.mendeley.com/public-files/datasets/gc4d9h4x67/files/565528fe-585a-4f71-bb84-9f76625a872b/file_downloaded -O humann2_HMO_annotation.csv
+
+# Download the reference genome from here: https://www.ncbi.nlm.nih.gov/nuccore/CP001095.1
+
+Click “Send to:" -> “Coding Sequences” -> Format: “FASTA Protein” -> Rename to "Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa"
+
+# Pull the HMO genes using pullseq
+
+pullseq -i Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa -n HMO_list > Blon_HMO_genes.faa
+
+# Search against them
+
+diamond makedb --in Blon_HMO_genes.faa -d /LAB_DATA/DATABASES/HMO_ID/Blon_HMO_genes.faa.dmd
+
+diamond blastp -q genes.faa -d Blon_HMO_genes.faa.dmd.dmnd  -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_HMO.b6
+```

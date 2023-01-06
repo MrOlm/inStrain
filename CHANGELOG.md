@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.6.4] - 2023-01-06
+- Update numpy requirement to avoid numba bug
+
 ## [1.6.3] - 2022-08-27
-- Fixs SNP pooling bug https://github.com/MrOlm/inStrain/pull/111
+- Fix SNP pooling bug https://github.com/MrOlm/inStrain/pull/111
 
 ## [1.6.2] - 2022-06-27
 - Add "dtype='float64'" to all pd.Series() calls to supress warnings
