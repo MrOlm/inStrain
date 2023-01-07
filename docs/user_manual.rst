@@ -853,6 +853,7 @@ This is pretty niche, but it's something I (Matt Olm) am interested in. So here 
 The following python code parses the resulting table
 
 .. code-block:: python
+  
   def parse_HMOs(floc, iloc):
       """
       v1.0 - 1/6/2023
