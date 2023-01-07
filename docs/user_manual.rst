@@ -547,12 +547,12 @@ The following python code parses the resulting table
 
     def parse_kofamscan(floc):
         """
+        v1.0: 1/6/2023
+        
         Parse kofamscan results. Only save results where KO score > threshold
         
         Returns:
             Adb: DataFrame with KOfam results
-            kdb: DataFrame listing KO index -> KO identity
-            gdb: DataFrame listing KO index -> KO identity
         """
         table = defaultdict(list)
         
@@ -610,56 +610,293 @@ Where Adb is a pandas DataFrame that looks like:
 
 Carbohydrate-Active enZYmes (CAZymes)
 ``````````````````````````````````````
-CAZymes can be profiled using the HMMs provided by dbCAN, which are based on CAZyDB (http://www.cazy.org/)
+CAZymes can be profiled using the HMMs provided by dbCAN, which are based on CAZyDB (http://www.cazy.org/)::
 
-```
-# Download the HMMs and executables
-wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/dbCAN-HMMdb-V11.txt
-wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/hmmscan-parser.sh
+  # Download the HMMs and executables
+  wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/dbCAN-HMMdb-V11.txt
+  wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/hmmscan-parser.sh
 
-# Prepare HMMs
-hmmpress dbCAN-HMMdb-V11.txt
+  # Prepare HMMs
+  hmmpress dbCAN-HMMdb-V11.txt
 
-# Run (based on readme here - https://bcb.unl.edu/dbCAN2/download/Databases/V11/readme.txt)
-hmmscan --domtblout genes.faa_vs_dbCAN_v11.dm dbCAN-HMMdb-V11.txt genes.faa > /dev/null ; sh /hmmscan-parser.sh genes.faa_vs_dbCAN_v11.dm > genes.faa_vs_dbCAN_v11.dm.ps ; cat genes.faa_vs_dbCAN_v11.dm.ps | awk '$5<1e-15&&$10>0.35' > genes.faa_vs_dbCAN_v11.dm.ps.stringent
-```
+  # Run (based on readme here - https://bcb.unl.edu/dbCAN2/download/Databases/V11/readme.txt)
+  hmmscan --domtblout genes.faa_vs_dbCAN_v11.dm dbCAN-HMMdb-V11.txt genes.faa > /dev/null ; sh /hmmscan-parser.sh genes.faa_vs_dbCAN_v11.dm > genes.faa_vs_dbCAN_v11.dm.ps ; cat genes.faa_vs_dbCAN_v11.dm.ps | awk '$5<1e-15&&$10>0.35' > genes.faa_vs_dbCAN_v11.dm.ps.stringent
+
+The following python code parses the resulting table
+
+.. code-block:: python
+
+  import pandas as pd
+  from collections import defaultdict
+
+  def parse_dbcan(floc):
+      """
+      v1.0 - 1/6/2023
+      
+      Parse dbcan2 results
+      
+      Returns:
+          Cdb: DataFrame with dbCAN2 results
+      """
+      
+      h = ['Family_HMM', 'HMM_length', 'gene', 'Query_length', 'E-value', 'HMM_start', 'HMM_end', 'Query_start', 'Query_end', 'Coverage']
+      Zdb = pd.read_csv(floc, sep='\t', names=h)
+      
+      # Parse names
+      def get_type(f):
+          for start in ['PL', 'AA', 'GH', 'CBM', 'GT', 'CE']:
+              if f.startswith(start):
+                  return start
+          if f in ['dockerin', 'SLH', 'cohesin']:
+              return 'cellulosome'
+          print(f)
+          assert False
+
+      def get_family(f):
+          for start in ['PL', 'AA', 'GH', 'CBM', 'GT', 'CE']:
+              if f.startswith(start):
+                  if f == 'CBM35inCE17':
+                      return 35
+                  try:
+                      return int(f.replace(start, '').split('_')[0])
+                  except:
+                      print(f)
+                      assert False
+          if f in ['dockerin', 'SLH', 'cohesin']:
+              return f
+          print(f)
+          assert False
+
+      def get_subfamily(f):
+          if f.startswith('GT2_'):
+              if f == 'GT2_Glycos_transf_2':
+                  return 0
+              else:
+                  return f.split('_')[-1]
+          if '_' in f:
+              try:
+                  return int(f.split('_')[1])
+              except:
+                  print(f)
+                  assert False
+          else:
+              return 0
+
+      t2n = {'GH':'glycoside hydrolases',
+            'PL':'polysaccharide lyases',
+            'GT':'glycosyltransferases',
+            'CBM':'non-catalytic carbohydrate-binding modules',
+            'AA':'auxiliary activities',
+            'CE':'carbohydrate esterases',
+            'cellulosome':'cellulosome'}    
+
+      ZIdb = Zdb[['Family_HMM']].drop_duplicates()
+      ZIdb['raw_family'] = [x.split('.')[0] for x in ZIdb['Family_HMM']]
+      ZIdb['class'] = [get_type(f) for f in ZIdb['raw_family']]
+      ZIdb['class_name'] = ZIdb['class'].map(t2n)
+      ZIdb['family'] = [get_family(f) for f in ZIdb['raw_family']]
+      ZIdb['subfamily'] = [get_subfamily(f) for f in ZIdb['raw_family']]
+
+      ZIdb['CAZyme'] = [f"{c}{f}_{s}" for c, f, s in zip(ZIdb['class'], ZIdb['family'], ZIdb['subfamily'])]
+      
+      ZSdb = pd.merge(Zdb, ZIdb[['Family_HMM', 'class', 'family',
+        'subfamily', 'CAZyme']], on='Family_HMM', how='left')
+      
+      # Reorder
+      ZSdb = ZSdb[[
+          'gene', 
+          'CAZyme',
+          'class',
+          'family',
+          'subfamily',
+          'Family_HMM',
+          'HMM_length',
+          'Query_length',
+          'E-value',
+          'HMM_start',
+          'HMM_end',
+          'Query_start',
+          'Query_end',
+          'Coverage',
+          ]]
+      
+      return ZSdb
+
+  floc = "/LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/2022_Misame/gene_annotation/dbCAN/DeltaI_NewBifido.faa_vs_dbCAN_v11.dm.ps"
+  Cdb = parse_dbcan(floc)
+
+Where Cdb is a pandas DataFrame that looks like:
+
+.. csv-table:: Cdb
+
+  gene,CAZyme,class,family,subfamily,Family_HMM,HMM_length,Query_length,E-value,HMM_start,HMM_end,Query_start,Query_end,Coverage
+  AP010888.1_103,GH51_0,GH,51,0,GH51.hmm,630,516,1.700000e-137,84,542,9,515,0.726984
+  AP010888.1_107,GH13_18,GH,13,18,GH13_18.hmm,343,509,4.100000e-114,2,343,35,379,0.994169
+  AP010888.1_113,GH13_30,GH,13,30,GH13_30.hmm,365,605,3.100000e-163,1,365,33,403,0.997260
+  AP010888.1_115,GH77_0,GH,77,0,GH77.hmm,494,746,4.700000e-134,2,482,204,728,0.971660
+  AP010888.1_120,GH31_0,GH,31,0,GH31.hmm,427,846,1.300000e-129,1,427,198,627,0.997658
 
 Antibiotic Resistance Genes
 ``````````````````````````````````````
-There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download).
+There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download)::
 
-```
-# Download and unzip database
-wget https://card.mcmaster.ca/download/0/broadstreet-v3.2.5.tar.bz2
-tar -xvjf broadstreet-v3.2.5.tar.bz2
+  # Download and unzip database
+  wget https://card.mcmaster.ca/download/0/broadstreet-v3.2.5.tar.bz2
+  tar -xvjf broadstreet-v3.2.5.tar.bz2
 
-# Make a diamond database out of it
-diamond makedb --in protein_fasta_protein_homolog_model.fasta -d protein_fasta_protein_homolog_model.dmd --threads 6
+  # Make a diamond database out of it
+  diamond makedb --in protein_fasta_protein_homolog_model.fasta -d protein_fasta_protein_homolog_model.dmd --threads 6
 
-# Run
-diamond blastp -q genes.faa -d protein_fasta_protein_homolog_model.dmd -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_CARD.dm
-```
+  # Run
+  diamond blastp -q genes.faa -d protein_fasta_protein_homolog_model.dmd -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_CARD.dm
+
+The following python code parses the resulting table
+
+.. code-block:: python
+
+  import pandas as pd
+  from collections import defaultdict
+
+  def parse_card(floc, jloc=None):
+      """
+      v1.0 - 1/6/2023
+      
+      Parse CARD 
+      
+      Returns:
+          Rdb: DataFrame with CARD results
+      """
+      h = ['gene', 'target', 'percentID', 'alignment_length', 'mm', 'gaps',
+          'querry_start', 'querry_end', 'target_start', 'target_end', 'e-value', 'bit_score',
+          'extra']
+      db = pd.read_csv(floc, sep='\t', names=h)
+      del db['extra']
+      
+      db['protein_seq_accession'] =  [t.split('|')[1] for t in db['target']]
+      db['ARO'] =  [t.split('|')[2].split(':')[-1] for t in db['target']]
+      db['CARD_short_name'] =  [t.split('|')[3].split(':')[-1] for t in db['target']]
+      
+      # Reorder
+      header = ['gene', 'CARD_short_name', 'ARO', 'target']
+      db = db[header + [x for x in list(db.columns) if x not in header]]
+      
+      if jloc is None:
+          return db
+      
+      # Parse more
+      import json
+      j = json.load(open(jloc))
+      
+      aro2name = {}
+      aro2categories = {}
+
+      for n, m2t in j.items():
+          if type(m2t) != type({}):
+              continue
+
+          if 'ARO_description' in m2t: 
+              aro2name[m2t['ARO_accession']] = m2t['ARO_description']
+              
+          if 'ARO_category' in m2t:
+              cats = []
+              for cat, c2t in m2t['ARO_category'].items():
+                  if 'category_aro_accession' in c2t:
+                      cats.append(c2t['category_aro_accession'])
+              aro2categories[m2t['ARO_accession']] = '|'.join(cats)
+              
+              
+      db['ARO_description'] = db['ARO'].map(aro2name)
+      db['ARO_category_accessions'] = db['ARO'].map(aro2categories)
+      
+      header = ['gene', 'CARD_short_name', 'ARO', 'ARO_description', 'ARO_category_accessions', 'target']
+      db = db[header + [x for x in list(db.columns) if x not in header]]
+      
+      return db
+    
+  floc = "/genes.faa_vs_CARD.dm"
+  Rdb = parse_card(floc, jloc = "card.json")
+
+Where Rdb is a pandas DataFrame that looks like:
+
+.. csv-table:: Rdb
+
+  gene,CARD_short_name,ARO,ARO_description,ARO_category_accessions,target,percentID,alignment_length,mm,gaps,querry_start,querry_end,target_start,target_end,e-value,bit_score,protein_seq_accession
+  AP010889.1_21,macB,3000535,MacB is an ATP-binding cassette (ABC) transpor...,0010001|0000006|0000000|3000159|0010000,gb|AAV85982.1|ARO:3000535|macB,34.6,231,137,5,1,227,3,223,7.170000e-33,123.0,AAV85982.1
+  AP010889.1_53,lin,3004651,Listeria monocytogenes EGD-e lin gene for linc...,3000221|0000046|0000017|0001004,gb|AEO25219.1|ARO:3004651|lin,21.4,415,260,14,170,560,80,452,1.560000e-07,51.2,AEO25219.1
+  AP010889.1_106,patA,3000024,PatA is an ABC transporter of Streptococcus pn...,0010001|0000036|3000662|0000001|3000159|0010000,gb|AAK76137.1|ARO:3000024|patA,25.9,228,149,7,80,298,344,560,1.560000e-14,70.9,AAK76137.1
+  AP010889.1_107,bcrA,3002987,bcrA is an ABC transporter found in Bacillus l...,0010001|0000041|3000629|3000630|3000631|300005...,gb|AAA99504.1|ARO:3002987|bcrA,28.3,212,149,2,5,216,4,212,7.430000e-26,99.8,AAA99504.1
+  AP010889.1_129,Abau_AbaF,3004573,Expression of abaF in E. coli resulted in incr...,0010002|0000025|3007149|3000159|0010000,gb|ABO11759.2|ARO:3004573|Abau_AbaF,31.5,435,280,7,24,453,4,425,7.750000e-72,230.0,ABO11759.2
+
 
 Human milk oligosaccharide (HMO) Utilization genes
 ````````````````````````````````````````````````````
-This is pretty niche, but it's something I (Matt Olm) am interested in. So here is how it can be done!
+This is pretty niche, but it's something I (Matt Olm) am interested in. So here is how it can be done!::
 
-```
-# Download the Supplemental Table S4 from here: https://data.mendeley.com/datasets/gc4d9h4x67/2
+  # Download the Supplemental Table S4 from here: https://data.mendeley.com/datasets/gc4d9h4x67/2
 
-wget https://data.mendeley.com/public-files/datasets/gc4d9h4x67/files/565528fe-585a-4f71-bb84-9f76625a872b/file_downloaded -O humann2_HMO_annotation.csv
+  wget https://data.mendeley.com/public-files/datasets/gc4d9h4x67/files/565528fe-585a-4f71-bb84-9f76625a872b/file_downloaded -O humann2_HMO_annotation.csv
 
-# Download the reference genome from here: https://www.ncbi.nlm.nih.gov/nuccore/CP001095.1
+  # Download the reference genome from here: https://www.ncbi.nlm.nih.gov/nuccore/CP001095.1
 
-Click “Send to:" -> “Coding Sequences” -> Format: “FASTA Protein” -> Rename to "Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa"
+  Click “Send to:" -> “Coding Sequences” -> Format: “FASTA Protein” -> Rename to "Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa"
 
-# Pull the HMO genes using pullseq
+  # Pull the HMO genes using pullseq
 
-pullseq -i Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa -n HMO_list > Blon_HMO_genes.faa
+  pullseq -i Bifidobacterium_longum_subsp_infantis_ATCC_15697.NCBI.faa -n HMO_list > Blon_HMO_genes.faa
 
-# Search against them
+  # Search against them
 
-diamond makedb --in Blon_HMO_genes.faa -d /LAB_DATA/DATABASES/HMO_ID/Blon_HMO_genes.faa.dmd
+  diamond makedb --in Blon_HMO_genes.faa -d /LAB_DATA/DATABASES/HMO_ID/Blon_HMO_genes.faa.dmd
 
-diamond blastp -q genes.faa -d Blon_HMO_genes.faa.dmd.dmnd  -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_HMO.b6
-```
+  diamond blastp -q genes.faa -d Blon_HMO_genes.faa.dmd.dmnd  -f 6 -e 0.0001 -k 1 -p 6 -o genes.faa_vs_HMO.b6
+
+The following python code parses the resulting table
+
+.. code-block:: python
+  def parse_HMOs(floc, iloc):
+      """
+      v1.0 - 1/6/2023
+      
+      Parse HMOs 
+      
+      Returns:
+          Hdb: DataFrame with HMO results
+      """
+      
+      Hdb = pd.read_csv(iloc, sep=';')
+      Hdb['target'] = [x.replace('_cds_', '_prot_').replace('lcl.', 'lcl|').strip() for x in Hdb['HMOgenes']]
+      Hdb = Hdb[['target', 'Blon', 'Cluster']]
+
+      h = ['gene', 'target', 'percentID', 'alignment_length', 'mm', 'gaps',
+          'querry_start', 'querry_end', 'target_start', 'target_end', 'e-value', 'bit_score',
+          'extra']
+      db = pd.read_csv(floc, sep='\t', names=h)
+      del db['extra']
+      
+      # Filter a bit
+      db = db[(db['percentID'] >= 50)]
+      
+      # Merge
+      Hdb = pd.merge(db, Hdb, how='left')
+      
+      # Re-order
+      header = ['gene', 'Blon', 'Cluster', 'target']
+      Hdb = Hdb[header + [x for x in list(Hdb.columns) if x not in header]]
+      
+      return Hdb
+      
+  floc = '/LAB_DATA/CURRENT/CURRENT_Metagenomics_PROJECTS/2022_Misame/gene_annotation/HMO/DeltaI_NewBifido.faa_vs_HMO.b6'
+  iloc = '/LAB_DATA/DATABASES/HMO_ID/humann2_HMO_annotation.csv'
+
+  Hdb = parse_HMOs(floc, iloc)
+
+Where Hdb is a pandas DataFrame that looks like:
+
+.. csv-table:: Hdb
+
+  gene,Blon,Cluster,target,percentID,alignment_length,mm,gaps,querry_start,querry_end,target_start,target_end,e-value,bit_score
+  AP010889.1_103,Blon_0104,Urease,lcl|CP001095.1_prot_ACJ51233.1_97,99.8,433,1,0,1,433,1,433,1.570002e-318,852.0
+  AP010889.1_104,Blon_0105,Urease,lcl|CP001095.1_prot_ACJ51234.1_98,100.0,294,0,0,1,294,1,294,1.660000e-195,530.0
+  AP010889.1_105,Blon_0106,Urease,lcl|CP001095.1_prot_ACJ51235.1_99,100.0,371,0,0,1,371,1,371,1.930000e-267,718.0
+  AP010889.1_106,Blon_0107,Urease,lcl|CP001095.1_prot_ACJ51236.1_100,100.0,257,0,0,49,305,14,270,3.000000e-186,506.0
+  AP010889.1_107,Blon_0108,Urease,lcl|CP001095.1_prot_ACJ51237.1_101,100.0,235,0,0,1,235,2,236,2.300000e-166,451.0
