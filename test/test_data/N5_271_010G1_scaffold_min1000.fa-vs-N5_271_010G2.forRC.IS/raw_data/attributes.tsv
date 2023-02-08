@@ -1,6 +1,6 @@
 name	value	type	description
 location	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS	value	Location of SNVprofile object
-version	1.5.7	value	Version of inStrain
+version	1.7.0	value	Version of inStrain
 Rdic	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/Rdic.json	dictionary	Read pair -> mismatches
 mapping_info	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/mapping_info.csv.gz	pandas	Report on reads
 fasta_loc	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa	value	Location of .fasta file used during profile
@@ -13,9 +13,15 @@ raw_snp_table	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_
 cumulative_scaffold_table	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/cumulative_scaffold_table.csv.gz	pandas	Cumulative coverage on mm level. Formerly scaffoldTable.csv
 cumulative_snv_table	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/cumulative_snv_table.csv.gz	pandas	Cumulative SNP on mm level. Formerly snpLocations.pickle
 scaffold_2_mm_2_read_2_snvs	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/scaffold_2_mm_2_read_2_snvs.pickle	pickle	crazy nonsense needed for linkage
+genes_coverage	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/genes_coverage.csv.gz	pandas	Coverage of individual genes
+genes_clonality	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/genes_clonality.csv.gz	pandas	Clonality of individual genes
+genes_SNP_count	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/genes_SNP_count.csv.gz	pandas	SNP density and counts of individual genes
+SNP_mutation_types	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/SNP_mutation_types.csv.gz	pandas	The mutation types of SNPs
 covT	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/covT.hd5	special	Scaffold -> mm -> position based coverage
 clonT	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/clonT.hd5	special	Scaffold -> mm -> position based clonality
 clonTR	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/clonTR.hd5	special	Scaffold -> mm -> rarefied position based clonality
+genes_fileloc	/Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa.genes.fna	value	Location of genes file that was used to call genes
+genes_table	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/genes_table.csv.gz	pandas	Location of genes in the associated genes_file
 scaffold2bin	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/scaffold2bin.json	dictionary	Dictionary of scaffold 2 bin
 bin2length	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/bin2length.json	dictionary	Dictionary of bin 2 total length
 genome_level_info	/Users/mattolm/Programs/inStrain/test/test_backend/testdir/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS/raw_data/genome_level_info.csv.gz	pandas	Table of genome-level information

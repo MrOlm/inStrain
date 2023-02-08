@@ -37,6 +37,7 @@ import inStrain.quickProfile
 import inStrain.SNVprofile
 import inStrain.logUtils
 import inStrain.compare_controller
+import inStrain.parse_annotations
 
 class Controller():
     '''
@@ -76,6 +77,9 @@ class Controller():
         if args.operation == "check_deps":
             self.checkdep_operation(args)
 
+        if args.operation == "parse_annotations":
+            self.parse_annotations_operation(args)
+
         self.shutdown(args)
 
     def profile_operation(self, args):
@@ -83,6 +87,9 @@ class Controller():
 
     def compare_operation(self, args):
         inStrain.compare_controller.CompareController(args).main()
+
+    def parse_annotations_operation(self, args):
+        inStrain.parse_annotations.PAController(args).main()
 
     def filter_reads_operation(self, args):
         inStrain.filter_reads.Controller().main(args)

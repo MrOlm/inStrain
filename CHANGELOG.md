@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.0] - UNPUSHED
+- Update help; remove deprecated things
+- Added "parse_gene_annotations" method
+
 ## [1.6.4] - 2023-01-06
 - Update numpy requirement to avoid numba bug
 

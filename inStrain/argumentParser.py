@@ -32,25 +32,24 @@ class SmartFormatter(argparse.ArgumentDefaultsHelpFormatter):
 def printHelp():
     print('')
     print('                ...::: inStrain v' + __version__ + ' :::...''')
-    print('')
-    print('  Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley. 2021''')
     print('''\
+   
+  Matt Olm and Alex Crits-Christoph. MIT License. Banfield Lab, UC Berkeley.
 
   Choose one of the operations below for more detailed help. See https://instrain.readthedocs.io for documentation.
   Example: inStrain profile -h
 
   Main operations:
-    profile         -> Create an inStrain profile (microdiversity analysis) from a mapping file
-    compare         -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
+    profile           -> Create an inStrain profile (microdiversity analysis) from a mapping file
+    compare            -> Compare multiple inStrain profiles (popANI, coverage_overlap, etc.)
 
   Auxiliary operations:
-    check_deps      -> Print a list of dependencies, versions, and whether they're working
-    quick_profile   -> Quickly calculate coverage and breadth of a mapping using coverM
-    filter_reads    -> Commands related to filtering reads from .bam files
-    plot            -> Make figures from the results of "profile" or "compare"
-    other           -> Other miscellaneous operations
-    profile_genes   -> [DEPRECATED; functionality within PROFILE] Calculate gene-level metrics on an inStrain profile
-    genome_wide     -> [DEPRECATED; functionality within PROFILE / COMPARE] Calculate genome-level metrics
+    check_deps        -> Print a list of dependencies, versions, and whether they're working
+    parse_annotations -> Run a number of outputs based a table of gene annotations 
+    quick_profile     -> Quickly calculate coverage and breadth of a mapping using coverM
+    filter_reads      -> Commands related to filtering reads from .bam files
+    plot              -> Make figures from the results of "profile" or "compare"
+    other             -> Other miscellaneous operations
     ''')
 
 def parse_args(args):
@@ -247,6 +246,32 @@ def parse_args(args):
     #     help="Alignment coverage for greedy clustering- put the fraction not the percentage (e.g. 0.5, not 10)")
     # Gflags.add_argument('--g_mm', action='store', default=100, type=int,\
     #     help="Maximum read mismatch level")
+
+    '''
+    ####### Arguments for parse_annotations operation ######
+    '''
+    parse_anno_parent = argparse.ArgumentParser(add_help=False)
+
+    # Required positional arguments
+    Rflags = parse_anno_parent.add_argument_group('REQUIRED')
+    Rflags.add_argument('-i', '--input', help="A list of inStrain objects, all mapped to the same .fasta file",
+                        nargs='*', required=True)
+    Rflags.add_argument('-a', '--annotations', help="R|A table or set of tables with gene annotations.\nMust be in specific format; see inStrain website for details",
+                        nargs='*', required=True)
+    Rflags.add_argument("-o", "--output", action="store", default='annotation_output', \
+                        help='Output prefix')
+    Rflags.add_argument("-b", "--min_genome_breadth", action="store", default=0.5, type=float, \
+                        help='Only annotate genomes on genomes with at least this genome breadth. Requires having genomes called. Set to 0 to include all genes.')
+    Rflags.add_argument("-g", "--min_gene_breadth", action="store", default=0.8, type=float, \
+                        help='Only annotate genes with at least this breadth. Set to 0 to include all genes.')
+
+    parse_anno_parser = subparsers.add_parser("parse_annotations", formatter_class=SmartFormatter, \
+                                           parents=[parse_anno_parent, parent_parser],
+                                           add_help=False)
+    # Other Parameters
+    Oflags = parse_anno_parser.add_argument_group('OTHER OPTIONS')
+    Oflags.add_argument("-sc", "--scaffolds", action="store",
+                        help='Example flag to fill in later')
 
     '''
     ####### Arguments for profile_genes operation ######

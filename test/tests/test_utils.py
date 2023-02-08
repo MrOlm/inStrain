@@ -79,6 +79,7 @@ def BTO():
     self.genes = dl + 'N5_271_010G1_scaffold_min1000.fa.genes.fna'
     self.genbank = dl + 'sars_cov_2_MT039887.1.gb'
     self.failure_genes = dl + 'N5_271_010G1_scaffold_failureScaffold.fa.genes.fna.fa'
+    self.anno_loc = dl + 'N5_271_010G1_scaffold_min1000.fa.genes.faa.KOfam_anno.txt'
 
     self.iRep_test_set = dl + 'test_iRep.p'
 
@@ -96,7 +97,7 @@ def BTO():
 
     self.teardown()
     yield self
-    #self.teardown()
+    self.teardown()
 
 
 def get_script_loc(script):

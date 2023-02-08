@@ -2,6 +2,7 @@
 
 import os
 import sys
+import glob
 import json
 import time
 import h5py
@@ -163,6 +164,27 @@ class SNVprofile:
             return loc
         else:
             logging.error('I dont know the location of {0}!'.format(name))
+
+    def load_output(self, name):
+        """
+        Load already-created output
+        """
+        out_base = self.get_output_base()
+
+        if name in ['gene_info', 'genome_info']:
+            loc = out_base + name
+
+        files = glob.glob(loc + '*')
+
+        # Make sure you don't have multiple files
+        assert len(files) < 2
+
+        if len(files) == 0:
+            logging.error(name + 'does not exist')
+            return pd.DataFrame()
+
+        db = pd.read_csv(files[0], sep='\t')
+        return db
 
     def generate(self, name, store=True, return_table=False, **kwargs):
         '''
@@ -895,6 +917,7 @@ def load_scaff2pair2mm2SNPs(location, scaffolds=[], pairs=[]):
 def _json_helper(o):
     if isinstance(o, np.int64): return int(o)
     if isinstance(o, Bio.Seq.Seq): return str(o)
+    if isinstance(o, set): return str(o)
     raise TypeError
 
 class SNVprofile_old:
