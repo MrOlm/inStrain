@@ -30,7 +30,7 @@ class PAController(object):
         # Load the annotation table
         message = """\
 ***************************************************
-    ..:: Step 1. Loads tables ::..
+    ..:: Step 1. Load tables ::..
 ***************************************************
                 """
         logging.info(message)
@@ -79,7 +79,7 @@ class PAController(object):
         Wrapper for loading the annotation table
         """
         args = self.kwargs
-        gene2annos = load_annotation_table(args.get('annotations'))
+        gene2annos = load_annotation_table2(args.get('annotations'))
         self.gene2anno = gene2annos
 
     def load_gene_tables_wrapper(self):
@@ -128,7 +128,8 @@ class PAController(object):
 
     def store_results(self):
         # Store raw data
-        self.OD.store('gene2anno', self.gene2anno, 'dictionary', 'Dictionary of genes 2 annotations')
+        if self.kwargs.get('store_rawdata', False):
+            self.OD.store('gene2anno', self.gene2anno, 'dictionary', 'Dictionary of genes 2 annotations')
 
         # Store output tables
         outloc = self.OD.get_location('output')
@@ -160,7 +161,37 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                            Sprofile.get_location('log'))
         logging.info(message)
 
-def load_annotation_table(locs):
+# def load_annotation_table(locs):
+#     """
+#     Load the annotation table
+#
+#     Input can either be a list of file locations or just 1 file location
+#     """
+#     gene2annos = {}
+#
+#     if type(locs) != type([]):
+#         locs = [locs]
+#
+#     for loc in locs:
+#         adb = pd.read_csv(loc, sep=',', dtype='string')
+#
+#         # Validate table
+#         for c in ['gene', 'anno']:
+#             if c not in list(adb.columns):
+#                 m = f"The required column {c} is not in your annotation table {loc}!"
+#                 print(m)
+#                 logging.error(m)
+#                 raise Exception(m)
+#
+#         # Store annos
+#         for gene, db in adb.groupby('gene'):
+#             if gene not in gene2annos:
+#                 gene2annos[gene] = set()
+#             gene2annos[gene] = gene2annos[gene].union(set(db['anno']))
+#
+#     return gene2annos
+
+def load_annotation_table2(locs):
     """
     Load the annotation table
 
@@ -172,21 +203,32 @@ def load_annotation_table(locs):
         locs = [locs]
 
     for loc in locs:
-        adb = pd.read_csv(loc, sep=',')
 
-        # Validate table
-        for c in ['gene', 'anno']:
-            if c not in list(adb.columns):
-                m = f"The required column {c} is not in your annotation table {loc}!"
-                print(m)
-                logging.error(m)
-                raise Exception(m)
+        first = True
+        with open(loc) as o:
+            for line in o:
+                lw = [l.strip() for l in line.split(',')]
+                if first:
+                    first = False
+                    for c in ['gene', 'anno']:
+                        if c not in list(lw):
+                            m = f"The required column {c} is not in your annotation table {loc}!"
+                            print(m)
+                            logging.error(m)
+                            raise Exception(m)
+                    continue
 
-        # Store annos
-        for gene, db in adb.groupby('gene'):
-            if gene not in gene2annos:
-                gene2annos[gene] = set()
-            gene2annos[gene] = gene2annos[gene].union(set(db['anno']))
+                if len(lw) != 2:
+                    m = f"The line {line} cannot be parsed!"
+                    print(m)
+                    logging.error(m)
+                    continue
+
+                gene = lw[0]
+                anno = lw[1]
+                if gene not in gene2annos:
+                    gene2annos[gene] = set()
+                gene2annos[gene].add(anno)
 
     return gene2annos
 

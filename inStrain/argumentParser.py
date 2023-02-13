@@ -260,18 +260,18 @@ def parse_args(args):
                         nargs='*', required=True)
     Rflags.add_argument("-o", "--output", action="store", default='annotation_output', \
                         help='Output prefix')
-    Rflags.add_argument("-b", "--min_genome_breadth", action="store", default=0.5, type=float, \
-                        help='Only annotate genomes on genomes with at least this genome breadth. Requires having genomes called. Set to 0 to include all genes.')
-    Rflags.add_argument("-g", "--min_gene_breadth", action="store", default=0.8, type=float, \
-                        help='Only annotate genes with at least this breadth. Set to 0 to include all genes.')
 
     parse_anno_parser = subparsers.add_parser("parse_annotations", formatter_class=SmartFormatter, \
                                            parents=[parse_anno_parent, parent_parser],
                                            add_help=False)
     # Other Parameters
     Oflags = parse_anno_parser.add_argument_group('OTHER OPTIONS')
-    Oflags.add_argument("-sc", "--scaffolds", action="store",
-                        help='Example flag to fill in later')
+    Oflags.add_argument("-b", "--min_genome_breadth", action="store", default=0.5, type=float, \
+                        help='Only annotate genomes on genomes with at least this genome breadth. Requires having genomes called. Set to 0 to include all genes.')
+    Oflags.add_argument("-g", "--min_gene_breadth", action="store", default=0.8, type=float, \
+                        help='Only annotate genes with at least this breadth. Set to 0 to include all genes.')
+    Oflags.add_argument('--store_rawdata', action='store_true', default=False,\
+                        help="Store the raw data dictionary")
 
     '''
     ####### Arguments for profile_genes operation ######
