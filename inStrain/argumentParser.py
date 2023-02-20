@@ -256,7 +256,7 @@ def parse_args(args):
     Rflags = parse_anno_parent.add_argument_group('REQUIRED')
     Rflags.add_argument('-i', '--input', help="A list of inStrain objects, all mapped to the same .fasta file",
                         nargs='*', required=True)
-    Rflags.add_argument('-a', '--annotations', help="R|A table or set of tables with gene annotations.\nMust be in specific format; see inStrain website for details",
+    Rflags.add_argument('-a', '--annotations', help="R|A table or set of tables with gene annotations.\nMust be be a .csv file with two columns- `gene` and `anno`. See inStrain documentation for details\n(https://instrain.readthedocs.io/en/latest/user_manual.html#parse-annotations)",
                         nargs='*', required=True)
     Rflags.add_argument("-o", "--output", action="store", default='annotation_output', \
                         help='Output prefix')

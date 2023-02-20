@@ -140,7 +140,7 @@ If we want inStrain to do gene-level profiling we need to give it a list of gene
 
 We will profile our genes using the program prodigal, which can be run using the following example command ::
 
- $ prodigal -i ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -d N5_271_010G1_scaffold_min1000.fa.genes.fna
+ $ prodigal -i ~/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa -d N5_271_010G1_scaffold_min1000.fa.genes.fna -a N5_271_010G1_scaffold_min1000.fa.genes.faa
 
 Running inStrain profile
 ++++++++++++++++++++++++++++++++++
@@ -248,10 +248,44 @@ The last but of the output shows you where the plots and figures have been made.
 
 We have now successfully generated an inStrain profile! For help interpreting the output files, see :doc:`example_output`
 
+Running inStrain parse_annotations
+++++++++++++++++++++++++++++++++++++
+
+``InStrain parse_annotations`` creates output files that make it easier to perform functional gene analysis. One input file is the InStrain profile object, which we just created above, and the other input file is a table of gene annotations.
+
+You can annotate your genes using whatever gene annotation database you like (depending on your specific project and questions). The section `Gene Annotation` in :doc:`user_manual` has instructions for a few databases. In this tutorial let's just annotate with KEGG Orthologies (KOs) and Carbohydrate-Active enZYmes (CAZymes).
+
+To do the annotations we'll need the amino acid sequences of the genes (the file ending in .faa, created using the prodigal command above) even though the gene nucleotide sequences is what we provided to inStrain profile. Following the section `Gene Annotation` in :doc:`user_manual`, we'll then run the following commands ::
+
+  $ exec_annotation -p profiles -k ko_list --cpu 10 --tmp-dir ./tmp -o N5_271_010G1_scaffold_min1000.fa.genes.faa.KO N5_271_010G1_scaffold_min1000.fa.genes.faa
+
+  $ hmmscan --domtblout N5_271_010G1_scaffold_min1000.fa.genes.faa_vs_dbCAN_v11.dm dbCAN-HMMdb-V11.txt N5_271_010G1_scaffold_min1000.fa.genes.faa > /dev/null ; sh /hmmscan-parser.sh N5_271_010G1_scaffold_min1000.fa.genes.faa_vs_dbCAN_v11.dm > N5_271_010G1_scaffold_min1000.fa.genes.faa_vs_dbCAN_v11.dm.ps ; cat N5_271_010G1_scaffold_min1000.fa.genes.faa_vs_dbCAN_v11.dm.ps | awk '$5<1e-15&&$10>0.35' > N5_271_010G1_scaffold_min1000.fa.genes.faa_vs_dbCAN_v11.dm.ps.stringent
+
+We'll now need to use python / R / Excel to parse and re-format the output of these (and any other) annotations. In the end they need be transformed into a single .csv file with the columns "gene" and "anno". See :doc:`user_manual` for more details on the specific formatting requirements. In our case the file, which I called `geneAnnotations_v1.csv`, should look like this:
+
+.. csv-table:: geneAnnotations_v1.csv
+
+    gene,anno
+    N5_271_010G1_scaffold_12_3,K06956
+    N5_271_010G1_scaffold_14_1,K09890
+    N5_271_010G1_scaffold_15_2,K07482
+    N5_271_010G1_scaffold_19_7,K09890
+    N5_271_010G1_scaffold_25_1,K20386
+    N5_271_010G1_scaffold_25_1,K15558
+    N5_271_010G1_scaffold_25_1,K19762
+    N5_271_010G1_scaffold_25_2,K06864
+    N5_271_010G1_scaffold_28_3,K07482
+
+Now we can run `inStrain parse_annotations` with a command like the following ::
+
+  $ inStrain parse_annotations -i N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS/ -o genes_output_v1 -a geneAnnotations_v1.csv
+
+Done! To see what output files you can expect, see :doc:`example_output`
+
 Running inStrain compare
 ++++++++++++++++++++++++++++++++++
 
-``InStrain compare`` compare genomes that have been profiled by multiple different metagenomic mappings. To compare genomes in the sample we just profiled above, we need to generate another :term:`bam file` of reads from another sample to the **same** .fasta file. Provided in the `inStrain test_data folder <https://github.com/MrOlm/inStrain/tree/master/test/test_data>`_ is exactly that- another different set of reads mapped to the same .fasta file (`N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam <https://github.com/MrOlm/inStrain/blob/master/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam>`_). Let's run inStrain on this to make a new inStrain profile ::
+``InStrain compare`` compares genomes that have been profiled by multiple different metagenomic mappings. To compare genomes in the sample we just profiled above, we need to generate another :term:`bam file` of reads from another sample to the **same** .fasta file. Provided in the `inStrain test_data folder <https://github.com/MrOlm/inStrain/tree/master/test/test_data>`_ is exactly that- another different set of reads mapped to the same .fasta file (`N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam <https://github.com/MrOlm/inStrain/blob/master/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam>`_). Let's run inStrain on this to make a new inStrain profile ::
 
   $ inStrain profile test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam N5_271_010G1_scaffold_min1000.fa -o N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.IS -p 6 -g N5_271_010G1_scaffold_min1000.fa.genes.fna -s N5_271_010G1.maxbin2.stb
 

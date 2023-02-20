@@ -202,8 +202,7 @@ def load_annotation_table2(locs):
     if type(locs) != type([]):
         locs = [locs]
 
-    for loc in locs:
-
+    for loc in tqdm(locs, total=len(locs), desc='Loading sample gene data'):
         first = True
         with open(loc) as o:
             for line in o:

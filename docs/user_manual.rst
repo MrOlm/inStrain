@@ -406,6 +406,57 @@ Other modules
 
 The other modules are not commonly used, and mainly provide auxiliary functions or allow you to run certain steps of ``profile`` after the fact. It is recommended to provide a genes file and/or a scaffold-to-bin file during ``inStrain profile`` rather than using ``profile_genes`` or ``genome_wide``, as it is more computationally efficient to do things that way.
 
+parse_annotations
+````````````````````
+This is a new module (released in inStrain version 1.7) that provides a straightforward way to annotate genes for functional analysis with inStrain. It's inputs are 1 or more :term:`inStrain profile<inStrain profile>` objects (a set of genes must of been provided when running profile) and a gene annotation table. The format of the gene annotation MUST be a .csv file that looks like the following:
+
+.. csv-table:: AnnotationTable.csv
+
+    gene,anno
+    AF21-42.Scaf7_79,K14374
+    AF21-42.Scaf7_79,K12633
+    AF21-42.Scaf7_79,K16034
+    AF21-42.Scaf7_79,K12705
+    AF21-42.Scaf7_79,K15467
+    AF21-42.Scaf7_79,K20592
+    AF21-42.Scaf7_79,K15958
+    AF21-42.Scaf7_79,K22590
+    AF21-42.Scaf7_80,K02835
+    AF21-42.Scaf7_81,K03431
+
+The top line MUST read `gene,anno` exactly, and all other lines must have the format `gene`, comma (`,`), `annotation`. The `gene` column must match the names of the genes provided to inStrain profile, and the second column can be whatever you want it to be. It is fine if a gene as multiple annotations, just make that gene have multiple lines in this file.
+
+For tips on running the annotations themselves, see the section `Gene Annotation` below. Also see the section `Running inStrain parse_annotations` in :doc:`tutorial` for more info.
+
+To see the command-line options, check the help::
+
+    $ inStrain parse_annotations -h
+    usage: inStrain parse_annotations -i [INPUT [INPUT ...]] -a [ANNOTATIONS [ANNOTATIONS ...]] [-o OUTPUT] [-p PROCESSES] [-d] [-h] [--version] [-b MIN_GENOME_BREADTH]
+                                      [-g MIN_GENE_BREADTH] [--store_rawdata]
+
+    REQUIRED:
+      -i [INPUT [INPUT ...]], --input [INPUT [INPUT ...]]
+                            A list of inStrain objects, all mapped to the same .fasta file (default: None)
+      -a [ANNOTATIONS [ANNOTATIONS ...]], --annotations [ANNOTATIONS [ANNOTATIONS ...]]
+                            A table or set of tables with gene annotations.
+                            Must be in specific format; see inStrain website for details (default: None)
+      -o OUTPUT, --output OUTPUT
+                            Output prefix (default: annotation_output)
+
+    SYSTEM PARAMETERS:
+      -p PROCESSES, --processes PROCESSES
+                            Number of processes to use (default: 6)
+      -d, --debug           Make extra debugging output (default: False)
+      -h, --help            show this help message and exit
+      --version             show program's version number and exit
+
+    OTHER OPTIONS:
+      -b MIN_GENOME_BREADTH, --min_genome_breadth MIN_GENOME_BREADTH
+                            Only annotate genomes on genomes with at least this genome breadth. Requires having genomes called. Set to 0 to include all genes. (default: 0.5)
+      -g MIN_GENE_BREADTH, --min_gene_breadth MIN_GENE_BREADTH
+                            Only annotate genes with at least this breadth. Set to 0 to include all genes. (default: 0.8)
+      --store_rawdata       Store the raw data dictionary (default: False)
+
 quick_profile
 ````````````````````
 This is a quirky module that is not really related to any of the others. It is used to quickly profile a :term:`bam file` to pull out scaffolds from genomes that are at a sufficient breadth. To use it you must provide a *.bam* file, the *.fasta* file that you mapped to to generate the *.bam* file, and a *scaffold to bin* file (see above section for details). On the backend this module is really just calling the program `coverM <https://github.com/wwood/CoverM>`_
@@ -517,13 +568,13 @@ The goal of this section is to describe how to perform other operations that are
 Gene Annotation
 +++++++++++++++++
 
-Below are some potential ways of annotating genes for follow-up inStrain analysis. The input to all operations is an amino acid fasta file (`.faa`), which should match the `.fna` file you passed to inStrain (see :doc:`user_manual.rst#preparing-the-genes-file` for an example command)
+Below are some potential ways of annotating genes for follow-up inStrain analysis. The input to all operations is an amino acid fasta file (`.faa`), which should match the `.fna` file you passed to inStrain (see :doc:`user_manual#preparing-the-genes-file` for an example command)
 
 **If you have some other annotation you like to use, please add to to this list by submitting a pull request on GitHub!** (https://github.com/MrOlm/inStrain/blob/master/docs/user_manual.rst)
 
 KEGG Orthologies (KOs)
 `````````````````````````
-KOs can be annotated using KofamScan / KofamKOALA (https://www.genome.jp/tools/kofamkoala/)::
+KOs can be annotated using KofamScan / KofamKOALA (https://www.genome.jp/tools/kofamkoala/) ::
 
     # Download the database and executables
     wget https://www.genome.jp/ftp/tools/kofam_scan/kofam_scan-1.3.0.tar.gz
@@ -610,7 +661,7 @@ Where Adb is a pandas DataFrame that looks like:
 
 Carbohydrate-Active enZYmes (CAZymes)
 ``````````````````````````````````````
-CAZymes can be profiled using the HMMs provided by dbCAN, which are based on CAZyDB (http://www.cazy.org/)::
+CAZymes can be profiled using the HMMs provided by dbCAN, which are based on CAZyDB (http://www.cazy.org/) ::
 
   # Download the HMMs and executables
   wget https://bcb.unl.edu/dbCAN2/download/Databases/V11/dbCAN-HMMdb-V11.txt
@@ -738,7 +789,7 @@ Where Cdb is a pandas DataFrame that looks like:
 
 Antibiotic Resistance Genes
 ``````````````````````````````````````
-There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download)::
+There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download) ::
 
   # Download and unzip database
   wget https://card.mcmaster.ca/download/0/broadstreet-v3.2.5.tar.bz2
@@ -830,7 +881,7 @@ Where Rdb is a pandas DataFrame that looks like:
 
 Human milk oligosaccharide (HMO) Utilization genes
 ````````````````````````````````````````````````````
-This is pretty niche, but it's something I (Matt Olm) am interested in. So here is how it can be done!::
+This is pretty niche, but it's something I (Matt Olm) am interested in. So here is how it can be done! ::
 
   # Download the Supplemental Table S4 from here: https://data.mendeley.com/datasets/gc4d9h4x67/2
 

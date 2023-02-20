@@ -557,6 +557,106 @@ reads_unfiltered_reads
 divergent_site_count
   The total number of :term:`divergent sites<divergent site>` called on this genome
 
+inStrain parse_annotations
+---------------------
+
+A typical run of inStrain `parse_gene_annotations` will yield the following files in the output folder. For more information, see :doc:`user_manual#parse-gene-annotations`
+
+LongFormData.csv
++++++++++++++++++
+
+All of the annotation information a very long table
+
+.. csv-table:: LongFormData.csv
+
+    sample,anno,genomes,genes,bases
+    2bag10_1.bam,K03737,{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa'},1,6666
+    2bag10_1.bam,K06973,{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa'},1,1068
+    2bag10_1.bam,K04066,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",2,195761
+    2bag10_1.bam,K15558,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",96,10748749
+    2bag10_1.bam,K19762,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",97,10920075
+    2bag10_1.bam,3000025,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",2,168916
+    2bag10_1.bam,K18888,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",3,504008
+    2bag10_1.bam,K20386,"{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa', 'Bifidobacterium_longum_subsp_infantis_ATCC_15697.fna'}",98,11007871
+    2bag10_1.bam,K07979,{'REFINED_METABAT215_TOP10_CONTIGS_1500_ASSEMBLY_K77_MERGED__Hadza_MoBio_hadza-E-H_A_23_1707.16.fa'},1,742
+
+sample
+  The sample this row refers to (based on the name of the .bam file used to create the inStrain profile)
+
+anno
+  The annotation this row refers to (based on the input annotation table)
+
+genomes
+  The specific genomes that have this particular annotation. Represented as a python set
+
+genes
+  The total number of genes detected with this annotation in this sample
+
+bases
+  The total number of base-pairs mapped to all genes with this annotation in this sample
+
+
+SampleAnnotationTotals.csv
++++++++++++++++++++++++++++++
+
+Totals for each sample. Used to generate the `_fraction` tables enumerated below.
+
+.. csv-table:: SampleAnnotationTotals.csv
+
+    sample,detected_genes,detected_genomes,bases_mapped_to_genes,detected_annotations,detected_genes_with_anno
+    2bag10_1.bam,2625,2,222405987,3302,1677
+    2bag10_2.bam,20909,10,2418511040,32225,15513
+
+sample
+  The sample this row refers to (based on the name of the .bam file used to create the inStrain profile)
+
+detected_genes
+  The total number of genes detected in this sample after passing the set filters
+
+detected_genomes
+  The total number of genomes detected in this sample after passing the set filters
+
+bases_mapped_to_genes
+  The total number of bases mapped to detected genes. See `ParsedGeneAnno_bases.csv` below for more info
+
+detected_annotations
+  The total number of annotations detected; this can be higher than `detected_genes_with_anno` if some genes have multiple annotations
+
+detected_genes_with_anno
+  The total number of genes detected with at least one annotation
+
+ParsedGeneAnno_*.csv
++++++++++++++++++++++++++++++
+
+There are a total of 6 tables like this generated in the output folder, each looking like the following:
+
+.. csv-table:: ParsedGeneAnno_bases.csv
+
+    sample,3000005,3000024,3000025,3000026,3000027,3000074,3000118,3000165,3000166
+    2bag10_1.bam,131097,1286827,168916,1656,0,0,0,0,0
+    2bag10_2.bam,104013,5016854,955645,2552,633275,1034042,95617,409295,541951
+
+In each case the column `sample` is the sample the row refers to (based on the name of the .bam file used to create the inStrain profile), and all other columns are annotations from the input annotation_table provides. The number values differ depending on the individual output table being analyzed. Below you can find descriptions on what the numbers refer to:
+
+ParsedGeneAnno_bases.csv
+  The total number of base pairs mapped to all genes with this annotation. The number of base pairs mapped for each gene with this annotation is calculated as the gene length * the coverage of the gene, and the number reported is the sum of this value of all genes
+
+ParsedGeneAnno_bases_fraction.csv
+  The values in `ParsedGeneAnno_bases.csv` divided by the total number of bases mapped to all detected genes (the value `bases_mapped_to_genes` reported in `SampleAnnotationTotals.csv`)
+
+ParsedGeneAnno_genes.csv
+  The total number of detected genes with this annotation
+
+ParsedGeneAnno_genes_fraction.csv
+  The values in `ParsedGeneAnno_genes.csv` divided by the total number of genes detected (the value `detected_genes` reported in `SampleAnnotationTotals.csv`)
+
+ParsedGeneAnno_genomes.csv
+  The total number of genomes with at least one detected gene with this annotation
+
+ParsedGeneAnno_genomes_fraction.csv
+  The values in `ParsedGeneAnno_genomes.csv` divided by the total number of genomes detected (the value `detected_genomes` reported in `SampleAnnotationTotals.csv`)
+
+
 inStrain compare
 ---------------------
 
