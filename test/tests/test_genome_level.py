@@ -149,7 +149,7 @@ def test_genome_level_2(BTO):
     IS = inStrain.SNVprofile.SNVprofile(location)
     files = glob.glob(IS.get_location('output') + '*')
     files = [f for f in files if 'genomeWide' in f]
-    assert len(files) == 1
+    assert len(files) == 2
 
 def test_genome_level_3(BTO):
     """

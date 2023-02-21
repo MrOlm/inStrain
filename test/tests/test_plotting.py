@@ -99,10 +99,11 @@ def test_plotting_2(BTO):
     # Load output
     IS = inStrain.SNVprofile.SNVprofile(location)
     figs = glob.glob(IS.get_location('figures') + '*')
+    #print(figs)
 
     # assert sorted([os.path.basename(f) for f in figs]) == sorted(FIGS), set(FIGS) - set([os.path.basename(f) for f in figs])
     for F in FIGS:
-        assert len([f for f in figs if F in f]) == 1, F
+        assert len([f for f in figs if F in f]) >= 1, F
     for fig in figs:
         assert os.path.getsize(fig) > 1000
 

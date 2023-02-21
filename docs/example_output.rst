@@ -560,7 +560,7 @@ divergent_site_count
 inStrain parse_annotations
 ---------------------
 
-A typical run of inStrain `parse_gene_annotations` will yield the following files in the output folder. For more information, see :doc:`user_manual#parse-gene-annotations`
+A typical run of inStrain `parse_gene_annotations` will yield the following files in the output folder. For more information, see :doc:`user_manual`
 
 LongFormData.csv
 +++++++++++++++++

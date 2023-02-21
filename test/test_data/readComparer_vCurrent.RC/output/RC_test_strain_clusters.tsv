@@ -1,0 +1,5 @@
+cluster	sample	genome
+1_1	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	fobin.fasta
+1_1	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	fobin.fasta
+2_1	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	maxbin2.maxbin.001.fasta
+2_2	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	maxbin2.maxbin.001.fasta

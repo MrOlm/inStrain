@@ -137,18 +137,18 @@ def test_compare_0(BTO):
     # Run program
     base = BTO.test_dir + 'RC_test'
 
-    cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations".format(
-        True, BTO.IS1, BTO.IS2,
+    cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations -s {0}".format(
+        BTO.stb, BTO.IS1, BTO.IS2,
         base)
     print(cmd)
     call(cmd, shell=True)
 
     # Make sure it produced output
     outfiles = glob.glob(base + '/output/*')
-    assert len(outfiles) == 2
+    assert len(outfiles) == 4
 
     rawfiles = glob.glob(base + '/raw_data/*')
-    assert len(rawfiles) == 5
+    assert len(rawfiles) == 7
 
     # Read the scaffold table
     Rdb = pd.read_csv(glob.glob(base + '/raw_data/*' + 'comparisonsTable.csv.gz')[0])

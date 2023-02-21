@@ -134,6 +134,11 @@ def get_aux_script_loc(script):
         return os.path.join(str(os.getcwd()),
                             '../auxiliary_scripts/rarefaction_curve.py')
 
+    if script == 'recluster_instrain_compare':
+        return os.path.join(str(os.getcwd()),
+                            '../auxiliary_scripts/recluster_instrain_compare.py')
+
+
 
 def load_random_test_dir():
     """

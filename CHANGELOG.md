@@ -7,6 +7,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 ## [1.7.0] - 2023-02-20
 - Update help; remove deprecated things
 - Added "parse_gene_annotations" method
+- Added auxiliary script "recluster_instrain_compare"
 
 ## [1.6.4] - 2023-01-06
 - Update numpy requirement to avoid numba bug

@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from collections import defaultdict
 
+import scipy.cluster
 import scipy.spatial.distance
 
 def recluster_instrain(db, cluster_method='single', ANI=99.999):
@@ -49,17 +50,17 @@ def recluster_instrain(db, cluster_method='single', ANI=99.999):
         combo2value = defaultdict(lambda: np.nan)
         combo2value2 = defaultdict(lambda: np.nan)
         for i, row in db.iterrows():
-            combo2value["{0}-vs-{1}".format(row['sample1'], row['sample2'])] \
+            combo2value["{0}-vs-{1}".format(row['name1'], row['name2'])] \
                 = row['popANI']
-            combo2value2["{0}-vs-{1}".format(row['sample1'], row['sample2'])] \
+            combo2value2["{0}-vs-{1}".format(row['name1'], row['name2'])] \
                 = row['coverage_overlap']
 
         table = defaultdict(list)
-        samples = set(db['sample1'].tolist()).union(set(db['sample2'].tolist()))
+        samples = set(db['name1'].tolist()).union(set(db['name2'].tolist()))
         for samp1 in samples:
             for samp2 in samples:
-                table['sample1'].append(samp1)
-                table['sample2'].append(samp2)
+                table['name1'].append(samp1)
+                table['name2'].append(samp2)
 
                 if samp1 == samp2:
                     table['av_ani'].append(1)
@@ -84,7 +85,7 @@ def recluster_instrain(db, cluster_method='single', ANI=99.999):
             f"WARNING! {missing_comps} / {len(gdb)} ({(missing_comps / len(gdb)) * 100:.2f}%) of comparisons are missing")
 
     gdb['dist'] = gdb['dist'].fillna(1)
-    db = gdb.pivot("sample1", "sample2", 'dist')
+    db = gdb.pivot("name1", "name2", 'dist')
 
     # Set up some more
     names = db.columns
@@ -109,21 +110,33 @@ def main(args):
     """
     Quick wrapper for this
     """
-    db = pd.read_csv(args.db, sep='\t')
-    cdb = recluster_instrain(db, cluster_method=args.clusterAlg, ANI=args.ani)
-    cdb.to_csv(args.output, sep='\t', index=False)
+    odb = pd.read_csv(args.db, sep='\t')
+    counter = 1
+    dbs = []
+    for genome, odb in odb.groupby('genome'):
+        cdb = recluster_instrain(odb, cluster_method=args.clusterAlg, ANI=args.ani)
+        cdb['genome'] = genome
+        cdb['cluster'] = [f"{counter}_{c}" for c in cdb['cluster']]
+        counter += 1
+        dbs.append(cdb)
+    pd.concat(dbs).reset_index(drop=True).to_csv(args.output, sep='\t', index=False)
 
 if __name__ == "__main__":
     """ This is executed when run from the command line """
     parser = argparse.ArgumentParser()
 
     # Required arguments
-    parser.add_argument("-d", "--db", help="Location of comparisonsTable.tsv file (from inStrain compare output)")
+    parser.add_argument("-d", "--db", help="Location of genomeWide_compare.tsv file (from inStrain compare output)", required=True)
     parser.add_argument("-o", "--output", help="output filename", default='strain_clusters_reClustered.tsv')
     parser.add_argument("-a", "--ani", help="popANI threshold (as a percentage, not fraction; default is 99.999)", default=99.999, type=float)
     parser.add_argument("--clusterAlg", help="Algorithm used to cluster genomes (passed\
                             to scipy.cluster.hierarchy.linkage", default='single',
                            choices={'single', 'complete', 'average', 'weighted', 'centroid', 'median', 'ward'})
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version="%(prog)s (version {version})".format(version=__version__))
 
 
     args = parser.parse_args()

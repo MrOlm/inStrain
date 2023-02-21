@@ -274,6 +274,7 @@ def DTO():
     self.teardown()
 
 #@pytest.mark.skip(reason="This test often fails during development")
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_0(DTO):
     '''
     make sure dependencies are working; make sure the right version of inStrain is in there
@@ -295,6 +296,7 @@ def test_docker_0(DTO):
     # Estimate cost
     estimate_cost(None, get_s3_results_folder())
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_1(DTO):
     '''
     Full on basic test
@@ -321,6 +323,7 @@ def test_docker_1(DTO):
         have = o in basenames
         assert have, [o, basenames]
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_2(DTO):
     '''
     Test with .sam, genes, and .stb file
@@ -346,6 +349,7 @@ def test_docker_2(DTO):
         have = o in basenames
         assert have, [o, basenames]
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_3(DTO):
     '''
     Test the timeout functionality
@@ -376,6 +380,7 @@ def test_docker_3(DTO):
         have = o in basenames
         assert not have, o
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_4(DTO):
     '''
     Test quick_profile
@@ -418,6 +423,7 @@ def test_docker_4(DTO):
 #     # Estimate cost
 #     estimate_cost(None, get_s3_results_folder())
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_6(DTO):
     '''
     Test compare with --scaffolds
@@ -459,6 +465,7 @@ def test_docker_6(DTO):
             scaffolds.append(line.strip())
     assert set(scaffolds) == set(rdb['scaffold'].tolist())
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_7(DTO):
     '''
     Test compare using FOF (file of files)
@@ -485,6 +492,7 @@ def test_docker_7(DTO):
         have = o in basenames
         assert have, [o, basenames]
 
+@pytest.mark.skip(reason="Docker support is depricated")
 def test_docker_8(DTO):
     '''
     Test with compressed fasta file
