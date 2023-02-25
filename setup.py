@@ -17,19 +17,17 @@ setup(name='inStrain',
       scripts=['bin/inStrain'],
       python_requires='>=3.4.0',
       install_requires=[
-          'numpy<=1.21', # Required for numba (1/6/2023)
+          'numpy',
           'pandas>=0.25,!=1.1.3',
           'seaborn',
           'matplotlib',
           'biopython<=1.74',
-          'scikit-learn',
-          'pytest',
           'tqdm',
           'pysam>=0.15', # This sets a requirement for python 3.7 for now, but so be it. pysam v0.9 (which works on python 3.8) has a broken iterator (has no stop)
           'networkx',
           'h5py',
           'psutil',
           'lmfit',
-          'numba'
+          'pytest'
       ],
       zip_safe=False)

@@ -75,6 +75,8 @@ class _BreadthCurvePlotter:
         except:
             logging.error(
                 "Skipping plot 1 - you don't have all required information.")
-            traceback.print_exc()
+
+            if kwargs.get('debug', False):
+                traceback.print_exc()
             return
 

@@ -15,6 +15,9 @@ from inStrain.plotting.gene_plots import gene_histogram_from_IS
 from inStrain.plotting.linkage_plots import linkage_decay_from_IS, linkage_decay_type_from_IS
 from inStrain.plotting.compare_plots import dendrograms_from_RC
 
+# This supresses all those crazy warnings I was getting!!
+logging.getLogger('fontTools').setLevel(logging.WARNING)
+
 class PlottingController(object):
     """
     Handle the logic of profiling

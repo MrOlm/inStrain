@@ -162,14 +162,16 @@ def calculate_gene_metrics(IS, GdbP, scaff2gene2sequenceP, **kwargs):
     Gdb = GdbP
     inStrain.logUtils.log_checkpoint("GeneProfile", "make_globals", "end")
 
+    ctx = multiprocessing.get_context('fork')
+
     # Generate commands and queue them
     logging.debug('Creating commands')
     cmd_groups = [x for x in iterate_commands(scaffolds_to_profile, Gdb, kwargs)]
     logging.debug('There are {0} cmd groups'.format(len(cmd_groups)))
 
     inStrain.logUtils.log_checkpoint("GeneProfile", "create_queue", "start")
-    gene_cmd_queue = multiprocessing.Queue()
-    gene_result_queue = multiprocessing.Queue()
+    gene_cmd_queue = ctx.Queue()
+    gene_result_queue = ctx.Queue()
     GeneProfiles = []
 
     for cmd_group in cmd_groups:
@@ -181,7 +183,7 @@ def calculate_gene_metrics(IS, GdbP, scaff2gene2sequenceP, **kwargs):
         logging.debug('Establishing processes')
         processes = []
         for i in range(0, p):
-            processes.append(multiprocessing.Process(target=gene_profile_worker, args=(gene_cmd_queue, gene_result_queue)))
+            processes.append(ctx.Process(target=gene_profile_worker, args=(gene_cmd_queue, gene_result_queue)))
         for proc in processes:
             proc.start()
 

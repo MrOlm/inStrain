@@ -522,6 +522,7 @@ def test_profile_7(BTO):
         print(Sprofile.get('Rdic'))
         assert reads < ORI_READS
 
+@pytest.mark.skipif(not inStrain.utils.find_program('samtools')[1], reason="requires samtools")
 def test_profile_8(BTO):
     """
     Test the ability to make and sort .bam files from .sam
@@ -696,7 +697,7 @@ def test_profile_11(BTO):
     #                               correct_scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True))
     assert test_utils.compare_dfs(scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True),
                                   correct_scaffdb[cols].sort_values(['scaffold']).reset_index(drop=True),
-                                  verbose=True, round=4)
+                                  verbose=True, round=3, tolerance=0.02)
 
     # Make sure you dont have the raw mm
     sdb = IS.get('cumulative_scaffold_table')

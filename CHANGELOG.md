@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.1] - 2023-02-24
+- Bring things up-to-date and working on python 3.10
+- Make profile_genes use "fork" instead of "spawn" to make it work with higher python versions (even though it's already deprecated)
+- Mark specific tests to skip when samtools isn't installed
+- Remove "pd.append" calls (to avoid lots of warnings)
+- Make all tests work with python3.10
+- Remove numba and scikit-learn as dependencies (make numba still work if it's installed)
+- Lots of refactoring to get around pandas warnings
+
 ## [1.7.0] - 2023-02-20
 - Update help; remove deprecated things
 - Added "parse_gene_annotations" method

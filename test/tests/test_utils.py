@@ -317,7 +317,7 @@ def _internal_verify_OdbSdb(Odb, Sdb):
         assert snps == len(db), [snps, len(db), scaff]
 
 
-def compare_dfs(db1, db2, round=4, verbose=False):
+def compare_dfs(db1, db2, round=4, verbose=False, tolerance=0):
     """
     Return True if dataframes are equal (order of dataframes doesn't matter)
     """
@@ -337,13 +337,17 @@ def compare_dfs(db1, db2, round=4, verbose=False):
         print("db2: ", db2)
         print("df_gpby: ", str(df_gpby))
 
+    identicle = True
     for x, y in zip(db1.iterrows(), db2.iterrows()):
         i, row1 = x
         i, row2 = y
 
         for col in df.columns:
             if row1[col] != row2[col]:
-                print(f"1 has {row1}, 2 has {row2}")
+                diff = abs(row1[col] - row2[col]) / max(row2[col], row1[col])
+                if diff > tolerance:
+                    identicle = False
+                    print(f"{col} 1 has {row1[col]}, 2 has {row2[col]}, diff = {diff:0.3f}")
 
     return identicle
 

@@ -953,7 +953,7 @@ def generate_genome_coverage_array(covT, s2l, order=None, maxMM=100, mask_edges=
                 cov = cov[mask_edges:len(cov)-mask_edges]
                 slen = slen - (mask_edges * 2)
             else: # really short scaffold
-                cov = pd.Series()
+                cov = pd.Series(dtype='float64')
                 slen = 0
 
         arrs.append(cov)

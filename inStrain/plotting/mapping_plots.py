@@ -1,3 +1,4 @@
+import sys
 import logging
 import traceback
 import pandas as pd
@@ -25,7 +26,12 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         Mdb = kwargs.get('GWdb', False)
-        assert len(Mdb) > 0
+
+        if type(Mdb) != type(pd.DataFrame()):
+            raise Exception('Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling')
+
+        if len(Mdb) == 0:
+            raise Exception('Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling')
 
         if 'mm' not in Mdb:
             raise Exception('Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling')
@@ -34,11 +40,12 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         readLen = int(IS.get_read_length())
         Mdb['read_length'] = readLen
         Mdb['mm'] = Mdb['mm'].astype(int)
-        Mdb.loc[:,'ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
+        Mdb.loc[:, 'ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
     except:
         logging.error(
             "Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -68,8 +75,10 @@ def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
         Mdb['genome'] = 'all_scaffolds'
         assert len(Mdb) > 0
     except:
-        logging.error("Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        logging.error(
+            "Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -89,6 +98,7 @@ def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
     pp.close()
     plt.close('all')
 
+
 def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
@@ -97,8 +107,10 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
             raise Exception('Plot 3 cannot be created when run with --database_mode or --skip_mm_profiling')
         assert len(Mdb) > 0
     except:
-        logging.error("Skipping plot 3 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        logging.error(
+            "Skipping plot 3 - you don't have all required information. You need to run inStrain genome_wide first")
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -113,42 +125,46 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
         fig = plt.gcf()
         fig.set_size_inches(6, 4)
         fig.tight_layout()
-        pp.savefig(fig)#, bbox_inches='tight')
-        #plt.show()
+        pp.savefig(fig)  # , bbox_inches='tight')
+        # plt.show()
         plt.close(fig)
 
     # Save the figure
     pp.close()
-    #plt.show()
+    # plt.show()
     plt.close('all')
+
 
 def mm_plot(db, left_val='breadth', right_val='coverage', title='',
             minANI=0.9):
     """
     The input db for this is "mm_genome_info" from "makeGenomeWide" in genomeUtilities.py
     """
-    db = db.sort_values('ANI_level')
-    sns.set_style('white')
+    plt.plot(db['ANI_level'], db[left_val], ls='-', color='blue')
 
-    # breadth
-    fig, ax1 = plt.subplots()
-    ax1.plot(db['ANI_level'], db[left_val], ls='-', color='blue')
-    if left_val == 'breadth':
-        ax1.plot(db['ANI_level'], estimate_breadth(db['coverage']), ls='--', color='lightblue')
-    ax1.set_ylabel(left_val, color='blue')
-    ax1.set_xlabel('Minimum read ANI level')
-    ax1.set_ylim(0, 1)
+    # db = db.sort_values('ANI_level')
+    # sns.set_style('white')
+    #
+    # # breadth
+    # fig, ax1 = plt.subplots()
+    # ax1.plot(db['ANI_level'], db[left_val], ls='-', color='blue')
+    # if left_val == 'breadth':
+    #     ax1.plot(db['ANI_level'], estimate_breadth(db['coverage']), ls='--', color='lightblue')
+    # ax1.set_ylabel(left_val, color='blue')
+    # ax1.set_xlabel('Minimum read ANI level')
+    # ax1.set_ylim(0, 1)
+    #
+    # # coverage
+    # ax2 = ax1.twinx()
+    # ax2.plot(db['ANI_level'], db[right_val], ls='-', color='red')
+    # ax2.set_ylabel(right_val, color='red')
+    # ax2.set_ylim(0, )
+    #
+    # # asthetics
+    # plt.xlim(1, max(minANI, db['ANI_level'].min()))
+    #
+    # plt.title(title)
 
-    # coverage
-    ax2 = ax1.twinx()
-    ax2.plot(db['ANI_level'], db[right_val], ls='-', color='red')
-    ax2.set_ylabel(right_val, color='red')
-    ax2.set_ylim(0, )
-
-    # asthetics
-    plt.xlim(1, max(minANI, db['ANI_level'].min()))
-
-    plt.title(title)
 
 def prepare_read_ani_dist_plot(IS):
     # Make a non-cumulative scaffold table
@@ -158,7 +174,7 @@ def prepare_read_ani_dist_plot(IS):
     for scaffold, covT in covTS.items():
         for mm, counts in covT.items():
             lengt = s2l[scaffold]
-            counts = counts.append(pd.Series(np.zeros(lengt - len(counts))))
+            counts = pd.concat([counts, pd.Series(np.zeros(lengt - len(counts)))])
 
             coverage = np.mean(counts)
 
@@ -171,6 +187,10 @@ def prepare_read_ani_dist_plot(IS):
     db = pd.DataFrame(table)
     stb = IS.get('scaffold2bin')
     b2l = IS.get('bin2length')
+
+    if type(stb) != type(dict()):
+        raise Exception("Cannot make plot - no stb detected")
+
     gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
 
     table = defaultdict(list)
@@ -185,14 +205,15 @@ def prepare_read_ani_dist_plot(IS):
     db = pd.DataFrame(table)
 
     # Add the number of read-pairs
-    #readLen = int(IS.get('mapping_info')['mean_pair_length'].tolist()[0])
+    # readLen = int(IS.get('mapping_info')['mean_pair_length'].tolist()[0])
     readLen = int(IS.get_read_length())
     db['read_length'] = readLen
     db['mm'] = db['mm'].astype(int)
-    db.loc[:,'read_pairs'] = [int((x*y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
-    db.loc[:,'ANI_level'] = [(readLen - mm)/readLen for mm in db['mm']]
+    db.loc[:, 'read_pairs'] = [int((x * y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
+    db.loc[:, 'ANI_level'] = [(readLen - mm) / readLen for mm in db['mm']]
 
     return db
+
 
 def read_ani_dist_plot(db, title=None):
     # Plot it
@@ -208,26 +229,27 @@ def read_ani_dist_plot(db, title=None):
     plt.ylabel("Numbner of read pairs (average length {0}bp)".format(rl))
     plt.title(title)
 
+
 def read_filtering_plot(db, title=''):
     # Prepare data
     keep_cols = [x for x in db.columns if 'pass' in x] \
-                 + ['unfiltered_reads', 'unfiltered_pairs', 'filtered_pairs']
+                + ['unfiltered_reads', 'unfiltered_pairs', 'filtered_pairs']
     db = db.melt(id_vars=['genome'], value_vars=keep_cols)
 
     # Rename
-    c2c = {'unfiltered_reads':'Total mapping reads (divided by 2)',
-          'unfiltered_pairs':'Total mapped pairs',
-          'pass_min_mapq':'Pairs passing mapQ threshold',
-          'pass_max_insert':'Pairs passing max insert size threshold',
-          'pass_min_insert':'Pairs passing min insert size threshold',
-          'pass_filter_cutoff':'Pairs passing ANI threshold',
-          'filtered_pairs':'Total filtered pairs'}
-    db.loc[:,'variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
-    db.loc[:,'value'] = [int(x/2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
-                db['value'], db['variable'])]
+    c2c = {'unfiltered_reads': 'Total mapping reads (divided by 2)',
+           'unfiltered_pairs': 'Total mapped pairs',
+           'pass_min_mapq': 'Pairs passing mapQ threshold',
+           'pass_max_insert': 'Pairs passing max insert size threshold',
+           'pass_min_insert': 'Pairs passing min insert size threshold',
+           'pass_filter_cutoff': 'Pairs passing ANI threshold',
+           'filtered_pairs': 'Total filtered pairs'}
+    db.loc[:, 'variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
+    db.loc[:, 'value'] = [int(x / 2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
+        db['value'], db['variable'])]
 
     # Set up colors
-    v2c = {v:'grey' for v in db['variable'].unique()}
+    v2c = {v: 'grey' for v in db['variable'].unique()}
     v2c['Total filtered pairs'] = 'green'
 
     db = db.sort_values(['value', 'variable'], ascending=False)
@@ -243,8 +265,8 @@ def read_filtering_plot(db, title=''):
             if i == 0:
                 continue
             width = p.get_width()
-            plt.text(offset + p.get_width(), p.get_y()+0.55*p.get_height(),
-                     '{:1.0f}%'.format((width/total)*100),
+            plt.text(offset + p.get_width(), p.get_y() + 0.55 * p.get_height(),
+                     '{:1.0f}%'.format((width / total) * 100),
                      ha='center', va='center')
 
     # Remove top and right axes

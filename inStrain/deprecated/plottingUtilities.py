@@ -448,7 +448,9 @@ def _get_basewise_clons3(clonT, MM, fill_zeros=False):
     counts = pd.Series(data = vals, index = np.array(inds).astype('int'), dtype='float64')
 
     if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        counts = pd.concat([counts, pd.Series(np.zeros(fill_zeros - len(counts)))])
+        #counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+
 
     return counts
 
@@ -652,7 +654,9 @@ def prepare_read_ani_dist_plot(IS):
     for scaffold, covT in covTS.items():
         for mm, counts in covT.items():
             lengt = s2l[scaffold]
-            counts = counts.append(pd.Series(np.zeros(lengt - len(counts))))
+            #counts = counts.append(pd.Series(np.zeros(lengt - len(counts))))
+            counts = pd.concat([counts, pd.Series(np.zeros(lengt - len(counts)))])
+
 
             coverage = np.mean(counts)
 
@@ -928,7 +932,7 @@ def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=
         t2t = {'av_ani':thresh, 'av_cov':gthresh}
 
         gdb['dist'] = 1 - gdb[thing]
-        db = gdb.pivot("name1", "name2", 'dist')
+        db = gdb.pivot(index="name1", columns="name2", values='dist')
 
         names = db.columns
         arr =  np.asarray(db)
@@ -1329,7 +1333,8 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         Mdb['ANI_level'] = [(readLen - mm)/readLen for mm in Mdb['mm']]
     except:
         logging.error("Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1337,6 +1342,7 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
     name = 'CoverageAndBreadth_vs_readMismatch.pdf'
     pp = PdfPages(plot_dir + name)
     #print(Mdb.head())
+
 
     for genome, mdb in Mdb.groupby('genome'):
         if not plot_genome(genome, IS, **kwargs):
@@ -1373,7 +1379,8 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
 
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1413,7 +1420,8 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 3 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1456,7 +1464,8 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 4 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1492,7 +1501,8 @@ def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 5 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1559,7 +1569,8 @@ def read_filtering_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 6 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1599,7 +1610,8 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
 
     except:
         logging.error("Skipping plot 7 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -1729,7 +1741,8 @@ def dendrograms_from_RC(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 10 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Plot

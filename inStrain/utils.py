@@ -39,6 +39,7 @@ def gen_dependency_report():
    PROGRAMS = ['samtools', 'coverm']
    MODULES = [matplotlib, seaborn, numpy, Bio, pysam, pandas]
 
+
    ret_string = f'{"$"*10} DEPENDENCY REPORT {"$"*10}\n'
    ret_string += f'PYTHON\nRunning python v{sys.version}\n'
 
@@ -49,6 +50,18 @@ def gen_dependency_report():
       ret_string += f'{program:.<30} {works_message:10} (version={version}) (location = {loc})\n'.format(program, works_message, loc)
 
    ret_string += '\nPYTHON DEPENDENCIES\n'
+
+   try:
+      import numba
+      numba_installed = True
+   except ModuleNotFoundError:
+      numba_installed = False
+   if numba_installed:
+      MODULES += [numba]
+   else:
+      s = f"{'numba':.<30} {'! NOT WORKING !':10} Not needed, but installing will increase filter_reads runtime\n"
+      ret_string += s
+
    for module in MODULES:
       v = str(module.__version__)
       l = str(module.__file__)

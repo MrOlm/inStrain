@@ -40,7 +40,8 @@ def dendrograms_from_RC(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 10 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Plot
@@ -83,7 +84,7 @@ def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=
         t2t = {'av_ani':thresh, 'av_cov':gthresh}
 
         gdb['dist'] = 1 - gdb[thing]
-        db = gdb.pivot("name1", "name2", 'dist')
+        db = gdb.pivot(index="name1", columns="name2", values='dist')
 
         names = db.columns
         arr =  np.asarray(db)
@@ -110,8 +111,10 @@ def plot_readComparerer_dendrograms(gdb, title, cluster_method='single', thresh=
     for thing in ['av_cov', 'av_ani']:
         axes = t2a[thing]
         labels = axes.xaxis.get_majorticklocs()
+        ori_labels = axes.xaxis.get_majorticklocs()
         for i, label in enumerate(labels):
             labels[i] = round((1 - float(label)) * 100, 3)
+        axes.set_xticks(ori_labels)
         axes.set_xticklabels(labels)
 
 def add_av_RC(db):

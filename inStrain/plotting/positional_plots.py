@@ -22,6 +22,10 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
     # Load the required data
     try:
         stb = IS.get('scaffold2bin')
+
+        if type(stb) != type(dict()):
+            raise Exception("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
+
         b2s = defaultdict(list)
         for s, b in stb.items():
             b2s[b].append(s)
@@ -38,7 +42,8 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
 
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -94,7 +99,8 @@ def scaffold_inspection_from_IS(IS, plot_dir=False, **kwargs):
 
     except:
         logging.error("Skipping plot 7 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot
@@ -476,7 +482,9 @@ def _get_basewise_clons3(clonT, MM, fill_zeros=False):
     counts = pd.Series(data = vals, index = np.array(inds).astype('int'), dtype='float64')
 
     if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        #counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        counts = pd.concat([counts, pd.Series(np.zeros(fill_zeros - len(counts)))])
+
 
     return counts
 

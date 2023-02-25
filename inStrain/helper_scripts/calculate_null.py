@@ -68,7 +68,7 @@ def main(args):
 
 
 	db = pd.concat(dbs).sort_values(['coverage', 'error_base_coverage'])
-	db = db.pivot('coverage', 'error_base_coverage', 'probability').fillna(0).reset_index()
+	db = db.pivot(index='coverage', columns='error_base_coverage', values='probability').fillna(0).reset_index()
 	db.to_csv('NullModel.txt', sep='\t', index=False)
 
 def prob_wrapper(cmd):

@@ -490,7 +490,7 @@ def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
         # Make a table of class counts
         class_options = ['DivergentSite', 'SNS', 'SNV', 'con_SNV', 'pop_SNV']
         ccdb = cdb.groupby('position')['class'].value_counts().to_frame().rename(
-            columns={'class': 'count'}).reset_index().pivot('position', 'class', 'count').fillna(0).reset_index()
+            columns={'class': 'count'}).reset_index().pivot(index='position', columns='class', values='count').fillna(0).reset_index()
         for c in class_options:
             if c not in ccdb.columns:
                 ccdb[c] = 0

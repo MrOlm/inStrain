@@ -208,7 +208,7 @@ def cluster_genome_strains(Mdb, kwargs):
         gdb['dist'] = [1 if c < cov_thresh else d for d, c in zip(gdb['dist'], gdb['av_cov'])]
 
         # Make squareform
-        db = gdb.pivot("name1", "name2", 'dist')
+        db = gdb.pivot(index="name1", columns="name2", values='dist')
         names = db.columns
         arr = np.asarray(db)
         arr = scipy.spatial.distance.squareform(arr, checks=True)

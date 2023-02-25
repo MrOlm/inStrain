@@ -540,7 +540,8 @@ def get_basewise_clons(clonT, MM, fill_zeros=False):
     counts = list(p2c.values())
 
     if fill_zeros:
-        counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        #counts = counts.append(pd.Series(np.zeros(fill_zeros - len(counts))))
+        counts = pd.concat([counts, pd.Series(np.zeros(fill_zeros - len(counts)))])
 
     return counts
 

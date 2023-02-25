@@ -14,7 +14,6 @@ import numpy as np
 import pandas as pd
 import pysam
 from Bio import SeqIO
-from numba import jit
 from tqdm import tqdm
 
 import inStrain.logUtils
@@ -26,6 +25,20 @@ global v2o
 
 i2o = {'nm':0, 'insert_distance':1, 'mapq':2, 'length':3, 'reads':4, 'start':5, 'stop':6}
 v2o = {'min_read_ani':0, 'max_insert':1, 'min_insert':2, 'min_mapq':3}
+
+try:
+    from numba import jit
+    numba_installed = True
+except ModuleNotFoundError:
+    numba_installed = False
+
+def numba_conditional_decorator(function):
+    if not numba_installed:
+        # We do not apply the decorator to the function
+        return function
+    else:
+        # We apply the decorator and return the new function
+        return jit(nopython=True)(function)
 
 class Controller():
 
@@ -371,7 +384,7 @@ def update_tallys(tallys, pair, info, values, scaffold, scaff2pair2mm, priority_
         if pair in priority_reads:
             tallys[scaffold]['filtered_priority_reads'] += 1
 
-@jit(nopython=True)
+@numba_conditional_decorator
 def evaluate_pair(info, f_results, min_read_ani, min_mapq, min_insert, max_insert):
     '''
     Return a list of the filters that this pair passes and fails

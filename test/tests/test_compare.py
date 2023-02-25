@@ -23,6 +23,7 @@ import inStrain.profile.profile_utilities
 import inStrain.profile.snv_utilities
 import inStrain.readComparer
 import inStrain.compare_utils
+import inStrain.utils
 import tests.test_utils as test_utils
 
 from test_utils import BTO
@@ -967,6 +968,7 @@ def test_compare_13(BTO):
         elif i in ['scaffold2length']:
             assert test_utils.compare_dicts(e, s), i
 
+@pytest.mark.skipif(not inStrain.utils.find_program('samtools')[1], reason="requires samtools")
 def test_compare_14(BTO):
     """
     Handle scaffold failures

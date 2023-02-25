@@ -32,7 +32,8 @@ def linkage_decay_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 5 - you don't have all required information. You need to run inStrain genome_wide first")
-        traceback.print_exc()
+        if kwargs.get('debug', False):
+            traceback.print_exc()
         return
 
     # Make the plot

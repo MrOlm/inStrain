@@ -6,7 +6,7 @@ import glob
 import importlib
 import os
 import shutil
-from subprocess import call
+from subprocess import call, run, PIPE
 import numpy as np
 
 import inStrain
@@ -255,9 +255,13 @@ def test_BreadthCurve_plot_1(BTO, view=False):
 
     cmd = "inStrain plot -i {0} -pl 1 2 -d".format(location)
     print(cmd)
-    sys_args = cmd.split(' ')
-    args = inStrain.argumentParser.parse_args(sys_args[1:])
-    inStrain.controller.Controller().main(args)
+    result = run(cmd, shell=True, stdout=PIPE, stderr=PIPE)
+    e = result.stderr.decode("utf-8").strip()
+    assert "Closing glyph list over" not in e
+
+    # sys_args = cmd.split(' ')
+    # args = inStrain.argumentParser.parse_args(sys_args[1:])
+    # inStrain.controller.Controller().main(args)
 
     # Load output
     IS = inStrain.SNVprofile.SNVprofile(location)

@@ -85,7 +85,7 @@ def recluster_instrain(db, cluster_method='single', ANI=99.999):
             f"WARNING! {missing_comps} / {len(gdb)} ({(missing_comps / len(gdb)) * 100:.2f}%) of comparisons are missing")
 
     gdb['dist'] = gdb['dist'].fillna(1)
-    db = gdb.pivot("name1", "name2", 'dist')
+    db = gdb.pivot(index="name1", columns="name2", values='dist')
 
     # Set up some more
     names = db.columns

@@ -5,6 +5,7 @@ Run tests on auxillary scripts
 import os
 import numpy as np
 import shutil
+import pytest
 import glob
 from subprocess import call
 
@@ -19,6 +20,7 @@ import tests.test_utils as test_utils
 
 from test_utils import BTO
 
+@pytest.mark.skipif(not inStrain.utils.find_program('sambamba')[1], reason="requires sambamba")
 def test_rarefaction_curve_0(BTO):
     """
     Just run the program
