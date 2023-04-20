@@ -356,7 +356,7 @@ Success! As before, for help interpreting this output see :doc:`example_output` 
 Tutorial #2) Running inStrain using a public genome database
 ---------------------------------------------------------------
 
-If you don't want to assemble and bin your metagenomic samples it is also possible to run inStrain using publicly available reference genomes. Here we will go through a tutorial on how to do this with the `UHGG genome collection <https://www.nature.com/articles/s41587-020-0603-3>`_, a collection of all microbial species known to exist in the human gut. The steps in this tutorial could be repeated with any set of genomes though.
+If you don't want to assemble and bin your metagenomic samples it is also possible to run inStrain using publicly available reference genomes. Here we will go through a tutorial on how to do this with the `UHGG genome collection <https://www.nature.com/articles/s41587-020-0603-3>`_, a collection of all microbial species known to exist in the human gut. The steps in this tutorial could be repeated with any set of genomes though, including genomes assembled from non-industrialized human populations, as available at the following link - https://doi.org/10.5281/zenodo.7782709
 
 Preparing a genome database
 ++++++++++++++++++++++++++++
@@ -364,6 +364,10 @@ Preparing a genome database
 .. note::
 
   The genome database created in this section is available for direct download at the following link - https://doi.org/10.5281/zenodo.4441269 . You can download those files directly and skip this section if you would like. **This genome set is based on UHGG version 1 and was created on Jan 14, 2021**.
+
+.. note::
+
+  An alternative genome database that includes UHGG genomes AND genomes assembled from non-industrialized human populations is available for direct download at the following link - https://doi.org/10.5281/zenodo.7782709 . This genome set is described in the following publication - https://doi.org/10.1101/2022.03.30.486478
 
 In order to create a genome database we need to download the genomes, create a :term:`scaffold-to-bin file`, create a :term:`genes file`, and merge all genomes into a single :term:`fasta file` that we can make a bowtie2 mapping index out of. All genomes in a genome need to database need to be distinct from one another, but not too distinct. See section "Establishing and evaluating genome databases" in :doc:`important_concepts` for more info.
 
