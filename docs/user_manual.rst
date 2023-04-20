@@ -787,6 +787,27 @@ Where Cdb is a pandas DataFrame that looks like:
   AP010888.1_115,GH77_0,GH,77,0,GH77.hmm,494,746,4.700000e-134,2,482,204,728,0.971660
   AP010888.1_120,GH31_0,GH,31,0,GH31.hmm,427,846,1.300000e-129,1,427,198,627,0.997658
 
+Pfams (protein families)
+``````````````````````````````````````
+Pfams can be profiled using the HMMs provided by Pfam ::
+
+  # Download the HMMs and executables
+  wget https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
+
+  # Install cath-resolve-hits on your system
+  # https://github.com/UCLOrengoGroup/cath-tools/releases/tag/v0.16.10
+
+  # Prepare HMMs
+  gzip -d Pfam-A.hmm.gz
+
+  # Run with gathering cutoff
+  hmmsearch --cut_ga --cpu 6 --domtblout genes.faa_vs_Pfam.hmm --acc Pfam-A.hmm genes.faa
+
+  # Resolve domain overlaps using cath-resolve-hits
+  cath-resolve-hits.ubuntu14.04 --input-format hmmer_domtblout genes.faa_vs_Pfam.hmm --hits-text-to-file genes.faa_vs_Pfam.hmm.filtered.txt --quiet
+
+The following python code parses the resulting table
+
 Antibiotic Resistance Genes
 ``````````````````````````````````````
 There are many, many different ways of identifying antibiotic resistance genes. The method below is based on identifying homologs to know antibiotic resistance genes using the CARD database (https://card.mcmaster.ca/download) ::
@@ -805,79 +826,104 @@ The following python code parses the resulting table
 
 .. code-block:: python
 
-  import pandas as pd
-  from collections import defaultdict
+    def parse_Pfam(floc, aloc):
+        """
+        v1.0 - 4/20/2023
 
-  def parse_card(floc, jloc=None):
-      """
-      v1.0 - 1/6/2023
-      
-      Parse CARD 
-      
-      Returns:
-          Rdb: DataFrame with CARD results
-      """
-      h = ['gene', 'target', 'percentID', 'alignment_length', 'mm', 'gaps',
-          'querry_start', 'querry_end', 'target_start', 'target_end', 'e-value', 'bit_score',
-          'extra']
-      db = pd.read_csv(floc, sep='\t', names=h)
-      del db['extra']
-      
-      db['protein_seq_accession'] =  [t.split('|')[1] for t in db['target']]
-      db['ARO'] =  [t.split('|')[2].split(':')[-1] for t in db['target']]
-      db['CARD_short_name'] =  [t.split('|')[3].split(':')[-1] for t in db['target']]
-      
-      # Reorder
-      header = ['gene', 'CARD_short_name', 'ARO', 'target']
-      db = db[header + [x for x in list(db.columns) if x not in header]]
-      
-      if jloc is None:
-          return db
-      
-      # Parse more
-      import json
-      j = json.load(open(jloc))
-      
-      aro2name = {}
-      aro2categories = {}
+        Parse Pfam
 
-      for n, m2t in j.items():
-          if type(m2t) != type({}):
-              continue
+        Returns:
+            Hdb: DataFrame with Pfam results
+        """
 
-          if 'ARO_description' in m2t: 
-              aro2name[m2t['ARO_accession']] = m2t['ARO_description']
-              
-          if 'ARO_category' in m2t:
-              cats = []
-              for cat, c2t in m2t['ARO_category'].items():
-                  if 'category_aro_accession' in c2t:
-                      cats.append(c2t['category_aro_accession'])
-              aro2categories[m2t['ARO_accession']] = '|'.join(cats)
-              
-              
-      db['ARO_description'] = db['ARO'].map(aro2name)
-      db['ARO_category_accessions'] = db['ARO'].map(aro2categories)
-      
-      header = ['gene', 'CARD_short_name', 'ARO', 'ARO_description', 'ARO_category_accessions', 'target']
-      db = db[header + [x for x in list(db.columns) if x not in header]]
-      
-      return db
-    
-  floc = "/genes.faa_vs_CARD.dm"
-  Rdb = parse_card(floc, jloc = "card.json")
+        PFdb = pd.read_csv(floc, header=1, delim_whitespace=True, names=['query-id', 'match-id', 'score', 'boundaries', 'resolved', 'cond-evalue', 'indp-evalue', 'junk'], index_col=None)
+        del PFdb['junk']
 
-Where Rdb is a pandas DataFrame that looks like:
+        # Compress
+        Ofdb = PFdb.rename(columns={'query-id':'gene', 'match-id':'pFam'})
+        Ofdb = Ofdb.sort_values('score').drop_duplicates(subset=['gene', 'pFam'], keep='last').sort_values('gene')
+        #Ofdb = Ofdb[['gene', 'pFam']]
+        Ofdb['pFam'] = Ofdb['pFam'].astype('category')
 
-.. csv-table:: Rdb
+        # Add more annotation data
+        PFDdb = pd.read_csv(aloc)
 
-  gene,CARD_short_name,ARO,ARO_description,ARO_category_accessions,target,percentID,alignment_length,mm,gaps,querry_start,querry_end,target_start,target_end,e-value,bit_score,protein_seq_accession
-  AP010889.1_21,macB,3000535,MacB is an ATP-binding cassette (ABC) transpor...,0010001|0000006|0000000|3000159|0010000,gb|AAV85982.1|ARO:3000535|macB,34.6,231,137,5,1,227,3,223,7.170000e-33,123.0,AAV85982.1
-  AP010889.1_53,lin,3004651,Listeria monocytogenes EGD-e lin gene for linc...,3000221|0000046|0000017|0001004,gb|AEO25219.1|ARO:3004651|lin,21.4,415,260,14,170,560,80,452,1.560000e-07,51.2,AEO25219.1
-  AP010889.1_106,patA,3000024,PatA is an ABC transporter of Streptococcus pn...,0010001|0000036|3000662|0000001|3000159|0010000,gb|AAK76137.1|ARO:3000024|patA,25.9,228,149,7,80,298,344,560,1.560000e-14,70.9,AAK76137.1
-  AP010889.1_107,bcrA,3002987,bcrA is an ABC transporter found in Bacillus l...,0010001|0000041|3000629|3000630|3000631|300005...,gb|AAA99504.1|ARO:3002987|bcrA,28.3,212,149,2,5,216,4,212,7.430000e-26,99.8,AAA99504.1
-  AP010889.1_129,Abau_AbaF,3004573,Expression of abaF in E. coli resulted in incr...,0010002|0000025|3007149|3000159|0010000,gb|ABO11759.2|ARO:3004573|Abau_AbaF,31.5,435,280,7,24,453,4,425,7.750000e-72,230.0,ABO11759.2
+        TDdb = pd.merge(Ofdb, PFDdb[['NAME', 'DESC', 'ACC']].rename(columns={'NAME':'pFam'}), on='pFam')
+        TDdb = TDdb.drop_duplicates()
 
+        return TDdb
+
+    def make_Pfam_info(LOCATION):
+        table = defaultdict(list)
+        a2c = {}
+        grab_next = False
+        with open(LOCATION) as f:
+            for line in f.readlines():
+                line = line.strip()
+                if grab_next:
+                    assert line.split()[0] == 'ACC', line
+                    a2c[acc] = ' '.join(line.split()[1:])
+                    grab_next = False
+
+                if line[:4] == 'NAME':
+                    acc = line.split()[1]
+                    grab_next = True
+        Ddb = pd.DataFrame(list(a2c.items()))
+        Ddb.rename(columns={0:'NAME', 1:'ACC'}, inplace=True)
+
+        a2c = {}
+        grab_next = False
+        with open(LOCATION) as f:
+            for line in f.readlines():
+                line = line.strip()
+                if grab_next:
+                    if line.split()[0] == 'NC':
+                        a2c[acc] = float(line.split()[1])
+                        grab_next = False
+
+                if line[:3] == 'ACC':
+                    acc = line.split()[1]
+                    grab_next = True
+        Ndb = pd.DataFrame(list(a2c.items()))
+        Ndb.rename(columns={0:'ACC', 1:'NC'}, inplace=True)
+
+        a2c = {}
+        grab_next = False
+        with open(LOCATION) as f:
+            for line in f.readlines():
+                line = line.strip()
+                if grab_next:
+                    assert line.split()[0] == 'DESC', line
+                    a2c[acc] = ' '.join(line.split()[1:])
+                    grab_next = False
+
+                if line[:3] == 'ACC':
+                    acc = line.split()[1]
+                    grab_next = True
+        DEdb = pd.DataFrame(list(a2c.items()))
+        DEdb.rename(columns={0:'ACC', 1:'DESC'}, inplace=True)
+
+        PFdb = pd.merge(Ddb, Ndb).merge(DEdb)
+
+    PIdb = make_Pfam_info("Pfam-A.hmm")
+    PIdb.to_csv('Pfam-A.info.csv', index=False)
+
+    floc = 'genes.faa_vs_Pfam.filtered.txt'
+    aloc = 'Pfam-A.info.csv'
+
+    Hdb = parse_Pfam(floc, aloc)
+    Hdb
+
+Where Hdb is a pandas DataFrame that looks like:
+
+.. csv-table:: Hdb
+
+    gene,pFam,score,boundaries,resolved,cond-evalue,indp-evalue,DESC,ACC
+    COASSEMBLY_8000__NODE_10003_length_3966_cov_2....,ParA,293.8,40-278,40-278,9.100000e-88,5.500000e-85,NUBPL iron-transfer P-loop NTPase,PF10609.9
+    COASSEMBLY_8000__NODE_1115_length_48820_cov_22...,ParA,298.1,33-277,33-277,4.500000e-89,2.700000e-86,NUBPL iron-transfer P-loop NTPase,PF10609.9
+    COASSEMBLY_8000__NODE_1595_length_34257_cov_43...,ParA,313.2,41-286,41-286,1.100000e-93,6.400000e-91,NUBPL iron-transfer P-loop NTPase,PF10609.9
+    COASSEMBLY_8000__NODE_187_length_143579_cov_8....,ParA,300.3,92-342,92-342,9.600000e-90,5.800000e-87,NUBPL iron-transfer P-loop NTPase,PF10609.9
+    COASSEMBLY_8000__NODE_2172_length_24655_cov_4....,ParA,305.3,25-267,25-267,2.800000e-91,1.700000e-88,NUBPL iron-transfer P-loop NTPase,PF10609.9
 
 Human milk oligosaccharide (HMO) Utilization genes
 ````````````````````````````````````````````````````
