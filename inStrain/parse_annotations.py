@@ -120,10 +120,10 @@ class PAController(object):
         self.totals_db = sdb
 
         # Calculate annotation counts
-        s2a2vals = calculate_annotation_counts(self.gene_tables, self.names, **self.kwargs)
+        s2a2g2vals = calculate_annotation_counts2(self.gene_tables, self.names, **self.kwargs)
 
         # Create tables
-        metric2table = create_annotation_tables(sdb, s2a2vals, **self.kwargs)
+        metric2table = create_annotation_tables2(sdb, s2a2g2vals, **self.kwargs)
         self.metric2tables = metric2table
 
     def store_results(self):
@@ -160,36 +160,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 """.format(Sprofile.get_location('output'), \
                            Sprofile.get_location('log'))
         logging.info(message)
-
-# def load_annotation_table(locs):
-#     """
-#     Load the annotation table
-#
-#     Input can either be a list of file locations or just 1 file location
-#     """
-#     gene2annos = {}
-#
-#     if type(locs) != type([]):
-#         locs = [locs]
-#
-#     for loc in locs:
-#         adb = pd.read_csv(loc, sep=',', dtype='string')
-#
-#         # Validate table
-#         for c in ['gene', 'anno']:
-#             if c not in list(adb.columns):
-#                 m = f"The required column {c} is not in your annotation table {loc}!"
-#                 print(m)
-#                 logging.error(m)
-#                 raise Exception(m)
-#
-#         # Store annos
-#         for gene, db in adb.groupby('gene'):
-#             if gene not in gene2annos:
-#                 gene2annos[gene] = set()
-#             gene2annos[gene] = gene2annos[gene].union(set(db['anno']))
-#
-#     return gene2annos
 
 def load_annotation_table2(locs):
     """
@@ -266,32 +236,135 @@ def calculate_gene_sum_stats(gdbs, names, **kwargs):
 
     return pd.DataFrame(table)
 
-def calculate_annotation_counts(gdbs, names, **kwargs):
+# def calculate_annotation_counts(gdbs, names, **kwargs):
+#     """
+#     Create sample2accession2values
+#     """
+#     s2a2vals = {}
+#     for db, name in tqdm(zip(gdbs, names), total=len(names), desc='Calculating anno metrics'):
+#         # Create "accession to values"
+#         # values = [genomes, # genes, # bases]
+#         a2vals = {}
+#         for i, row in db[~db['annos'].isna()].iterrows():
+#             kos = row['annos']
+#             if 'genome' in row:
+#                 genome = row['genome']
+#             else:
+#                 genome = None
+#             for k in kos:
+#                 if k in a2vals:
+#                     a2vals[k][0] = a2vals[k][0].union(set([genome]))
+#                     a2vals[k][1] += 1
+#                     a2vals[k][2] += row['mb']
+#                 else:
+#                     a2vals[k] = [set([genome]), 1, row['mb']]
+#         s2a2vals[name] = a2vals
+#     return s2a2vals
+
+def calculate_annotation_counts2(gdbs, names, **kwargs):
     """
-    Create sample2accession2values
+    Create sample2accession2genome2values
     """
-    s2a2vals = {}
+    s2a2g2vals = {}
     for db, name in tqdm(zip(gdbs, names), total=len(names), desc='Calculating anno metrics'):
-        # Create "accession to values"
+        # Create "accession to genome to values"
         # values = [genomes, # genes, # bases]
-        a2vals = {}
+        a2g2vals = {}
         for i, row in db[~db['annos'].isna()].iterrows():
             kos = row['annos']
             if 'genome' in row:
-                genome = row['genome']
+                g = row['genome']
             else:
-                genome = None
+                g = None
             for k in kos:
-                if k in a2vals:
-                    a2vals[k][0] = a2vals[k][0].union(set([genome]))
-                    a2vals[k][1] += 1
-                    a2vals[k][2] += row['mb']
-                else:
-                    a2vals[k] = [set([genome]), 1, row['mb']]
-        s2a2vals[name] = a2vals
-    return s2a2vals
 
-def create_annotation_tables(sdb, s2a2vals, **kwargs):
+                if k not in a2g2vals:
+                    a2g2vals[k] = {}
+
+                if g in a2g2vals[k]:
+                    a2g2vals[k][g][0] = a2g2vals[k][g][0].union(set([g]))
+                    a2g2vals[k][g][1] += 1
+                    a2g2vals[k][g][2] += row['mb']
+                else:
+                    a2g2vals[k][g] = [set([g]), 1, row['mb']]
+        s2a2g2vals[name] = a2g2vals
+    return s2a2g2vals
+
+# def create_annotation_tables(sdb, s2a2vals, **kwargs):
+#     """
+#     Create the actual tables that can be used for stats and whatnot
+#     """
+#     if 'detected_genomes' in set(sdb.columns):
+#         METRICS = ['genes', 'bases', 'genomes']
+#     else:
+#         METRICS = ['genes', 'bases']
+#
+#     metric2table = {}
+#     for metric in METRICS:
+#         metric2table[metric] = defaultdict(list)
+#
+#     TOTAL_KOS = set()
+#     for s, a2vals in s2a2vals.items():
+#         TOTAL_KOS = TOTAL_KOS.union(set(a2vals.keys()))
+#
+#     for sample, a2vals in s2a2vals.items():
+#         for metric in METRICS:
+#             metric2table[metric]['sample'].append(sample)
+#
+#         for KO in sorted(list(TOTAL_KOS)):
+#             if KO in a2vals:
+#                 genomes = len(a2vals[KO][0])
+#                 genes = a2vals[KO][1]
+#                 bases = a2vals[KO][2]
+#             else:
+#                 genomes = 0
+#                 genes = 0
+#                 bases = 0
+#
+#             for metric in METRICS:
+#                 if metric == 'genes':
+#                     val = genes
+#                 elif metric == 'bases':
+#                     val = bases
+#                 elif metric == 'genomes':
+#                     val = genomes
+#                 else:
+#                     assert False
+#                 metric2table[metric][KO].append(val)
+#
+#     for metric in METRICS:
+#         metric2table[metric] = pd.DataFrame(metric2table[metric])
+#
+#     # Calculate the percentage metrics
+#     for metric in METRICS:
+#         if metric == 'genes':
+#             s2norm = sdb.set_index('sample')['detected_genes'].to_dict()
+#         elif metric == 'bases':
+#             s2norm = sdb.set_index('sample')['bases_mapped_to_genes'].to_dict()
+#         elif metric == 'genomes':
+#             s2norm = sdb.set_index('sample')['detected_genomes'].to_dict()
+#         else:
+#             assert False
+#
+#         db = metric2table[metric].copy()
+#         for d in TOTAL_KOS:
+#             db[d] = [x / s2norm[s] for x, s in zip(db[d], db['sample'])]
+#
+#         metric2table[metric + '_fraction'] = db
+#
+#     # Calculate the long-form table
+#     table = defaultdict(list)
+#     for sample, a2vals in s2a2vals.items():
+#         for a, vals in a2vals.items():
+#             table['sample'].append(sample)
+#             table['anno'].append(a)
+#             for name, thing in zip(['genomes', 'genes', 'bases'], vals):
+#                 table[name].append(thing)
+#     metric2table["long_data"] = pd.DataFrame(table)
+#
+#     return metric2table
+
+def create_annotation_tables2(sdb, s2a2g2vals, **kwargs):
     """
     Create the actual tables that can be used for stats and whatnot
     """
@@ -305,18 +378,18 @@ def create_annotation_tables(sdb, s2a2vals, **kwargs):
         metric2table[metric] = defaultdict(list)
 
     TOTAL_KOS = set()
-    for s, a2vals in s2a2vals.items():
-        TOTAL_KOS = TOTAL_KOS.union(set(a2vals.keys()))
+    for s, a2g2vals in s2a2g2vals.items():
+        TOTAL_KOS = TOTAL_KOS.union(set(a2g2vals.keys()))
 
-    for sample, a2vals in s2a2vals.items():
+    for sample, a2g2vals in s2a2g2vals.items():
         for metric in METRICS:
             metric2table[metric]['sample'].append(sample)
 
         for KO in sorted(list(TOTAL_KOS)):
-            if KO in a2vals:
-                genomes = len(a2vals[KO][0])
-                genes = a2vals[KO][1]
-                bases = a2vals[KO][2]
+            if KO in s2a2g2vals:
+                genomes = len(a2g2vals[KO].keys())
+                genes = sum([a2vals[1] for g, a2vals in a2g2vals[KO].items()])
+                bases = sum([a2vals[2] for g, a2vals in a2g2vals[KO].items()])
             else:
                 genomes = 0
                 genes = 0
@@ -355,12 +428,36 @@ def create_annotation_tables(sdb, s2a2vals, **kwargs):
 
     # Calculate the long-form table
     table = defaultdict(list)
-    for sample, a2vals in s2a2vals.items():
-        for a, vals in a2vals.items():
-            table['sample'].append(sample)
-            table['anno'].append(a)
-            for name, thing in zip(['genomes', 'genes', 'bases'], vals):
-                table[name].append(thing)
+    for sample, a2g2vals in s2a2g2vals.items():
+        for a, g2vals in a2g2vals.items():
+            for g, vals in g2vals.items():
+                table['sample'].append(sample)
+                table['anno'].append(a)
+                table['genome'].append(g)
+                for name, thing in zip(['genomes', 'genes', 'bases'], vals):
+                    if name == 'genomes':
+                        continue
+                    table[name].append(thing)
     metric2table["long_data"] = pd.DataFrame(table)
 
     return metric2table
+
+def load_s2a2g2vals(loc):
+    """
+    Create s2a2g2vals from long_data
+    """
+
+    s2a2g2vals = {}
+    bdb = pd.read_csv(loc)
+    for i, row in bdb.iterrows():
+        s = row['sample']
+        g = row['genome']
+        a = row['anno']
+
+        if s not in s2a2g2vals:
+            s2a2g2vals[s] = {}
+        if a not in s2a2g2vals[s]:
+            s2a2g2vals[s][a] = {}
+        s2a2g2vals[s][a][g] = [set([g]), row['genes'], row['bases']]
+
+    return s2a2g2vals

@@ -598,6 +598,9 @@ The following python code parses the resulting table
 
     def parse_kofamscan(floc):
         """
+        v1.1: 5/1/2023
+        - update "KO_definition" to be 5
+
         v1.0: 1/6/2023
         
         Parse kofamscan results. Only save results where KO score > threshold
@@ -636,7 +639,7 @@ The following python code parses the resulting table
                         table['thrshld'].append(float(lw[2]))
                         table['score'].append(float(lw[3]))
                         table['e_value'].append(float(lw[4]))
-                        table['KO_definition'].append(' '.join(lw[4:]))
+                        table['KO_definition'].append(' '.join(lw[5:]))
                 except:
                     print(line)
                     assert False   

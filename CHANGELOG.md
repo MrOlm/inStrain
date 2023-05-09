@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.2] - 2023-05-09
+- Update to parse_gene_annotations that spells things out on the genome level
+
 ## [1.7.1] - 2023-02-24
 - Bring things up-to-date and working on python 3.10
 - Make profile_genes use "fork" instead of "spawn" to make it work with higher python versions (even though it's already deprecated)
