@@ -29,7 +29,20 @@ def test_PA_1(BTO):
 
     odb = pd.read_csv([f for f in outfiles if 'LongFormData.csv' in f][0])
     assert len(odb) > 0
-    print(odb)
+
+    # Make sure not all 0s
+    for loc in glob.glob(base + '/output/ParsedGeneAnno_*'):
+        Ddb = pd.read_csv(loc)
+
+        got = False
+        for c, i in Ddb.items():
+            if c == 'sample':
+                continue
+
+            if sum(i) > 0:
+                got = True
+
+        assert got, loc
 
 def test_PA_2(BTO):
     """

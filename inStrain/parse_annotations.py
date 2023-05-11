@@ -386,7 +386,7 @@ def create_annotation_tables2(sdb, s2a2g2vals, **kwargs):
             metric2table[metric]['sample'].append(sample)
 
         for KO in sorted(list(TOTAL_KOS)):
-            if KO in s2a2g2vals:
+            if KO in a2g2vals:
                 genomes = len(a2g2vals[KO].keys())
                 genes = sum([a2vals[1] for g, a2vals in a2g2vals[KO].items()])
                 bases = sum([a2vals[2] for g, a2vals in a2g2vals[KO].items()])
