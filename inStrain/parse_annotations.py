@@ -422,7 +422,10 @@ def create_annotation_tables2(sdb, s2a2g2vals, **kwargs):
 
         db = metric2table[metric].copy()
         for d in TOTAL_KOS:
-            db[d] = [x / s2norm[s] for x, s in zip(db[d], db['sample'])]
+            if s2norm[s] == 0:
+                db[d] = 0
+            else:
+                db[d] = [x / s2norm[s] for x, s in zip(db[d], db['sample'])]
 
         metric2table[metric + '_fraction'] = db
 

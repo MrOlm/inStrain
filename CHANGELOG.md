@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.4] - 2023-05-16
+- Fix a division by 0 when you don't have any annos detected in a sample
+
 ## [1.7.3] - 2023-05-11
 - Fix but in 1.7.2 that resulted in all 0s with parse_gene_annotations
 
