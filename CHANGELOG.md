@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.5] - 2023-05-16
+- Silly fix of 1.7.4 again
+
 ## [1.7.4] - 2023-05-16
 - Fix a division by 0 when you don't have any annos detected in a sample
 
