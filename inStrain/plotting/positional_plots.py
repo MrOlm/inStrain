@@ -358,6 +358,8 @@ def load_windowed_linkage(Ldb, scaffolds, window_len, mms, ANI_levels, s2l, on='
 
     # Get the linkage table
     #Ldb = IS.get('raw_linkage_table')
+    if len(Ldb) == 0:
+        return pd.DataFrame()
     Ldb = Ldb[Ldb['scaffold'].isin(scaffolds)].sort_values('mm')
     got_scaffolds = set(Ldb['scaffold'].unique())
 

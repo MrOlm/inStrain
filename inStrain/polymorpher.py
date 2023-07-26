@@ -63,6 +63,7 @@ class PoolController(object):
                     columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                              'baseCoverage': 'position_coverage'})
                 db = db[db['cryptic'] == False]
+                db['scaffold'] = db['scaffold'].astype(str)
                 if 'mm' in list(db.columns):
                     db = db.sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last').sort_index().drop(columns=['mm'])
                 name2snpTable[name] = db

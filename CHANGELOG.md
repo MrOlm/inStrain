@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.7.6] - 2023-07-26
+- Make polymorpher work when scaffold names are ints
+- Fix plots 2 and 7 when there's no linkage reported
+
 ## [1.7.5] - 2023-05-16
 - Silly fix of 1.7.4 again
 
