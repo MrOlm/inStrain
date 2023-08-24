@@ -171,7 +171,7 @@ class SNVprofile:
         """
         out_base = self.get_output_base()
 
-        if name in ['gene_info', 'genome_info']:
+        if name in ['gene_info', 'genome_info', 'mapping_info']:
             loc = out_base + name
 
         files = glob.glob(loc + '*')
@@ -183,7 +183,10 @@ class SNVprofile:
             logging.error(name + 'does not exist')
             return pd.DataFrame()
 
-        db = pd.read_csv(files[0], sep='\t')
+        if name == 'mapping_info':
+            db = pd.read_csv(files[0], sep='\t', header=1)
+        else:
+            db = pd.read_csv(files[0], sep='\t')
         return db
 
     def generate(self, name, store=True, return_table=False, **kwargs):

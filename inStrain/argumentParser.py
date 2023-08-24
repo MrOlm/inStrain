@@ -91,6 +91,8 @@ def parse_args(args):
         + "(for example long reads or merged reads). This can be a .fastq " \
         + "file or text file with list of read names (will assume file is " \
         + "compressed if ends in .gz", default=None)
+    fiflags.add_argument("--maximum_reads", action="store", default=None, type=int, \
+                         help='Maximum number of reads. Requires sambamba to do the subsetting.')
 
     # Make a parent parser for read output
     readoutput_parent = argparse.ArgumentParser(add_help=False)

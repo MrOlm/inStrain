@@ -32,7 +32,7 @@ def BTO():
 
     self.test_dir = load_random_test_dir()
 
-    self.fasta =  dl + 'N5_271_010G1_scaffold_min1000.fa'
+    self.fasta = dl + 'N5_271_010G1_scaffold_min1000.fa'
     self.failure_fasta = dl + 'N5_271_010G1_scaffold_failureScaffold.fa'
     self.highcov_fasta = dl + 'L3_108_000G1_scaffold_35331.fasta'
     self.single_scaff = dl + 'N5_271_010G1_scaffold_101.fasta'

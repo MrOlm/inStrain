@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.8.0] - 2023-08-24
+- If you don't have any genomes detected, crash more gracefully
+- Make it so all the genome_info columns are the same whether or not you have a linkage table
+- Add "maximum_reads" argument
+
 ## [1.7.6] - 2023-07-26
 - Make polymorpher work when scaffold names are ints
 - Fix plots 2 and 7 when there's no linkage reported

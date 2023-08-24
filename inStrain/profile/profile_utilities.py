@@ -710,8 +710,9 @@ def gen_snv_profile(Sprofiles, ISP_loc=None, **kwargs):
         counts_table = list() #alexcc 5/9/2019
         for Sprof in Sprofiles:
             counts_table.append(Sprof.pileup_counts) #add pileup counts to list
-        counts_table = np.array(counts_table)
-        Sprofile.store('counts_table', counts_table, 'numpy', '1d numpy array of 2D counts tables for each scaffold')
+        #counts_table = np.array([np.array(item) for item in counts_table])
+        #counts_table = np.array(counts_table)
+        Sprofile.store('counts_table', counts_table, 'pickle', '1d numpy array of 2D counts tables for each scaffold')
 
     return Sprofile
 

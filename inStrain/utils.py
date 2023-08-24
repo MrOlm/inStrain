@@ -36,7 +36,7 @@ def gen_dependency_report():
    """
    Return a string listing a number of dependencies and their versions
    """
-   PROGRAMS = ['samtools', 'coverm']
+   PROGRAMS = ['samtools', 'coverm', 'sambamba']
    MODULES = [matplotlib, seaborn, numpy, Bio, pysam, pandas]
 
 

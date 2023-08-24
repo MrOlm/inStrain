@@ -129,6 +129,8 @@ def test_compare_S(BTO):
                 snps = 0
             assert len(snp_locs) == snps, [len(snp_locs), snps, cov, ani, msdb]
 
+# This updates the RC loc
+@pytest.mark.skip(reason="Only run this as-needed")
 def test_compare_0(BTO):
     """
     Test calling readcomparer. These are two reads from samples from the same DOL to the same assembly.

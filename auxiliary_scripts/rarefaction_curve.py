@@ -123,7 +123,7 @@ class Controller(object):
         del self.args.bam
 
         # Figure out number of reads in the .bam file
-        self.total_reads = calc_number_reads(self.bam)
+        self.total_reads = inStrain.profile.samtools_ops.calc_number_reads(self.bam)
         logging.info(f"{self.total_reads:,} reads detected in bam file")
 
         # Figure out the average read length
@@ -211,7 +211,7 @@ class Controller(object):
             # subset the bam
             new_bamloc = f"{bam_base}.subset.{row['samtools_subset']}.bam"
             print("Subsetting bam")
-            sub_bam = subset_bam(self.bam, row['samtools_subset'], new_bamloc, p=self.args.processes)
+            sub_bam = inStrain.profile.samtools_ops.subset_bam(self.bam, row['samtools_subset'], new_bamloc, p=self.args.processes)
             assert os.path.exists(sub_bam), sub_bam
 
             # run coverM
@@ -276,26 +276,6 @@ class Outdir:
                 os.makedirs(loc)
             return loc
 
-def calc_number_reads(bam):
-    """
-    Return the number of reads in the .bam file
-    """
-    cmd = ['samtools', 'idxstats', bam]
-    logging.info(' '.join(cmd))
-
-    # run idxstats
-    result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-    assert result.returncode == 0, result
-
-    # sum number of reads
-    total_reads = 0
-    for line in result.stdout.split('\n'):
-        if len(line.split()) != 4:
-            continue
-        total_reads += (int(line.split()[2]) + int(line.split()[3]))
-
-    return total_reads
-
 def calc_read_length(bam, num_reads=10000):
     """
     Return the average read length in the bam file
@@ -314,13 +294,6 @@ def calc_read_length(bam, num_reads=10000):
         total_len += len(line.split()[9])
 
     return total_len / total_reads
-
-def subset_bam(ori_bam, substr, new_bam, p=6):
-    #cmd = f"samtools view -@ {p} -bs {substr} {ori_bam} > {new_bam}"
-    cmd = f"sambamba view -s {substr} -t {p} -f bam {ori_bam} > {new_bam}"
-    result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=True)
-    assert result.returncode == 0, result
-    return new_bam
 
 def run_instrain_qp(sub_bam, out, stb, genome2length, p=6):
     # Get coverM exe

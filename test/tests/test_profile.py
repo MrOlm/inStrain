@@ -656,7 +656,7 @@ def test_profile_10(BTO):
     cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 100  -s {4} --skip_genome_wide".format(
         True, BTO.bam1, BTO.fasta, base, BTO.stb2)
     exit_code = call(cmd, shell=True)
-    assert exit_code == 1
+    assert exit_code == 0
 
     # Run it with an .stb and coverage that is low
     cmd = "inStrain profile {1} {2} -o {3} -l 0.98 --min_genome_coverage 1.1  -s {4} --skip_genome_wide".format(
@@ -1370,6 +1370,85 @@ def test_profile_21(BTO):
     sdb = S1.get('raw_snp_table')
     assert len(sdb) > 0
     assert len(sdb[sdb['ref_base'] == 'c']) == 0
+
+def test_profile_22(BTO):
+    """
+    Test running database_mode with no scaffolds detected
+    """
+    # Run database mode
+    base = BTO.test_dir + 'test2'
+    cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --skip_plot_generation --min_genome_coverage 10000 -s {4}".format(
+        True, BTO.bam1,
+        BTO.fasta, base, BTO.stb)
+    print(cmd)
+    exit = call(cmd, shell=True)
+    assert exit == 0
+
+    out_loc = base + '/output/'
+    outs = glob.glob(out_loc + '*')
+    assert len(outs) >= 4
+
+def test_profile_23(BTO):
+    """
+    Test creation of genome_info.tsv when no linkage info present
+    """
+    # Run database mode
+    base2 = BTO.test_dir + 'test2'
+    cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --database_mode --skip_plot_generation -s {4}".format(
+        True, BTO.bam1,
+        BTO.fasta, base2, BTO.stb)
+    print(cmd)
+    inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+    Sprofile2 = inStrain.SNVprofile.SNVprofile(base2)
+
+    db = Sprofile2.load_output('genome_info')
+
+    print('removing linkage')
+    ldb = pd.DataFrame()
+    Sprofile2.store('raw_linkage_table', ldb, 'pandas', 'Contains raw linkage information on a mm level')
+    GIdb = inStrain.genomeUtilities.genomeLevel_from_IS(Sprofile2)
+    Sprofile2.store('genome_level_info', GIdb, 'pandas', 'Table of genome-level information')
+    Sprofile2.generate('genome_info')
+    print('done')
+
+    db2 = Sprofile2.load_output('genome_info')
+    assert set(db.columns) == set(db2.columns), set(db.columns) - set(db2.columns)
+
+@pytest.mark.skipif(not inStrain.utils.find_program('samtools')[1], reason="requires samtools")
+def test_profile_24(BTO):
+    """
+    Test "maximum_reads"
+    """
+    # Run with subset
+    base2 = BTO.test_dir + 'test2'
+    cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --maximum_reads 1000 --skip_plot_generation -s {4}".format(
+        True, BTO.bam1,
+        BTO.fasta, base2, BTO.stb)
+    print(cmd)
+    #inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+    exit = call(cmd, shell=True)
+    Sprofile2 = inStrain.SNVprofile.SNVprofile(base2)
+
+    db2 = Sprofile2.load_output('mapping_info')
+    reads2 = db2['unfiltered_pairs'].sum()
+    print(db2, reads2)
+
+    # Run without subset
+    base = BTO.test_dir + 'test'
+    cmd = "inStrain profile {1} {2} -o {3} -l 0.95 --skip_plot_generation -s {4}".format(
+        True, BTO.bam1,
+        BTO.fasta, base, BTO.stb)
+    print(cmd)
+    #inStrain.controller.Controller().main(inStrain.argumentParser.parse_args(cmd.split(' ')[1:]))
+    exit = call(cmd, shell=True)
+    Sprofile = inStrain.SNVprofile.SNVprofile(base)
+
+    db = Sprofile.load_output('mapping_info')
+    reads = db['unfiltered_pairs'].sum()
+    print(db, reads)
+
+    assert reads > reads2
+
 
 # This is from test_compare.py
 @pytest.mark.skip(reason="Only run this as-needed")

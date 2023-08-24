@@ -3,5 +3,5 @@ fobin.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_0
 fobin.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	0.9847586790855208	1163	4	0	1.0	0.9965606190885641	0.9822635135135135
 fobin.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	1.0	1163	0	0	1.0	1.0	0.9822635135135135
 maxbin2.maxbin.001.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	1.0	89094	0	0	1.0	1.0	0.336920842850444
-maxbin2.maxbin.001.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	0.6463046758890663	61198	161	4	0.9999346383868754	0.9973691950717344	0.2314283985539034
+maxbin2.maxbin.001.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	0.6463046758890664	61198	161	4	0.9999346383868754	0.9973691950717344	0.2314283985539034
 maxbin2.maxbin.001.fasta	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.sorted.bam	1.0	134332	0	0	1.0	1.0	0.5079943729295557

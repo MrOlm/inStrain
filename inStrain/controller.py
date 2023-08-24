@@ -189,7 +189,14 @@ class ProfileController(object):
         setup_logger(log_loc)
 
         # Make the bam file if you need to; remove it from args
-        self.bam = inStrain.profile.samtools_ops.prepare_bam_fie(args.bam, args.processes)
+        if 'maximum_reads' in args:
+            max_reads = args.maximum_reads
+            # logging.info(f"Will subset the .bam file to a maximum of {max_reads} reads")
+            # print(f"Will subset the .bam file to a maximum of {max_reads} reads")
+        else:
+            max_reads = None
+
+        self.bam = inStrain.profile.samtools_ops.prepare_bam_fie(args.bam, args.processes, max_reads=max_reads)
         del self.args.bam
 
         # Load the list of scaffolds
@@ -311,7 +318,8 @@ class ProfileController(object):
 
         if len(self.fasta_db) <= 0:
             logging.error("No scaffolds passed initial filtering based on numbers of mapped reads")
-            raise Exception('No scaffolds detected; see above message and log')
+            self.make_empty_ISP_and_exit()
+            #raise Exception('No scaffolds detected; see above message and log')
 
     def run_profile(self):
         '''
@@ -428,6 +436,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             Sprofile.get_location('figures'),
             Sprofile.get_location('log'))
         logging.info(message)
+
+    def make_empty_ISP_and_exit(self):
+        print('testeroni')
+        self.write_output()
+        sys.exit(0)
 
 def setup_logger(loc):
     ''' set up logger such that DEBUG goes only to file, rest go to file and console '''

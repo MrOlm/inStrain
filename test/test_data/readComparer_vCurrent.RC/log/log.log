@@ -1,733 +1,735 @@
-23-07-26 14:16:48 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-23-07-26 14:16:48 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
-23-07-26 14:16:48 DEBUG    Command to run inStrain was: /Users/mattolm/miniconda3/envs/python3.7/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations -s /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
+23-08-24 10:12:17 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+23-08-24 10:12:17 DEBUG    ***Logger started up at /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log***
+23-08-24 10:12:17 DEBUG    Command to run inStrain was: /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/bin/inStrain compare -i /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS -o /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test --include_self_comparisons --store_mismatch_locations -s /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1.maxbin2.stb
 
-23-07-26 14:16:48 DEBUG    inStrain version 1.7.6 was run 
+23-08-24 10:12:17 DEBUG    inStrain version 1.7.6 was run 
 
-23-07-26 14:16:48 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+23-08-24 10:12:17 DEBUG    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-23-07-26 14:16:48 DEBUG    $$$$$$$$$$ DEPENDENCY REPORT $$$$$$$$$$
+23-08-24 10:12:17 DEBUG    $$$$$$$$$$ DEPENDENCY REPORT $$$$$$$$$$
 PYTHON
-Running python v3.7.8 | packaged by conda-forge | (default, Jul 31 2020, 02:37:09) 
-[Clang 10.0.1 ]
+Running python v3.10.4 (main, Mar 31 2022, 03:38:35) [Clang 12.0.0 ]
 
 PROGRAM DEPENDENCIES
-samtools...................... all good   (version=samtools 1.9) (location = /Users/mattolm/miniconda3/envs/python3.7/bin/samtools)
+samtools...................... ! NOT WORKING ! (version=na) (location = None)
 coverm........................ all good   (version=coverm 0.6.0) (location = /Users/mattolm/.cargo/bin/coverm)
 
 PYTHON DEPENDENCIES
-matplotlib.................... all good   (version=3.2.2) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/matplotlib/__init__.py)
-seaborn....................... all good   (version=0.11.1) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/seaborn/__init__.py)
-numpy......................... all good   (version=1.19.5) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/numpy/__init__.py)
-Bio........................... all good   (version=1.74) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/Bio/__init__.py)
-pysam......................... all good   (version=0.15.3) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/pysam/__init__.py)
-pandas........................ all good   (version=1.0.1) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/pandas/__init__.py)
-numba......................... all good   (version=0.52.0) (location = /Users/mattolm/miniconda3/envs/python3.7/lib/python3.7/site-packages/numba/__init__.py)
+numba......................... ! NOT WORKING ! Not needed, but installing will increase filter_reads runtime
+matplotlib.................... all good   (version=3.7.0) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/matplotlib/__init__.py)
+seaborn....................... all good   (version=0.12.2) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/seaborn/__init__.py)
+numpy......................... all good   (version=1.21.0) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/numpy/__init__.py)
+Bio........................... all good   (version=1.74) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/Bio/__init__.py)
+pysam......................... all good   (version=0.20.0) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/pysam/__init__.py)
+pandas........................ all good   (version=1.5.3) (location = /Users/mattolm/mambaforge/envs/python3.10_instrain_x86/lib/python3.10/site-packages/pandas/__init__.py)
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-23-07-26 14:16:48 INFO     Scaffold to bin was made using .stb file
-23-07-26 14:16:48 INFO     ***************************************************
+23-08-24 10:12:17 INFO     Scaffold to bin was made using .stb file
+23-08-24 10:12:17 INFO     ***************************************************
     ..:: inStrain compare Step 1. Load data ::..
 ***************************************************
                 
-23-07-26 14:16:48 DEBUG    Checkpoint Compare CreateScaffoldComparisonObjects start 177008640
-23-07-26 14:16:48 DEBUG    Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
-23-07-26 14:16:48 DEBUG    Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
-23-07-26 14:16:48 INFO     167 of 167 scaffolds are in at least 2 samples
-23-07-26 14:16:48 DEBUG    Checkpoint Compare CreateScaffoldComparisonObjects end 178704384
-23-07-26 14:16:48 INFO     ***************************************************
+23-08-24 10:12:17 DEBUG    Checkpoint Compare CreateScaffoldComparisonObjects start 165904384
+23-08-24 10:12:17 DEBUG    Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.forRC.IS
+23-08-24 10:12:17 DEBUG    Loading /Users/mattolm/Programs/inStrain/test/test_data/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS
+23-08-24 10:12:17 INFO     167 of 167 scaffolds are in at least 2 samples
+23-08-24 10:12:17 DEBUG    Checkpoint Compare CreateScaffoldComparisonObjects end 178266112
+23-08-24 10:12:17 INFO     ***************************************************
 ..:: inStrain compare Step 2. Run comparisons ::..
 ***************************************************
                 
-23-07-26 14:16:48 DEBUG    Checkpoint Compare multiprocessing start 178708480
-23-07-26 14:16:48 INFO     Running group 1 of 1
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_618 start 176631808 1690406211.448422 88234
-
-WorkerLog Compare N5_271_010G1_scaffold_618 end 177971200 1690406211.486582 88234
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_49 start 175407104 1690406211.4745479 88238
-
-WorkerLog Compare N5_271_010G1_scaffold_49 end 177106944 1690406211.4985769 88238
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_98 start 178036736 1690406211.4801621 88240
-
-WorkerLog Compare N5_271_010G1_scaffold_98 end 179970048 1690406211.504998 88240
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_158 start 177123328 1690406211.466845 88236
-
-WorkerLog Compare N5_271_010G1_scaffold_158 end 178982912 1690406211.505997 88236
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_118 start 177020928 1690406211.500252 88238
-
-WorkerLog Compare N5_271_010G1_scaffold_118 end 177205248 1690406211.533122 88238
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_45 start 175804416 1690406211.478446 88239
-
-WorkerLog Compare N5_271_010G1_scaffold_45 end 178974720 1690406211.569591 88239
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_70 start 177397760 1690406211.4540732 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_70 end 179884032 1690406211.573293 88235
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_90 start 179908608 1690406211.506759 88240
-
-WorkerLog Compare N5_271_010G1_scaffold_90 end 181571584 1690406211.591132 88240
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_26 start 178241536 1690406211.489345 88234
-
-WorkerLog Compare N5_271_010G1_scaffold_26 end 182382592 1690406211.691026 88234
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_99 start 182431744 1690406211.692689 88234
-
-WorkerLog Compare N5_271_010G1_scaffold_99 end 182751232 1690406211.712285 88234
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_101 start 183083008 1690406211.714768 88234
-
-WorkerLog Compare N5_271_010G1_scaffold_101 end 183767040 1690406211.743335 88234
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_141 start 179871744 1690406211.5760372 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_141 end 180449280 1690406211.776028 88235
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_130 start 180551680 1690406211.77885 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_130 end 180600832 1690406211.825292 88235
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_127 start 179372032 1690406211.508627 88236
-
-WorkerLog Compare N5_271_010G1_scaffold_127 end 181506048 1690406211.826331 88236
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_94 start 179396608 1690406211.5720608 88239
-
-WorkerLog Compare N5_271_010G1_scaffold_94 end 180436992 1690406211.82937 88239
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_102 start 183767040 1690406211.744459 88234
-
-WorkerLog Compare N5_271_010G1_scaffold_102 end 183906304 1690406211.8354712 88234
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_31 start 180600832 1690406211.8263319 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_31 end 180727808 1690406211.846833 88235
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_40 start 181633024 1690406211.827703 88236
-
-WorkerLog Compare N5_271_010G1_scaffold_40 end 183394304 1690406211.852737 88236
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_41 start 177979392 1690406211.535614 88238
-
-WorkerLog Compare N5_271_010G1_scaffold_41 end 180563968 1690406211.915854 88238
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_52 start 182059008 1690406211.593407 88240
-
-WorkerLog Compare N5_271_010G1_scaffold_52 end 183107584 1690406211.922496 88240
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_119 start 183111680 1690406211.923234 88240
-
-WorkerLog Compare N5_271_010G1_scaffold_119 end 183123968 1690406211.940213 88240
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_64 start 180965376 1690406211.848372 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_64 end 181334016 1690406211.944743 88235
-23-07-26 14:16:51 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_67 start 181334016 1690406211.9460852 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_67 end 181407744 1690406211.976174 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_54 start 183689216 1690406211.854961 88236
-
-WorkerLog Compare N5_271_010G1_scaffold_54 end 184262656 1690406212.045164 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_157 start 181436416 1690406211.977611 88235
-
-WorkerLog Compare N5_271_010G1_scaffold_157 end 181600256 1690406212.0870311 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_150 start 181604352 1690406212.088334 88235
+23-08-24 10:12:17 DEBUG    Checkpoint Compare multiprocessing start 179548160
+23-08-24 10:12:17 INFO     Running group 1 of 1
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_81 start 157089792 1692897139.584061 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_81 end 158801920 1692897139.595927 1325
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_129 start 159408128 1692897139.579266 1323
+
+WorkerLog Compare N5_271_010G1_scaffold_129 end 161452032 1692897139.59612 1323
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_109 start 158220288 1692897139.60236 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_109 end 160014336 1692897139.615763 1326
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_84 start 160010240 1692897139.616796 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_84 end 160071680 1692897139.626275 1326
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_484 start 157278208 1692897139.5837598 1322
+
+WorkerLog Compare N5_271_010G1_scaffold_484 end 159449088 1692897139.633674 1322
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_102 start 157945856 1692897139.6021671 1327
+
+WorkerLog Compare N5_271_010G1_scaffold_102 end 160038912 1692897139.646143 1327
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_70 start 160112640 1692897139.648221 1327
+
+WorkerLog Compare N5_271_010G1_scaffold_70 end 160882688 1692897139.7016032 1327
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_33 start 160104448 1692897139.6280751 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_33 end 162131968 1692897139.736141 1326
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_14 start 158875648 1692897139.583512 1324
+
+WorkerLog Compare N5_271_010G1_scaffold_14 end 163479552 1692897139.7427032 1324
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_15 start 159842304 1692897139.597755 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_15 end 165892096 1692897139.747753 1325
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_128 start 165982208 1692897139.748631 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_128 end 165998592 1692897139.7597702 1325
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_836 start 166006784 1692897139.760297 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_836 end 166096896 1692897139.771126 1325
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_95 start 159891456 1692897139.635711 1322
+
+WorkerLog Compare N5_271_010G1_scaffold_95 end 161734656 1692897139.7829509 1322
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_54 start 160899072 1692897139.703247 1327
+
+WorkerLog Compare N5_271_010G1_scaffold_54 end 161656832 1692897139.805938 1327
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_66 start 161968128 1692897139.78437 1322
+
+WorkerLog Compare N5_271_010G1_scaffold_66 end 162029568 1692897139.810034 1322
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_362 start 161665024 1692897139.807144 1327
+
+WorkerLog Compare N5_271_010G1_scaffold_362 end 161677312 1692897139.8222148 1327
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_32 start 163074048 1692897139.60165 1323
+
+WorkerLog Compare N5_271_010G1_scaffold_32 end 165396480 1692897139.847743 1323
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_87 start 164265984 1692897139.7450109 1324
+
+WorkerLog Compare N5_271_010G1_scaffold_87 end 164810752 1692897139.902648 1324
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_76 start 166354944 1692897139.7797382 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_76 end 167395328 1692897139.976358 1325
+23-08-24 10:12:19 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_155 start 167571456 1692897139.97759 1325
+
+WorkerLog Compare N5_271_010G1_scaffold_155 end 168083456 1692897139.990129 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_9 start 164347904 1692897139.825311 1327
+
+WorkerLog Compare N5_271_010G1_scaffold_9 end 172187648 1692897140.042018 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_18 start 166010880 1692897139.8496509 1323
+
+WorkerLog Compare N5_271_010G1_scaffold_18 end 167620608 1692897140.052062 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_4 start 167215104 1692897139.739425 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_4 end 176844800 1692897140.06439 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_156 start 176844800 1692897140.065312 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_156 end 176848896 1692897140.074952 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_119 start 176848896 1692897140.075595 1326
+
+WorkerLog Compare N5_271_010G1_scaffold_119 end 176852992 1692897140.083499 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_108 start 172199936 1692897140.0434718 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_150 end 181649408 1690406212.1277719 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_25 start 181923840 1690406212.1291819 88235
+WorkerLog Compare N5_271_010G1_scaffold_108 end 172412928 1692897140.098228 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_74 start 176885760 1692897140.08443 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_25 end 182853632 1690406212.2171469 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_132 start 182951936 1690406212.218376 88235
+WorkerLog Compare N5_271_010G1_scaffold_74 end 176914432 1692897140.135489 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_67 start 176914432 1692897140.136516 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_132 end 183091200 1690406212.240959 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_68 start 183197696 1690406212.2424781 88235
+WorkerLog Compare N5_271_010G1_scaffold_67 end 176934912 1692897140.148531 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_60 start 176934912 1692897140.149566 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_68 end 183230464 1690406212.284557 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_76 start 181223424 1690406211.9183931 88238
+WorkerLog Compare N5_271_010G1_scaffold_60 end 176947200 1692897140.163062 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_37 start 172658688 1692897140.099515 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_76 end 182530048 1690406212.35423 88238
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_87 start 184832000 1690406212.0478652 88236
+WorkerLog Compare N5_271_010G1_scaffold_37 end 173383680 1692897140.1689138 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_65 start 176951296 1692897140.164046 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_87 end 185856000 1690406212.369448 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_44 start 184918016 1690406211.8386502 88234
+WorkerLog Compare N5_271_010G1_scaffold_65 end 176967680 1692897140.2033741 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_29 start 167899136 1692897140.05382 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_44 end 186445824 1690406212.3709161 88234
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_159 start 182530048 1690406212.3549702 88238
+WorkerLog Compare N5_271_010G1_scaffold_29 end 168448000 1692897140.2092988 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_123 start 173395968 1692897140.1699939 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_159 end 182550528 1690406212.375072 88238
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_75 start 185856000 1690406212.370929 88236
+WorkerLog Compare N5_271_010G1_scaffold_123 end 173420544 1692897140.21157 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_0 start 164257792 1692897139.8133812 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_75 end 185905152 1690406212.3905191 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_163 start 186454016 1690406212.37309 88234
+WorkerLog Compare N5_271_010G1_scaffold_0 end 190648320 1692897140.242635 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_92 start 173420544 1692897140.212495 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_163 end 186478592 1690406212.418483 88234
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_185 start 186482688 1690406212.420644 88234
+WorkerLog Compare N5_271_010G1_scaffold_92 end 173993984 1692897140.2508428 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_114 start 166428672 1692897139.90523 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_185 end 186675200 1690406212.452517 88234
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_7 start 184565760 1690406211.94303 88240
+WorkerLog Compare N5_271_010G1_scaffold_114 end 168452096 1692897140.260865 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_105 start 168456192 1692897140.2105799 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_7 end 189079552 1690406212.459313 88240
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_16 start 183410688 1690406212.2869499 88235
+WorkerLog Compare N5_271_010G1_scaffold_105 end 168484864 1692897140.2630908 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_86 start 174006272 1692897140.251755 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_16 end 184627200 1690406212.619767 88235
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_117 start 185921536 1690406212.393088 88236
+WorkerLog Compare N5_271_010G1_scaffold_86 end 174006272 1692897140.28371 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_6 start 170045440 1692897139.993066 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_117 end 185974784 1690406212.620419 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_120 start 183042048 1690406212.377334 88238
+WorkerLog Compare N5_271_010G1_scaffold_6 end 176291840 1692897140.289383 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_59 start 190652416 1692897140.244481 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_120 end 183570432 1690406212.7287722 88238
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_122 start 185999360 1690406212.623553 88236
+WorkerLog Compare N5_271_010G1_scaffold_59 end 190656512 1692897140.289781 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_130 start 176291840 1692897140.290845 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_122 end 186019840 1690406212.7217689 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_145 start 186019840 1690406212.723365 88236
+WorkerLog Compare N5_271_010G1_scaffold_130 end 176328704 1692897140.307809 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_55 start 168452096 1692897140.262178 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_145 end 186048512 1690406212.8286011 88236
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_96 start 183668736 1690406212.7304351 88238
+WorkerLog Compare N5_271_010G1_scaffold_55 end 168599552 1692897140.3078148 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_20 start 177364992 1692897140.205164 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_96 end 183685120 1690406212.8567 88238
-23-07-26 14:16:52 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_1 start 188690432 1690406211.836357 88239
+WorkerLog Compare N5_271_010G1_scaffold_20 end 178057216 1692897140.323849 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_42 start 178163712 1692897140.324971 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_1 end 224821248 1690406212.884008 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_19 start 187379712 1690406212.45552 88234
+WorkerLog Compare N5_271_010G1_scaffold_42 end 178577408 1692897140.338669 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_36 start 176398336 1692897140.308772 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_19 end 190734336 1690406213.000559 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_58 start 190738432 1690406213.002593 88234
+WorkerLog Compare N5_271_010G1_scaffold_36 end 176398336 1692897140.340726 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_96 start 190656512 1692897140.2910562 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_58 end 190820352 1690406213.095943 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_6 start 191496192 1690406212.463267 88240
+WorkerLog Compare N5_271_010G1_scaffold_96 end 190930944 1692897140.3453 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_34 start 190930944 1692897140.346122 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_6 end 199524352 1690406213.1124742 88240
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_15 start 186363904 1690406212.830836 88236
+WorkerLog Compare N5_271_010G1_scaffold_34 end 190930944 1692897140.3555388 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_143 start 190930944 1692897140.3564138 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_15 end 189652992 1690406213.125025 88236
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_10 start 186871808 1690406212.623232 88235
+WorkerLog Compare N5_271_010G1_scaffold_143 end 191160320 1692897140.368483 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_45 start 178577408 1692897140.339941 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_10 end 190713856 1690406213.260434 88235
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_60 start 190717952 1690406213.2621639 88235
+WorkerLog Compare N5_271_010G1_scaffold_45 end 178696192 1692897140.374924 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_138 start 191160320 1692897140.3693671 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_60 end 190808064 1690406213.2880452 88235
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_9 start 225517568 1690406212.887669 88239
+WorkerLog Compare N5_271_010G1_scaffold_138 end 191168512 1692897140.384035 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_25 start 176398336 1692897140.341738 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_9 end 227438592 1690406213.3366349 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_56 start 199536640 1690406213.114997 88240
+WorkerLog Compare N5_271_010G1_scaffold_25 end 176402432 1692897140.3822742 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_118 start 191168512 1692897140.384935 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_56 end 199593984 1690406213.337754 88240
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_121 start 227442688 1690406213.33809 88239
+WorkerLog Compare N5_271_010G1_scaffold_118 end 191184896 1692897140.396283 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_145 start 176402432 1692897140.383123 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_121 end 227446784 1690406213.3520992 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_95 start 190832640 1690406213.098367 88234
+WorkerLog Compare N5_271_010G1_scaffold_145 end 176431104 1692897140.420205 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_121 start 176431104 1692897140.4206238 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_95 end 191254528 1690406213.400268 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_136 start 227446784 1690406213.353665 88239
+WorkerLog Compare N5_271_010G1_scaffold_121 end 176431104 1692897140.427042 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_21 start 168624128 1692897140.3107378 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_136 end 227487744 1690406213.438557 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_108 start 199647232 1690406213.3394492 88240
+WorkerLog Compare N5_271_010G1_scaffold_21 end 168783872 1692897140.4300501 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_131 start 176435200 1692897140.427671 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_108 end 199655424 1690406213.4611661 88240
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_484 start 227487744 1690406213.43997 88239
+WorkerLog Compare N5_271_010G1_scaffold_131 end 176443392 1692897140.436248 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_78 start 168783872 1692897140.430767 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_484 end 227500032 1690406213.540163 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_11 start 190881792 1690406213.290561 88235
+WorkerLog Compare N5_271_010G1_scaffold_78 end 168783872 1692897140.445086 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_43 start 176443392 1692897140.437073 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_11 end 191250432 1690406213.549429 88235
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_103 start 199667712 1690406213.4627142 88240
+WorkerLog Compare N5_271_010G1_scaffold_43 end 176836608 1692897140.451488 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_99 start 168783872 1692897140.445961 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_103 end 199680000 1690406213.558552 88240
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_125 start 227520512 1690406213.541643 88239
+WorkerLog Compare N5_271_010G1_scaffold_99 end 168783872 1692897140.457005 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_24 start 169119744 1692897140.264836 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_125 end 227524608 1690406213.620333 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_155 start 227524608 1690406213.6217349 88239
+WorkerLog Compare N5_271_010G1_scaffold_24 end 170831872 1692897140.461251 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_13 start 174432256 1692897140.285603 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_155 end 227549184 1690406213.663892 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_114 start 185192448 1690406212.8599098 88238
+WorkerLog Compare N5_271_010G1_scaffold_13 end 175996928 1692897140.491607 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_144 start 176001024 1692897140.492803 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_114 end 186425344 1690406213.717828 88238
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_80 start 191340544 1690406213.5516841 88235
+WorkerLog Compare N5_271_010G1_scaffold_144 end 176058368 1692897140.504776 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_90 start 176058368 1692897140.505834 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_80 end 191385600 1690406213.7240572 88235
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_86 start 227565568 1690406213.665227 88239
+WorkerLog Compare N5_271_010G1_scaffold_90 end 176058368 1692897140.540779 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_89 start 178749440 1692897140.37671 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_86 end 227573760 1690406213.733948 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_77 start 186425344 1690406213.719338 88238
+WorkerLog Compare N5_271_010G1_scaffold_89 end 179130368 1692897140.5468311 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_50 start 176058368 1692897140.541455 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_77 end 186425344 1690406213.740222 88238
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_100 start 191414272 1690406213.7252731 88235
+WorkerLog Compare N5_271_010G1_scaffold_50 end 176062464 1692897140.554539 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_127 start 170831872 1692897140.462681 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_100 end 191475712 1690406213.7484381 88235
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_128 start 227573760 1690406213.7350788 88239
+WorkerLog Compare N5_271_010G1_scaffold_127 end 171311104 1692897140.585728 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_162 start 171311104 1692897140.586379 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_128 end 227586048 1690406213.76157 88239
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_153 start 186425344 1690406213.7409658 88238
+WorkerLog Compare N5_271_010G1_scaffold_162 end 171323392 1692897140.598242 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_112 start 176852992 1692897140.453197 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_153 end 186433536 1690406213.769569 88238
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_112 start 191254528 1690406213.4029849 88234
+WorkerLog Compare N5_271_010G1_scaffold_112 end 177659904 1692897140.64198 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_63 start 176070656 1692897140.555547 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_112 end 191639552 1690406213.811287 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_2 start 193822720 1690406213.1304598 88236
+WorkerLog Compare N5_271_010G1_scaffold_63 end 176087040 1692897140.6532302 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_111 start 176087040 1692897140.6544378 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_2 end 213749760 1690406213.823501 88236
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_61 start 199680000 1690406213.560586 88240
+WorkerLog Compare N5_271_010G1_scaffold_111 end 176115712 1692897140.669775 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_11 start 179724288 1692897140.548238 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_61 end 199888896 1690406213.83659 88240
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_23 start 191655936 1690406213.813059 88234
+WorkerLog Compare N5_271_010G1_scaffold_11 end 180817920 1692897140.671287 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_94 start 176128000 1692897140.671328 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_23 end 191668224 1690406213.854439 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_133 start 191668224 1690406213.8555121 88234
+WorkerLog Compare N5_271_010G1_scaffold_94 end 176136192 1692897140.784224 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_83 start 180817920 1692897140.672884 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_133 end 191672320 1690406213.877814 88234
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_12 start 213753856 1690406213.825695 88236
+WorkerLog Compare N5_271_010G1_scaffold_83 end 180854784 1692897140.787015 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_2 start 173969408 1692897140.460951 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_12 end 213938176 1690406213.917716 88236
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_137 start 213938176 1690406213.9187598 88236
+WorkerLog Compare N5_271_010G1_scaffold_2 end 193847296 1692897140.798502 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_68 start 176144384 1692897140.7855082 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_137 end 213958656 1690406213.941951 88236
-23-07-26 14:16:53 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_139 start 213970944 1690406213.942962 88236
+WorkerLog Compare N5_271_010G1_scaffold_68 end 176164864 1692897140.803113 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_161 start 193847296 1692897140.799521 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_139 end 213975040 1690406213.97117 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_149 start 213979136 1690406213.972281 88236
+WorkerLog Compare N5_271_010G1_scaffold_161 end 193855488 1692897140.809727 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_154 start 177664000 1692897140.643401 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_149 end 213991424 1690406214.0019462 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_46 start 186757120 1690406213.7715552 88238
+WorkerLog Compare N5_271_010G1_scaffold_154 end 178450432 1692897140.809833 1325
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_39 start 193855488 1692897140.8105228 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_46 end 186785792 1690406214.017052 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_376 start 213991424 1690406214.0026639 88236
+WorkerLog Compare N5_271_010G1_scaffold_39 end 193855488 1692897140.8246279 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_23 start 193855488 1692897140.825925 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_376 end 214016000 1690406214.038584 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_81 start 214016000 1690406214.039731 88236
+WorkerLog Compare N5_271_010G1_scaffold_23 end 194281472 1692897140.8476539 1324
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_71 start 176164864 1692897140.804118 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_81 end 214016000 1690406214.056515 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_28 start 227610624 1690406213.763658 88239
+WorkerLog Compare N5_271_010G1_scaffold_71 end 176173056 1692897140.8475368 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_7 start 171929600 1692897140.6382022 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_28 end 228573184 1690406214.106352 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_48 start 186822656 1690406214.0187562 88238
+WorkerLog Compare N5_271_010G1_scaffold_7 end 172380160 1692897140.8672798 1323
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_1 start 194555904 1692897140.3997838 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_48 end 186900480 1690406214.116837 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_161 start 228573184 1690406214.10762 88239
+WorkerLog Compare N5_271_010G1_scaffold_1 end 214077440 1692897140.864511 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_100 start 214077440 1692897140.8659358 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_161 end 228581376 1690406214.134443 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_66 start 228585472 1690406214.135929 88239
+WorkerLog Compare N5_271_010G1_scaffold_100 end 214077440 1692897140.8795788 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_97 start 214077440 1692897140.880343 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_66 end 228610048 1690406214.182789 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_5 start 201338880 1690406213.840139 88240
+WorkerLog Compare N5_271_010G1_scaffold_97 end 214355968 1692897140.891202 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_61 start 180928512 1692897140.788401 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_5 end 205406208 1690406214.263983 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_71 start 205406208 1690406214.2659898 88240
+WorkerLog Compare N5_271_010G1_scaffold_61 end 181215232 1692897140.9057121 1326
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_56 start 176185344 1692897140.848824 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_71 end 205410304 1690406214.3620312 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_8 start 191983616 1690406213.880476 88234
+WorkerLog Compare N5_271_010G1_scaffold_56 end 176226304 1692897140.946846 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_80 start 214376448 1692897140.892948 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_8 end 194215936 1690406214.382882 88234
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_84 start 205410304 1690406214.363338 88240
+WorkerLog Compare N5_271_010G1_scaffold_80 end 214413312 1692897140.962975 1322
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_103 start 176230400 1692897140.948025 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_84 end 205418496 1690406214.38889 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_33 start 228610048 1690406214.184906 88239
+WorkerLog Compare N5_271_010G1_scaffold_103 end 176234496 1692897140.991641 1327
+23-08-24 10:12:20 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_120 start 194555904 1692897140.8498418 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_33 end 228626432 1690406214.3995578 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_69 start 205418496 1690406214.389826 88240
+WorkerLog Compare N5_271_010G1_scaffold_120 end 195104768 1692897140.999169 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_419 start 181284864 1692897140.907284 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_69 end 205418496 1690406214.4116979 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_160 start 228630528 1690406214.401122 88239
+WorkerLog Compare N5_271_010G1_scaffold_419 end 181313536 1692897141.001576 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_52 start 172380160 1692897140.8687449 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_160 end 228642816 1690406214.440778 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_162 start 228642816 1690406214.441975 88239
+WorkerLog Compare N5_271_010G1_scaffold_52 end 172617728 1692897141.0033479 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_159 start 195104768 1692897140.9999402 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_162 end 228651008 1690406214.477242 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_24 start 214081536 1690406214.05872 88236
+WorkerLog Compare N5_271_010G1_scaffold_159 end 195117056 1692897141.007575 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_5 start 179859456 1692897140.8126342 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_24 end 214872064 1690406214.493205 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_147 start 194236416 1690406214.3848698 88234
+WorkerLog Compare N5_271_010G1_scaffold_5 end 180891648 1692897141.011342 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_158 start 180981760 1692897141.012414 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_147 end 194260992 1690406214.52777 88234
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_39 start 194260992 1690406214.529005 88234
+WorkerLog Compare N5_271_010G1_scaffold_158 end 180989952 1692897141.0228622 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_82 start 172617728 1692897141.004673 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_39 end 194297856 1690406214.5527308 88234
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_105 start 228651008 1690406214.4789262 88239
+WorkerLog Compare N5_271_010G1_scaffold_82 end 172650496 1692897141.035892 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_48 start 176234496 1692897140.992946 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_105 end 228827136 1690406214.611161 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_83 start 205418496 1690406214.413708 88240
+WorkerLog Compare N5_271_010G1_scaffold_48 end 176238592 1692897141.040373 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_91 start 195125248 1692897141.008615 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_83 end 205594624 1690406214.674426 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_0 start 194662400 1690406213.751986 88235
+WorkerLog Compare N5_271_010G1_scaffold_91 end 195129344 1692897141.049184 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_46 start 214433792 1692897140.96449 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_0 end 212267008 1690406214.683908 88235
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_82 start 228831232 1690406214.6129768 88239
+WorkerLog Compare N5_271_010G1_scaffold_46 end 214794240 1692897141.079421 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_197 start 176242688 1692897141.041318 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_82 end 228855808 1690406214.696168 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_109 start 228855808 1690406214.6973062 88239
+WorkerLog Compare N5_271_010G1_scaffold_197 end 176242688 1692897141.086813 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_107 start 172650496 1692897141.037001 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_109 end 228864000 1690406214.718216 88239
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_36 start 205598720 1690406214.675959 88240
+WorkerLog Compare N5_271_010G1_scaffold_107 end 172662784 1692897141.099968 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_185 start 172662784 1692897141.101084 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_36 end 205623296 1690406214.7397828 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_419 start 194306048 1690406214.554986 88234
+WorkerLog Compare N5_271_010G1_scaffold_185 end 172662784 1692897141.1178539 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_148 start 195129344 1692897141.050472 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_419 end 194330624 1690406214.779103 88234
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_3 start 190877696 1690406214.120959 88238
+WorkerLog Compare N5_271_010G1_scaffold_148 end 195231744 1692897141.123557 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_157 start 176242688 1692897141.087562 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_3 end 205709312 1690406214.784276 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_144 start 194330624 1690406214.780267 88234
+WorkerLog Compare N5_271_010G1_scaffold_157 end 176259072 1692897141.1303759 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_98 start 195231744 1692897141.124414 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_144 end 194330624 1690406214.7988749 88234
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_35 start 205627392 1690406214.7416892 88240
+WorkerLog Compare N5_271_010G1_scaffold_98 end 195231744 1692897141.136684 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_142 start 176259072 1692897141.130839 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_35 end 205627392 1690406214.8024518 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_42 start 205709312 1690406214.7862022 88238
+WorkerLog Compare N5_271_010G1_scaffold_142 end 176263168 1692897141.138038 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_104 start 214876160 1692897141.080659 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_42 end 205844480 1690406214.808192 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_341 start 214876160 1690406214.495801 88236
+WorkerLog Compare N5_271_010G1_scaffold_104 end 214937600 1692897141.145544 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_150 start 195231744 1692897141.137459 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_341 end 215195648 1690406214.8373618 88236
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_55 start 205844480 1690406214.809715 88238
+WorkerLog Compare N5_271_010G1_scaffold_150 end 195252224 1692897141.150177 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_113 start 176287744 1692897141.138803 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_55 end 205971456 1690406214.925719 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_123 start 205676544 1690406214.8041742 88240
+WorkerLog Compare N5_271_010G1_scaffold_113 end 176304128 1692897141.153837 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_31 start 214958080 1692897141.146516 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_123 end 205701120 1690406214.935217 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_113 start 205971456 1690406214.927312 88238
+WorkerLog Compare N5_271_010G1_scaffold_31 end 214962176 1692897141.156002 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_16 start 181432320 1692897141.024342 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_113 end 205979648 1690406214.96074 88238
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_156 start 205701120 1690406214.936631 88240
+WorkerLog Compare N5_271_010G1_scaffold_16 end 181813248 1692897141.1730728 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_133 start 181813248 1692897141.173922 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_156 end 205713408 1690406214.969235 88240
-23-07-26 14:16:54 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_73 start 205979648 1690406214.961695 88238
+WorkerLog Compare N5_271_010G1_scaffold_133 end 181813248 1692897141.186141 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_136 start 214962176 1692897141.1570501 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_73 end 205979648 1690406214.977373 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_362 start 206102528 1690406214.9791858 88238
+WorkerLog Compare N5_271_010G1_scaffold_136 end 214986752 1692897141.1888692 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_79 start 176308224 1692897141.1550982 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_362 end 206123008 1690406215.009813 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_350 start 205721600 1690406214.970707 88240
+WorkerLog Compare N5_271_010G1_scaffold_79 end 176332800 1692897141.211096 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_44 start 181334016 1692897141.0035279 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_350 end 205795328 1690406215.012448 88240
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_148 start 215199744 1690406214.8391838 88236
+WorkerLog Compare N5_271_010G1_scaffold_44 end 181686272 1692897141.2406468 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_141 start 214986752 1692897141.190036 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_148 end 215244800 1690406215.053536 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_30 start 228864000 1690406214.720227 88239
+WorkerLog Compare N5_271_010G1_scaffold_141 end 215113728 1692897141.268747 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_28 start 172924928 1692897141.1193962 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_30 end 229023744 1690406215.065842 88239
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_143 start 229023744 1690406215.067266 88239
+WorkerLog Compare N5_271_010G1_scaffold_28 end 173600768 1692897141.278819 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_53 start 176336896 1692897141.212235 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_143 end 229031936 1690406215.097229 88239
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_53 start 206123008 1690406215.011688 88238
+WorkerLog Compare N5_271_010G1_scaffold_53 end 176599040 1692897141.289707 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_376 start 173690880 1692897141.2801652 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_53 end 206131200 1690406215.1892438 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_142 start 206131200 1690406215.190509 88238
+WorkerLog Compare N5_271_010G1_scaffold_376 end 173711360 1692897141.293768 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_30 start 195256320 1692897141.151526 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_142 end 206135296 1690406215.208288 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_107 start 215244800 1690406215.0553632 88236
+WorkerLog Compare N5_271_010G1_scaffold_30 end 195268608 1692897141.30388 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_132 start 173711360 1692897141.295178 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_107 end 215257088 1690406215.2134132 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_106 start 215257088 1690406215.214062 88236
+WorkerLog Compare N5_271_010G1_scaffold_132 end 173711360 1692897141.306989 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_134 start 195272704 1692897141.304859 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_106 end 215257088 1690406215.235434 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_88 start 205795328 1690406215.014963 88240
+WorkerLog Compare N5_271_010G1_scaffold_134 end 195280896 1692897141.3119428 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_122 start 215187456 1692897141.269883 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_88 end 205840384 1690406215.2887669 88240
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_13 start 194977792 1690406214.8011851 88234
+WorkerLog Compare N5_271_010G1_scaffold_122 end 215195648 1692897141.317002 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_139 start 195280896 1692897141.3127942 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_13 end 196153344 1690406215.328031 88234
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_197 start 206135296 1690406215.20985 88238
+WorkerLog Compare N5_271_010G1_scaffold_139 end 195289088 1692897141.326729 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_49 start 215195648 1692897141.318082 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_197 end 206151680 1690406215.3336692 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_116 start 196161536 1690406215.329664 88234
+WorkerLog Compare N5_271_010G1_scaffold_49 end 215195648 1692897141.3299131 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_26 start 181686272 1692897141.242194 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_116 end 196161536 1690406215.352703 88234
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_4 start 214687744 1690406214.688517 88235
+WorkerLog Compare N5_271_010G1_scaffold_26 end 181706752 1692897141.337739 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_101 start 215195648 1692897141.330903 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_4 end 216727552 1690406215.3993988 88235
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_47 start 205840384 1690406215.2907038 88240
+WorkerLog Compare N5_271_010G1_scaffold_101 end 215195648 1692897141.346339 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_618 start 181706752 1692897141.338531 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_47 end 205856768 1690406215.4563808 88240
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_111 start 205856768 1690406215.457856 88240
+WorkerLog Compare N5_271_010G1_scaffold_618 end 181719040 1692897141.350951 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_151 start 173711360 1692897141.3081212 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_111 end 205869056 1690406215.501688 88240
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_21 start 215285760 1690406215.237546 88236
+WorkerLog Compare N5_271_010G1_scaffold_151 end 173740032 1692897141.361561 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_443 start 181813248 1692897141.187585 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_21 end 215293952 1690406215.5102131 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_151 start 216727552 1690406215.402038 88235
+WorkerLog Compare N5_271_010G1_scaffold_443 end 181833728 1692897141.363584 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_135 start 181719040 1692897141.35176 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_151 end 216752128 1690406215.5474172 88235
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_50 start 216752128 1690406215.549106 88235
+WorkerLog Compare N5_271_010G1_scaffold_135 end 181735424 1692897141.3639529 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_106 start 181735424 1692897141.3644328 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_50 end 216756224 1690406215.583093 88235
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_27 start 196173824 1690406215.3547342 88234
+WorkerLog Compare N5_271_010G1_scaffold_106 end 181739520 1692897141.3731809 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_116 start 181837824 1692897141.364618 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_27 end 196407296 1690406215.6267068 88234
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_51 start 196407296 1690406215.628769 88234
+WorkerLog Compare N5_271_010G1_scaffold_116 end 181837824 1692897141.378231 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_40 start 173740032 1692897141.362602 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_51 end 196423680 1690406215.701631 88234
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_22 start 206204928 1690406215.3363452 88238
+WorkerLog Compare N5_271_010G1_scaffold_40 end 174202880 1692897141.3788538 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_69 start 174206976 1692897141.379751 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_22 end 206221312 1690406215.71787 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_37 start 217231360 1690406215.585366 88235
+WorkerLog Compare N5_271_010G1_scaffold_69 end 174211072 1692897141.3886678 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_58 start 215195648 1692897141.347314 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_37 end 217239552 1690406215.731549 88235
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_14 start 215293952 1690406215.513091 88236
+WorkerLog Compare N5_271_010G1_scaffold_58 end 215408640 1692897141.390215 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_51 start 174211072 1692897141.389601 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_14 end 215343104 1690406215.856565 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_129 start 215347200 1690406215.8579369 88236
+WorkerLog Compare N5_271_010G1_scaffold_51 end 174235648 1692897141.416576 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_73 start 174235648 1692897141.417197 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_129 end 215347200 1690406215.880397 88236
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_154 start 205869056 1690406215.5035882 88240
+WorkerLog Compare N5_271_010G1_scaffold_73 end 174235648 1692897141.422913 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_64 start 181837824 1692897141.379312 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_154 end 206065664 1690406215.903712 88240
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_63 start 206225408 1690406215.719872 88238
+WorkerLog Compare N5_271_010G1_scaffold_64 end 181841920 1692897141.4252632 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_17 start 195670016 1692897141.328223 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_63 end 206241792 1690406215.929712 88238
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_963 start 229277696 1690406215.0999591 88239
+WorkerLog Compare N5_271_010G1_scaffold_17 end 195678208 1692897141.4535732 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_41 start 176623616 1692897141.291784 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_963 end 230330368 1690406215.930859 88239
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_135 start 230330368 1690406215.9329221 88239
+WorkerLog Compare N5_271_010G1_scaffold_41 end 176648192 1692897141.459615 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_85 start 195678208 1692897141.454744 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_135 end 230346752 1690406215.969721 88239
-23-07-26 14:16:55 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_74 start 215347200 1690406215.881977 88236
+WorkerLog Compare N5_271_010G1_scaffold_85 end 195686400 1692897141.4937851 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_12 start 176648192 1692897141.460716 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_74 end 215347200 1690406215.980149 88236
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_138 start 230346752 1690406215.9710011 88239
+WorkerLog Compare N5_271_010G1_scaffold_12 end 176648192 1692897141.507991 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_88 start 181919744 1692897141.42674 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_138 end 230354944 1690406216.0031219 88239
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_79 start 206065664 1690406215.9057658 88240
+WorkerLog Compare N5_271_010G1_scaffold_88 end 181944320 1692897141.525808 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_163 start 181952512 1692897141.526539 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_79 end 206073856 1690406216.032829 88240
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_57 start 206086144 1690406216.034194 88240
+WorkerLog Compare N5_271_010G1_scaffold_163 end 181964800 1692897141.538857 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_47 start 176656384 1692897141.509283 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_57 end 206192640 1690406216.05252 88240
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_65 start 215347200 1690406215.981598 88236
+WorkerLog Compare N5_271_010G1_scaffold_47 end 176672768 1692897141.5759418 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_75 start 176672768 1692897141.57674 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_65 end 215347200 1690406216.0590668 88236
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_134 start 206192640 1690406216.0535429 88240
+WorkerLog Compare N5_271_010G1_scaffold_75 end 176672768 1692897141.586528 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_152 start 176672768 1692897141.5870368 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_134 end 206200832 1690406216.071418 88240
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_91 start 230383616 1690406216.004595 88239
+WorkerLog Compare N5_271_010G1_scaffold_152 end 176672768 1692897141.5949209 1327
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_8 start 175263744 1692897141.424713 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_91 end 230391808 1690406216.084738 88239
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_104 start 206245888 1690406215.931394 88238
+WorkerLog Compare N5_271_010G1_scaffold_8 end 177901568 1692897141.653939 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_149 start 177905664 1692897141.655064 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_104 end 206327808 1690406216.092491 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_443 start 196464640 1690406215.704479 88234
+WorkerLog Compare N5_271_010G1_scaffold_149 end 177913856 1692897141.6662889 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_10 start 215498752 1692897141.392421 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_443 end 196509696 1690406216.106542 88234
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_59 start 206327808 1690406216.094081 88238
+WorkerLog Compare N5_271_010G1_scaffold_10 end 216502272 1692897141.674745 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_160 start 216502272 1692897141.675901 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_59 end 206315520 1690406216.185066 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_97 start 206315520 1690406216.186072 88238
+WorkerLog Compare N5_271_010G1_scaffold_160 end 216518656 1692897141.6880891 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_3 start 182800384 1692897141.3756611 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_97 end 206315520 1690406216.213103 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_43 start 206315520 1690406216.214265 88238
+WorkerLog Compare N5_271_010G1_scaffold_3 end 193564672 1692897141.694575 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_35 start 177913856 1692897141.6670568 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_43 end 206315520 1690406216.238175 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_32 start 217255936 1690406215.7607942 88235
+WorkerLog Compare N5_271_010G1_scaffold_35 end 177971200 1692897141.698962 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_153 start 193572864 1692897141.695999 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_32 end 217534464 1690406216.2510011 88235
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_78 start 217534464 1690406216.25239 88235
+WorkerLog Compare N5_271_010G1_scaffold_153 end 193585152 1692897141.705627 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_22 start 181968896 1692897141.540334 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_78 end 217690112 1690406216.274024 88235
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_131 start 217690112 1690406216.274771 88235
+WorkerLog Compare N5_271_010G1_scaffold_22 end 182423552 1692897141.7044559 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_77 start 182423552 1692897141.705199 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_131 end 217694208 1690406216.298694 88235
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_836 start 217694208 1690406216.299676 88235
+WorkerLog Compare N5_271_010G1_scaffold_77 end 182423552 1692897141.7191901 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_19 start 195719168 1692897141.49549 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_836 end 217702400 1690406216.32675 88235
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_20 start 230391808 1690406216.086897 88239
+WorkerLog Compare N5_271_010G1_scaffold_19 end 196513792 1692897141.731715 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_147 start 216539136 1692897141.689363 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_20 end 230379520 1690406216.332096 88239
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_126 start 206462976 1690406216.2402189 88238
+WorkerLog Compare N5_271_010G1_scaffold_147 end 216547328 1692897141.74476 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_125 start 182423552 1692897141.72013 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_126 end 206475264 1690406216.36563 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_17 start 196509696 1690406216.108928 88234
+WorkerLog Compare N5_271_010G1_scaffold_125 end 182435840 1692897141.757592 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_350 start 216555520 1692897141.745622 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_17 end 196702208 1690406216.374675 88234
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_152 start 206475264 1690406216.366373 88238
+WorkerLog Compare N5_271_010G1_scaffold_350 end 216559616 1692897141.760087 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_126 start 193585152 1692897141.70671 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_152 end 206487552 1690406216.3893151 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_34 start 206487552 1690406216.39022 88238
+WorkerLog Compare N5_271_010G1_scaffold_126 end 193593344 1692897141.761208 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_137 start 182439936 1692897141.758473 1325
 
-WorkerLog Compare N5_271_010G1_scaffold_34 end 206487552 1690406216.406355 88238
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_92 start 230379520 1690406216.333301 88239
+WorkerLog Compare N5_271_010G1_scaffold_137 end 182452224 1692897141.766575 1325
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_57 start 216559616 1692897141.760952 1322
 
-WorkerLog Compare N5_271_010G1_scaffold_92 end 230404096 1690406216.412821 88239
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_85 start 217702400 1690406216.3280902 88235
+WorkerLog Compare N5_271_010G1_scaffold_57 end 216559616 1692897141.77353 1322
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_117 start 177971200 1692897141.700363 1323
 
-WorkerLog Compare N5_271_010G1_scaffold_85 end 217710592 1690406216.41914 88235
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_89 start 206200832 1690406216.0736299 88240
+WorkerLog Compare N5_271_010G1_scaffold_117 end 178008064 1692897141.792876 1323
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_27 start 193593344 1692897141.76273 1326
 
-WorkerLog Compare N5_271_010G1_scaffold_89 end 206258176 1690406216.450182 88240
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_18 start 215347200 1690406216.0615602 88236
+WorkerLog Compare N5_271_010G1_scaffold_27 end 193593344 1692897141.88145 1326
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_341 start 196517888 1692897141.733321 1324
 
-WorkerLog Compare N5_271_010G1_scaffold_18 end 215470080 1690406216.486503 88236
-23-07-26 14:16:56 DEBUG    
-WorkerLog Compare N5_271_010G1_scaffold_29 start 196702208 1690406216.377007 88234
+WorkerLog Compare N5_271_010G1_scaffold_341 end 196689920 1692897141.8873758 1324
+23-08-24 10:12:21 DEBUG    
+WorkerLog Compare N5_271_010G1_scaffold_963 start 177811456 1692897141.5970502 1327
 
-WorkerLog Compare N5_271_010G1_scaffold_29 end 196734976 1690406216.68199 88234
-23-07-26 14:16:56 DEBUG    Checkpoint Compare multiprocessing end 352792576
-23-07-26 14:16:56 INFO     ***************************************************
+WorkerLog Compare N5_271_010G1_scaffold_963 end 179355648 1692897141.9257011 1327
+23-08-24 10:12:21 DEBUG    Checkpoint Compare multiprocessing end 288534528
+23-08-24 10:12:21 INFO     ***************************************************
 ..:: inStrain compare Step 3. Auxiliary processing ::..
 ***************************************************
                 
-23-07-26 14:16:56 INFO     ***************************************************
+23-08-24 10:12:22 INFO     ***************************************************
 ..:: inStrain compare Step 4. Store results ::..
 ***************************************************
                 
-23-07-26 14:16:56 DEBUG    Checkpoint Compare SaveResults start 354263040
-23-07-26 14:16:56 DEBUG    Checkpoint Compare SaveResults end 357797888
-23-07-26 14:16:56 DEBUG    Checkpoint Compare making_plots start 357801984
-23-07-26 14:16:57 INFO     making plots 10
-23-07-26 14:16:57 INFO     Plotting plot 10
-23-07-26 14:16:57 DEBUG    Assigning font /b'F1' = '/System/Library/Fonts/Supplemental/Arial.ttf'
-23-07-26 14:16:57 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
-23-07-26 14:16:57 DEBUG    Writing TrueType font.
-23-07-26 14:16:57 DEBUG    Checkpoint Compare making_plots end 360431616
-23-07-26 14:16:57 INFO     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+23-08-24 10:12:22 DEBUG    Checkpoint Compare SaveResults start 289587200
+23-08-24 10:12:22 DEBUG    Checkpoint Compare SaveResults end 291672064
+23-08-24 10:12:22 DEBUG    Checkpoint Compare making_plots start 291672064
+23-08-24 10:12:22 INFO     making plots 10
+23-08-24 10:12:22 INFO     Plotting plot 10
+23-08-24 10:12:22 DEBUG    Loaded backend agg version v2.2.
+23-08-24 10:12:22 DEBUG    Assigning font /F1 = '/System/Library/Fonts/Supplemental/Arial.ttf'
+23-08-24 10:12:22 DEBUG    Embedding font /System/Library/Fonts/Supplemental/Arial.ttf.
+23-08-24 10:12:22 DEBUG    Writing TrueType font.
+23-08-24 10:12:22 DEBUG    SUBSET /System/Library/Fonts/Supplemental/Arial.ttf characters:  %().0123456789ACGINS_abcdefghilmnorstuvxy
+23-08-24 10:12:22 DEBUG    SUBSET /System/Library/Fonts/Supplemental/Arial.ttf 773236 -> 30540
+23-08-24 10:12:22 DEBUG    Checkpoint Compare making_plots end 296407040
+23-08-24 10:12:22 INFO     $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 ..:: inStrain compare finished ::..
 
@@ -739,4 +741,4 @@ See documentation for output descriptions - https://instrain.readthedocs.io/en/l
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         
-23-07-26 14:16:57 DEBUG    inStrain complete; shutting down logger and printing run stats if in debug mode (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)
+23-08-24 10:12:22 DEBUG    inStrain complete; shutting down logger and printing run stats if in debug mode (log location = /Users/mattolm/Programs/inStrain/test/test_backend/testdir/RC_test/log/log.log)

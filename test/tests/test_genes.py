@@ -142,7 +142,7 @@ def test_genes_1(BTO):
     assert len(Rdb) == len(RNdb)
 
     pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_colwidth', -1)
+    pd.set_option('display.max_colwidth', None)
 
     Rdb = Rdb[['scaffold', 'position', 'mutation_type', 'mutation', 'gene', 'mut_key']].sort_values(
         ['scaffold', 'position'])

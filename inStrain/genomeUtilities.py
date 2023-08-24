@@ -248,6 +248,18 @@ def genomeLevel_from_IS(IS, **kwargs):
 
             mdb = pd.merge(mdb, ldb, on=['genome', 'mm'], how='left')
 
+    else:
+        new_columns = ['SNV_distance_mean', 'd_prime_mean', 'linked_SNV_count', 'r2_mean']
+
+        for col in new_columns:
+            if col not in mdb.columns:
+                mdb[col] = np.nan
+            else:
+                pass
+                #print(f"Warning: Column '{col}' already exists.")
+
+        # To ensure that the new columns are of the correct data type (float)
+        mdb[new_columns] = mdb[new_columns].astype(float)
 
     if skip_mm_level:
         del mdb['mm']
