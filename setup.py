@@ -13,7 +13,7 @@ setup(name='inStrain',
       license='MIT',
       package_data={'inStrain': ['helper_files/NullModel.txt']},
       #packages=['inStrain'],
-      packages=find_packages(exclude=["tests"]),
+      packages=find_packages(exclude=["test"]),
       scripts=['bin/inStrain'],
       python_requires='>=3.4.0',
       install_requires=[

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.8.1] - 2024-04-12
+- Minor update to _get_covt_keys method
+
 ## [1.8.0] - 2023-08-24
 - If you don't have any genomes detected, crash more gracefully
 - Make it so all the genome_info columns are the same whether or not you have a linkage table

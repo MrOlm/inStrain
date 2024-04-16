@@ -640,7 +640,7 @@ class SNVprofile:
         Adb = self._get_attributes_file()
 
         scaffs = set()
-        filename = self.get_location('raw_data') + '/' + os.path.basename(Adb.loc['covT', 'value'])
+        filename = self.get_location('raw_data') + os.path.basename(Adb.loc['covT', 'value'])
         f = h5py.File(filename, 'r')
         for thing in list(f.keys()):
             scaff, mm = thing.split('::')
