@@ -32,6 +32,7 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
         assert len(b2s.keys()) > 0
 
         # Load the cache
+        logging.debug('Loading cache')
         covTs = kwargs.get('covT')#, IS.get('covT'))
         clonTs = kwargs.get('clonT')#, IS.get('clonT'))
         raw_linkage_table = kwargs.get('raw_linkage_table')#, IS.get('raw_linkage_table'))
@@ -39,6 +40,7 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
         scaffold2length = IS.get('scaffold2length')
         rl = IS.get_read_length()
         profiled_scaffolds = set(scaffold2length.keys())
+        logging.debug('Loading cache finished')
 
     except:
         logging.error("Skipping plot 2 - you don't have all required information. You need to run inStrain genome_wide first")
@@ -53,6 +55,7 @@ def genome_plot_from_IS(IS, plot_dir=False, **kwargs):
 
 
     for genome, scaffolds in b2s.items():
+        logging.debug('Plotting %s %s', genome, scaffolds)
         if not plot_genome(genome, IS, **kwargs):
             continue
         present_scaffolds = list(set(scaffolds).intersection(set(profiled_scaffolds)))

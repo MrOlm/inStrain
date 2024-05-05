@@ -43,7 +43,7 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         Mdb.loc[:, 'ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
     except:
         logging.error(
-            "Skipping plot 1 - you don't have all required information. You need to run inStrain genome_wide first")
+            "Skipping plot 1 - Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling")
         if kwargs.get('debug', False):
             traceback.print_exc()
         return
@@ -108,7 +108,7 @@ def ANI_dist_plot_from_IS(IS, plot_dir=False, **kwargs):
         assert len(Mdb) > 0
     except:
         logging.error(
-            "Skipping plot 3 - you don't have all required information. You need to run inStrain genome_wide first")
+            "Skipping plot 3 - Plot 3 cannot be created when run with --database_mode or --skip_mm_profiling")
         if kwargs.get('debug', False):
             traceback.print_exc()
         return
