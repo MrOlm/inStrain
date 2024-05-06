@@ -544,6 +544,7 @@ class ScaffoldCompareGroup(object):
             name2SNPtable[name] = S.get('cumulative_snv_table').rename(
                 columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                          'baseCoverage': 'position_coverage'})
+            print(name)
             name2SNPtable_hash[name] = inStrain.compare_utils.hash_SNP_table(name2SNPtable[name])
             logging.debug('cumulative_snv_table %f', time.time() - start)
             if for_pooling:

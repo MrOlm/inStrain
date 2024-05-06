@@ -125,6 +125,10 @@ def hash_SNP_table(db):
     """
     Split SNP table according to scaffold
     """
+    if len(db) == 0:
+        print('empty')
+        return {}
+
     db = db.sort_values(['scaffold', 'mm'])
     ukeys, index = np.unique(db['scaffold'], True)
     dbhash = {}
