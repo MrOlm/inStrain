@@ -120,6 +120,24 @@ def subset_SNP_table(db, scaffold):
 
     return db
 
+
+def hash_SNP_table(db):
+    """
+    Split SNP table according to scaffold
+    """
+    if len(db) == 0:
+        return {}
+
+    db = db.sort_values(['scaffold', 'mm'])
+    ukeys, index = np.unique(db['scaffold'], True)
+    index = np.append(index, len(db))  # add the index of the last row in db
+    dbhash = {}
+    for key, idx1, idx2 in zip(ukeys, index[:-1], index[1:]):
+        dbhash[key] = db.iloc[idx1:idx2]
+
+    return dbhash
+
+
 def find_relevant_scaffolds(input, bts, kwargs):
     """
     Return a list of scaffolds in the input based on the parameters of kwargs

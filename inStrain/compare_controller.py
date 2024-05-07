@@ -12,6 +12,7 @@ import multiprocessing
 import traceback
 from collections import defaultdict
 from tqdm import tqdm
+import time
 
 import inStrain.readComparer
 import inStrain.compare_utils
@@ -530,16 +531,26 @@ class ScaffoldCompareGroup(object):
         # Load data from the profiles
         name2covT = {}
         name2SNPtable = {}
+        name2SNPtable_hash = {}
         name2Rdic = {}
 
         for S, name in zip(sProfiles, names):
+            logging.debug('Loading %s', name)
+            start = time.time()
             if not for_pooling:
                 name2covT[name] = S.get('covT', scaffolds=scaffolds_to_compare)
+            logging.debug('covT %f', time.time() - start)
+            start = time.time()
             name2SNPtable[name] = S.get('cumulative_snv_table').rename(
                 columns={'conBase': 'con_base', 'refBase': 'ref_base', 'varBase': 'var_base',
                          'baseCoverage': 'position_coverage'})
+            print(name)
+            name2SNPtable_hash[name] = inStrain.compare_utils.hash_SNP_table(name2SNPtable[name])
+            logging.debug('cumulative_snv_table %f', time.time() - start)
             if for_pooling:
+                start = time.time()
                 name2Rdic[name] = S.get("Rdic")
+                logging.debug('Rdic %f', time.time() - start)
 
         if for_pooling:
             self.name2SNPtable = name2SNPtable
@@ -549,7 +560,8 @@ class ScaffoldCompareGroup(object):
             # Attach this information to ScaffoldComparison objects
             for SC in self.ScaffoldComparisons:
                 for name in SC.names:
-                    SC.SNPtables.append(inStrain.compare_utils.subset_SNP_table(name2SNPtable[name], SC.scaffold))
+                    # SC.SNPtables.append(inStrain.compare_utils.subset_SNP_table(name2SNPtable[name], SC.scaffold))
+                    SC.SNPtables.append(name2SNPtable_hash[name].get(SC.scaffold, pd.DataFrame()))
                     SC.covTs.append(name2covT[name][SC.scaffold])
 
                     if for_pooling:
@@ -561,6 +573,8 @@ class ScaffoldCompareGroup(object):
             self.result_queue = ctx.Queue()
             for SC in self.ScaffoldComparisons:
                 self.cmd_queue.put(SC)
+
+        logging.debug('Load cache done.')
 
     def purge_cache(self):
         """
