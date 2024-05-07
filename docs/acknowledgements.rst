@@ -11,6 +11,8 @@ Special thanks to all those who have provided `feedback on GitHub <https://githu
 
 Many of the ideas in :doc:`important_concepts` were honed over many years during countless discussions with members of the `Banfield Lab <https://geomicrobiology.berkeley.edu/>`_, the `Sonnenburg Lab <https://sonnenburglab.stanford.edu/>`_, and others. Special thanks to Christopher Brown, Keith Bouma-Gregson, Yue "Clare" Lou, Spencer Diamond, Alex Thomas, Patrick West, Alex Jaffe, Bryan Merrill, Matt Carter, and Dylan Dahan.
 
+Thank you to those who have provided substantial pull requests as well- especially `Jing Wang <https://github.com/zhenjiaofenjie/>`_
+
 Software
 +++++++++++++++++++++++++
 
