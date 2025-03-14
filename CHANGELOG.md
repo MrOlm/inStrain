@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.9.1] - 2025-03-14
+- Bugfix in polymorpher related to Rdic handling
+
 ## [1.9.0] - 2024-05-07
 - Updates from Jing Wang pull request #181 https://github.com/MrOlm/inStrain/pull/181
 - Efficiency improvements for inStrain compare and Error message clarification

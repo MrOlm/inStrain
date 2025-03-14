@@ -118,7 +118,7 @@ class PoolController(object):
                 if scaff not in scaff2name2position2counts:
                     scaff2name2position2counts[scaff] = {}
 
-                scaff2name2position2counts[scaff][name] = extract_SNVS_from_bam(bam_loc, Rdic, locs, scaff)
+                scaff2name2position2counts[scaff][name] = extract_SNVS_from_bam(bam_loc, Rdic[scaff], locs, scaff)
                 pbar.update(1)
 
             # Delete .bam-level cache
@@ -479,7 +479,7 @@ def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
     Mdbs = []
     order = []
     pbar = tqdm(desc='Generating pooled SNV summary table', total=len(pd.unique(DSTdb['scaffold'])))
-    for scaff, DDST in DSTdb.groupby('scaffold'):
+    for scaff, DDST in DSTdb.groupby('scaffold', observed=True):
         order.append(scaff)
 
         # Get the base table
@@ -507,7 +507,7 @@ def generate_pooled_SNV_summary_table(DSTdb, name2snpTable, name2scaffs):
         # Make a depth table summarizing depth for all samples
         Ddb_list = []
         index_list = []
-        for myindex, indexDF in DDST.groupby(level=[1]):
+        for myindex, indexDF in DDST.groupby(level=1):
             Ddb_list.append(indexDF[['A','C','T','G']].sum(axis=0))
             index_list.append(myindex)
         Ddb = pd.DataFrame(Ddb_list)
