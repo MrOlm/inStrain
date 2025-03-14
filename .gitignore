@@ -6,3 +6,4 @@ dist/*
 *.egg-info/*
 docs/_build/
 .idea/
+.DS_Store
