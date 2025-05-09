@@ -104,6 +104,7 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
                 logging.debug(nm)
 
             mm2overlap, mm2coverage = calc_mm2overlap_v3(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
+            mm2overlap, mm2coverage = calc_mm2overlap(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
             Mdb = _calc_SNP_count_v3(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
 
             table = _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, name2, mLen)
@@ -188,53 +189,53 @@ def calc_mm2overlap_v3(covT1, covT2, min_cov=5, verbose=False, debug=False):
 
     return mm2overlap, mm2coverage
 
-# def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
-#     '''
-#     Calculate mm2overlap for a pair of covTs
+def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
+    '''
+    Calculate mm2overlap for a pair of covTs
 
-#     Coverage is calculated as cov = len(coveredInBoth) / len(coveredInEither)
-#     This means that its the percentage of bases that are covered by both
+    Coverage is calculated as cov = len(coveredInBoth) / len(coveredInEither)
+    This means that its the percentage of bases that are covered by both
 
-#     Returns:
-#         mm2overlap -> dictionary to array of "True" where there's overlap and "False" where both are compared but there's not overlap
-#         mm2coverage -> dictionary of mm -> the alignment coverage
-#     '''
-#     mm2overlap = {}
-#     mm2coverage = {}
+    Returns:
+        mm2overlap -> dictionary to array of "True" where there's overlap and "False" where both are compared but there's not overlap
+        mm2coverage -> dictionary of mm -> the alignment coverage
+    '''
+    mm2overlap = {}
+    mm2coverage = {}
 
-#     # if debug != False:
-#     #     scaffold, name1, name2 = debug
+    # if debug != False:
+    #     scaffold, name1, name2 = debug
 
-#     mms = sorted(list(set(covT1.keys()).union(set(covT2.keys()))))
-#     cov1 = pd.Series(dtype='float64')
-#     cov2 = pd.Series(dtype='float64')
-#     for mm in mms:
-#         if mm in covT1:
-#             cov1 = cov1.add(covT1[mm], fill_value=0)
-#         if mm in covT2:
-#             cov2 = cov2.add(covT2[mm], fill_value=0)
+    mms = sorted(list(set(covT1.keys()).union(set(covT2.keys()))))
+    cov1 = pd.Series(dtype='float64')
+    cov2 = pd.Series(dtype='float64')
+    for mm in mms:
+        if mm in covT1:
+            cov1 = cov1.add(covT1[mm], fill_value=0)
+        if mm in covT2:
+            cov2 = cov2.add(covT2[mm], fill_value=0)
 
-#         # Figure out where each has min coverage
-#         T1 = set(cov1[(cov1 >= min_cov)].index)
-#         T2 = set(cov2[(cov2 >= min_cov)].index)
+        # Figure out where each has min coverage
+        T1 = set(cov1[(cov1 >= min_cov)].index)
+        T2 = set(cov2[(cov2 >= min_cov)].index)
 
-#         # Figure out the total possible overlap
-#         coveredInEither = T1.union(T2)
+        # Figure out the total possible overlap
+        coveredInEither = T1.union(T2)
 
-#         # Figure out where there's overlap in both
-#         coveredInBoth = T1.intersection(T2)
+        # Figure out where there's overlap in both
+        coveredInBoth = T1.intersection(T2)
 
-#         # Calculate coverage
-#         if len(coveredInEither) > 0:
-#             cov = len(coveredInBoth) / len(coveredInEither)
-#         else:
-#             cov = 0
+        # Calculate coverage
+        if len(coveredInEither) > 0:
+            cov = len(coveredInBoth) / len(coveredInEither)
+        else:
+            cov = 0
 
-#         # Save
-#         mm2overlap[mm] = coveredInBoth
-#         mm2coverage[mm] = cov
+        # Save
+        mm2overlap[mm] = coveredInBoth
+        mm2coverage[mm] = cov
 
-#     return mm2overlap, mm2coverage
+    return mm2overlap, mm2coverage
 
 def _gen_blank_Mdb(COLUMNS):
     '''
