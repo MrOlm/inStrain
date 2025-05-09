@@ -103,8 +103,8 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
                         scaffold, time.time())
                 logging.debug(nm)
 
-            mm2overlap, mm2coverage = calc_mm2overlap(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
-            Mdb = _calc_SNP_count_alternate(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
+            mm2overlap, mm2coverage = calc_mm2overlap_v3(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
+            Mdb = _calc_SNP_count_v3(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
 
             table = _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, name2, mLen)
 
@@ -142,7 +142,7 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
     log_message += '\n' + inStrain.logUtils.get_worker_log('Compare', scaffold, 'end')
     return (results, log_message)
 
-def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
+def calc_mm2overlap_v3(covT1, covT2, min_cov=5, verbose=False, debug=False):
     '''
     Calculate mm2overlap for a pair of covTs
 
@@ -169,14 +169,12 @@ def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
             cov2 = cov2.add(covT2[mm], fill_value=0)
 
         # Figure out where each has min coverage
-        T1 = set(cov1[(cov1 >= min_cov)].index)
-        T2 = set(cov2[(cov2 >= min_cov)].index)
+        T1 = cov1[(cov1 >= min_cov)].index
+        T2 = cov2[(cov2 >= min_cov)].index
 
         # Figure out the total possible overlap
-        coveredInEither = T1.union(T2)
-
-        # Figure out where there's overlap in both
-        coveredInBoth = T1.intersection(T2)
+        coveredInEither = np.union1d(T1, T2)#, assume_unique=True)
+        coveredInBoth = np.intersect1d(T1, T2, assume_unique=True)
 
         # Calculate coverage
         if len(coveredInEither) > 0:
@@ -190,6 +188,54 @@ def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
 
     return mm2overlap, mm2coverage
 
+# def calc_mm2overlap(covT1, covT2, min_cov=5, verbose=False, debug=False):
+#     '''
+#     Calculate mm2overlap for a pair of covTs
+
+#     Coverage is calculated as cov = len(coveredInBoth) / len(coveredInEither)
+#     This means that its the percentage of bases that are covered by both
+
+#     Returns:
+#         mm2overlap -> dictionary to array of "True" where there's overlap and "False" where both are compared but there's not overlap
+#         mm2coverage -> dictionary of mm -> the alignment coverage
+#     '''
+#     mm2overlap = {}
+#     mm2coverage = {}
+
+#     # if debug != False:
+#     #     scaffold, name1, name2 = debug
+
+#     mms = sorted(list(set(covT1.keys()).union(set(covT2.keys()))))
+#     cov1 = pd.Series(dtype='float64')
+#     cov2 = pd.Series(dtype='float64')
+#     for mm in mms:
+#         if mm in covT1:
+#             cov1 = cov1.add(covT1[mm], fill_value=0)
+#         if mm in covT2:
+#             cov2 = cov2.add(covT2[mm], fill_value=0)
+
+#         # Figure out where each has min coverage
+#         T1 = set(cov1[(cov1 >= min_cov)].index)
+#         T2 = set(cov2[(cov2 >= min_cov)].index)
+
+#         # Figure out the total possible overlap
+#         coveredInEither = T1.union(T2)
+
+#         # Figure out where there's overlap in both
+#         coveredInBoth = T1.intersection(T2)
+
+#         # Calculate coverage
+#         if len(coveredInEither) > 0:
+#             cov = len(coveredInBoth) / len(coveredInEither)
+#         else:
+#             cov = 0
+
+#         # Save
+#         mm2overlap[mm] = coveredInBoth
+#         mm2coverage[mm] = cov
+
+#     return mm2overlap, mm2coverage
+
 def _gen_blank_Mdb(COLUMNS):
     '''
     COLUMNS = ['position', 'consensus_SNP', 'population_SNP', 'mm'
@@ -201,8 +247,7 @@ def _gen_blank_Mdb(COLUMNS):
 
     return pd.DataFrame({c:[] for c in COLUMNS})
 
-
-def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.05, debug=False):
+def _calc_SNP_count_v3(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.05, debug=False):
 
     mm2ANI = {}
     mm2popANI = {}
@@ -229,7 +274,8 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_
     for mm, cov_arr in mm2overlap.items():
 
         # Subset to bases that have coverage in both
-        covs = set(cov_arr)
+        #covs = set(cov_arr)
+        covs = cov_arr
 
         # These represent relevant counts at these posisions
         if len(SNPtable1) > 0:
@@ -271,8 +317,13 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_
             Mdb = pd.merge(s1_all, s2_all, on='position', suffixes=('_1', '_2'), how='outer', copy=False)
 
         if Mdb is not None:
-            Mdb.loc[:,'consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
-            Mdb.loc[:,'population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
+            # Vectorized conSNP calculation
+            Mdb = calc_con_snps(Mdb)
+
+            # Vectorized popSNP calculation
+            Mdb = calc_pop_snps(Mdb, model_to_use, min_freq)
+
+            
 
             Mdb['mm'] = mm
             Mdb = Mdb[OUT_COLUMNS]
@@ -287,6 +338,353 @@ def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_
     else:
         Mdb = _gen_blank_Mdb(OUT_COLUMNS)
     return Mdb
+
+def call_pop_snps_vectorized_optimized(df, model_to_use, min_freq):
+    '''
+    Optimized vectorized function to call population SNPs
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing required columns for SNP identification
+    model_to_use : dict
+        Model dictionary for minimum count thresholds
+    min_freq : float
+        Minimum frequency threshold
+        
+    Returns:
+    --------
+    pandas.Series
+        Boolean Series indicating population SNPs
+    '''
+    import pandas as pd
+    import numpy as np
+    
+    # Initialize the result series with False
+    result = pd.Series(False, index=df.index)
+    
+    # CASE 1: Are the consensus bases the same? If yes, not a SNP
+    same_consensus = df['con_base_1'] == df['con_base_2']
+    
+    # CASE 2: Handle where one of the consensus bases is NaN
+    con1_is_nan = df['con_base_1'].isna()
+    con2_is_nan = df['con_base_2'].isna()
+    one_consensus_nan = con1_is_nan | con2_is_nan
+    
+    # For rows where only con_base_1 is NaN, check if ref_base_2 is present in sample 2
+    con1_nan_only = con1_is_nan & ~con2_is_nan
+    if con1_nan_only.any():
+        # Extract subset of data for this case
+        subset = df.loc[con1_nan_only]
+        
+        # Vectorized approach for getting counts
+        ref_bases = subset['ref_base_2'].values
+        counts = pd.Series(0.0, index=subset.index)
+        
+        # Pre-compute all possible column names for faster lookups
+        base_cols = [col for col in subset.columns if col.endswith('_2') and len(col) == 3]
+        
+        # Create a mapping of base to column for quick lookup
+        base_to_col = {col[0]: col for col in base_cols}
+        
+        # Use numpy for faster assignment
+        for base, col in base_to_col.items():
+            mask = ref_bases == base
+            if mask.any() and col in subset.columns:
+                counts.loc[subset.index[mask]] = subset.loc[subset.index[mask], col].values
+        
+        totals = subset['position_coverage_2']
+        # Check if the reference base is present
+        is_present_mask = is_present_vectorized(counts, totals, model_to_use, min_freq)
+        # If reference is NOT present, it's a population SNP
+        result.loc[con1_nan_only] = ~is_present_mask
+    
+    # For rows where only con_base_2 is NaN, check if ref_base_1 is present in sample 1
+    con2_nan_only = ~con1_is_nan & con2_is_nan
+    if con2_nan_only.any():
+        # Extract subset of data for this case
+        subset = df.loc[con2_nan_only]
+        
+        # Vectorized approach for getting counts
+        ref_bases = subset['ref_base_1'].values
+        counts = pd.Series(0.0, index=subset.index)
+        
+        # Pre-compute all possible column names for faster lookups
+        base_cols = [col for col in subset.columns if col.endswith('_1') and len(col) == 3]
+        
+        # Create a mapping of base to column for quick lookup
+        base_to_col = {col[0]: col for col in base_cols}
+        
+        # Use numpy for faster assignment
+        for base, col in base_to_col.items():
+            mask = ref_bases == base
+            if mask.any() and col in subset.columns:
+                counts.loc[subset.index[mask]] = subset.loc[subset.index[mask], col].values
+        
+        totals = subset['position_coverage_1']
+        # Check if the reference base is present
+        is_present_mask = is_present_vectorized(counts, totals, model_to_use, min_freq)
+        # If reference is NOT present, it's a population SNP
+        result.loc[con2_nan_only] = ~is_present_mask
+    
+    # CASE 3: Handle where both consensus bases are present but different
+    both_present_diff = ~same_consensus & ~one_consensus_nan
+    if both_present_diff.any():
+        subset = df.loc[both_present_diff]
+        
+        # Check if con_base_1 is present in sample 2
+        con_bases_1 = subset['con_base_1'].values
+        counts_1_in_2 = pd.Series(0.0, index=subset.index)
+        
+        # Pre-compute mappings for faster lookups
+        base_cols_2 = [col for col in subset.columns if col.endswith('_2') and len(col) == 3]
+        base_to_col_2 = {col[0]: col for col in base_cols_2}
+        
+        for base, col in base_to_col_2.items():
+            mask = con_bases_1 == base
+            if mask.any() and col in subset.columns:
+                counts_1_in_2.loc[subset.index[mask]] = subset.loc[subset.index[mask], col].values
+        
+        is_1_in_2 = is_present_vectorized(counts_1_in_2, subset['position_coverage_2'], model_to_use, min_freq)
+        
+        # Check if con_base_2 is present in sample 1
+        con_bases_2 = subset['con_base_2'].values
+        counts_2_in_1 = pd.Series(0.0, index=subset.index)
+        
+        # Pre-compute mappings for faster lookups
+        base_cols_1 = [col for col in subset.columns if col.endswith('_1') and len(col) == 3]
+        base_to_col_1 = {col[0]: col for col in base_cols_1}
+        
+        for base, col in base_to_col_1.items():
+            mask = con_bases_2 == base
+            if mask.any() and col in subset.columns:
+                counts_2_in_1.loc[subset.index[mask]] = subset.loc[subset.index[mask], col].values
+        
+        is_2_in_1 = is_present_vectorized(counts_2_in_1, subset['position_coverage_1'], model_to_use, min_freq)
+        
+        # Check for shared minor alleles - vectorized approach
+        shared_minor = pd.Series(False, index=subset.index)
+        
+        # Check which column format is used ('morphia' or 'allele_count')
+        if 'allele_count_1' in df.columns:
+            multi_allele_1 = subset['allele_count_1'] > 1
+            multi_allele_2 = subset['allele_count_2'] > 1
+            both_multi = multi_allele_1 & multi_allele_2
+            
+            if both_multi.any():
+                shared_minor.loc[both_multi] = subset.loc[both_multi, 'var_base_1'].values == subset.loc[both_multi, 'var_base_2'].values
+                
+        elif 'morphia_1' in df.columns:
+            multi_allele_1 = subset['morphia_1'] > 1
+            multi_allele_2 = subset['morphia_2'] > 1
+            both_multi = multi_allele_1 & multi_allele_2
+            
+            if both_multi.any():
+                shared_minor.loc[both_multi] = subset.loc[both_multi, 'var_base_1'].values == subset.loc[both_multi, 'var_base_2'].values
+        
+        # Determine if it's a population SNP: both consensus bases are different,
+        # neither is present in the other sample, and they don't share a minor allele
+        is_pop_snp = ~is_1_in_2 & ~is_2_in_1 & ~shared_minor
+        result.loc[both_present_diff] = is_pop_snp
+    
+    return result
+
+
+def calc_con_snps(df):
+    '''
+    Vectorized function to call SNPs based on consensus sequences
+    
+    Parameters:
+    -----------
+    df : pandas.DataFrame
+        DataFrame containing con_base_1, con_base_2, ref_base_1, ref_base_2 columns
+        
+    Returns:
+    --------
+    pandas.DataFrame
+        The input DataFrame with 'consensus_SNP' column added
+    '''
+    # Extract all needed columns at once to avoid multiple DataFrame lookups
+    con_base_1 = df['con_base_1']
+    con_base_2 = df['con_base_2']
+    ref_base_1 = df['ref_base_1']
+    ref_base_2 = df['ref_base_2']
+    
+    # Create masks for NaN values - reuse them to avoid recalculation
+    sample1_nan = con_base_1.isna()
+    sample2_nan = con_base_2.isna()
+    
+    # Calculate the results directly without intermediate variables
+    # Initialize with False array of same size as dataframe
+    result = pd.Series(False, index=df.index)
+    
+    # Set result where both samples are present (most common case first)
+    non_nan_mask = ~(sample1_nan | sample2_nan)
+    if non_nan_mask.any():
+        result.loc[non_nan_mask] = con_base_1.loc[non_nan_mask] != con_base_2.loc[non_nan_mask]
+    
+    # Set result where only sample2 is present (sample1 is NaN)
+    if sample1_nan.any():
+        result.loc[sample1_nan] = con_base_2.loc[sample1_nan] != ref_base_2.loc[sample1_nan]
+    
+    # Set result where only sample1 is present (sample2 is NaN)
+    if sample2_nan.any():
+        result.loc[sample2_nan] = con_base_1.loc[sample2_nan] != ref_base_1.loc[sample2_nan]
+    
+    # Assign the result directly without copying
+    df['consensus_SNP'] = result
+    
+    return df
+
+
+def is_present_vectorized(counts, totals, model_to_use, min_freq):
+    """
+    Optimized vectorized function to check if counts meet the threshold criteria
+    
+    Parameters:
+    -----------
+    counts : pandas.Series
+        Count values
+    totals : pandas.Series
+        Total coverage values
+    model_to_use : dict
+        Model dictionary for minimum count thresholds
+    min_freq : float
+        Minimum frequency threshold
+        
+    Returns:
+    --------
+    pandas.Series
+        Boolean Series indicating if counts meet threshold criteria
+    """
+    import numpy as np
+    
+    # Calculate frequencies directly (no intermediate Series needed)
+    freqs = counts.values / totals.values
+    
+    # Convert model_to_use to sorted arrays for faster lookup
+    coverage_levels = np.array(sorted(model_to_use.keys()), dtype=np.float64)
+    threshold_values = np.array([model_to_use[k] for k in coverage_levels], dtype=np.float64)
+    
+    # Find appropriate thresholds in one vectorized operation
+    # Use np.maximum to handle the case where totals are less than the smallest coverage level
+    indices = np.maximum(0, np.searchsorted(coverage_levels, totals.values, side='right') - 1)
+    thresholds = threshold_values[indices]
+    
+    # Combine conditions directly with numpy operations
+    # Both operations at once: (counts >= thresholds) & (freqs >= min_freq)
+    is_present = (counts.values >= thresholds) & (freqs >= min_freq)
+    
+    # Convert back to pandas Series with the original index
+    return pd.Series(is_present, index=counts.index)
+
+# Usage:
+def calc_pop_snps(Mdb, model_to_use, min_freq):
+    '''
+    Apply vectorized population SNP calling to a DataFrame
+    
+    Parameters:
+    -----------
+    Mdb : pandas.DataFrame
+        Input DataFrame
+    model_to_use : dict
+        Model for minimum count thresholds
+    min_freq : float
+        Minimum frequency threshold
+        
+    Returns:
+    --------
+    pandas.DataFrame
+        Input DataFrame with 'population_SNP' column added
+    '''
+    Mdb.loc[:, 'population_SNP'] = call_pop_snps_vectorized_optimized(Mdb, model_to_use, min_freq)
+    return Mdb
+
+# def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.05, debug=False):
+
+#     mm2ANI = {}
+#     mm2popANI = {}
+#     dbs = []
+
+#     # Get the null model for SNP calling
+#     model_to_use = null_model
+
+#     # Constant for the SNP dataframe
+#     SNP_COLUMNS = ['position', 'con_base', 'ref_base', 'var_base',
+#     'position_coverage', 'A', 'C', 'T', 'G']
+
+#     # Constant for the output dataframe
+#     OUT_COLUMNS = ['position', 'consensus_SNP', 'population_SNP', 'mm',
+#     'con_base_1', 'ref_base_1', 'var_base_1', 'position_coverage_1',
+#     'A_1', 'C_1', 'T_1', 'G_1',
+#     'con_base_2', 'ref_base_2', 'var_base_2', 'position_coverage_2',
+#     'A_2', 'C_2', 'T_2', 'G_2']
+
+#     RENAME_COLUMNS = ['con_base', 'ref_base', 'var_base', 'position_coverage',
+#                     'A', 'C', 'T', 'G']
+
+#     # Iterate mm levels
+#     for mm, cov_arr in mm2overlap.items():
+
+#         # Subset to bases that have coverage in both
+#         covs = set(cov_arr)
+
+#         # These represent relevant counts at these posisions
+#         if len(SNPtable1) > 0:
+#             s1_all = SNPtable1[[(p in covs) for p in SNPtable1['position'].values]].drop_duplicates(
+#                         subset=['position'], keep='last')
+#             del s1_all['mm']
+#             if len(s1_all) == 0:
+#                 s1_all = None
+#         else:
+#             #s1_all = _gen_blank_SNPdb(SNP_COLUMNS)
+#             s1_all = None
+
+#         if len(SNPtable2) > 0:
+#             s2_all = SNPtable2[[(p in covs) for p in SNPtable2['position'].values]].drop_duplicates(
+#                         subset=['position'], keep='last')
+#             del s2_all['mm']
+#             if len(s2_all) == 0:
+#                 s2_all = None
+#         else:
+#             #s2_all = _gen_blank_SNPdb(SNP_COLUMNS)
+#             s2_all = None
+
+#         # Merge
+#         if (s1_all is None) & (s2_all is None):
+#             #Mdb = _gen_blank_Mdb(OUT_COLUMNS)
+#             Mdb = None
+
+#         elif s1_all is None:
+#             Mdb = s2_all.rename(columns={c:c + '_2' for c in RENAME_COLUMNS})
+#             for c in RENAME_COLUMNS:
+#                 Mdb[c + '_1'] = np.nan
+
+#         elif s2_all is None:
+#             Mdb = s1_all.rename(columns={c:c + '_1' for c in RENAME_COLUMNS})
+#             for c in RENAME_COLUMNS:
+#                 Mdb[c + '_2'] = np.nan
+
+#         else:
+#             Mdb = pd.merge(s1_all, s2_all, on='position', suffixes=('_1', '_2'), how='outer', copy=False)
+
+#         if Mdb is not None:
+#             Mdb.loc[:,'consensus_SNP'] = Mdb.apply(call_con_snps, axis=1)
+#             Mdb.loc[:,'population_SNP'] = Mdb.apply(call_pop_snps, axis=1, args=(model_to_use, min_freq))
+
+#             Mdb['mm'] = mm
+#             Mdb = Mdb[OUT_COLUMNS]
+
+#             # Only keep SNPs
+#             Mdb = Mdb[Mdb['consensus_SNP'] | Mdb['population_SNP'] ]
+
+#             dbs.append(Mdb)
+
+#     if len(dbs) > 0:
+#         Mdb = pd.concat(dbs, sort=False)
+#     else:
+#         Mdb = _gen_blank_Mdb(OUT_COLUMNS)
+#     return Mdb
 
 def call_con_snps(row):
     '''

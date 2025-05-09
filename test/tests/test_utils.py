@@ -147,7 +147,7 @@ def load_random_test_dir():
     #                    'test_backend/testdir/')
     unique_id = str(uuid.uuid4())
     base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../test_backend')
-    return os.path.join(base_dir, f'test_dir_{unique_id}')
+    return os.path.join(base_dir, f'test_dir_{unique_id}/')
 
 def load_data_loc():
     """
