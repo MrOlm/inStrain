@@ -104,7 +104,6 @@ def compare_scaffold(scaffold, cur_names, SNPtables, covTs, mLen, null_model, **
                 logging.debug(nm)
 
             mm2overlap, mm2coverage = calc_mm2overlap_v3(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
-            mm2overlap, mm2coverage = calc_mm2overlap(covT1, covT2, min_cov=min_cov, verbose=False, debug=debug)
             Mdb = _calc_SNP_count_v3(SNPtable1_ori, SNPtable2_ori, mm2overlap, null_model, min_freq=min_freq, debug=debug)
 
             table = _update_overlap_table(table, scaffold, mm2overlap, mm2coverage, Mdb, name1, name2, mLen)
