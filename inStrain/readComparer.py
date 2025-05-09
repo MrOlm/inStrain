@@ -274,8 +274,8 @@ def _calc_SNP_count_v3(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.0
     for mm, cov_arr in mm2overlap.items():
 
         # Subset to bases that have coverage in both
-        #covs = set(cov_arr)
-        covs = cov_arr
+        covs = set(cov_arr)
+        #covs = cov_arr
 
         # These represent relevant counts at these posisions
         if len(SNPtable1) > 0:
