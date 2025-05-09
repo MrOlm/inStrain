@@ -725,7 +725,7 @@ def test_compare_12(BTO):
     null_loc = os.path.dirname(inStrain.readComparer.__file__) + '/helper_files/NullModel.txt'
     model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=1e-6)
 
-    mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+    mdb = inStrain.readComparer._calc_SNP_count_v3(SNPtable1, SNPtable2,
                                                           mm2overlap, model)
     assert len(mdb[mdb['population_SNP'] == True]) == 1
     assert len(mdb[mdb['consensus_SNP'] == True]) == 2, \
@@ -761,7 +761,7 @@ def test_compare_12(BTO):
     table['mm'].append(0)
 
     SNPtable2 = pd.DataFrame(table)
-    mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+    mdb = inStrain.readComparer._calc_SNP_count_v3(SNPtable1, SNPtable2,
                                                           mm2overlap, model)
     assert len(mdb[mdb['consensus_SNP'] == True]) == 2
     assert len(mdb[mdb['population_SNP'] == True]) == 2
@@ -795,7 +795,7 @@ def test_compare_12(BTO):
     table['mm'].append(0)
 
     SNPtable2 = pd.DataFrame(table)
-    mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+    mdb = inStrain.readComparer._calc_SNP_count_v3(SNPtable1, SNPtable2,
                                                           mm2overlap, model)
     assert len(mdb[mdb['consensus_SNP'] == True]) == 1
     assert len(mdb[mdb['population_SNP'] == True]) == 0
@@ -803,7 +803,7 @@ def test_compare_12(BTO):
     # Try with nothing
     SNPtable1 = pd.DataFrame()
     SNPtable2 = pd.DataFrame()
-    mdb = inStrain.readComparer._calc_SNP_count_alternate(SNPtable1, SNPtable2,
+    mdb = inStrain.readComparer._calc_SNP_count_v3(SNPtable1, SNPtable2,
                                                           mm2overlap, model)
     assert len(mdb) == 0
 

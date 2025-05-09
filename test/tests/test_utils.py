@@ -13,6 +13,13 @@ import pytest
 import uuid
 
 class TestingClass():
+    def make(self):
+        importlib.reload(logging)
+        if os.path.isdir(self.test_dir):
+            shutil.rmtree(self.test_dir)
+        os.mkdir(self.test_dir)
+        importlib.reload(logging)
+    
     def teardown(self):
         importlib.reload(logging)
         if os.path.isdir(self.test_dir):
@@ -96,7 +103,7 @@ def BTO():
 
     self.LOCALONLY_IS_plotting = '/Users/mattolm/Programs/testing_house/UHGG_reps.fasta-vs-N5_216_039G1.a.IS'
 
-    self.teardown()
+    self.make()
     yield self
     self.teardown()
 

@@ -449,7 +449,7 @@ def test_profile_8(BTO):
     shutil.copyfile(BTO.sam, new_sam)
 
     # Run program
-    base = BTO.test_dir + 'test'
+    base = BTO.test_dir + '/test'
     cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide -d".format(
         True, new_sam,
         BTO.extra_single_scaff, base)
