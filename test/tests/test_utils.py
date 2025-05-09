@@ -10,13 +10,14 @@ import logging
 import importlib
 
 import pytest
+import uuid
 
 class TestingClass():
     def teardown(self):
         importlib.reload(logging)
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
-        os.mkdir(self.test_dir)
+        #os.mkdir(self.test_dir)
         importlib.reload(logging)
 
 @pytest.fixture()
@@ -105,56 +106,55 @@ def get_script_loc(script):
     Relies on being run from test_docker.py (not ideal)
     """
     if script == 'inStrain':
-        return os.path.join(str(os.getcwd()),
-                            '../bin/inStrain')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../bin/inStrain')
     if script == 'filter_reads':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/filter_reads.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/filter_reads.py')
     if script == 'deprecated_gene_statistics':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/deprecated/deprecated_gene_statistics.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/deprecated/deprecated_gene_statistics.py')
     if script == 'SNVprofile':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/SNVprofile.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/SNVprofile.py')
     if script == 'readcomparer':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/readComparer.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/readComparer.py')
     if script == 'quickProfile':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/quickProfile.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/quickProfile.py')
     if script == 'GeneProfile':
-        return os.path.join(str(os.getcwd()),
-                            '../inStrain/GeneProfile.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../inStrain/GeneProfile.py')
 
 def get_aux_script_loc(script):
     """
     Relies on being run from within inStrain/test (not ideal)
     """
     if script == 'rarefaction_curve':
-        return os.path.join(str(os.getcwd()),
-                            '../auxiliary_scripts/rarefaction_curve.py')
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../auxiliary_scripts/rarefaction_curve.py')
 
     if script == 'recluster_instrain_compare':
-        return os.path.join(str(os.getcwd()),
-                            '../auxiliary_scripts/recluster_instrain_compare.py')
-
-
+        return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            '../../auxiliary_scripts/recluster_instrain_compare.py')
 
 def load_random_test_dir():
     """
     Relies on being run from test_docker.py (not ideal)
     """
-    loc = os.path.join(str(os.getcwd()),
-                       'test_backend/testdir/')
-    return loc
-
+    # loc = os.path.join(str(os.getcwd()),
+    #                    'test_backend/testdir/')
+    unique_id = str(uuid.uuid4())
+    base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../test_backend')
+    return os.path.join(base_dir, f'test_dir_{unique_id}')
 
 def load_data_loc():
     """
     Relies on being run from test_docker.py (not ideal)
     """
-    return os.path.join(str(os.getcwd()),
-                        'test_data/')
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                        '../test_data/')
 
 
 def get_twelve2thriteen():

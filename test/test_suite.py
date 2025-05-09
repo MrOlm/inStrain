@@ -7,15 +7,18 @@ import warnings
 
 import pandas as pd
 
-import tests.test_compare
-import tests.test_filter_reads
-import tests.test_genes
-import tests.test_genome_level
-import tests.test_plotting
-import tests.test_profile
-import tests.test_quick_profile
-import tests.test_snv_profile
-import tests.test_special
+import tests.test_utils
+
+# import tests.test_compare
+# import tests.test_filter_reads
+# import tests.test_genes
+# import tests.test_genome_level
+# import tests.test_plotting
+# import tests.test_profile
+# import tests.test_quick_profile
+# import tests.test_snv_profile
+# import tests.test_special
+
 
 warnings.filterwarnings("ignore")
 

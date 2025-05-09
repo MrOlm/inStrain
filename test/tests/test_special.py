@@ -22,7 +22,7 @@ import inStrain.plotting
 
 import scipy
 import scipy.spatial.distance as ssd
-from test_utils import BTO
+from tests.test_utils import BTO
 
 # class test_special:
 #     def __init__(BTO):

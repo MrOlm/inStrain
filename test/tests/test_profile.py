@@ -27,91 +27,7 @@ import inStrain.profile.fasta
 import tests.test_utils as test_utils
 import inStrain.polymorpher
 
-from test_utils import BTO
-
-# class test_profile:
-#     def __init__(BTO):
-#         BTO.script = test_utils.get_script_loc('inStrain')
-#         BTO.test_dir = test_utils.load_random_test_dir()
-#         BTO.bam1 = test_utils.load_data_loc() + \
-#                           'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam'
-#         BTO.fasta = test_utils.load_data_loc() + \
-#                      'N5_271_010G1_scaffold_min1000.fa'
-#         BTO.failure_bam = test_utils.load_data_loc() + \
-#                            'N5_271_010G1_scaffold_failureScaffold.sorted.bam'
-#         BTO.single_scaff = test_utils.load_data_loc() + \
-#                             'N5_271_010G1_scaffold_101.fasta'
-#         BTO.fasta_extra = test_utils.load_data_loc() + \
-#                            'N5_271_010G1_scaffold_min1000_extra.fa'
-#         BTO.small_fasta = test_utils.load_data_loc() + \
-#                            'SmallScaffold.fa'
-#         BTO.small_bam = test_utils.load_data_loc() + \
-#                          'SmallScaffold.fa.sorted.bam'
-#         BTO.extra_single_scaff = test_utils.load_data_loc() + \
-#                                   'N5_271_010G1_scaffold_101_extra.fasta'
-#         BTO.failure_fasta = test_utils.load_data_loc() + \
-#                              'N5_271_010G1_scaffold_failureScaffold.fa'
-#         BTO.failure_genes = test_utils.load_data_loc() + \
-#                              'N5_271_010G1_scaffold_failureScaffold.fa.genes.fna.fa'
-#         BTO.cc_solution = test_utils.load_data_loc() + \
-#                            'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.bam.CB'
-#         BTO.pp_snp_solution = test_utils.load_data_loc() + \
-#                                'strainProfiler_v0.3_results/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted' \
-#                                '.bam_SP_snpLocations.pickle '
-#         BTO.cc_snp_solution = test_utils.load_data_loc() + \
-#                                'v0.4_results/test_0.98.freq'
-#         BTO.v12_solution = test_utils.load_data_loc() + \
-#                             'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sorted.bam.IS.v1.2.14'
-#         BTO.sam = test_utils.load_data_loc() + \
-#                    'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.sam'
-#         BTO.IS = test_utils.load_data_loc() + \
-#                   'N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G1.IS'
-#         BTO.scafflist = test_utils.load_data_loc() + \
-#                          'scaffList.txt'
-#         BTO.genes = test_utils.load_data_loc() + \
-#                      'N5_271_010G1_scaffold_min1000.fa.genes.fna'
-#         BTO.stb = test_utils.load_data_loc() + \
-#                    'GenomeCoverages.stb'
-#         BTO.genes = test_utils.load_data_loc() + \
-#                      'N5_271_010G1_scaffold_min1000.fa.genes.fna'
-# 
-#         twelve2thirteen, del_thirteen, new_thirteen = test_utils.get_twelve2thriteen()
-#         BTO.twelve2thirteen = twelve2thirteen
-#         BTO.del_thirteen = del_thirteen
-#         BTO.new_thirteen = new_thirteen
-# 
-#     def setUp(BTO, destroy=True):
-#         if destroy:
-#             if os.path.isdir(BTO.test_dir):
-#                 shutil.rmtree(BTO.test_dir)
-#             os.mkdir(BTO.test_dir)
-# 
-#         importlib.reload(logging)
-# 
-#     def tearDown(BTO):
-#         logging.shutdown()
-#         if os.path.isdir(BTO.test_dir):
-#             shutil.rmtree(BTO.test_dir)
-# 
-#     def run(BTO, min=0, max=19, tests='all', cleanUp=True):
-#         # YOU HAVE TO RUN THIS ONE ON ITS OWN, BECUASE IT MESSES UP FUTURE RUNS
-#         # BTO.setUp()
-#         # BTO.test0()
-#         # BTO.tearDown()
-# 
-#         if tests == 'all':
-#             tests = np.arange(min, max+1)
-# 
-#         for test_num in tests:
-#             BTO.setUp()
-#             print("\n*** Running {1} test {0} ***\n".format(test_num, BTO.__class__))
-#             eval('BTO.test{0}()'.format(test_num))
-#             if cleanUp:
-#                 BTO.tearDown()
-# 
-#         # BTO.setUp(destroy=True)
-#         # BTO.test16()
-#         # BTO.tearDown()
+from tests.test_utils import BTO
 
 def test_profile_0(BTO):
     """
@@ -468,7 +384,7 @@ def test_profile_7(BTO):
     Also test being able to adjust read filtering parameters
     """
     # Run program
-    base = BTO.test_dir + 'test'
+    base = BTO.test_dir + '/test'
     cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 --store_everything --skip_genome_wide --skip_plot_generation".format(
         True, BTO.bam1,
         BTO.extra_single_scaff, base)
@@ -1304,7 +1220,7 @@ def test_profile_19(BTO):
     Test the case where a scaffold is not in the .bam but is in the .stb
     """
     # Run program
-    base = BTO.test_dir + 'test'
+    base = BTO.test_dir + '/test'
     cmd = "inStrain profile {1} {2} -o {3} -l 0.80 -p 6 -s {4} --store_everything --skip_plot_generation".format(
         True, BTO.bam1,
         BTO.extra_single_scaff, base,

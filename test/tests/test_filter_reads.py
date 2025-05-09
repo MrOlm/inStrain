@@ -19,7 +19,7 @@ import inStrain.deprecated.deprecated_filter_reads
 import inStrain.filter_reads
 import tests.test_utils as test_utils
 
-from test_utils import BTO
+from tests.test_utils import BTO
 
 def test_filter_reads_0(BTO):
     """

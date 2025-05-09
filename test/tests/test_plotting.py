@@ -18,7 +18,7 @@ import inStrain.irep_utilities
 import inStrain.profile.fasta
 import tests.test_utils as test_utils
 
-from test_utils import BTO
+from tests.test_utils import BTO
 
 def test_plotting_1(BTO, view=False):
     """

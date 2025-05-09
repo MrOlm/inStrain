@@ -3,8 +3,9 @@ import glob
 import pandas as pd
 import shutil
 
-from test_utils import BTO
-import test_utils
+from tests.test_utils import BTO
+import tests.test_utils 
+import tests.test_utils as test_utils
 from subprocess import call
 
 import inStrain
@@ -128,7 +129,7 @@ def test_PA_5(BTO):
     Test the case where one sample doesn't have any annotations detected
     """
     # Heavily edit one of the files
-    new_IS2 = BTO.test_dir + os.path.basename(BTO.IS2)
+    new_IS2 = BTO.test_dir + '/' + os.path.basename(BTO.IS2)
     shutil.copytree(BTO.IS2, new_IS2)
     gloc = os.path.join(new_IS2, 'output/N5_271_010G1_scaffold_min1000.fa-vs-N5_271_010G2.forRC.IS_gene_info.tsv')
     gdb = pd.read_csv(gloc, sep='\t')
@@ -136,7 +137,7 @@ def test_PA_5(BTO):
     gdb.to_csv(gloc, sep='\t', index=False)
 
     # Run program
-    base = BTO.test_dir + 'testA'
+    base = BTO.test_dir + '/testA'
 
     cmd = f"inStrain parse_annotations -i {BTO.IS1} {new_IS2} -o {base} -a {BTO.anno_loc}"
     print(cmd)

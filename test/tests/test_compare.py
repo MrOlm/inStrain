@@ -26,7 +26,7 @@ import inStrain.compare_utils
 import inStrain.utils
 import tests.test_utils as test_utils
 
-from test_utils import BTO
+from tests.test_utils import BTO
 
 def test_compare_S(BTO):
     """

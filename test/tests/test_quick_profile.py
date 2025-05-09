@@ -16,7 +16,7 @@ import inStrain.filter_reads
 import inStrain.profile.fasta
 import tests.test_utils as test_utils
 
-from test_utils import BTO
+from tests.test_utils import BTO
 
 # class test_quickProfile:
 #     def __init__(BTO):

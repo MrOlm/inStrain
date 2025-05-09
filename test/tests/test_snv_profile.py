@@ -15,7 +15,7 @@ import inStrain
 import inStrain.SNVprofile
 import tests.test_utils as test_utils
 
-from test_utils import BTO
+from tests.test_utils import BTO
 
 def test_SNV_profile_0(BTO):
     """
