@@ -21,9 +21,12 @@ from concurrent import futures
 from inStrain import SNVprofile
 from collections import defaultdict
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    from Bio.codonalign.codonalphabet import default_codon_table
+try:
+    from Bio.Data.CodonTable import standard_dna_table as default_codon_table
+except ImportError:
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        from Bio.codonalign.codonalphabet import default_codon_table
 
 import inStrain.SNVprofile
 import inStrain.controller
