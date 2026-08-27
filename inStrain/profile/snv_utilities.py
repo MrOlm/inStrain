@@ -11,13 +11,22 @@ import inStrain.profile.profile_utilities
 P2C = {'A':0, 'C':1, 'T':2, 'G':3} # base -> position
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'} # position -> base
 
-def generate_snp_model(model_file, fdr=1e-6):
+def generate_snp_model(model_file, fdr=1e-6, legacy_thresholds=False):
     '''
     The model_file contains the columns "coverage", "probability of X coverage base by random chance"
 
     The model that it returns has the properties:
         model[position_coverage] = the minimum number of alternate bases to be legit
         model[-1] = use this value if coverage is not in dictionary
+
+    The data columns of model_file hold the number of alternate bases (k = 1, 2, 3, ...),
+    so column k lives at index k - 1. Enumerating from 1 stores the read count itself
+    rather than its column index; storing the index made the returned thresholds one
+    read lower than intended, so the realized false-positive rate was that of the
+    preceding column rather than fdr.
+
+    legacy_thresholds: reproduce the previous (one-read-lower) thresholds, for
+        re-analysing data processed with earlier versions.
     '''
     f = open(model_file)
     model = {}
@@ -26,12 +35,10 @@ def generate_snp_model(model_file, fdr=1e-6):
             continue
         counts = line.split()[1:]
         coverage = line.split()[0]
-        i = 0 # note 6.4.20 - this should be 1, not zero
-        for count in counts:
+        for k, count in enumerate(counts, start=1):
             if float(count) < fdr:
-                model[int(coverage)] = i
+                model[int(coverage)] = k - 1 if legacy_thresholds else k
                 break
-            i += 1
 
     model[-1] = max(model.values())
 
