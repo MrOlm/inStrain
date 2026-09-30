@@ -290,10 +290,10 @@ class SNVprofile:
                             'linked_SNV_count', 'SNV_distance_mean', 'r2_mean','d_prime_mean',
                             'consensus_divergent_sites',
                             'population_divergent_sites',
-                            'SNS_count', 'SNV_count',
+                            'SNS_count', 'SNV_count', 'divergent_site_count',
                             'filtered_read_pair_count',
                             'reads_unfiltered_pairs',
-                            'reads_mean_PID']
+                            'reads_mean_PID', 'reads_unfiltered_reads']
 
             db = self.get('genome_level_info')
             db = reorder_columns(db, column_order)
@@ -828,7 +828,10 @@ class SNVprofile:
         # mask |= (ar1 == a)"
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            return pd.read_csv(location, index_col=0)
+            # Read name columns as strings so that purely numeric names (e.g. a genome called "243")
+            # are not converted to integers and can still be matched against the .stb file
+            return pd.read_csv(location, index_col=0,
+                               dtype={c: str for c in ['scaffold', 'genome', 'gene']})
 
     def _store_pickle(self, obj, location):
         f = open(location, 'wb')
@@ -1158,9 +1161,12 @@ def reorder_columns(db, column_order):
         return db
 
     if len(db) > 0:
+        # Keep the remaining columns in their original order; iterating over a
+        # set here made the column order change from run to run
         columns = set(db.columns)
+        ordered = set(column_order)
         return db[[c for c in column_order if c in columns] \
-                    + list(columns - set(column_order))]
+                    + [c for c in db.columns if c not in ordered]]
     else:
         return db
 

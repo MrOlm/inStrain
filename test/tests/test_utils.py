@@ -17,7 +17,7 @@ class TestingClass():
         importlib.reload(logging)
         if os.path.isdir(self.test_dir):
             shutil.rmtree(self.test_dir)
-        os.mkdir(self.test_dir)
+        os.makedirs(self.test_dir)
         importlib.reload(logging)
     
     def teardown(self):

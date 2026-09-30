@@ -105,9 +105,12 @@ def split_profile_wrapper_groups(cmds, null_model, bam_init):
             print(e)
             traceback.print_exc()
 
+            # Also put the traceback in the log so that it isn't lost with STDOUT
+            tb = ''.join('    ' + l for l in traceback.format_exc().splitlines(True))
+
             t = time.strftime('%m-%d %H:%M')
-            log_message = "\n{1} DEBUG FAILURE SplitException {0} {2}\n"\
-                            .format(cmd.scaffold, t, cmd.split_number)
+            log_message = "\n{1} DEBUG FAILURE SplitException {0} {2}\n{3}\n"\
+                            .format(cmd.scaffold, t, cmd.split_number, tb)
             results.append(log_message)
     return results
 
