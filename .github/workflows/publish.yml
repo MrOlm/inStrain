@@ -1,0 +1,82 @@
+name: publish
+
+# Publish to PyPI after the test workflow passes on master, but only when the version in
+# inStrain/_version.py is not on PyPI yet. Merges that don't bump the version do nothing.
+#
+# Uses PyPI trusted publishing (no API token needed). One-time setup on pypi.org:
+#   inStrain project -> Settings -> Publishing -> Add a new publisher (GitHub), with
+#   owner "MrOlm", repository "inStrain", workflow "publish.yml", environment "pypi"
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  check-version:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      is_new: ${{ steps.version.outputs.is_new }}
+      sha: ${{ steps.version.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Is this version already on PyPI?
+        id: version
+        run: |
+          version=$(python -c "exec(open('inStrain/_version.py').read()); print(__version__)")
+          status=$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/inStrain/${version}/json")
+          echo "inStrain ${version}: PyPI returned HTTP ${status}"
+          if [ "$status" = "404" ]; then is_new=true; else is_new=false; fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "is_new=${is_new}" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: check-version
+    if: needs.check-version.outputs.is_new == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write   # PyPI trusted publishing
+      contents: write   # tag + GitHub release
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.check-version.outputs.sha }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build
+        run: |
+          python -m pip install build twine
+          python -m build
+          python -m twine check dist/*
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Tag and create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.check-version.outputs.version }}
+          SHA: ${{ needs.check-version.outputs.sha }}
+        run: |
+          # Release notes = this version's section of CHANGELOG.md
+          awk -v v="$VERSION" '
+            index($0, "## [" v "]") == 1 {on=1; next}
+            on && /^## \[/ {exit}
+            on {print}
+          ' CHANGELOG.md > notes.md
+          gh release create "v${VERSION}" dist/* --target "$SHA" \
+            --title "inStrain v${VERSION}" --notes-file notes.md

@@ -13,6 +13,7 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 - --scaffolds_to_profile / -sc with a plain text list works again with modern biopython
 - Tests no longer depend on hard-coded local paths; make test_profile_17 independent of timing
 - Add GitHub Actions workflow that runs the test suite on pushes to master and on pull requests
+- Automatically publish to PyPI (and tag a GitHub release) when a new version passes tests on master
 - Purely numeric genome / scaffold / gene names no longer break inStrain compare (issue #217)
 - Output table column order is now stable between runs (issue #169)
 - Failed splits are reported at the end of profiling and their tracebacks written to log.log (issue #212)
