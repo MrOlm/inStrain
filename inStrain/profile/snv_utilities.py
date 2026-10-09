@@ -12,6 +12,9 @@ import scipy.stats
 import inStrain
 import inStrain.profile.profile_utilities
 
+# Module logger; unlike logging.info() etc. this doesn't set up a default handler if called before inStrain's logger
+logger = logging.getLogger(__name__)
+
 P2C = {'A':0, 'C':1, 'T':2, 'G':3} # base -> position
 C2P = {0:'A', 1:'C', 2:'T', 3:'G'} # position -> base
 
@@ -91,16 +94,16 @@ def load_null_model(**kwargs):
     if (error_rate is None) and (min_base_quality == 30):
         null_loc = os.path.join(os.path.dirname(inStrain.__file__), 'helper_files', 'NullModel.txt')
         model = generate_snp_model(null_loc, fdr=fdr, legacy_thresholds=legacy)
-        logging.debug(f"Using the simulated Q30 null model (fdr={fdr}, legacy_snv_thresholds={legacy})")
+        logger.debug(f"Using the simulated Q30 null model (fdr={fdr}, legacy_snv_thresholds={legacy})")
         return model
 
     if error_rate is None:
         error_rate = 10 ** (-min_base_quality / 10)
     if legacy:
-        logging.warning("--legacy_snv_thresholds only applies to the default Q30 null model; ignoring it")
+        logger.warning("--legacy_snv_thresholds only applies to the default Q30 null model; ignoring it")
 
     model = generate_error_rate_model(float(error_rate), fdr=fdr)
-    logging.info(f"Using a null model for SNV calling calculated from an error rate of {error_rate:.4g} (fdr={fdr})")
+    logger.info(f"Using a null model for SNV calling calculated from an error rate of {error_rate:.4g} (fdr={fdr})")
     return model
 
 def update_snp_table(Stable, clonT, clonTR, MMcounts, p2c,\

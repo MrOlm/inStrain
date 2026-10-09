@@ -53,6 +53,20 @@ Bowtie2 default parameters are what we use for mapping, but it may be worth play
 
 Other mapping software can also be used to generate .bam files for inStrain. However, some software (e.g. BBmap and SNAP) use the fasta file scaffold descriptions when generating the .bam files, which causes problems for inStrain. If using mapping software that does this, include the flag ``--use_full_fasta_header`` to let inStrain account for this.
 
+Long reads (Nanopore and PacBio)
++++++++++++++++++++++++++++++++++++
+
+inStrain was designed for Illumina reads, and its defaults assume them: only bases with a quality score of at least Q30 are counted, and the :term:`null model` used to call SNVs assumes a 0.1% error rate. High-accuracy long reads (e.g. PacBio HiFi, ~Q30+) work with the defaults. For more error-prone reads (e.g. Nanopore) use::
+
+ $ inStrain profile nanopore.bam assembly.fasta -o output.IS --min_base_quality 15 --skip_mm_profiling --pairing_filter non_discordant -l 0.9
+
+* ``--min_base_quality`` should match the base quality of your reads (e.g. 10-20 for Nanopore). With the default Q30 most Nanopore bases are not counted at all. Lowering it also changes the :term:`null model` to assume the matching error rate (e.g. 3% for Q15), which is needed to avoid calling sequencing errors as SNVs. If your quality scores are not well calibrated you can set the error rate directly with ``--error_rate`` (e.g. ``--error_rate 0.02``)
+* ``--skip_mm_profiling``: each long read has many mismatches, which makes profiling at every read mismatch level (:term:`mm`) slow, and makes real SNVs appear and disappear at low mm levels, which marks them as cryptic
+* ``--pairing_filter non_discordant``: keep unpaired reads (the default only keeps paired reads)
+* ``-l`` (``--min_read_ani``): error-prone reads may need a lower minimum read ANI than the default of 0.95
+
+inStrain logs a warning with these suggestions when the mean read length is over 1000bp. The same ``--min_base_quality`` / ``--error_rate`` should be used with ``inStrain compare``.
+
 .. note::
   If the reads that you'd like to run with inStrain are not working, please post an issue on GitHub. We're happy to upgrade inStrain to work with new mapping software and/or reads from different technologies.
 
@@ -64,6 +78,12 @@ You can run prodigal on your :term:`fasta file` to generate an .fna file with th
 Example::
 
  $ prodigal -i assembly.fasta -d genes.fna -a genes.faa
+
+Gene calls from other programs can be provided as a GFF3 file (``.gff`` / ``.gff3``, e.g. from Bakta, Prokka, or NCBI) or a genbank file (``.gb`` / ``.gbk``). Only ``CDS`` features are used. In GFF3 files genes are named by their ``ID`` attribute (or ``locus_tag`` / ``Name`` if there's no ID), and gene sequences are taken from the file's ``##FASTA`` section if there is one, or from the :term:`fasta file` otherwise. In genbank files genes are named by their ``locus_tag`` (or ``gene`` / ``protein_id``). The scaffold names in the gene file must match the scaffold names in the :term:`fasta file`.
+
+Example::
+
+ $ inStrain profile mapping.bam assembly.fasta -o output.IS -g bakta_output.gff3
 
 Preparing a scaffold-to-bin file
 ++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -218,14 +238,30 @@ To see the command-line arguments for inStrain profile, check the help::
                             the FDR snp count cutoff must be true to call a SNP).
                             (default: 0.05)
       -fdr FDR, --fdr FDR   SNP false discovery rate- based on simulation data
-                            with a 0.1 percent error rate (Q30) (default: 1e-06)
+                            with a 0.1 percent error rate (Q30) by default; see
+                            --error_rate (default: 1e-06)
+      --min_base_quality MIN_BASE_QUALITY
+                            Minimum base quality score for a base to be counted.
+                            Lower this for error-prone long reads (e.g. Nanopore);
+                            the SNV error model then assumes the matching error
+                            rate unless --error_rate is set (default: 30)
+      --error_rate ERROR_RATE
+                            Per-base substitution error rate assumed when calling
+                            SNVs (e.g. 0.01 for 1 percent). Default: calculated
+                            from --min_base_quality (0.001 for Q30, which uses the
+                            simulated model shipped with inStrain) (default: None)
+      --legacy_snv_thresholds
+                            Use the SNV calling thresholds of inStrain versions
+                            before 1.12, which required one fewer read than the
+                            FDR implies. Only useful for reproducing results from
+                            older versions (default: False)
 
     GENE PROFILING OPTIONS:
       -g GENE_FILE, --gene_file GENE_FILE
-                            Path to prodigal .fna genes file. If file ends in .gb
-                            or .gbk, will treat as a genbank file (EXPERIMENTAL;
-                            the name of the gene must be in the gene qualifier)
-                            (default: None)
+                            Path to a genes file: a prodigal .fna file, a GFF3
+                            file (.gff / .gff3; e.g. from Bakta, Prokka or NCBI),
+                            or a genbank file (.gb / .gbk). Only CDS features are
+                            used (default: None)
 
     GENOME WIDE OPTIONS:
       -s [STB [STB ...]], --stb [STB [STB ...]]
@@ -347,7 +383,23 @@ To see the command-line options, check the help::
                             the FDR snp count cutoff must be true to call a SNP).
                             (default: 0.05)
       -fdr FDR, --fdr FDR   SNP false discovery rate- based on simulation data
-                            with a 0.1 percent error rate (Q30) (default: 1e-06)
+                            with a 0.1 percent error rate (Q30) by default; see
+                            --error_rate (default: 1e-06)
+      --min_base_quality MIN_BASE_QUALITY
+                            Minimum base quality score for a base to be counted.
+                            Lower this for error-prone long reads (e.g. Nanopore);
+                            the SNV error model then assumes the matching error
+                            rate unless --error_rate is set (default: 30)
+      --error_rate ERROR_RATE
+                            Per-base substitution error rate assumed when calling
+                            SNVs (e.g. 0.01 for 1 percent). Default: calculated
+                            from --min_base_quality (0.001 for Q30, which uses the
+                            simulated model shipped with inStrain) (default: None)
+      --legacy_snv_thresholds
+                            Use the SNV calling thresholds of inStrain versions
+                            before 1.12, which required one fewer read than the
+                            FDR implies. Only useful for reproducing results from
+                            older versions (default: False)
 
     DATABASE MODE PARAMETERS:
       --database_mode       Using the parameters below, automatically determine

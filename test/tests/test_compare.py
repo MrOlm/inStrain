@@ -118,7 +118,8 @@ def test_compare_S(BTO):
         # Check on the pickle;
         for i, row in db.iterrows():
             msdb = MSdb[(MSdb['name1'] == row['name1']) & (MSdb['name2'] == row['name2'])]
-            snp_locs = msdb[msdb['mm'] == 'mm']['position'].tolist()
+            snp_locs = msdb[(msdb['scaffold'] == row['scaffold']) & (msdb['mm'] == row['mm']) &
+                            (msdb['population_SNP'] == True)]['position'].tolist()
 
             cov = row['compared_bases_count']
             ani = row['popANI']
@@ -815,7 +816,8 @@ def test_compare_13(BTO):
     # Run program
     base = BTO.test_dir + 'RC_test'
 
-    cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations -d".format(
+    # --legacy_snv_thresholds: the solution was made before the SNV threshold fix in v1.12
+    cmd = "inStrain compare -i {1} {2} -o {3} --include_self_comparisons --store_mismatch_locations -d --legacy_snv_thresholds".format(
         True, BTO.IS1, BTO.IS2,
         base, BTO.scafflistF)
     print(cmd)

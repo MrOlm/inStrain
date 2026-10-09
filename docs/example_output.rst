@@ -420,10 +420,10 @@ end
   End of the gene (position on scaffold; 0-indexed)
 
 direction
-  Direction of the gene (based on prodigal call). If -1, means the gene is not coded in the direction expressed by the .fasta file
+  Direction of the gene (from the gene file). If -1, means the gene is not coded in the direction expressed by the .fasta file
 
 partial
-  If True this is a partial gene; based on not having `partial=00` in the record description provided by Prodigal
+  If True this is a partial gene; based on not having `partial=00` in the record description provided by Prodigal (or the `partial` / `start_range` / `end_range` attributes of a GFF3 file). Genes from genbank files with compound locations are listed as `compound`
 
 :term:`dNdS_substitutions<dN/dS>`
   The :term:`dN/dS` of :term:`SNSs<SNS>` detected in this gene. Will be blank if 0 N and/or 0 S substitutions are detected
