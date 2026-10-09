@@ -11,7 +11,8 @@ and this project (attempts to) adhere to [Semantic Versioning](http://semver.org
 - Support modern biopython in SNV characterization (Seq.tomutable was removed); drop the biopython<=1.74 pin
 - Support pandas 3: column assignments via `.loc[:, col]` made every split fail silently (scaffolds missing from output)
 - --scaffolds_to_profile / -sc with a plain text list works again with modern biopython
-- Tests no longer depend on hard-coded local paths
+- Tests no longer depend on hard-coded local paths; make test_profile_17 independent of timing
+- Add GitHub Actions workflow that runs the test suite on pushes to master and on pull requests
 - Purely numeric genome / scaffold / gene names no longer break inStrain compare (issue #217)
 - Output table column order is now stable between runs (issue #169)
 - Failed splits are reported at the end of profiling and their tracebacks written to log.log (issue #212)

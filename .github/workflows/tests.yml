@@ -1,0 +1,36 @@
+name: tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        # Login shell so that the micromamba environment is activated
+        shell: bash -el {0}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up conda environment (python + external programs)
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: test/environment.yml
+          cache-environment: true
+
+      - name: Install inStrain
+        run: |
+          pip install -e . pytest-timeout
+          inStrain -h | head -5
+
+      - name: Dependency report
+        run: python -c "import inStrain.utils; print(inStrain.utils.gen_dependency_report())"
+
+      - name: Run tests
+        run: pytest -p no:cacheprovider --timeout 900 -rfEs test/tests

@@ -1121,6 +1121,17 @@ def test_profile_16(BTO):
             print("YOUR NOT CHECKING {0}".format(i))
             print(s)
 
+def _runtime_failures(base):
+    """
+    Return the "Failures" section of the runtime report in an inStrain output folder, and remove the report
+    """
+    rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
+    with open(rr, 'r') as o:
+        text = o.read()
+    for f in glob.glob(base + '/log/*runtime*'):
+        os.remove(f)
+    return text.split('..:: Failures ::..')[-1]
+
 def test_profile_17(BTO):
     """
     Test scaffold failure
@@ -1141,16 +1152,10 @@ def test_profile_17(BTO):
     Odb = Sprofile.get('cumulative_scaffold_table')
     assert len(Odb['scaffold'].unique()) == 1, Odb['scaffold'].unique()
 
-    # Make sure the missing scaffold is reported
-    rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
-    got = 0
-    with open(rr, 'r') as o:
-        for line in o.readlines():
-            line = line.strip()
-            if 'FailureScaffoldHeaderTesting' in line:
-                got += 1
-    assert got == 3, got
-    os.remove(rr)
+    # Make sure the failed split is reported
+    # (only look at the Failures section; the rest of the report depends on timing)
+    failures = _runtime_failures(base)
+    assert 'FailureScaffoldHeaderTesting split 1' in failures, failures
 
     # Make it not crash on that scaffold
     importlib.reload(logging)
@@ -1164,16 +1169,9 @@ def test_profile_17(BTO):
     Odb = Sprofile.get('cumulative_scaffold_table')
     assert len(Odb['scaffold'].unique()) == 2, Odb['scaffold'].unique()
 
-    # Make sure the missing scaffold is reported
-    rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
-    got = 0
-    with open(rr, 'r') as o:
-        for line in o.readlines():
-            line = line.strip()
-            if 'FailureScaffoldHeaderTesting' in line:
-                got += 1
-    assert got == 3, got
-    os.remove(rr)
+    # Make sure no failure is reported
+    failures = _runtime_failures(base)
+    assert 'FailureScaffoldHeaderTesting' not in failures, failures
 
     # Make it crash on the gene profile
     importlib.reload(logging)
@@ -1187,16 +1185,10 @@ def test_profile_17(BTO):
     Odb = Sprofile.get('cumulative_scaffold_table')
     assert len(Odb['scaffold'].unique()) == 2, Odb['scaffold'].unique()
 
-    # Make sure the missing scaffold is reported
-    rr = [f for f in glob.glob(base + '/log/*') if 'runtime' in f][0]
-    got = 0
-    with open(rr, 'r') as o:
-        for line in o.readlines():
-            line = line.strip()
-            if 'FailureScaffoldHeaderTesting' in line:
-                got += 1
-    assert got == 4, got
-    os.remove(rr)
+    # Make sure the gene failure is reported
+    failures = _runtime_failures(base)
+    assert 'Genes on the following scaffolds could not be profiled' in failures, failures
+    assert 'FailureScaffoldHeaderTesting' in failures, failures
 
 def test_profile_18(BTO):
     """
