@@ -597,7 +597,7 @@ def calc_pop_snps(Mdb, model_to_use, min_freq):
     pandas.DataFrame
         Input DataFrame with 'population_SNP' column added
     '''
-    Mdb.loc[:, 'population_SNP'] = call_pop_snps_vectorized_optimized(Mdb, model_to_use, min_freq)
+    Mdb['population_SNP'] = call_pop_snps_vectorized_optimized(Mdb, model_to_use, min_freq)
     return Mdb
 
 # def _calc_SNP_count_alternate(SNPtable1, SNPtable2, mm2overlap, null_model, min_freq=.05, debug=False):

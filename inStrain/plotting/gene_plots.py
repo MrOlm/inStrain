@@ -28,7 +28,7 @@ def gene_histogram_from_IS(IS, plot_dir=False, **kwargs):
         stb = IS.get('scaffold2bin')
         Gdb = inStrain.genomeUtilities._add_stb(db, stb, verbose=False)
         if 'clonality' in Gdb.columns:
-            Gdb.loc[:,'nucl_diversity'] = 1 - Gdb['clonality']
+            Gdb['nucl_diversity'] = 1 - Gdb['clonality']
         assert len(Gdb) > 0
     except:
         logging.error("Skipping plot 9 - you don't have all required information. You need to run inStrain profile_genes first")

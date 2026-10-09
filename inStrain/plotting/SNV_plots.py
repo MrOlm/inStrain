@@ -68,7 +68,7 @@ def allele_freq_plot_from_IS(IS, plot_dir=False, **kwargs):
     plt.close('all')
 
 def major_allele_freq_plot(db, title=''):
-    db.loc[:, 'major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
+    db['major_allele_freq'] = [max(x, y) for x, y in zip(db['var_freq'], db['ref_freq'])]
     sns.histplot(db['major_allele_freq'], bins=np.arange(0.5, 1, 0.01), kde=False, binwidth=0.005)
 
     plt.xlim(0.5, 1)

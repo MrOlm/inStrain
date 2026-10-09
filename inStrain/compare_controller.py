@@ -97,7 +97,7 @@ class CompareController(object):
         self.RCprof = RCprof
 
         # Set up list of input IS profiles
-        inputs = list(args.input)
+        inputs = parse_input_list(args.input)
         assert len(inputs) > 1, "You need to have more than one input .IS file"
         self.inputs = inputs
 
@@ -590,6 +590,26 @@ class ScaffoldCompareGroup(object):
         """
         string = f"This group has {len(self.ScaffoldComparisons)} scaffolds accross {len(self.names)} ISP objects"
         return string
+
+def parse_input_list(inputs):
+    """
+    Expand the list of inputs passed to -i
+
+    inStrain profiles are folders, so any input that is a regular file is treated as a text file
+    listing one inStrain profile per line (blank lines and lines starting with "#" are ignored)
+    """
+    parsed = []
+    for i in inputs:
+        if os.path.isfile(i):
+            with open(i) as o:
+                for line in o:
+                    line = line.strip()
+                    if (line == '') or line.startswith('#'):
+                        continue
+                    parsed.append(line)
+        else:
+            parsed.append(i)
+    return parsed
 
 def group_Scaffold_objects(valid_SCs, group_length):
     SC_groups = []

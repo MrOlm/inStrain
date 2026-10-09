@@ -1,0 +1,15 @@
+# Conda environment used by the GitHub Actions test workflow (.github/workflows/tests.yml)
+#
+# External programs are pinned so that test results are reproducible; python packages
+# are installed by pip from setup.py so that CI tests what users actually get.
+name: instrain-test
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - pip
+  - samtools=1.24
+  - prodigal=2.6.3
+  - sambamba=1.0.1
+  - coverm=0.8.0

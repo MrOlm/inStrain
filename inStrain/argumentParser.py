@@ -187,7 +187,8 @@ def parse_args(args):
     compare_parent = argparse.ArgumentParser(add_help=False)
     # Required positional arguments
     Rflags = compare_parent.add_argument_group('REQUIRED')
-    Rflags.add_argument('-i', '--input', help="A list of inStrain objects, all mapped to the same .fasta file",
+    Rflags.add_argument('-i', '--input', help="A list of inStrain objects, all mapped to the same .fasta file. " \
+                        + "Can also be a text file listing one inStrain object per line",
                         nargs='*', required=True)
     Rflags.add_argument("-o", "--output", action="store", default='instrainComparer', \
                         help='Output prefix')

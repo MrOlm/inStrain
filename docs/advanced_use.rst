@@ -78,10 +78,10 @@ Accessing other data
 In addition to the raw_data described above, there are a couple of other things that inStrain can make for you. You access these from methods that run on the IS object itself, instead of using the ``get`` method. For example::
 
   import inStrain
-  import inStain.SNVprofile
+  import inStrain.SNVprofile
 
-  IS = inStain.SNVprofile.SNVprofile(``/home/mattolm/inStrainOutputTest/``)
-  coverage_table = IS.get_raw_coverage_table()
+  IS = inStrain.SNVprofile.SNVprofile('/home/mattolm/inStrainOutputTest/')
+  scaffold_table = IS.get_nonredundant_scaffold_table()
 
 The following methods work like that:
 
@@ -96,6 +96,15 @@ get_nonredundant_snv_table()
 
 get_clonality_table()
   Get a raw clonality table, listing the clonality of each position. Pass `nonredundant=False` to keep multiple mms
+
+Per-position coverage values can be pulled out of the raw ``covT`` object. For example, to get the coverage at every position of a single scaffold::
+
+  import inStrain.profile.profile_utilities
+
+  covT = IS.get('covT')
+  cov = inStrain.profile.profile_utilities.mm_counts_to_counts_shrunk(covT['scaffold_name'])
+
+This returns a pandas Series where the index is the (0-based) position on the scaffold and the value is the coverage at that position. Positions with no coverage are not included.
 
 Dealing with "mm"
 ++++++++++++++++++++

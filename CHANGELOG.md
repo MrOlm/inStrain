@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.11.0] - 2026-10-08
+- SNVs with more than 2 alleles are now linked to their gene and classified (N/S) (issues #195, #220)
+- Gene-level SNV_count now includes all sites with >1 allele, matching scaffold- and genome-level tables (issue #220)
+- Gene linking of SNVs now always uses the highest mm level, matching SNVs.tsv (issue #195)
+- Support modern biopython in SNV characterization (Seq.tomutable was removed); drop the biopython<=1.74 pin
+- Support pandas 3: column assignments via `.loc[:, col]` made every split fail silently (scaffolds missing from output)
+- --scaffolds_to_profile / -sc with a plain text list works again with modern biopython
+- Tests no longer depend on hard-coded local paths; make test_profile_17 independent of timing
+- Add GitHub Actions workflow that runs the test suite on pushes to master and on pull requests
+- Purely numeric genome / scaffold / gene names no longer break inStrain compare (issue #217)
+- Output table column order is now stable between runs (issue #169)
+- Failed splits are reported at the end of profiling and their tracebacks written to log.log (issue #212)
+- inStrain compare -i can take a text file listing one inStrain profile per line (issue #94)
+- Tests create the test_backend directory themselves (issue #218)
+- Fix out-of-date "Accessing other data" docs (issue #28)
+
 ## [1.10.0] - 2025-05-09
 - Huge speed improvements to inStrain compare (>10x faster in some cases)
 

@@ -40,7 +40,7 @@ def mm_plot_from_IS(IS, plot_dir=False, **kwargs):
         readLen = int(IS.get_read_length())
         Mdb['read_length'] = readLen
         Mdb['mm'] = Mdb['mm'].astype(int)
-        Mdb.loc[:, 'ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
+        Mdb['ANI_level'] = [(readLen - mm) / readLen for mm in Mdb['mm']]
     except:
         logging.error(
             "Skipping plot 1 - Plot 1 cannot be created when run with --database_mode or --skip_mm_profiling")
@@ -209,8 +209,8 @@ def prepare_read_ani_dist_plot(IS):
     readLen = int(IS.get_read_length())
     db['read_length'] = readLen
     db['mm'] = db['mm'].astype(int)
-    db.loc[:, 'read_pairs'] = [int((x * y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
-    db.loc[:, 'ANI_level'] = [(readLen - mm) / readLen for mm in db['mm']]
+    db['read_pairs'] = [int((x * y) / (readLen * 2)) for x, y in zip(db['coverage'], db['length'])]
+    db['ANI_level'] = [(readLen - mm) / readLen for mm in db['mm']]
 
     return db
 
@@ -244,8 +244,8 @@ def read_filtering_plot(db, title=''):
            'pass_min_insert': 'Pairs passing min insert size threshold',
            'pass_filter_cutoff': 'Pairs passing ANI threshold',
            'filtered_pairs': 'Total filtered pairs'}
-    db.loc[:, 'variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
-    db.loc[:, 'value'] = [int(x / 2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
+    db['variable'] = [c2c[x] if x in c2c else x for x in db['variable']]
+    db['value'] = [int(x / 2) if y == 'Total mapping reads (divided by 2)' else x for x, y in zip(
         db['value'], db['variable'])]
 
     # Set up colors

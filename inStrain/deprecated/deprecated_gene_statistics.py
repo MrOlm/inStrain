@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from Bio import SeqIO
+from Bio.Seq import Seq, MutableSeq
 from inStrain import SNVprofile
 from collections import defaultdict
 
@@ -42,11 +43,11 @@ def characterize_snp(gene_index, gene_starts, seqs, gene_direction, snv_table):
             if gene_direction[gene] == '-1': #need to do some flipping if we want to have the positions right....
                 original_sequence = original_sequence.reverse_complement()
 
-            new_sequence = original_sequence.tomutable()
+            new_sequence = MutableSeq(str(original_sequence))
             new_sequence[snp_start] = snp['varBase']
             if new_sequence[snp_start] == original_sequence[snp_start]:
                 new_sequence[snp_start] = snp['conBase']
-            new_sequence = new_sequence.toseq()
+            new_sequence = Seq(str(new_sequence))
 
             if gene_direction[gene] == '-1':
                 old_aa_sequence = original_sequence.reverse_complement().translate()

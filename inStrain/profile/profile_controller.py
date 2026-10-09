@@ -276,6 +276,7 @@ class BamProfileController(object):
         """
         p = int(self.kwargs.get('processes', 6))
         total_cmd_count = len(self.cmd_groups)
+        failed_splits = 0
 
         if p > 1:
             # Set up progress bar
@@ -287,6 +288,7 @@ class BamProfileController(object):
                 try:
                     log = self.log_list.get()
                     logging.debug(log)
+                    failed_splits += log.count('FAILURE SplitException')
                     pbar.update(1)
                     received_splits += 1
                 except KeyboardInterrupt:
@@ -308,10 +310,16 @@ class BamProfileController(object):
                 try:
                     log = self.log_list.get(timeout=5)
                     logging.debug(log)
+                    failed_splits += log.count('FAILURE SplitException')
                     received_splits += 1
                 except:
                     logging.warning("Missing splits; {0} {1}".format(self.cmd_groups, self.split_cmd_queue))
                     assert False
+
+        if failed_splits > 0:
+            logging.warning("{0} split(s) failed during profiling; the scaffolds they belong to will be missing "
+                            "or incomplete in the output. Search the log.log file for "
+                            "\"FAILURE SplitException\" to see which scaffolds and why".format(failed_splits))
 
     def spawn_profile_merge_workers(self):
         """

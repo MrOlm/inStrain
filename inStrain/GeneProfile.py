@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 from Bio import SeqIO
+from Bio.Seq import Seq, MutableSeq
 import concurrent.futures
 from concurrent import futures
 from inStrain import SNVprofile
@@ -577,22 +578,22 @@ def calc_gene_snp_counts(gdb, ldb, sdb, gene2sequence, scaffold=None):
             table['gene_length'].append(gLen)
             table['divergent_site_count'].append(len(db))
 
-            # Report type counts
-            for allele_count, name in zip([1, 2], ['SNS', 'SNV']):
-                table['{0}_count'.format(name)].append(len(db[db['allele_count'] == allele_count]))
+            # Report type counts (SNS = 1 allele; SNV = more than 1 allele, same as at the scaffold level)
+            for name, is_type in zip(['SNS', 'SNV'], [db['allele_count'] == 1, db['allele_count'] > 1]):
+                table['{0}_count'.format(name)].append(len(db[is_type]))
 
                 for snp_type in ['N', 'S']:
                     table["{0}_{1}_count".format(name, snp_type)].append(
-                    len(db[(db['allele_count'] == allele_count) & (db['mutation_type'] == snp_type)]))
+                    len(db[is_type & (db['mutation_type'] == snp_type)]))
 
     GGdb = pd.DataFrame(table).merge(SiteDb, on='gene', how='left').reset_index(drop=True)
     log_message += "\nSpecialPoint_genes {0} PID {1} SNP_counts_geneCalc end {2}".format(scaffold, pid, time.time())
 
     # Calculate dn/ds
-    GGdb.loc[:, 'dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+    GGdb['dNdS_substitutions'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
                                 GGdb['SNS_N_count'], GGdb['N_sites'],
                                 GGdb['SNS_S_count'], GGdb['S_sites'])]
-    GGdb.loc[:, 'pNpS_variants'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
+    GGdb['pNpS_variants'] = [((nC/nS) / (sC/sS)) if ((sC > 0) & (sS > 0)) else np.nan for nC, nS, sC, sS in zip(
                                     GGdb['SNV_N_count'], GGdb['N_sites'],
                                     GGdb['SNV_S_count'], GGdb['S_sites'])]
     # GGdb['SNPs_per_bp'] = [x/y if y > 0 else np.nan for x, y in \
@@ -616,10 +617,10 @@ def Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence):
     if len(Ldb) == 0:
         return pd.DataFrame()
 
-    # Get a non-nonredundant list of SNPs
-    Sdb = Ldb.drop_duplicates(subset=['scaffold', 'position'], keep='last')\
+    # Get a non-nonredundant list of SNPs (the highest mm, to match the SNVs.tsv output)
+    Sdb = Ldb.sort_values('mm').drop_duplicates(subset=['scaffold', 'position'], keep='last')\
                 .sort_index().drop(columns=['mm'])
-    Sdb.loc[:, 'position'] = Sdb['position'].astype(int)
+    Sdb['position'] = Sdb['position'].astype(int)
 
     # Filter out SNPs that shouldn't be profiled like this
     # Sdb = Sdb[Sdb['cryptic'] == False]
@@ -630,7 +631,8 @@ def Characterize_SNPs_wrapper(Ldb, gdb, gene2sequence):
     else:
         col = 'allele_count'
     Sdb[col] = Sdb[col].astype(int)
-    Sdb = Sdb[(Sdb[col] > 0) & (Sdb[col] <= 2)]
+    # Sites with more than 2 alleles are characterized using the consensus and variant (2nd most common) base
+    Sdb = Sdb[Sdb[col] > 0]
 
     # Make sure some SNPs to profile remain
     if len(Sdb) == 0:
@@ -671,7 +673,7 @@ def characterize_SNPs(gdb, Sdb, gene2sequence):
 
             # Make the new sequence
             snp_start = row['position'] - db['start'].tolist()[0]
-            new_sequence = original_sequence.tomutable()
+            new_sequence = MutableSeq(str(original_sequence))
             try:
                 new_sequence[snp_start] = row['con_base']
             except:
@@ -679,7 +681,7 @@ def characterize_SNPs(gdb, Sdb, gene2sequence):
 
             if new_sequence[snp_start] == original_sequence[snp_start]:
                 new_sequence[snp_start] = row['var_base']
-            new_sequence = new_sequence.toseq()
+            new_sequence = Seq(str(new_sequence))
 
             # Translate
             if db['direction'].tolist()[0] == '-1':

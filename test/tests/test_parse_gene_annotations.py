@@ -54,7 +54,7 @@ def test_PA_2(BTO):
     # Run program
     base = BTO.test_dir + 'testA'
 
-    cmd = f"/Users/mattolm/Programs/inStrain/bin/inStrain parse_annotations -i {BTO.IS1} {BTO.IS2} -o {base} -a {BTO.anno_loc}"
+    cmd = f"inStrain parse_annotations -i {BTO.IS1} {BTO.IS2} -o {base} -a {BTO.anno_loc}"
     print(cmd)
     call(cmd, shell=True)
 

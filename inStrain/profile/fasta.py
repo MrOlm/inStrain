@@ -113,8 +113,8 @@ def _filter_genome_coverage(FAdb, s2l, s2p, rl, min_genome_coverage, stb_loc):
     stb_loc should be a list, direct from argument parser
     '''
     cdb = FAdb.drop_duplicates(subset=['scaffold'])
-    cdb.loc[:, 'read_pairs'] = cdb['scaffold'].map(s2p)
-    cdb.loc[:, 'length'] = cdb['scaffold'].map(s2l)
+    cdb['read_pairs'] = cdb['scaffold'].map(s2p)
+    cdb['length'] = cdb['scaffold'].map(s2l)
 
     stb = inStrain.genomeUtilities.load_scaff2bin(stb_loc)
     cdb = inStrain.genomeUtilities._add_stb(cdb, stb)
@@ -148,9 +148,12 @@ def load_scaff_list(list):
     # Try as it its a fasta file
     scaffs = []
     handle = open(list, "r")
-    fasta = SeqIO.parse(handle, "fasta")
-    for f in fasta:
-        scaffs.append(f.id)
+    try:
+        for f in SeqIO.parse(handle, "fasta"):
+            scaffs.append(f.id)
+    except ValueError:
+        # Newer versions of biopython raise an error on text files instead of returning nothing
+        scaffs = []
 
     if len(scaffs) > 0:
         handle.close()
