@@ -86,7 +86,7 @@ def find_program(dep):
    if loc != None:
       try:
          v = subprocess.check_output([loc, '--version'], stderr=subprocess.STDOUT)
-         v = str(v, 'utf-8').strip().split('\n')[0]
+         v = str(v, 'utf-8', errors='replace').strip().split('\n')[0]
          works = True
       except:
          pass

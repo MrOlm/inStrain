@@ -280,11 +280,11 @@ def generate_snp_table(Stable, scaffold, p2c):
         SNPTable['scaffold'] = scaffold
 
         # Add cryptic SNPs
-        SNPTable.loc[:,'cryptic'] = SNPTable['position'].map(p2c)
-        SNPTable.loc[:,'cryptic'] = SNPTable['cryptic'].fillna(False)
+        SNPTable['cryptic'] = SNPTable['position'].map(p2c)
+        SNPTable['cryptic'] = SNPTable['cryptic'].fillna(False).astype(bool)
 
         # Calc base coverage
-        SNPTable.loc[:,'position_coverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
+        SNPTable['position_coverage'] = [sum([a,c,t,g]) for a,c,t,g in zip(SNPTable['A'],SNPTable['C'],SNPTable['T'],SNPTable['G'])]
 
     del Stable
     return SNPTable

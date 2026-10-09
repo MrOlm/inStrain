@@ -104,7 +104,10 @@ def test_genes_1(BTO):
     Sdb['allele_count'] = Sdb['allele_count'].astype(int)
     #Sdb = Sdb[Sdb['cryptic'] == False]
     if 'allele_count' in Sdb.columns:
-        Sdb = Sdb[Sdb['allele_count'].isin([1, 2])]
+        # As of v1.11 sites with > 2 alleles are characterized as well; the deprecated script only handles <= 2
+        multi_keys = set("{0}:{1}".format(x, y) for x, y in
+                         zip(Sdb[Sdb['allele_count'] > 2]['scaffold'], Sdb[Sdb['allele_count'] > 2]['position']))
+        Sdb = Sdb[Sdb['allele_count'] > 0]
         Sdb = Sdb.drop(columns="allele_count")
     #Sdb = Sdb.drop(columns="cryptic")
     Sdb['position'] = Sdb['position'].astype(int)
@@ -132,8 +135,8 @@ def test_genes_1(BTO):
     # Filter out SNPs that are in multiple genes, which CCs script doesnt handle
     RNdb = RNdb[RNdb['mutation_type'] != 'M']
 
-    # COMPARE
-    overlap = set(Rdb['mut_key']).intersection(set(RNdb['mut_key']))
+    # COMPARE (only sites the deprecated script can handle)
+    overlap = set(Rdb['mut_key']).intersection(set(RNdb['mut_key'])) - multi_keys
     Rdb = Rdb[Rdb['mut_key'].isin(overlap)]
     RNdb = RNdb[RNdb['mut_key'].isin(overlap)]
 

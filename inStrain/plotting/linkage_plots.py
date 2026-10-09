@@ -71,10 +71,10 @@ def linkage_decay_type_from_IS(IS, plot_dir=False, **kwargs):
         assert SNdb is not None
         if len(SNdb) == 0:
             return
-        SNdb.loc[:,'key'] = ["{0}:{1}".format(s, p) for s, p in zip(SNdb['scaffold'], SNdb['position'])]
+        SNdb['key'] = ["{0}:{1}".format(s, p) for s, p in zip(SNdb['scaffold'], SNdb['position'])]
         k2t = SNdb.set_index('key')['mutation_type'].to_dict()
 
-        Mdb.loc[:,'link_type'] = Mdb.apply(calc_link_type, axis=1, k2t=k2t)
+        Mdb['link_type'] = Mdb.apply(calc_link_type, axis=1, k2t=k2t)
         assert len(Mdb) > 0
     except:
         logging.error("Skipping plot 8 - you don't have all required information. You need to run inStrain profile_genes first")
@@ -123,7 +123,7 @@ def linkage_decay_plot(db, chunkSize=5, min_vals=5, title=''):
             table[col].append(d[col].mean())
             table[col + '_values'].append(len(d[~d[col].isna()]))
     df = pd.DataFrame(table)
-    df.loc[:,'distance'] = [np.mean([x, y]) for x, y in zip(df['d_start'], df['d_end'])]
+    df['distance'] = [np.mean([x, y]) for x, y in zip(df['d_start'], df['d_end'])]
     df = df.sort_values('distance')
 
     for col in COLS:
@@ -179,7 +179,7 @@ def linkage_decay_type(Odb, chunkSize=5, min_vals=2, title=''):
                 table[col].append(d[col].mean())
                 table[col + '_values'].append(len(d[~d[col].isna()]))
     df = pd.DataFrame(table)
-    df.loc[:,'distance'] = [np.mean([x, y]) for x, y in zip(df['d_start'], df['d_end'])]
+    df['distance'] = [np.mean([x, y]) for x, y in zip(df['d_start'], df['d_end'])]
     df = df.sort_values('distance')
 
     for thing in ['S-S', 'N-N', 'all']:

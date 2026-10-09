@@ -463,8 +463,8 @@ def parse_multiprocessing(Odb):
     """
     table = defaultdict(list)
     Ldb = Odb[Odb['multi_log_type'] == 'WorkerLog']
-    Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
-    Ldb.loc[:, 'process_RAM'] = Ldb['process_RAM'].astype(float)
+    Ldb['time'] = Ldb['time'].astype(float)
+    Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
     first_time = Ldb['time'].min()
 
     # Generate this on a per-unit level
@@ -492,15 +492,15 @@ def parse_multiprocessing(Odb):
             table['command'].append(cmd)
 
     db = pd.DataFrame(table)
-    db.loc[:, 'runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
-    db.loc[:, 'RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+    db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+    db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
     WorkerDB = db
 
     table = defaultdict(list)
     Ldb = Odb[Odb['multi_log_type'] == 'GroupLog']
     if len(Ldb) > 0:
-        Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
-        Ldb.loc[:, 'process_RAM'] = Ldb['process_RAM'].astype(float)
+        Ldb['time'] = Ldb['time'].astype(float)
+        Ldb['process_RAM'] = Ldb['process_RAM'].astype(float)
         first_time = Ldb['time'].min()
 
         # Generate this on a per-unit level
@@ -528,8 +528,8 @@ def parse_multiprocessing(Odb):
                 table['command'].append(cmd)
 
         db = pd.DataFrame(table)
-        db.loc[:, 'runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
-        db.loc[:, 'RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
+        db['runtime'] = [s - e for s, e in zip(db['end_time'], db['start_time'])]
+        db['RAM_usage'] = [s - e for s, e in zip(db['end_process_RAM'], db['start_process_RAM'])]
         GroupDB = db
     else:
         GroupDB = pd.DataFrame()
@@ -708,7 +708,7 @@ def _gen_failures_report(Ldb):
     report = ''
     ldb = Ldb[Ldb['log_type'] == 'Failure']
     if len(ldb) > 0:
-        ldb.loc[:, 'failure_type'] = [parse_parsable_string(p)['type'] for p in ldb['parsable_string']]
+        ldb['failure_type'] = [parse_parsable_string(p)['type'] for p in ldb['parsable_string']]
 
         for t, db in ldb.groupby('failure_type'):
             table = defaultdict(list)
@@ -770,7 +770,7 @@ def _gen_plotting_report(Ldb):
     ldb = Ldb[Ldb['log_type'] == 'Plotting']
     if len(ldb) > 0:
         #ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
-        ldb.loc[:, 'plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
+        ldb['plot'] = [parse_parsable_string(p)['plot'] for p in ldb['parsable_string']]
         ldb = ldb.sort_values('time').reset_index(drop=True)
 
         for i, (index, row) in enumerate(ldb.iterrows()):
@@ -798,7 +798,7 @@ def _load_genes_logtable(ldb):
         return Ldb
 
     table = defaultdict(list)
-    Ldb.loc[:, 'time'] = Ldb['time'].astype(float)
+    Ldb['time'] = Ldb['time'].astype(float)
     first_time = Ldb['time'].min()
     for scaffold, ddb in Ldb.groupby('scaffold'):
         for cmd, db in ddb.groupby('what'):
@@ -815,7 +815,7 @@ def _load_genes_logtable(ldb):
             table['command'].append(cmd)
 
     db = pd.DataFrame(table)
-    db.loc[:, 'runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
+    db['runtime'] = [s-e for s,e in zip(db['end_time'], db['start_time'])]
 
     return db
 
