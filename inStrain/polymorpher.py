@@ -49,6 +49,7 @@ class PoolController(object):
         """
         self.name2bam_loc = name2bam
         self.SC_objects = SC_objects
+        self.min_base_quality = int(kwargs.get('min_base_quality', 30))
 
         # Load SNPtables
         name2snpTable = {}
@@ -118,7 +119,8 @@ class PoolController(object):
                 if scaff not in scaff2name2position2counts:
                     scaff2name2position2counts[scaff] = {}
 
-                scaff2name2position2counts[scaff][name] = extract_SNVS_from_bam(bam_loc, Rdic[scaff], locs, scaff)
+                scaff2name2position2counts[scaff][name] = extract_SNVS_from_bam(bam_loc, Rdic[scaff], locs, scaff,
+                                                    min_base_quality=self.min_base_quality)
                 pbar.update(1)
 
             # Delete .bam-level cache
@@ -290,7 +292,8 @@ def extract_SNVS_from_bam(bam_loc, R2M, positions, scaffold, **kwargs):
     biter = bam_init.pileup(scaffold, truncate=True, max_depth=100000,
                             stepper='nofilter', compute_baq=True,
                             ignore_orphans=True, ignore_overlaps=True,
-                            min_base_quality=30, start=max(min(positions) - 1, 0), stop=max(positions) + 1)
+                            min_base_quality=int(kwargs.get('min_base_quality', 30)),
+                            start=max(min(positions) - 1, 0), stop=max(positions) + 1)
 
     # Initialize the object to return
     position2counts = {}

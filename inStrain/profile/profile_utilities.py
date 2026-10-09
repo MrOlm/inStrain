@@ -153,7 +153,7 @@ def profile_split(samfile, scaffold, start, end, split_number,
         iter = samfile.pileup(scaffold, truncate=True, max_depth=100000,
                                 stepper='nofilter', compute_baq=True,
                                 ignore_orphans=True, ignore_overlaps=True,
-                                min_base_quality=30, start=start, stop=end+1)
+                                min_base_quality=int(kwargs.get('min_base_quality', 30)), start=start, stop=end+1)
     except ValueError:
         logging.error("scaffold {0} is not in the .bam file {1}!".format(scaffold, samfile))
         return None, log_message
