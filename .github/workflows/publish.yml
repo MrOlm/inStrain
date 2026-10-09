@@ -1,7 +1,9 @@
 name: publish
 
 # Publish to PyPI after the test workflow passes on master, but only when the version in
-# inStrain/_version.py is not on PyPI yet. Merges that don't bump the version do nothing.
+# inStrain/_version.py has no GitHub release yet. Merges that don't bump the version do nothing.
+# The GitHub release (created last) marks a version as done, so a run that failed part-way
+# can simply be re-run: files already on PyPI are skipped and the missing ones are uploaded.
 #
 # Uses PyPI trusted publishing (no API token needed). One-time setup on pypi.org:
 #   inStrain project -> Settings -> Publishing -> Add a new publisher (GitHub), with
@@ -29,13 +31,19 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Is this version already on PyPI?
+      - name: Has this version been released yet?
         id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           version=$(python -c "exec(open('inStrain/_version.py').read()); print(__version__)")
-          status=$(curl -s -o /dev/null -w '%{http_code}' "https://pypi.org/pypi/inStrain/${version}/json")
-          echo "inStrain ${version}: PyPI returned HTTP ${status}"
-          if [ "$status" = "404" ]; then is_new=true; else is_new=false; fi
+          if gh release view "v${version}" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "inStrain ${version} is already released"
+            is_new=false
+          else
+            echo "inStrain ${version} has no GitHub release yet; publishing"
+            is_new=true
+          fi
           echo "version=${version}" >> "$GITHUB_OUTPUT"
           echo "is_new=${is_new}" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -60,11 +68,14 @@ jobs:
       - name: Build
         run: |
           python -m pip install build twine
+          rm -rf dist
           python -m build
           python -m twine check dist/*
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
 
       - name: Tag and create GitHub release
         env:
