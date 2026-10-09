@@ -68,10 +68,7 @@ class BamProfileController(object):
         self.scaffold_num = len(self.Fdb['scaffold'].unique())
 
         # Generate the null model
-        fdr = profArgs.get('fdr', 1e-6)
-        null_loc = os.path.dirname(__file__) + '/../helper_files/NullModel.txt'
-        null_model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
-        self.null_model = null_model
+        self.null_model = inStrain.profile.snv_utilities.load_null_model(**profArgs)
 
         # Parse for ProfileGenes as needed
         if self.kwargs.get('gene_file') is not None:

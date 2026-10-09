@@ -36,9 +36,7 @@ class CompareController(object):
         self.kwargs = vars(self.args)
 
         # Make null model for SNP calling
-        fdr = self.kwargs.get('fdr', 1e-6)
-        null_loc = os.path.dirname(__file__) + '/helper_files/NullModel.txt'
-        self.null_model = inStrain.profile.snv_utilities.generate_snp_model(null_loc, fdr=fdr)
+        self.null_model = inStrain.profile.snv_utilities.load_null_model(**self.kwargs)
 
     def main(self):
         '''
@@ -295,7 +293,7 @@ class CompareController(object):
         """
         # Run pooling
         if self.run_pooling:
-            PM = inStrain.polymorpher.PoolController(self.SC_objects, self.name2bam)
+            PM = inStrain.polymorpher.PoolController(self.SC_objects, self.name2bam, **self.kwargs)
             PM.main()
             self.DSTdb = PM.DSTdb
             self.PMdb = PM.PMdb

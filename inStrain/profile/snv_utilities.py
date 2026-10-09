@@ -2,8 +2,12 @@
 This has utilities related to SNVs and SNSs
 '''
 
+import os
+import logging
+
 import numpy as np
 import pandas as pd
+import scipy.stats
 
 import inStrain
 import inStrain.profile.profile_utilities
@@ -42,6 +46,61 @@ def generate_snp_model(model_file, fdr=1e-6, legacy_thresholds=False):
 
     model[-1] = max(model.values())
 
+    return model
+
+def generate_error_rate_model(error_rate, fdr=1e-6, max_coverage=10000):
+    '''
+    Calculate a null model for SNV calling from a per-base substitution error rate
+
+    Sequencing errors are assumed to occur at rate error_rate and to be split evenly among the
+    three alternate bases. At each coverage the threshold is the smallest number of reads k such
+    that the chance of any one alternate base reaching k reads by error alone is below fdr.
+
+    Returns a model in the same format as generate_snp_model. With error_rate=0.001 (Q30) the
+    thresholds are within one read of the simulated table in NullModel.txt.
+    '''
+    if not (0 < error_rate < 0.75):
+        raise ValueError(f"error_rate must be between 0 and 0.75, not {error_rate}")
+
+    coverages = np.arange(1, max_coverage + 1)
+    ks = scipy.stats.binom.isf(fdr / 3, coverages, error_rate / 3) + 1
+
+    model = {int(c): int(k) for c, k in zip(coverages, ks)}
+    model[-1] = max(model.values())
+    return model
+
+def load_null_model(**kwargs):
+    '''
+    Load the null model for SNV calling based on the program arguments
+
+    kwargs:
+        fdr: false discovery rate (default 1e-6)
+        min_base_quality: minimum base quality used when counting bases (default 30)
+        error_rate: per-base substitution error rate. If not set, it is calculated from min_base_quality
+        legacy_snv_thresholds: reproduce the (one-read-lower) thresholds of inStrain <1.12
+
+    With the default settings (Q30, no error_rate) the simulated table in NullModel.txt is used, so
+    results match previous versions. Otherwise a model is calculated from the error rate.
+    '''
+    fdr = float(kwargs.get('fdr', 1e-6))
+    min_base_quality = kwargs.get('min_base_quality', 30)
+    min_base_quality = 30 if min_base_quality is None else int(min_base_quality)
+    error_rate = kwargs.get('error_rate', None)
+    legacy = kwargs.get('legacy_snv_thresholds', False)
+
+    if (error_rate is None) and (min_base_quality == 30):
+        null_loc = os.path.join(os.path.dirname(inStrain.__file__), 'helper_files', 'NullModel.txt')
+        model = generate_snp_model(null_loc, fdr=fdr, legacy_thresholds=legacy)
+        logging.debug(f"Using the simulated Q30 null model (fdr={fdr}, legacy_snv_thresholds={legacy})")
+        return model
+
+    if error_rate is None:
+        error_rate = 10 ** (-min_base_quality / 10)
+    if legacy:
+        logging.warning("--legacy_snv_thresholds only applies to the default Q30 null model; ignoring it")
+
+    model = generate_error_rate_model(float(error_rate), fdr=fdr)
+    logging.info(f"Using a null model for SNV calling calculated from an error rate of {error_rate:.4g} (fdr={fdr})")
     return model
 
 def update_snp_table(Stable, clonT, clonTR, MMcounts, p2c,\
