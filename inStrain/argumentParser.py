@@ -124,7 +124,8 @@ def parse_args(args):
     genes_parent = argparse.ArgumentParser(add_help=False)
     Rflags = genes_parent.add_argument_group('GENE PROFILING OPTIONS')
     Rflags.add_argument("-g", "--gene_file", action="store", default=None, \
-        help='Path to prodigal .fna genes file. If file ends in .gb or .gbk, will treat as a genbank file (EXPERIMENTAL; the name of the gene must be in the gene qualifier)')
+        help='Path to a genes file: a prodigal .fna file, a GFF3 file (.gff / .gff3; e.g. from Bakta, Prokka or NCBI), ' \
+           + 'or a genbank file (.gb / .gbk). Only CDS features are used')
 
     # Make a parent for genome_wide
     geneomewide_parent = argparse.ArgumentParser(add_help=False)
