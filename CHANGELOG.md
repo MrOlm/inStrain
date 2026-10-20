@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+- New `auxiliary_scripts/refilter_profile.py`: re-apply stricter `--min_cov` / `--min_freq` to an existing profile without re-running `inStrain profile`. Gives the same SNVs, scaffold, genome and gene tables as profiling with those thresholds (issue #229)
+
 ## [1.12.0] - 2026-10-09
 - **SNV calling is slightly stricter.** The SNV null model required one fewer supporting read than the FDR implies (PR #224 from @Sidduppal, issue #223). This is fixed, which changes SNV calls (and downstream metrics) relative to previous versions; use `--legacy_snv_thresholds` to reproduce older results
 - Support for error-prone long reads (e.g. Nanopore):
