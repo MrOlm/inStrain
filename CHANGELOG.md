@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project (attempts to) adhere to [Semantic Versioning](http://semver.org/).
 
+## [1.12.0] - 2026-10-09
+- **SNV calling is slightly stricter.** The SNV null model required one fewer supporting read than the FDR implies (PR #224 from @Sidduppal, issue #223). This is fixed, which changes SNV calls (and downstream metrics) relative to previous versions; use `--legacy_snv_thresholds` to reproduce older results
+- Support for error-prone long reads (e.g. Nanopore):
+  - New `--min_base_quality` option (was hard-coded to Q30) for `profile` and `compare`
+  - The SNV null model now matches the error rate implied by `--min_base_quality`, or can be set directly with `--error_rate`. The defaults are unchanged (Q30 with the simulated null model)
+  - inStrain warns when reads look like long reads and suggests settings (`--skip_mm_profiling`, `--min_base_quality`, `--pairing_filter`)
+  - See "Long reads" in the user manual. Simulated Nanopore-like tests check that real SNVs are found without calling sequencing errors as SNVs
+- Non-prodigal gene calls: `-g` accepts GFF3 files (e.g. from Bakta, Prokka, NCBI), and genbank parsing no longer requires a `/gene` qualifier (issue #83)
+- Fix reverse-strand genes from genbank files being translated on the wrong strand when classifying mutations as N/S
+- `genome_wide` no longer crashes when no bases were counted
+
 ## [1.11.0] - 2026-10-08
 - SNVs with more than 2 alleles are now linked to their gene and classified (N/S) (issues #195, #220)
 - Gene-level SNV_count now includes all sites with >1 allele, matching scaffold- and genome-level tables (issue #220)

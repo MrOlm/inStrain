@@ -109,13 +109,23 @@ def parse_args(args):
     fiflags.add_argument("-f", "--min_freq", action="store", default=0.05, type=float, \
         help='Minimum SNP frequency to confirm a SNV (both this AND the  FDR snp count cutoff must be true to call a SNP).')
     fiflags.add_argument("-fdr", "--fdr", action="store", default=1e-6, type=float,\
-        help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30)')
+        help='SNP false discovery rate- based on simulation data with a 0.1 percent error rate (Q30) by default; see --error_rate')
+    fiflags.add_argument("--min_base_quality", action="store", default=30, type=int,\
+        help='Minimum base quality score for a base to be counted. Lower this for error-prone long reads (e.g. Nanopore); ' \
+           + 'the SNV error model then assumes the matching error rate unless --error_rate is set')
+    fiflags.add_argument("--error_rate", action="store", default=None, type=float,\
+        help='Per-base substitution error rate assumed when calling SNVs (e.g. 0.01 for 1 percent). ' \
+           + 'Default: calculated from --min_base_quality (0.001 for Q30, which uses the simulated model shipped with inStrain)')
+    fiflags.add_argument("--legacy_snv_thresholds", action="store_true", default=False,\
+        help='Use the SNV calling thresholds of inStrain versions before 1.12, which required one fewer read than ' \
+           + 'the FDR implies. Only useful for reproducing results from older versions')
 
     # Make a parent for profile_genes
     genes_parent = argparse.ArgumentParser(add_help=False)
     Rflags = genes_parent.add_argument_group('GENE PROFILING OPTIONS')
     Rflags.add_argument("-g", "--gene_file", action="store", default=None, \
-        help='Path to prodigal .fna genes file. If file ends in .gb or .gbk, will treat as a genbank file (EXPERIMENTAL; the name of the gene must be in the gene qualifier)')
+        help='Path to a genes file: a prodigal .fna file, a GFF3 file (.gff / .gff3; e.g. from Bakta, Prokka or NCBI), ' \
+           + 'or a genbank file (.gb / .gbk). Only CDS features are used')
 
     # Make a parent for genome_wide
     geneomewide_parent = argparse.ArgumentParser(add_help=False)

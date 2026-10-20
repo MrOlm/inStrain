@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+import io
 import os
+import gzip
+import urllib.parse
 import csv
 import sys
 import time
@@ -51,7 +54,7 @@ class Controller():
 
         # Read the genes file
         logging.debug('Loading genes')
-        scaff_2_gene_database, scaff2gene2sequence = parse_genes(GF, **vargs)
+        scaff_2_gene_database, scaff2gene2sequence = parse_genes(GF, fasta=IS.get('fasta_loc'), **vargs)
         GdbP = pd.concat([x for x in scaff_2_gene_database.values()])
 
         # Calculate all your parallelized gene-level stuff
@@ -752,25 +755,146 @@ class Command():
     def __init__(self):
         pass
 
-def parse_genes(gene_file_loc, **kwargs):
+def parse_genes(gene_file_loc, scaff2sequence=None, fasta=None, **kwargs):
     '''
     Parse a file of genes based on the file extention.
 
     Currently supported extentions are:
-        .fna (prodigal)
-        .gb / .gbk (genbank)
+        .fna / .fa / .fasta / .ffn (prodigal nucleotide genes)
+        .gff / .gff3 (GFF3, e.g. from Bakta, Prokka, NCBI or prodigal -f gff)
+        .gb / .gbk / .gbff (genbank)
+
+    GFF3 files only list coordinates, so gene sequences are taken from a ##FASTA section in the file if
+    there is one, otherwise from scaff2sequence (scaffold -> sequence) or the .fasta file at fasta
 
     Methods return a table of genes (Gdb) and a dictionary of gene -> sequence
     '''
-    if ((gene_file_loc[-4:] == '.fna') | (gene_file_loc[-3:] == '.fa')):
+    lower = gene_file_loc.lower()
+    if lower.endswith('.gz'):
+        lower = lower[:-3]
+
+    if lower.endswith(('.fna', '.fa', '.fasta', '.ffn')):
         return parse_prodigal_genes(gene_file_loc)
 
-    elif ((gene_file_loc[-3:] == '.gb') | (gene_file_loc[-4:] == '.gbk')):
+    elif lower.endswith(('.gff', '.gff3')):
+        return parse_gff_genes(gene_file_loc, scaff2sequence=scaff2sequence, fasta=fasta)
+
+    elif lower.endswith(('.gb', '.gbk', '.gbff')):
         return parse_genbank_genes(gene_file_loc)
 
     else:
-        print("I dont know how to process {0}".format(gene_file_loc))
-        raise Exception
+        message = "I dont know how to process gene file {0}; it should end in .fna (prodigal), " \
+                  ".gff / .gff3, or .gb / .gbk (genbank)".format(gene_file_loc)
+        logging.error(message)
+        raise Exception(message)
+
+def _open_maybe_gzipped(loc):
+    if loc.endswith('.gz'):
+        return gzip.open(loc, 'rt')
+    return open(loc, 'r')
+
+def _parse_gff_attributes(column):
+    attributes = {}
+    for item in column.strip().split(';'):
+        if '=' not in item:
+            continue
+        key, value = item.split('=', 1)
+        attributes[key.strip()] = urllib.parse.unquote(value.strip())
+    return attributes
+
+def parse_gff_genes(gff_loc, scaff2sequence=None, fasta=None):
+    '''
+    Parse the CDS features of a GFF3 file
+
+    Gene names come from the ID attribute (falling back to locus_tag, then Name). GFF3 coordinates are
+    1-based and inclusive; they're converted to 0-based here, as for prodigal genes. CDSs split over
+    multiple lines (e.g. programmed frameshifts) are skipped, since they can't be profiled as one stretch
+    '''
+    cds_rows = []
+    fasta_lines = []
+    in_fasta = False
+    with _open_maybe_gzipped(gff_loc) as o:
+        for line in o:
+            if in_fasta:
+                fasta_lines.append(line)
+                continue
+            if line.startswith('##FASTA'):
+                in_fasta = True
+                continue
+            if line.startswith('#') or (line.strip() == ''):
+                continue
+
+            cols = line.rstrip('\n').split('\t')
+            if (len(cols) < 9) or (cols[2] != 'CDS'):
+                continue
+            cds_rows.append(cols)
+
+    # Get the scaffold sequences
+    if len(fasta_lines) > 0:
+        scaff2sequence = {r.id: r.seq.upper() for r in SeqIO.parse(io.StringIO(''.join(fasta_lines)), 'fasta')}
+    elif scaff2sequence is None:
+        if fasta is None:
+            message = "The GFF file {0} has no ##FASTA section, so the .fasta file is needed to get gene sequences".format(gff_loc)
+            logging.error(message)
+            raise Exception(message)
+        scaff2sequence = {r.id: r.seq.upper() for r in SeqIO.parse(fasta, 'fasta')}
+
+    # Group CDS rows by gene
+    gene2rows = defaultdict(list)
+    for cols in cds_rows:
+        attributes = _parse_gff_attributes(cols[8])
+        gene = attributes.get('ID', attributes.get('locus_tag', attributes.get('Name')))
+        if gene is None:
+            gene = "{0}_{1}_{2}".format(cols[0], cols[3], cols[4])
+        gene2rows[gene].append((cols, attributes))
+
+    scaff2geneinfo = {}
+    scaff2gene2sequence = {}
+    skipped = defaultdict(int)
+    for gene, rows in gene2rows.items():
+        if len(rows) > 1:
+            skipped['split into multiple parts'] += 1
+            continue
+        cols, attributes = rows[0]
+
+        scaffold = cols[0]
+        if scaffold not in scaff2sequence:
+            skipped['on a scaffold not in the .fasta file'] += 1
+            continue
+        if cols[6] not in ['+', '-']:
+            skipped['without a strand'] += 1
+            continue
+
+        start = int(cols[3]) - 1
+        end = int(cols[4]) - 1
+        direction = '1' if cols[6] == '+' else '-1'
+        partial = (attributes.get('partial', '00').lower() not in ['00', 'false']) | \
+                  ('start_range' in attributes) | ('end_range' in attributes)
+
+        seq = Seq(str(scaff2sequence[scaffold][start:end + 1]))
+        if direction == '-1':
+            seq = seq.reverse_complement()
+
+        if scaffold not in scaff2geneinfo:
+            scaff2geneinfo[scaffold] = defaultdict(list)
+            scaff2gene2sequence[scaffold] = {}
+        table = scaff2geneinfo[scaffold]
+
+        table['gene'].append(gene)
+        table['scaffold'].append(scaffold)
+        table['direction'].append(direction)
+        table['partial'].append(partial)
+        table['start'].append(start)
+        table['end'].append(end)
+        scaff2gene2sequence[scaffold][gene] = seq
+
+    for reason, count in skipped.items():
+        logging.warning("Skipped {0} CDSs in {1} {2}".format(count, gff_loc, reason))
+
+    for scaff in list(scaff2geneinfo.keys()):
+        scaff2geneinfo[scaff] = pd.DataFrame(scaff2geneinfo[scaff])
+
+    return scaff2geneinfo, scaff2gene2sequence
 
 def parse_prodigal_genes(gene_fasta):
     '''
@@ -815,18 +939,33 @@ def parse_prodigal_genes(gene_fasta):
 
     return scaff2geneinfo, scaff2gene2sequence
 
-def parse_genbank_genes(gene_file, gene_name='gene'):
+def parse_genbank_genes(gene_file, gene_name=None):
     '''
     Parse a genbank file. Gets features marked as CDS
+
+    Gene names come from the locus_tag qualifier (falling back to gene, then protein_id), or from
+    gene_name if given
     '''
+    name_qualifiers = [gene_name] if gene_name is not None else ['locus_tag', 'gene', 'protein_id']
+
     scaff2geneinfo = {}
     scaff2gene2sequence = {}
     for record in SeqIO.parse(gene_file, 'gb'):
         scaffold = record.id
-        for feature in record.features:
+        for i, feature in enumerate(record.features):
             if feature.type == 'CDS':
-                gene = feature.qualifiers[gene_name][0]
+                gene = None
+                for q in name_qualifiers:
+                    if q in feature.qualifiers:
+                        gene = feature.qualifiers[q][0]
+                        break
+                if gene is None:
+                    gene = "{0}_CDS_{1}".format(scaffold, i)
+
                 loc = feature.location
+                if loc.strand not in [1, -1]:
+                    logging.warning("Skipping CDS {0} in {1}; it has no strand".format(gene, gene_file))
+                    continue
                 if type(loc) is Bio.SeqFeature.CompoundLocation:
                     partial = 'compound'
                 else:
@@ -838,11 +977,11 @@ def parse_genbank_genes(gene_file, gene_name='gene'):
 
                 table['gene'].append(gene)
                 table['scaffold'].append(scaffold)
-                table['direction'].append(feature.location.strand)
+                table['direction'].append(str(int(loc.strand)))
                 table['partial'].append(partial)
 
-                table['start'].append(loc.start)
-                table['end'].append(loc.end - 1)
+                table['start'].append(int(loc.start))
+                table['end'].append(int(loc.end) - 1)
 
                 if scaffold not in scaff2gene2sequence:
                     scaff2gene2sequence[scaffold] = {}

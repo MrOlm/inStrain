@@ -257,6 +257,27 @@ class ProfileController(object):
 
         inStrain.logUtils.log_checkpoint("main_profile", "filter_reads", "end")
 
+    def warn_if_long_reads(self):
+        '''
+        Long, error-prone reads (e.g. Nanopore) need different settings than Illumina reads
+        '''
+        if not (self.readlength > 1000):
+            return
+
+        suggestions = []
+        if not self.args.skip_mm_profiling:
+            suggestions.append("--skip_mm_profiling (long reads have too many mismatches each for mm-level "
+                               "profiling, which makes profiling slow and can hide real SNVs as 'cryptic')")
+        if (self.args.min_base_quality == 30) and (self.args.error_rate is None):
+            suggestions.append("--min_base_quality set to match your reads (e.g. 10-20 for Nanopore); the SNV "
+                               "error model is adjusted to match, or set it directly with --error_rate")
+        if self.args.pairing_filter == 'paired_only':
+            suggestions.append("--pairing_filter non_discordant (otherwise unpaired reads are removed)")
+
+        if len(suggestions) > 0:
+            logging.warning("The mean read length is {0:.0f}bp, which looks like long reads. For error-prone long "
+                            "reads (e.g. Nanopore) consider:\n    {1}".format(self.readlength, '\n    '.join(suggestions)))
+
     def parse_filter_reads(self):
         '''
         Parse filter read results in the context of profile
@@ -264,6 +285,7 @@ class ProfileController(object):
         # Parse results
         self.scaffold2pairs = self.RR.set_index('scaffold')['filtered_pairs'].to_dict()
         self.readlength = float(self.RR.loc[0, 'mean_pair_length'])
+        self.warn_if_long_reads()
 
         # Filter the .fasta file with these results
         self.fasta_db = inStrain.profile.fasta.filter_fasta(self.fasta_db,

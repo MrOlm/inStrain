@@ -165,6 +165,12 @@ def genomeLevel_from_IS(IS, **kwargs):
 
     # Calculate averaing and summing metrics from the scaffold table
     db = IS.get('cumulative_scaffold_table')
+    if (db is None) or (len(db) == 0):
+        logging.warning("No scaffolds had any bases counted, so there is no genome-level information to report. "
+                        "If you are using error-prone long reads (e.g. Nanopore), most bases may be below "
+                        "--min_base_quality (default 30)")
+        inStrain.logUtils.log_checkpoint("GenomeLevel", "genomeLevel_from_IS", "end")
+        return pd.DataFrame()
     db['scaffold'] = db['scaffold'].astype(str)
     gdb = _add_stb(db, stb)
 

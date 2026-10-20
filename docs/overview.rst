@@ -91,7 +91,7 @@ Glossary of terms used in inStrain
       A .text file with two columns separated by tabs, where the first column is the name of a scaffold and the second column is the name of the bin / genome the scaffold belongs to. Can be created using the script `parse_stb.py <https://github.com/MrOlm/drep/blob/master/helper_scripts/parse_stb.py>`_ that comes with the program ``dRep``  See :doc:`example_output` for more info
 
     genes file
-      A file containing the nucleotide sequences of all genes to profile, as called by the program Prodigal. See :doc:`example_output` for more info
+      A file containing the genes to profile: the nucleotide sequences of all genes as called by the program Prodigal, or a GFF3 or genbank file of gene calls from another program. See :doc:`user_manual` and :doc:`example_output` for more info
 
     mismapped read
       A read that is erroneously mapped to a genome. InStrain profiles a population by looking at the reads mapped to a genome. These reads are short, and sometimes reads that originated from one microbial population map to the representative genome of another (for example if they share homology). There are several techniques that can be used to reduce mismapping to the lowest extent possible.
@@ -103,7 +103,7 @@ Glossary of terms used in inStrain
       An inStrain profile (aka IS_profile, IS, ISP) is created by running the ``inStrain profile`` command. It contains  all of the program's internal workings, cached data, and is where the output is stored. Additional commands can then be run on an IS_profile, for example to analyze genes, compare profiles, etc., and there is lots of nice cached data stored in it that can be accessed using python.
 
     null model
-      The null model describes the probability that the number of true reads that support a variant base could be due to random mutation error, assuming Q30 score. The default false discovery rate with the null model is 1e-6 (one in a million).
+      The null model describes the probability that the number of true reads that support a variant base could be due to random mutation error, assuming Q30 score by default (see ``--min_base_quality`` and ``--error_rate`` to change this, e.g. for Nanopore reads). The default false discovery rate with the null model is 1e-6 (one in a million).
 
     mm
       The maximum number of mismatches a read-pair can have to be considered in the metric being considered. Behind the scenes, inStrain actually calculates pretty much all metrics for every read pair mismatch level. That is, only including read pairs with 0 mismatches to the reference sequences, only including read pairs with >= 1 mis-match to the reference sequences, all the way up to the number of mismatches associated with the "PID" parameter. Most of the time when it then generates user-facing output, it uses the highest mm possible and deletes the column label. If you'd like access to information on the mm-level, see the section titled "Dealing with mm"
